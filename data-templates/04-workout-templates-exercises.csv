@@ -1,0 +1,24 @@
+templateId,dayNumber,dayName,restDay,exerciseOrder,exerciseSlug,sets,reps,durationSeconds,restSeconds,notes
+wt-001,1,"Giorno A - Full Body",false,1,squat,3,10,,120,"Concentrati sulla profondità e la verticalità del busto."
+wt-001,1,"Giorno A - Full Body",false,2,panca-piana,3,10,,120,
+wt-001,1,"Giorno A - Full Body",false,3,rematore-bilanciere,3,10,,90,
+wt-001,1,"Giorno A - Full Body",false,4,plank,3,,30,60,"Mantieni la posizione 30 secondi."
+wt-001,2,"Riposo Attivo",true,,,,,,,
+wt-001,3,"Giorno B - Full Body",false,1,stacco-da-terra,3,8,,150,"Mantieni la schiena neutra in ogni rep."
+wt-001,3,"Giorno B - Full Body",false,2,military-press,3,10,,90,
+wt-001,3,"Giorno B - Full Body",false,3,curl-bicipiti,3,12,,60,
+wt-001,3,"Giorno B - Full Body",false,4,plank,3,,30,60,
+wt-001,4,"Riposo Attivo",true,,,,,,,
+wt-001,5,"Giorno A - Full Body",false,1,squat,3,10,,120,"Aumenta 2.5kg rispetto al giorno A precedente."
+wt-001,5,"Giorno A - Full Body",false,2,panca-piana,3,10,,120,
+wt-001,5,"Giorno A - Full Body",false,3,rematore-bilanciere,3,10,,90,
+wt-001,5,"Giorno A - Full Body",false,4,plank,3,,30,60,
+wt-001,6,"Riposo",true,,,,,,,
+wt-001,7,"Riposo",true,,,,,,,
+wt-002,1,"Upper A - Forza",false,1,panca-piana,4,6,,180,"Carico pesante, 80-85% 1RM."
+wt-002,1,"Upper A - Forza",false,2,trazioni,4,8,,150,
+wt-002,1,"Upper A - Forza",false,3,military-press,3,8,,120,
+wt-002,1,"Upper A - Forza",false,4,rematore-bilanciere,3,10,,90,
+wt-002,2,"Lower A - Forza",false,1,squat,4,6,,180,"Carico pesante."
+wt-002,2,"Lower A - Forza",false,2,stacco-da-terra,3,5,,180,
+wt-002,2,"Lower A - Forza",false,3,affondi,3,12,,90,"Per gamba."

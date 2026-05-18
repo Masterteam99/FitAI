@@ -1,0 +1,21 @@
+{
+  "name": "FitAI — Personal Trainer AI",
+  "short_name": "FitAI",
+  "description": "Allenati con piani personalizzati dall'AI e analisi real-time della tecnica",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#22c55e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["health", "fitness", "sports"],
+  "lang": "it",
+  "shortcuts": [
+    { "name": "Dashboard", "url": "/dashboard", "description": "Vai alla dashboard" },
+    { "name": "Analisi AI", "url": "/analisi", "description": "Avvia analisi esercizio" },
+    { "name": "AI Coach", "url": "/ai-coach", "description": "Parla con il coach AI" }
+  ]
+}

@@ -1,0 +1,19 @@
+templateId,day,mealType,mealOrder,mealName,estimatedKcal,estimatedProteinG,estimatedCarbsG,estimatedFatG,preparationNotes
+nt-001,lunedi,breakfast,,"Yogurt greco con frutti di bosco e granola",380,25,45,8,
+nt-001,lunedi,lunch,,"Insalata di farro con pollo e verdure grigliate",520,38,55,12,"Far raffreddare il farro prima di condire"
+nt-001,lunedi,dinner,,"Salmone al forno con patate dolci e broccoli",560,42,38,22,"Salmone 200g, patate 200g, broccoli a volontà"
+nt-001,lunedi,snack,1,"Mela e mandorle",180,5,25,8,
+nt-001,lunedi,snack,2,"Yogurt con miele",150,12,18,3,
+nt-001,martedi,breakfast,,"Toast integrale con avocado e uova in camicia",450,22,40,22,"2 uova in camicia, 1 fetta pane integrale, mezzo avocado"
+nt-001,martedi,lunch,,"Pasta integrale al pomodoro e tonno",560,38,75,12,"Pasta 80g cotta al dente"
+nt-001,martedi,dinner,,"Bistecca magra con insalata e patate al forno",530,42,45,18,
+nt-001,martedi,snack,1,"Frutta secca mix",160,5,8,12,
+nt-001,mercoledi,breakfast,,"Porridge con banana e noci",420,15,60,12,"Avena 60g, latte parzialmente scremato 250ml"
+nt-001,mercoledi,lunch,,"Quinoa con ceci, feta e pomodorini",510,25,60,18,
+nt-001,mercoledi,dinner,,"Branzino al forno con verdure miste",520,38,30,25,
+nt-001,mercoledi,snack,1,"Smoothie proteico",200,18,20,5,"Latte 200ml, 1 misurino proteine, frutti di bosco"
+nt-002,lunedi,breakfast,,"Porridge proteico con burro di arachidi e banana",680,40,75,22,"Avena 100g, latte di soia 300ml, 1 misurino proteine vegane"
+nt-002,lunedi,lunch,,"Buddha bowl con tofu, riso integrale e verdure",780,45,85,25,
+nt-002,lunedi,dinner,,"Pasta integrale con lenticchie e pomodoro",720,38,100,15,
+nt-002,lunedi,snack,1,"Hummus con verdure crude",280,12,30,12,
+nt-002,lunedi,snack,2,"Shake proteico post-workout",350,35,40,8,"Subito dopo allenamento"

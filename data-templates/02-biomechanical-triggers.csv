@@ -1,0 +1,11 @@
+exerciseSlug,joint,movementType,phase,minAngle,maxAngle,condition,severity,feedback,injuryRisk
+squat,left_knee,flessione,BOTTOM,70,110,ABOVE_MAX,ERROR,"Profondità insufficiente: il ginocchio non raggiunge il parallelo. Scendi finché la coscia è parallela al pavimento.",false
+squat,left_knee,flessione,BOTTOM,70,110,BELOW_MIN,CRITICAL,"Discesa eccessiva sotto il parallelo. Rischio di stress capsulare sul ginocchio. Ferma la discesa al parallelo.",true
+squat,right_knee,flessione,BOTTOM,70,110,ABOVE_MAX,ERROR,"Profondità insufficiente: il ginocchio non raggiunge il parallelo. Scendi finché la coscia è parallela al pavimento.",false
+squat,right_knee,flessione,BOTTOM,70,110,BELOW_MIN,CRITICAL,"Discesa eccessiva sotto il parallelo. Rischio di stress capsulare sul ginocchio. Ferma la discesa al parallelo.",true
+squat,left_knee,estensione,TOP,160,180,BELOW_MIN,WARNING,"Estensione incompleta in alto. Estendi completamente le ginocchia tra una ripetizione e l'altra.",false
+squat,spine,neutrale,THROUGHOUT,160,180,BELOW_MIN,CRITICAL,"Schiena arrotondata: rischio elevato di ernia lombare. Mantieni la colonna neutra durante tutta l'esecuzione.",true
+panca-piana,left_elbow,flessione,BOTTOM,70,95,BELOW_MIN,CRITICAL,"Gomiti troppo flessi al di sotto del petto. Rischio impingement spalla. Ferma la discesa al tocco del petto.",true
+panca-piana,left_shoulder,abduzione,BOTTOM,30,60,ABOVE_MAX,ERROR,"Gomiti troppo abdotti (90°): aumenta lo stress sull'articolazione gleno-omerale. Mantieni i gomiti a 45-75° dal busto.",true
+plank,spine,neutrale,THROUGHOUT,170,180,BELOW_MIN,ERROR,"Bacino caduto: la colonna non è in linea con le gambe. Contrai i glutei e l'addome per sollevare il bacino.",false
+plank,left_hip,neutrale,THROUGHOUT,170,180,ABOVE_MAX,WARNING,"Bacino sollevato: stai trasferendo il carico sulle spalle. Abbassa il bacino fino ad allineamento testa-piedi.",false

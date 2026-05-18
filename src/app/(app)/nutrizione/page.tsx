@@ -1,0 +1,230 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { format, addDays, subDays, parseISO } from "date-fns";
+import { it } from "date-fns/locale";
+
+interface NutritionLog {
+  id: string;
+  mealType: string;
+  foodName: string;
+  calories: number;
+  proteinG: number;
+  carbsG: number;
+  fatG: number;
+}
+
+interface Totals { calories: number; protein: number; carbs: number; fat: number }
+
+const MEAL_LABELS: Record<string, string> = {
+  BREAKFAST: "Colazione",
+  LUNCH: "Pranzo",
+  DINNER: "Cena",
+  SNACK: "Spuntino",
+  PRE_WORKOUT: "Pre-allenamento",
+  POST_WORKOUT: "Post-allenamento",
+};
+
+const MEAL_TYPES = Object.keys(MEAL_LABELS);
+
+// Daily targets (generic defaults)
+const TARGETS = { calories: 2000, protein: 150, carbs: 250, fat: 65 };
+
+export default function NutrizionePage() {
+  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [logs, setLogs] = useState<NutritionLog[]>([]);
+  const [totals, setTotals] = useState<Totals>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ mealType: "LUNCH", foodName: "", calories: "", protein: "", carbs: "", fat: "" });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/nutrition?date=${date}`)
+      .then((r) => r.json())
+      .then((d) => { setLogs(d.logs ?? []); setTotals(d.totals ?? { calories: 0, protein: 0, carbs: 0, fat: 0 }); })
+      .finally(() => setLoading(false));
+  }, [date]);
+
+  async function addLog() {
+    if (!form.foodName || !form.calories) return;
+    setSaving(true);
+    const res = await fetch("/api/nutrition", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        date,
+        mealType: form.mealType,
+        foodName: form.foodName,
+        calories: Number(form.calories),
+        proteinG: Number(form.protein) || 0,
+        carbsG: Number(form.carbs) || 0,
+        fatG: Number(form.fat) || 0,
+      }),
+    });
+    if (res.ok) {
+      const newLog = await res.json();
+      setLogs((prev) => [...prev, newLog]);
+      setTotals((prev) => ({
+        calories: prev.calories + newLog.calories,
+        protein: prev.protein + newLog.proteinG,
+        carbs: prev.carbs + newLog.carbsG,
+        fat: prev.fat + newLog.fatG,
+      }));
+      setForm({ mealType: "LUNCH", foodName: "", calories: "", protein: "", carbs: "", fat: "" });
+      setShowForm(false);
+    }
+    setSaving(false);
+  }
+
+  async function deleteLog(id: string) {
+    await fetch(`/api/nutrition?id=${id}`, { method: "DELETE" });
+    const deleted = logs.find((l) => l.id === id);
+    setLogs((prev) => prev.filter((l) => l.id !== id));
+    if (deleted) {
+      setTotals((prev) => ({
+        calories: prev.calories - deleted.calories,
+        protein: prev.protein - deleted.proteinG,
+        carbs: prev.carbs - deleted.carbsG,
+        fat: prev.fat - deleted.fatG,
+      }));
+    }
+  }
+
+  const grouped = MEAL_TYPES.reduce((acc, mt) => {
+    acc[mt] = logs.filter((l) => l.mealType === mt);
+    return acc;
+  }, {} as Record<string, NutritionLog[]>);
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Apple className="w-7 h-7 text-primary" />
+            Nutrizione
+          </h1>
+          <p className="text-muted-foreground">Traccia la tua alimentazione</p>
+        </div>
+        <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
+          <Plus className="w-4 h-4" />
+          Aggiungi
+        </Button>
+      </div>
+
+      {/* Date navigator */}
+      <div className="flex items-center gap-3 justify-center">
+        <Button variant="ghost" size="icon" onClick={() => setDate(format(subDays(parseISO(date), 1), "yyyy-MM-dd"))}>
+          <ChevronLeft className="w-5 h-5" />
+        </Button>
+        <span className="font-medium min-w-[160px] text-center">
+          {format(parseISO(date), "EEEE d MMMM yyyy", { locale: it })}
+        </span>
+        <Button variant="ghost" size="icon" onClick={() => setDate(format(addDays(parseISO(date), 1), "yyyy-MM-dd"))} disabled={date >= format(new Date(), "yyyy-MM-dd")}>
+          <ChevronRight className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Macro totals */}
+      <div className="grid grid-cols-4 gap-2">
+        {[
+          { label: "Calorie", value: totals.calories, unit: "kcal", target: TARGETS.calories, color: "text-primary" },
+          { label: "Proteine", value: Math.round(totals.protein), unit: "g", target: TARGETS.protein, color: "text-blue-400" },
+          { label: "Carboidrati", value: Math.round(totals.carbs), unit: "g", target: TARGETS.carbs, color: "text-orange-400" },
+          { label: "Grassi", value: Math.round(totals.fat), unit: "g", target: TARGETS.fat, color: "text-yellow-400" },
+        ].map((m) => {
+          const pct = Math.min(Math.round((m.value / m.target) * 100), 100);
+          return (
+            <Card key={m.label}>
+              <CardContent className="p-3 text-center">
+                <div className={`text-lg font-bold ${m.color}`}>{m.value}</div>
+                <div className="text-xs text-muted-foreground">{m.unit}</div>
+                <div className="text-xs text-muted-foreground">{m.label}</div>
+                <div className="mt-1.5 h-1 bg-secondary rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">{pct}%</div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Add form */}
+      {showForm && (
+        <Card className="border-primary/30">
+          <CardHeader><CardTitle className="text-base">Nuovo alimento</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <select
+              value={form.mealType}
+              onChange={(e) => setForm((f) => ({ ...f, mealType: e.target.value }))}
+              className="w-full bg-secondary border border-border rounded-lg p-2 text-sm"
+            >
+              {MEAL_TYPES.map((mt) => <option key={mt} value={mt}>{MEAL_LABELS[mt]}</option>)}
+            </select>
+            <Input placeholder="Nome alimento *" value={form.foodName} onChange={(e) => setForm((f) => ({ ...f, foodName: e.target.value }))} />
+            <div className="grid grid-cols-2 gap-2">
+              <Input placeholder="Calorie *" type="number" value={form.calories} onChange={(e) => setForm((f) => ({ ...f, calories: e.target.value }))} />
+              <Input placeholder="Proteine (g)" type="number" value={form.protein} onChange={(e) => setForm((f) => ({ ...f, protein: e.target.value }))} />
+              <Input placeholder="Carboidrati (g)" type="number" value={form.carbs} onChange={(e) => setForm((f) => ({ ...f, carbs: e.target.value }))} />
+              <Input placeholder="Grassi (g)" type="number" value={form.fat} onChange={(e) => setForm((f) => ({ ...f, fat: e.target.value }))} />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={addLog} disabled={saving || !form.foodName || !form.calories} className="flex-1">
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
+              </Button>
+              <Button variant="outline" onClick={() => setShowForm(false)}>Annulla</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Meals */}
+      {loading ? (
+        <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+      ) : (
+        <div className="space-y-4">
+          {MEAL_TYPES.filter((mt) => grouped[mt]?.length > 0).map((mt) => (
+            <Card key={mt}>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm">{MEAL_LABELS[mt]}</CardTitle>
+                  <Badge variant="secondary" className="text-xs">
+                    {grouped[mt].reduce((a, l) => a + l.calories, 0)} kcal
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {grouped[mt].map((log) => (
+                  <div key={log.id} className="flex items-center justify-between gap-3 text-sm p-2 rounded-lg bg-secondary/40">
+                    <span className="flex-1 truncate">{log.foodName}</span>
+                    <span className="text-muted-foreground text-xs shrink-0">P:{log.proteinG}g C:{log.carbsG}g G:{log.fatG}g</span>
+                    <span className="font-medium shrink-0">{log.calories} kcal</span>
+                    <button onClick={() => deleteLog(log.id)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+
+          {logs.length === 0 && (
+            <Card className="border-dashed border-2">
+              <CardContent className="py-10 text-center">
+                <Apple className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-muted-foreground text-sm">Nessun alimento registrato per questo giorno</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

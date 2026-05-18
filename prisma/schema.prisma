@@ -1,0 +1,705 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum FitnessLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ATHLETE
+}
+
+enum FitnessGoal {
+  LOSE_WEIGHT
+  BUILD_MUSCLE
+  ENDURANCE
+  FLEXIBILITY
+  GENERAL_FITNESS
+  ATHLETIC_PERFORMANCE
+}
+
+enum Equipment {
+  NONE
+  DUMBBELLS
+  BARBELL
+  MACHINE
+  RESISTANCE_BANDS
+  PULL_UP_BAR
+  BENCH
+  KETTLEBELL
+  CABLES
+  FULL_GYM
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  FOREARMS
+  CORE
+  QUADRICEPS
+  HAMSTRINGS
+  GLUTES
+  CALVES
+  FULL_BODY
+}
+
+enum ExerciseCategory {
+  STRENGTH
+  CARDIO
+  FLEXIBILITY
+  BALANCE
+  PLYOMETRIC
+  FUNCTIONAL
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum SessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AnalysisStatus {
+  RECORDING
+  PROCESSING
+  COMPLETED
+  ERROR
+}
+
+enum ThresholdSeverity {
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum ExercisePhase {
+  CONCENTRIC
+  ECCENTRIC
+  ISOMETRIC
+  TOP
+  BOTTOM
+  THROUGHOUT
+}
+
+enum TriggerCondition {
+  BELOW_MIN
+  ABOVE_MAX
+  OUT_OF_RANGE
+}
+
+enum AchievementRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+enum PostType {
+  WORKOUT_SHARE
+  ACHIEVEMENT
+  PROGRESS_PHOTO
+  CHALLENGE_COMPLETION
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum SubscriptionStatus {
+  FREE
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum SubscriptionPlan {
+  MONTHLY
+  YEARLY
+}
+
+enum ChallengeType {
+  STREAK
+  VOLUME
+  FREQUENCY
+  SPECIFIC_EXERCISE
+}
+
+enum NotificationType {
+  ACHIEVEMENT
+  REMINDER
+  SOCIAL
+  CHALLENGE
+  AI_TIP
+}
+
+enum WearablePlatform {
+  APPLE_HEALTH
+  GOOGLE_FIT
+  FITBIT
+  GARMIN
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id                  String       @id @default(cuid())
+  email               String       @unique
+  emailVerified       DateTime?
+  name                String?
+  avatar              String?
+  passwordHash        String?
+  profileVisibility   ProfileVisibility @default(PUBLIC)
+  stripeCustomerId    String?      @unique
+  subscriptionStatus  SubscriptionStatus @default(FREE)
+  subscriptionPlan    SubscriptionPlan?
+  subscriptionCurrentPeriodEnd DateTime?
+  fitnessLevel        FitnessLevel @default(BEGINNER)
+  age                 Int?
+  weightKg            Float?
+  heightCm            Float?
+  gender              String?
+  primaryGoal         FitnessGoal  @default(GENERAL_FITNESS)
+  availableEquipment  Equipment[]  @default([NONE])
+  weeklyWorkoutDays   Int          @default(3)
+  dietType            String? // onnivora, vegetariana, vegana, chetogenica, mediterranea, altro
+  pastInjuries        String[]     @default([]) // array libero
+  pastSports          String[]     @default([]) // multi-select
+  nutritionPlanJson   Json?
+  onboardingCompleted Boolean      @default(false)
+  totalPoints         Int          @default(0)
+  currentStreak       Int          @default(0)
+  longestStreak       Int          @default(0)
+  lastWorkoutDate     DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  accounts              Account[]
+  authSessions          AuthSession[]
+  passwordResetTokens   PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  subscriptions         Subscription[]
+  usageCounters         UsageCounter[]
+  workoutPlans          WorkoutPlan[]
+  workoutSessions       WorkoutSession[]
+  analysisSessions      AnalysisSession[]
+  progressEntries       UserProgress[]
+  nutritionLogs         NutritionLog[]
+  achievements          UserAchievement[]
+  socialPosts           SocialPost[]
+  socialLikes           SocialLike[]
+  challengeParticipants ChallengeParticipant[]
+  notifications         Notification[]
+  wearables             WearableIntegration[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model AuthSession {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_sessions")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id         String    @id @default(cuid())
+  token      String    @unique
+  userId     String
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("email_verification_tokens")
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  stripeSubscriptionId String             @unique
+  stripePriceId        String
+  status               SubscriptionStatus
+  plan                 SubscriptionPlan
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model UsageCounter {
+  id        String   @id @default(cuid())
+  userId    String
+  feature   String
+  period    String
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature, period])
+  @@index([userId])
+  @@map("usage_counters")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Exercise {
+  id                       String           @id @default(cuid())
+  name                     String
+  slug                     String           @unique
+  description              String           @db.Text
+  instructions             String[]
+  muscleGroupPrimary       MuscleGroup
+  muscleGroupsSecondary    MuscleGroup[]    @default([])
+  difficulty               Difficulty
+  equipment                Equipment[]      @default([NONE])
+  category                 ExerciseCategory
+  videoUrl                 String? // VIDEO_RIF_1: video PT pro per riferimento e Logica 3
+  thumbnailUrl             String?
+  durationSeconds          Int?
+  recordingDurationSeconds Int              @default(20) // 15-25s, durata acquisizione video utente per analisi
+  caloriesPerMinute        Float            @default(5)
+  professionalNotes        String?          @db.Text
+  tags                     String[]         @default([])
+  isActive                 Boolean          @default(true)
+  createdAt                DateTime         @default(now())
+
+  biomechanicalSpec ExerciseBiomechanicalSpec?
+  planExercises     WorkoutPlanExercise[]
+  sessionExercises  WorkoutSessionExercise[]
+  analysisSessions  AnalysisSession[]
+
+  @@index([muscleGroupPrimary])
+  @@index([difficulty])
+  @@index([category])
+  @@map("exercises")
+}
+
+// ─── Analisi v2: gerarchia spec biomeccanica per esercizio ────────────────────
+// Struttura: Spec → Movements (per joint) → Phases (per fase movimento) → Triggers (regole)
+
+model ExerciseBiomechanicalSpec {
+  id         String             @id @default(cuid())
+  exerciseId String             @unique
+  exercise   Exercise           @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  movements  ExerciseMovement[]
+
+  @@map("exercise_biomechanical_specs")
+}
+
+model ExerciseMovement {
+  id           String                    @id @default(cuid())
+  specId       String
+  spec         ExerciseBiomechanicalSpec @relation(fields: [specId], references: [id], onDelete: Cascade)
+  joint        String // left_knee, right_knee, spine, ecc. (vedi src/lib/pose.ts::KEYPOINT_NAMES)
+  movementType String // flessione, estensione, abduzione, rotazione, inclinazione, cerniera, neutrale
+  phases       MovementPhase[]
+
+  @@index([specId])
+  @@map("exercise_movements")
+}
+
+model MovementPhase {
+  id         String           @id @default(cuid())
+  movementId String
+  movement   ExerciseMovement @relation(fields: [movementId], references: [id], onDelete: Cascade)
+  phase      ExercisePhase // CONCENTRIC, ECCENTRIC, ISOMETRIC, TOP, BOTTOM, THROUGHOUT
+  minAngle   Float
+  maxAngle   Float
+  triggers   PhaseTrigger[]
+
+  @@index([movementId])
+  @@map("movement_phases")
+}
+
+model PhaseTrigger {
+  id         String            @id @default(cuid())
+  phaseId    String
+  phase      MovementPhase     @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  condition  TriggerCondition // BELOW_MIN, ABOVE_MAX, OUT_OF_RANGE
+  severity   ThresholdSeverity // WARNING, ERROR, CRITICAL
+  feedback   String            @db.Text
+  injuryRisk Boolean           @default(false)
+
+  @@index([phaseId])
+  @@map("phase_triggers")
+}
+
+model WorkoutPlan {
+  id              String           @id @default(cuid())
+  userId          String
+  name            String
+  description     String?          @db.Text
+  generatedByAI   Boolean          @default(false)
+  aiPromptUsed    String?          @db.Text
+  difficulty      Difficulty       @default(INTERMEDIATE)
+  durationWeeks   Int              @default(4)
+  workoutsPerWeek Int              @default(3)
+  primaryGoal     FitnessGoal      @default(GENERAL_FITNESS)
+  isActive        Boolean          @default(false)
+  isPublic        Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days            WorkoutPlanDay[]
+  sessions        WorkoutSession[]
+
+  @@index([userId])
+  @@map("workout_plans")
+}
+
+model WorkoutPlanDay {
+  id        String                @id @default(cuid())
+  planId    String
+  dayNumber Int
+  name      String
+  restDay   Boolean               @default(false)
+  plan      WorkoutPlan           @relation(fields: [planId], references: [id], onDelete: Cascade)
+  exercises WorkoutPlanExercise[]
+  sessions  WorkoutSession[]
+
+  @@index([planId])
+  @@map("workout_plan_days")
+}
+
+model WorkoutPlanExercise {
+  id              String         @id @default(cuid())
+  planDayId       String
+  exerciseId      String
+  orderIndex      Int
+  sets            Int            @default(3)
+  reps            Int?
+  durationSeconds Int?
+  restSeconds     Int            @default(60)
+  notes           String?
+  targetWeightKg  Float?
+  planDay         WorkoutPlanDay @relation(fields: [planDayId], references: [id], onDelete: Cascade)
+  exercise        Exercise       @relation(fields: [exerciseId], references: [id])
+
+  @@index([planDayId])
+  @@map("workout_plan_exercises")
+}
+
+model WorkoutSession {
+  id             String                   @id @default(cuid())
+  userId         String
+  planId         String?
+  planDayId      String?
+  status         SessionStatus            @default(IN_PROGRESS)
+  startedAt      DateTime                 @default(now())
+  completedAt    DateTime?
+  totalSeconds   Int?
+  totalVolumeKg  Float?
+  caloriesBurned Int?
+  notes          String?                  @db.Text
+  overallFeeling Int?
+  user           User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan           WorkoutPlan?             @relation(fields: [planId], references: [id])
+  planDay        WorkoutPlanDay?          @relation(fields: [planDayId], references: [id])
+  exercises      WorkoutSessionExercise[]
+
+  @@index([userId])
+  @@index([planId])
+  @@map("workout_sessions")
+}
+
+model WorkoutSessionExercise {
+  id            String         @id @default(cuid())
+  sessionId     String
+  exerciseId    String
+  orderIndex    Int
+  completedSets Json           @default("[]")
+  session       WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exercise      Exercise       @relation(fields: [exerciseId], references: [id])
+
+  @@index([sessionId])
+  @@map("workout_session_exercises")
+}
+
+model AnalysisSession {
+  id              String         @id @default(cuid())
+  userId          String
+  exerciseId      String
+  status          AnalysisStatus @default(RECORDING)
+  videoUrl        String? // URL Supabase Storage del video utente (15-25s)
+  durationSeconds Int?
+  startedAt       DateTime       @default(now())
+  completedAt     DateTime?
+
+  // Analisi v2 — output strutturati per logica + sintesi finale
+  l1Result      Json? // L1Result: score, triggeredFeedback, detectedPhases, rawAngles
+  l2Result      Json? // L2Result: score, qualitativeAnalysis, visualObservations, injuryRiskFlags
+  l3Result      Json? // L3Result: score, comparisonFeedback, keyDifferences
+  finalReport   Json? // FinalReport: combinedScore, overallJudgment, prioritizedImprovements, injuryRiskAlert, positiveAspects
+  combinedScore Float? // Manteniamo top-level per query/index veloci
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@index([userId])
+  @@index([exerciseId])
+  @@map("analysis_sessions")
+}
+
+model UserProgress {
+  id                 String   @id @default(cuid())
+  userId             String
+  date               DateTime @default(now())
+  weightKg           Float?
+  bodyFatPercent     Float?
+  measurementChestCm Float?
+  measurementWaistCm Float?
+  measurementHipsCm  Float?
+  measurementArmsCm  Float?
+  measurementLegsCm  Float?
+  photoUrl           String?
+  notes              String?
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_progress")
+}
+
+model NutritionLog {
+  id       String   @id @default(cuid())
+  userId   String
+  date     DateTime @default(now())
+  mealType MealType
+  foodName String
+  quantity Float
+  unit     String   @default("g")
+  calories Float
+  proteinG Float    @default(0)
+  carbsG   Float    @default(0)
+  fatG     Float    @default(0)
+  fiberG   Float    @default(0)
+  notes    String?
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@map("nutrition_logs")
+}
+
+model Achievement {
+  id               String            @id @default(cuid())
+  key              String            @unique
+  name             String
+  description      String
+  icon             String
+  category         String
+  condition        Json
+  points           Int               @default(10)
+  rarity           AchievementRarity @default(COMMON)
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id               String      @id @default(cuid())
+  userId           String
+  achievementId    String
+  unlockedAt       DateTime    @default(now())
+  notificationSent Boolean     @default(false)
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement      Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+model Challenge {
+  id           String                 @id @default(cuid())
+  creatorId    String?
+  title        String
+  description  String                 @db.Text
+  type         ChallengeType
+  target       Json
+  startDate    DateTime
+  endDate      DateTime
+  isPublic     Boolean                @default(true)
+  reward       Json?
+  participants ChallengeParticipant[]
+
+  @@index([startDate])
+  @@map("challenges")
+}
+
+model ChallengeParticipant {
+  id              String    @id @default(cuid())
+  challengeId     String
+  userId          String
+  currentProgress Json      @default("{}")
+  completedAt     DateTime?
+  rank            Int?
+  challenge       Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@map("challenge_participants")
+}
+
+model SocialPost {
+  id               String       @id @default(cuid())
+  userId           String
+  type             PostType
+  content          String       @db.Text
+  workoutSessionId String?
+  achievementId    String?
+  imageUrl         String?
+  likesCount       Int          @default(0)
+  createdAt        DateTime     @default(now())
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes            SocialLike[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("social_posts")
+}
+
+model SocialLike {
+  id        String     @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime   @default(now())
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@map("social_likes")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model WearableIntegration {
+  id           String           @id @default(cuid())
+  userId       String
+  platform     WearablePlatform
+  accessToken  String           @db.Text
+  refreshToken String?          @db.Text
+  lastSyncAt   DateTime?
+  isActive     Boolean          @default(true)
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform])
+  @@map("wearable_integrations")
+}
+
+model WorkoutPlanTemplate {
+  id                String        @id @default(cuid())
+  name              String
+  description       String        @db.Text
+  difficulty        FitnessLevel
+  targetGoals       FitnessGoal[]
+  requiredEquipment Equipment[]
+  durationWeeks     Int
+  workoutsPerWeek   Int
+  rationale         String        @db.Text
+  daysJson          Json
+  createdAt         DateTime      @default(now())
+
+  @@index([difficulty])
+}
+
+model NutritionPlanTemplate {
+  id                   String      @id @default(cuid())
+  name                 String
+  description          String      @db.Text
+  dietType             String
+  targetGoal           FitnessGoal
+  estimatedProfileJson Json
+  targetMacrosJson     Json
+  weeklyPlanJson       Json
+  rationale            String      @db.Text
+  createdAt            DateTime    @default(now())
+
+  @@index([dietType, targetGoal])
+}

@@ -1,0 +1,4 @@
+exerciseSlug,videoUrl,thumbnailUrl
+squat,https://YOUR-PROJECT.supabase.co/storage/v1/object/public/exercise-videos/squat.mp4,https://YOUR-PROJECT.supabase.co/storage/v1/object/public/exercise-videos/squat-thumb.jpg
+panca-piana,https://YOUR-PROJECT.supabase.co/storage/v1/object/public/exercise-videos/panca-piana.mp4,https://YOUR-PROJECT.supabase.co/storage/v1/object/public/exercise-videos/panca-piana-thumb.jpg
+plank,https://YOUR-PROJECT.supabase.co/storage/v1/object/public/exercise-videos/plank.mp4,

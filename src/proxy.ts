@@ -1,0 +1,31 @@
+export { auth as proxy } from "@/lib/auth";
+
+export const config = {
+  matcher: [
+    "/dashboard/:path*",
+    "/esercizi/:path*",
+    "/allenamento/:path*",
+    "/analisi/:path*",
+    "/ai-coach/:path*",
+    "/nutrizione/:path*",
+    "/community/:path*",
+    "/progressi/:path*",
+    "/profilo/:path*",
+    "/onboarding/:path*",
+    "/api/workout-plans/:path*",
+    "/api/workout-sessions/:path*",
+    "/api/analysis/:path*",
+    "/api/ai/:path*",
+    "/api/gamification/:path*",
+    "/api/nutrition/:path*",
+    "/api/progressi/:path*",
+    "/api/profilo/:path*",
+    "/api/onboarding/:path*",
+    "/abbonamento/:path*",
+    "/api/billing/checkout",
+    "/api/billing/portal",
+    "/api/billing/status",
+    "/api/community/:path*",
+    "/api/account/:path*",
+  ],
+};

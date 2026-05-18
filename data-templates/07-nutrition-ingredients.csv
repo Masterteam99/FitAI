@@ -1,0 +1,34 @@
+templateId,day,mealType,mealOrder,food,quantityG
+nt-001,lunedi,breakfast,,"Yogurt greco 0%",200
+nt-001,lunedi,breakfast,,"Mirtilli",80
+nt-001,lunedi,breakfast,,"Granola",40
+nt-001,lunedi,breakfast,,"Miele",5
+nt-001,lunedi,lunch,,"Farro perlato",80
+nt-001,lunedi,lunch,,"Petto di pollo",120
+nt-001,lunedi,lunch,,"Zucchine grigliate",150
+nt-001,lunedi,lunch,,"Peperoni grigliati",100
+nt-001,lunedi,lunch,,"Olio extravergine d'oliva",10
+nt-001,lunedi,dinner,,"Salmone fresco",200
+nt-001,lunedi,dinner,,"Patate dolci",200
+nt-001,lunedi,dinner,,"Broccoli",150
+nt-001,lunedi,dinner,,"Olio extravergine d'oliva",8
+nt-001,lunedi,snack,1,"Mela",150
+nt-001,lunedi,snack,1,"Mandorle",20
+nt-001,lunedi,snack,2,"Yogurt bianco intero",125
+nt-001,lunedi,snack,2,"Miele",10
+nt-001,martedi,breakfast,,"Pane integrale",60
+nt-001,martedi,breakfast,,"Avocado",80
+nt-001,martedi,breakfast,,"Uova",120
+nt-001,martedi,breakfast,,"Pomodorini",50
+nt-002,lunedi,breakfast,,"Avena in fiocchi",100
+nt-002,lunedi,breakfast,,"Latte di soia non zuccherato",300
+nt-002,lunedi,breakfast,,"Burro di arachidi",30
+nt-002,lunedi,breakfast,,"Banana",120
+nt-002,lunedi,breakfast,,"Proteine vegane in polvere",30
+nt-002,lunedi,lunch,,"Tofu naturale",200
+nt-002,lunedi,lunch,,"Riso integrale",100
+nt-002,lunedi,lunch,,"Cavolo riccio",80
+nt-002,lunedi,lunch,,"Edamame",80
+nt-002,lunedi,lunch,,"Avocado",60
+nt-002,lunedi,lunch,,"Semi di sesamo",10
+nt-002,lunedi,lunch,,"Salsa di soia",15
