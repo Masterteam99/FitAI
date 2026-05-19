@@ -171,6 +171,7 @@ model User {
   emailVerified       DateTime?
   name                String?
   avatar              String?
+  image               String?
   passwordHash        String?
   profileVisibility   ProfileVisibility @default(PUBLIC)
   stripeCustomerId    String?      @unique
