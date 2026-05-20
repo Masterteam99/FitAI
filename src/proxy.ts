@@ -27,5 +27,6 @@ export const config = {
     "/api/billing/status",
     "/api/community/:path*",
     "/api/account/:path*",
+    "/api/daily-checkin/:path*",
   ],
 };
