@@ -7,8 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Dumbbell, Apple, Heart, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { DailyMission } from "@/lib/dailyMission";
-import { MOOD_EMOJI, CHECKIN_MOODS } from "@/lib/dailyMission";
+import type { DailyMission } from "@/lib/dailyMission-shared";
+import { MOOD_EMOJI, CHECKIN_MOODS } from "@/lib/dailyMission-shared";
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("it-IT", {
   weekday: "long",

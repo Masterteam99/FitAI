@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
-import { Flame, TrendingUp, Dumbbell, Brain, Target, Clock, ChevronRight, Plus } from "lucide-react";
+import { Flame, Dumbbell, Brain, Target, Clock, ChevronRight, Plus } from "lucide-react";
 import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
+import { DailyMissionCard } from "@/components/dashboard/DailyMissionCard";
+import { getDailyMission } from "@/lib/dailyMission";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -16,51 +18,39 @@ export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user!.id as string;
 
-  const [user, activePlan, recentSessions, achievements] = await Promise.all([
+  const [user, activePlan, recentSessions, achievements, mission] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, currentStreak: true, totalPoints: true, longestStreak: true } }),
     prisma.workoutPlan.findFirst({ where: { userId, isActive: true }, include: { days: { include: { exercises: { include: { exercise: true } } } } } }),
     prisma.workoutSession.findMany({ where: { userId, status: "COMPLETED" }, orderBy: { completedAt: "desc" }, take: 5, include: { planDay: true } }),
     prisma.userAchievement.findMany({ where: { userId }, include: { achievement: true }, orderBy: { unlockedAt: "desc" }, take: 3 }),
+    getDailyMission(userId),
   ]);
-
-  const weeklyCount = recentSessions.filter((s) => {
-    const weekAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000);
-    return s.completedAt && s.completedAt > weekAgo;
-  }).length;
 
   return (
     <div className="space-y-6">
       <WelcomeTour />
-      <div>
-        <h1 className="text-2xl font-bold">Ciao, {user?.name?.split(" ")[0] ?? "Atleta"} 👋</h1>
-        <p className="text-muted-foreground">Pronto per l&apos;allenamento di oggi?</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Ciao, {user?.name?.split(" ")[0] ?? "Atleta"} 👋</h1>
+          <p className="text-muted-foreground">Pronto per l&apos;allenamento di oggi?</p>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <span className="inline-flex items-center gap-1.5">
+            <Flame className="w-4 h-4 text-orange-400" />
+            <span className="font-semibold">{user?.currentStreak ?? 0}gg</span>
+            <span className="text-muted-foreground">streak</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Target className="w-4 h-4 text-primary" />
+            <span className="font-semibold">{user?.totalPoints ?? 0}</span>
+            <span className="text-muted-foreground">pt</span>
+          </span>
+        </div>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: "Streak attuale", value: `${user?.currentStreak ?? 0}gg`, icon: Flame, color: "text-orange-400" },
-          { label: "Questa settimana", value: `${weeklyCount} sessioni`, icon: TrendingUp, color: "text-blue-400" },
-          { label: "Punti totali", value: `${user?.totalPoints ?? 0}`, icon: Target, color: "text-primary" },
-          { label: "Record streak", value: `${user?.longestStreak ?? 0}gg`, icon: Dumbbell, color: "text-purple-400" },
-        ].map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label} className="bg-card/60">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">{stat.label}</span>
-                  <Icon className={`w-4 h-4 ${stat.color}`} />
-                </div>
-                <p className="text-2xl font-bold">{stat.value}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <DailyMissionCard mission={mission} />
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Piano attivo */}
         <div className="lg:col-span-2 space-y-4">
           <Card>
             <CardHeader className="pb-2">
@@ -104,7 +94,6 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Sessioni recenti */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Sessioni Recenti</CardTitle>
@@ -130,9 +119,7 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        {/* Sidebar destra */}
         <div className="space-y-4">
-          {/* Quick actions */}
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-base">Azioni rapide</CardTitle></CardHeader>
             <CardContent className="space-y-2">
@@ -157,7 +144,6 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Achievements recenti */}
           {achievements.length > 0 && (
             <Card>
               <CardHeader className="pb-2"><CardTitle className="text-base">Ultimi Achievement</CardTitle></CardHeader>
