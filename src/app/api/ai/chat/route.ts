@@ -6,6 +6,10 @@ import { SYSTEM_PROMPTS } from "@/services/ai/promptTemplates";
 import { requirePremium } from "@/lib/billing/gating";
 import { z } from "zod";
 
+export const runtime = "nodejs";
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   message: z.string().min(1).max(1000),
   history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() })).default([]),
@@ -45,14 +49,19 @@ export async function POST(req: NextRequest) {
   return new Response(
     new ReadableStream({
       async start(controller) {
-        for await (const chunk of stream) {
-          if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-            controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+        try {
+          for await (const chunk of stream) {
+            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+              controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+            }
           }
+          controller.close();
+        } catch (err) {
+          console.error("[ai-chat] stream error", err);
+          controller.error(err);
         }
-        controller.close();
       },
     }),
-    { headers: { "Content-Type": "text/plain; charset=utf-8" } }
+    { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store, no-transform" } }
   );
 }

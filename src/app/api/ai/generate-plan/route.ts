@@ -7,6 +7,10 @@ import { SYSTEM_PROMPTS, buildPlanGeneratorPrompt } from "@/services/ai/promptTe
 import { checkQuota, incrementUsage } from "@/lib/billing/gating";
 import { z } from "zod";
 
+export const runtime = "nodejs";
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   goal: z.string().optional(),
   goals: z.array(z.string()).optional(),
@@ -24,25 +28,29 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const startTs = Date.now();
+  console.log("[generate-plan] start", { ts: startTs });
+
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+  const userId = session.user.id as string;
+  console.log("[generate-plan] authed", { userId });
 
-  const { success } = await aiRatelimit.limit(session.user.id);
+  const { success } = await aiRatelimit.limit(userId);
   if (!success) return NextResponse.json({ error: "Troppe richieste. Riprova tra un minuto." }, { status: 429 });
 
-  const gate = await checkQuota(session.user.id as string, "generate_plan");
+  const gate = await checkQuota(userId, "generate_plan");
   if (!gate.ok) {
     return NextResponse.json(
       { error: "Hai esaurito le generazioni AI di questo mese. Passa a Premium per averle illimitate.", code: gate.reason, limit: gate.limit, resetAt: gate.resetAt },
       { status: 402 },
     );
   }
+  console.log("[generate-plan] gate ok", { premium: gate.premium, remaining: gate.remaining });
 
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Dati non validi" }, { status: 400 });
-
-  if (!gate.premium) await incrementUsage(session.user.id as string, "generate_plan");
 
   const d = parsed.data;
   const normalizedGoals = d.goals ?? (d.goal ? [d.goal] : ["GENERAL_FITNESS"]);
@@ -58,6 +66,7 @@ export async function POST(req: NextRequest) {
   const exerciseList = exercises
     .map((e) => `- ${e.slug}: "${e.name}" | muscolo: ${e.muscleGroupPrimary} | difficoltà: ${e.difficulty} | attrezzatura: ${e.equipment.join(",")} | categoria: ${e.category}`)
     .join("\n");
+  console.log("[generate-plan] exercises loaded", { count: exercises.length });
 
   // Few-shot: 2-3 template più simili al profilo utente
   const matchedTemplates = await prisma.workoutPlanTemplate.findMany({
@@ -103,18 +112,33 @@ export async function POST(req: NextRequest) {
       },
     ],
   });
+  console.log("[generate-plan] anthropic stream opened");
 
   return new Response(
     new ReadableStream({
       async start(controller) {
-        for await (const chunk of stream) {
-          if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-            controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+        let streamOk = false;
+        try {
+          for await (const chunk of stream) {
+            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+              controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+            }
           }
+          streamOk = true;
+          controller.close();
+          console.log("[generate-plan] stream complete", { durationMs: Date.now() - startTs });
+        } catch (err) {
+          console.error("[generate-plan] stream error", { durationMs: Date.now() - startTs, err: err instanceof Error ? err.message : String(err) });
+          controller.error(err);
+          return;
         }
-        controller.close();
+        if (streamOk && !gate.premium) {
+          await incrementUsage(userId, "generate_plan").catch((e) =>
+            console.error("[generate-plan] incrementUsage failed", e)
+          );
+        }
       },
     }),
-    { headers: { "Content-Type": "text/plain; charset=utf-8", "Transfer-Encoding": "chunked" } }
+    { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store, no-transform" } }
   );
 }

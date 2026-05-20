@@ -26,8 +26,6 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "exerciseId richiesto" }, { status: 400 });
 
-  if (!gate.premium) await incrementUsage(session.user.id as string, "analysis_start");
-
   const exercise = await prisma.exercise.findUnique({
     where: { id: parsed.data.exerciseId },
   });
@@ -36,6 +34,12 @@ export async function POST(req: NextRequest) {
   const analysisSession = await prisma.analysisSession.create({
     data: { userId: session.user.id, exerciseId: exercise.id, status: "RECORDING" },
   });
+
+  if (!gate.premium) {
+    await incrementUsage(session.user.id as string, "analysis_start").catch((e) =>
+      console.error("[analysis-start] incrementUsage failed", e)
+    );
+  }
 
   return NextResponse.json({
     analysisSessionId: analysisSession.id,

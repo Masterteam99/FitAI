@@ -81,7 +81,18 @@ export default function OnboardingStep4() {
           notes: "",
         }),
       });
-      if (!planRes.ok || !planRes.body) throw new Error("Errore generazione piano AI");
+      if (!planRes.ok) {
+        const errBody = await planRes.text().catch(() => "");
+        let errMsg = `HTTP ${planRes.status}`;
+        try {
+          const j = JSON.parse(errBody);
+          if (j.error) errMsg += ` — ${j.error}`;
+        } catch {
+          if (errBody) errMsg += ` — ${errBody.slice(0, 200)}`;
+        }
+        throw new Error(`Errore generazione piano (${errMsg})`);
+      }
+      if (!planRes.body) throw new Error("Errore generazione piano: stream vuoto");
 
       const reader = planRes.body.getReader();
       const decoder = new TextDecoder();

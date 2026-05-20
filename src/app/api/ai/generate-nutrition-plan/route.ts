@@ -7,6 +7,10 @@ import { NUTRITION_SYSTEM_PROMPT, buildNutritionPlanPrompt } from "@/services/ai
 import { checkQuota, incrementUsage } from "@/lib/billing/gating";
 import { z } from "zod";
 
+export const runtime = "nodejs";
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   weightKg: z.number().min(30).max(300),
   heightCm: z.number().min(100).max(250),
@@ -62,7 +66,6 @@ export async function POST(req: NextRequest) {
       { status: 402 },
     );
   }
-  if (!gate.premium) await incrementUsage(session.user.id as string, "generate_nutrition_plan");
 
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
@@ -113,6 +116,12 @@ export async function POST(req: NextRequest) {
     where: { id: session.user.id },
     data: { nutritionPlanJson: plan as object },
   });
+
+  if (!gate.premium) {
+    await incrementUsage(session.user.id as string, "generate_nutrition_plan").catch((e) =>
+      console.error("[generate-nutrition-plan] incrementUsage failed", e)
+    );
+  }
 
   return NextResponse.json({ plan, targetMacros });
 }
