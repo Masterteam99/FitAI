@@ -53,6 +53,7 @@ function computeTargetMacros(p: {
 }
 
 export async function POST(req: NextRequest) {
+  try {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
 
@@ -124,4 +125,10 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ plan, targetMacros });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    const status = (err as { status?: number })?.status ?? 500;
+    console.error("[generate-nutrition-plan] handler error", { status, err: msg });
+    return NextResponse.json({ error: msg, code: "AI_PROVIDER_ERROR" }, { status: status >= 400 && status < 600 ? status : 500 });
+  }
 }

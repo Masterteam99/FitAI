@@ -16,6 +16,7 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  try {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
 
@@ -64,4 +65,10 @@ export async function POST(req: NextRequest) {
     }),
     { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store, no-transform" } }
   );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    const status = (err as { status?: number })?.status ?? 500;
+    console.error("[ai-chat] handler error", { status, err: msg });
+    return NextResponse.json({ error: msg, code: "AI_PROVIDER_ERROR" }, { status: status >= 400 && status < 600 ? status : 500 });
+  }
 }

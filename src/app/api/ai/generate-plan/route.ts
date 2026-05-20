@@ -29,6 +29,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   const startTs = Date.now();
+  try {
   console.log("[generate-plan] start", { ts: startTs });
 
   const session = await auth();
@@ -141,4 +142,11 @@ export async function POST(req: NextRequest) {
     }),
     { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store, no-transform" } }
   );
+  } catch (err) {
+    const durationMs = Date.now() - startTs;
+    const msg = err instanceof Error ? err.message : String(err);
+    const status = (err as { status?: number })?.status ?? 500;
+    console.error("[generate-plan] handler error", { durationMs, status, err: msg });
+    return NextResponse.json({ error: msg, code: "AI_PROVIDER_ERROR" }, { status: status >= 400 && status < 600 ? status : 500 });
+  }
 }
