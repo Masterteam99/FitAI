@@ -215,6 +215,7 @@ model User {
   challengeParticipants ChallengeParticipant[]
   notifications         Notification[]
   wearables             WearableIntegration[]
+  dailyCheckins         DailyCheckin[]
 
   @@map("users")
 }
@@ -553,6 +554,20 @@ model NutritionLog {
   @@index([userId])
   @@index([date])
   @@map("nutrition_logs")
+}
+
+model DailyCheckin {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime // UTC midnight della data del check-in
+  mood      Int      // 1-5
+  note      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_checkins")
 }
 
 model Achievement {
