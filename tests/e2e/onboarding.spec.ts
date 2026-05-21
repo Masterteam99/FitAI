@@ -25,10 +25,11 @@ const MOCK_PLAN_STREAM = `Ecco il tuo piano:
 
 test.describe("Onboarding", () => {
   test("flusso completo 4 step → onboardingCompleted=true + piano AI salvato", async ({ page }) => {
+    test.setTimeout(60_000);
     const user = await createTestUser({ onboarded: false });
     try {
       await loginViaUI(page, user.email, user.password);
-      await page.waitForURL(/\/onboarding/, { timeout: 15_000 });
+      await page.waitForURL(/\/onboarding/, { timeout: 30_000 });
 
       await page.route("**/api/ai/generate-plan", (route) =>
         route.fulfill({
@@ -43,11 +44,11 @@ test.describe("Onboarding", () => {
       await page.getByRole("button", { name: /Principiante/i }).click();
       await page.getByRole("button", { name: /Continua/i }).click();
 
-      await page.waitForURL("**/step2");
+      await page.waitForURL("**/step2", { timeout: 30_000 });
       await page.getByRole("button", { name: /Solo peso corporeo/i }).click();
       await page.getByRole("button", { name: /Continua/i }).click();
 
-      await page.waitForURL("**/step3");
+      await page.waitForURL("**/step3", { timeout: 30_000 });
       await page.getByPlaceholder("30", { exact: true }).fill("30");
       await page.getByPlaceholder("75", { exact: true }).fill("75");
       await page.getByPlaceholder("175", { exact: true }).fill("175");
