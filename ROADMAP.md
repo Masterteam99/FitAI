@@ -1,8 +1,8 @@
 # FitAI — Roadmap Esecutiva (Analisi v2 + Estensioni)
 
-*Versione 1.9 — 18 maggio 2026 (sessione 9 — M0–M7 tutte chiuse, codice production-ready)*
+*Versione 2.0 — 22 maggio 2026 (sessione 11 — M0–M8 tutte chiuse, suite E2E 50/50 verdi su origin/main)*
 
-> **🎉 STATO ATTUALE**: Tutte le fasi 1–5 sono chiuse e funzionanti. Setup DB completato. Documentazione sviluppatori in `DOCUMENTAZIONE_FLUSSI.md`. **Sessione 8 (15 maggio)**: avviato master plan M0–M5 verso produzione full (`~/.claude/plans/cosa-manca-da-fare-swirling-puzzle.md`). **M0 done** (error boundaries, PWA icons, CORS doc, roadmap update). **M1 done**: Playwright suite con 19 test verdi (1.2 min). Fixato bug pre-esistente: profilo PATCH usava `weight`/`height` invece di `weightKg`/`heightCm` (impossibile aggiornare peso/altezza). Aggiunto `aria-label` al bottone Send AI Coach.
+> **🎉 STATO ATTUALE**: Tutte le fasi 1–5 sono chiuse e funzionanti. Setup DB completato. M0–M8 tutte chiuse e pushate su `Masterteam99/FitAI`. Suite E2E 50/50 verdi in 2.6 min. Documentazione sviluppatori in `DOCUMENTAZIONE_FLUSSI.md`. **Sessione 8 (15 maggio)**: avviato master plan M0–M5 verso produzione full (`~/.claude/plans/cosa-manca-da-fare-swirling-puzzle.md`). **M0 done** (error boundaries, PWA icons, CORS doc, roadmap update). **M1 done**: Playwright suite con 19 test verdi (1.2 min). Fixato bug pre-esistente: profilo PATCH usava `weight`/`height` invece di `weightKg`/`heightCm` (impossibile aggiornare peso/altezza). Aggiunto `aria-label` al bottone Send AI Coach. **Sessione 11 (22 maggio)**: M8 Daily Mission chiusa + verifica end-to-end della suite (vedi sotto).
 
 > Questo documento è il tracking esecutivo delle task per la rifondazione dell'Analisi v2 e le estensioni correlate. È pensato per essere usato da **agent multipli** (Claude Code per i refactor architetturali, Antigravity AI per le task ripetitive/dataset). Aggiornare lo stato di ogni task quando completata.
 
@@ -352,8 +352,10 @@ Ogni task ha:
 ### 6.1 🤖 Test E2E flusso completo
 
 - **Owner**: Claude Code
-- **Stato**: 🔴 **TODO** (sbloccata dalla sessione 6 — DB up + Fasi 1–5 chiuse)
+- **Stato**: ✅ **DONE** (sessione 11, 22 maggio 2026 — 50/50 verdi, 2.6 min, su `npm run test:e2e`)
 - **Pre-requisiti soddisfatti**: setup DB completato (12 maggio), tutte le fasi 1–5 DONE.
+- **Lavoro effettuato**: copertura via Playwright (`tests/e2e/`) di 13 spec file → 50 test. Include il giro completo onboarding → genera piano AI mockato → save → dashboard, oltre a workout, analisi, nutrizione, coach, progressi/profilo, password reset, community/GDPR, billing M4, tour/insights M7, daily mission M8 e smoke.
+- **Bug residuo di stabilità chiuso in sessione 11**: il test "flusso completo 4 step → onboardingCompleted=true" timeout-ava al cold compile di Turbopack su `/onboarding/step*`. Fix: alzati `test.setTimeout` a 60s e `waitForURL` a 30s su step1→step3 (commit `c4e77fc`).
 - **Note**:
   - Eseguire il giro completo: registrazione → login → onboarding 4-step → genera piano AI → vai a `/allenamento/{id}` → "Inizia sessione" → completa serie → PATCH session → achievement unlock → `/analisi` → seleziona esercizio → registra video 15–25s → upload → orchestrazione L1+L2+L3 → vedi `/analisi/report/{id}` con anello SVG e dettagli → `/progressi` verifica stats → `/profilo` verifica streak.
   - Validare graceful degradation L3 (se proFrames non disponibili per CORS → score sentinella → redistribuzione `(L1+L2)/2`).
@@ -402,6 +404,7 @@ Master plan: `~/.claude/plans/cosa-manca-da-fare-swirling-puzzle.md`. Scope scel
 | **M5** Vercel deploy + analytics + go-live | vercel.json, .env.example, Vercel Analytics, health endpoint, build production verified, procedura 11 step in CHECKLIST | ✅ DONE (code-side) — 40/40 passed |
 | **M6** Bug fixes residui | nutrizione macros (proteinG/carbsG/fatG corretti), pagina /allenamento/nuovo creata, 1 test E2E | ✅ DONE |
 | **M7** Welcome tour + Insights dashboard | WelcomeTour modal 5 step su /dashboard, API progressi estesa (daysActive30, weeklyVolume 8sett, avgFeeling), card "I tuoi insight" + bar chart settimanale, 4 test | ✅ DONE — 45/45 passed |
+| **M8** Daily Mission dashboard hero | Modello `DailyCheckin` + getDailyMission server fn, POST `/api/daily-checkin`, componente `DailyMissionCard` hero (3 task adattivi: workout di oggi, nutrizione 3 pasti, check-in mood 5 emoji), dashboard rimontata con header compresso streak/punti, 5 test E2E + 2 commit di stabilizzazione (timeout onboarding, script reset-quota utility) | ✅ DONE — 50/50 passed (sessione 11, 22 maggio 2026, push `0dc3720..ea86037` su origin/main) |
 
 ---
 

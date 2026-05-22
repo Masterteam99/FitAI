@@ -1,23 +1,35 @@
 # FitAI — Stato del Progetto
-*Aggiornato: 14 maggio 2026 (sessione 7 — documentazione flussi completata)*
+*Aggiornato: 22 maggio 2026 (sessione 11 — M8 Daily Mission chiusa, suite E2E 50/50 verde, codice pushato)*
 
-> **⚠️ IMPORTANTE**: l'Analisi v2 è **implementata e funzionante** (Fasi 1–5 chiuse). La spec autoritativa resta in `ANALYSIS_SPEC.md` (root). Per una vista panoramica di TUTTI i flussi dell'app (auth, onboarding, allenamento, analisi, nutrizione, progressi, infrastruttura) fare riferimento a **`DOCUMENTAZIONE_FLUSSI.md`** (root), che è il documento di onboarding sviluppatori.
+> **⚠️ IMPORTANTE**: l'Analisi v2 è **implementata e funzionante** (Fasi 1–5 chiuse). La spec autoritativa resta in `ANALYSIS_SPEC.md` (root). Per una vista panoramica di TUTTI i flussi dell'app (auth, onboarding, allenamento, analisi, nutrizione, progressi, infrastruttura, daily mission) fare riferimento a **`DOCUMENTAZIONE_FLUSSI.md`** (root), che è il documento di onboarding sviluppatori.
 
 ---
 
 ## 📌 Stato attuale in una riga
 
-**APP FUNZIONANTE su `http://localhost:3000`.** Build clean, typecheck a zero errori, DB Supabase migrato e seedato, tutte le fasi 1–5 della rifondazione Analisi v2 completate. Manca solo il test E2E (Fase 6.1) e il polishing v1 (PWA icons, error boundary, community/progressi UI placeholder, deploy Vercel).
+**APP PRODUCTION-READY su `http://localhost:3000` + repo `Masterteam99/FitAI`.** Build clean (52 pagine), typecheck a zero errori, DB Supabase migrato e seedato, tutte le fasi 1–5 della rifondazione Analisi v2 completate, milestone M0–M8 chiuse, suite E2E 50/50 verde in 2.6 min, codice pushato su `origin/main`. Resta solo l'azione utente di deploy su Vercel (CHECKLIST_DEPLOY.md sezione M5).
 
 ---
 
-## ✅ COMPLETATO IN QUESTA SESSIONE (sessione 7, 14 maggio 2026)
+## ✅ COMPLETATO IN QUESTA SESSIONE (sessione 11, 22 maggio 2026)
 
-### Documentazione sviluppatori
-- Creato **`DOCUMENTAZIONE_FLUSSI.md`** (root, ~5400 parole): documento di riferimento navigabile (TOC + 16 sezioni) che descrive ogni parte dell'app — panoramica, schema dati completo, auth, onboarding, dashboard, esercizi, allenamento, **analisi v2** (con il dettaglio dei 3 livelli L1/L2/L3 + final report), AI coach, nutrizione, progressi, community, profilo, infrastruttura supportiva, riepilogo modelli AI per endpoint, errori noti e convenzioni nomi.
-- Pensato come "point of entry" per chiunque (nuovo agente, nuovo sviluppatore, l'utente stesso che torna dopo settimane).
+### M8 Daily Mission — verifica e stabilizzazione
+- Build production verificato (`npm run build` → 52 pagine, zero errori).
+- Suite E2E completa eseguita: **50/50 verdi in 2.6 min** (45 esistenti + 5 nuovi M8).
+- Fix di stabilità: alzati i timeout del test `onboarding.spec.ts:27 "flusso completo 4 step"` (`test.setTimeout(60_000)` + `waitForURL` a 30s su step1→step3). Causa: cold compile di Turbopack su `/onboarding/step*` la prima volta che il test li tocca, sforava i 15s default.
+- Committato `scripts/reset-quota.mjs`: script utility per cancellare `UsageCounter` di un utente per il mese corrente UTC (testing del gating M4 senza aspettare il rollover mensile).
+- Push su `origin/main` (`0dc3720..ea86037`): include i 2 commit di oggi (test fix + script utility) sopra ai 6 commit M8 già pushati a fine sessione 10.
+
+### Lezione operativa (Turbopack persistence cache)
+- Bug critico scoperto: dev server zombi multipli (PID 16844, 19376 da sessioni precedenti mai chiuse pulitamente) lockavano la persistence directory di Turbopack (`.next/dev/cache/turbopack/<hash>/`), causando un errore criptico "Failed to open database / Loading persistence directory failed / invalid digit found in string" al riavvio.
+- **Soluzione**: `taskkill /F /PID <zombie>` su tutti i node Next.js residui prima di avviare `npm run dev` o `npm run test:e2e`. Se persiste, `rm -rf .next/dev/cache/turbopack` (forza rigenerazione cache LSM).
+- **Causa di fondo**: Playwright termina il `webServer` con SIGKILL (Windows `taskkill /F`) → Turbopack non flush della LSM-cache → corruzione al boot successivo. È un loop strutturale: ogni volta che si interrompe brutalmente il dev server può lasciare zombi.
 
 ## ✅ COMPLETATO IN SESSIONI PRECEDENTI
+
+### Sessione 7 (14 maggio 2026) — Documentazione sviluppatori
+- Creato **`DOCUMENTAZIONE_FLUSSI.md`** (root, ~5400 parole): documento di riferimento navigabile (TOC + 16 sezioni) che descrive ogni parte dell'app — panoramica, schema dati completo, auth, onboarding, dashboard, esercizi, allenamento, **analisi v2** (con il dettaglio dei 3 livelli L1/L2/L3 + final report), AI coach, nutrizione, progressi, community, profilo, infrastruttura supportiva, riepilogo modelli AI per endpoint, errori noti e convenzioni nomi.
+- Pensato come "point of entry" per chiunque (nuovo agente, nuovo sviluppatore, l'utente stesso che torna dopo settimane).
 
 ### Sessione 6 (12 maggio 2026) — Cleanup Fase 5.1 + setup DB
 
@@ -220,14 +232,19 @@ step4: POST /api/onboarding (save profile + onboardingCompleted=true)
 | Progressi (stats + BarChart settimanale + LineChart 30gg + achievements grid) | ✅ |
 | AI Coach chat streaming | ✅ |
 | Catalogo esercizi (filtri + dettaglio biomeccanico) | ✅ |
-| Profilo (edit + logout) | ✅ |
-| Community feed | ❌ placeholder |
-| PWA offline + icons | ❌ |
-| Error UX globale (boundary + toast) | ❌ |
-| Test E2E | ❌ da eseguire |
-| Deploy prod (Vercel) | ❌ |
+| Profilo (edit + logout) + GDPR export/delete | ✅ |
+| Community feed (read-only MVP) | ✅ |
+| PWA offline + icons | ✅ |
+| Error UX globale (boundary + toast) | ✅ |
+| Email transactional + reset password + verify email | ✅ |
+| Sentry + GDPR (privacy/terms, cookie banner) | ✅ |
+| Stripe billing (free/premium + gating + checkout/portal/webhook) | ✅ |
+| Welcome tour + Insights dashboard | ✅ |
+| **Daily Mission dashboard hero (workout/nutrition/check-in)** | ✅ |
+| Test E2E (50/50 verdi) | ✅ |
+| Deploy prod (Vercel) | ⏸ azione utente (CHECKLIST_DEPLOY.md M5) |
 
-**Copertura complessiva**: ~90% del v1 + **100% del v2 analisi**. Restano polishing UX e verifica end-to-end.
+**Copertura complessiva**: **100% v1 + 100% v2 analisi + 100% M0–M8 production features**. Resta solo l'azione utente di deploy Vercel.
 
 ---
 

@@ -342,20 +342,37 @@ if (!user?.onboardingCompleted) redirect("/onboarding");
 `src/app/(app)/dashboard/page.tsx` — server component. Carica in parallelo:
 
 ```typescript
-const [user, activePlan, recentSessions, achievements] = await Promise.all([
+const [user, activePlan, recentSessions, achievements, mission] = await Promise.all([
   prisma.user.findUnique({ select: { name, currentStreak, totalPoints, longestStreak } }),
   prisma.workoutPlan.findFirst({ where: { userId, isActive: true }, include: { days: { include: { exercises } } } }),
   prisma.workoutSession.findMany({ where: { userId, status: "COMPLETED" }, take: 5 }),
   prisma.userAchievement.findMany({ where: { userId }, take: 3 }),
+  getDailyMission(userId),  // M8
 ]);
 ```
 
-UI mostra:
-- **Stats grid 4 colonne**: streak, sessioni questa settimana, punti totali, record streak
+UI mostra (post M8 — sessione 11):
+- **Header compresso**: saluto + streak/punti inline (Flame + Target icon)
+- **Daily Mission hero** (`DailyMissionCard`): 3 task adattivi giornalieri (vedi sotto)
 - **Piano attivo**: card con progress bar settimanale + primi 3 giorni
 - **Sessioni recenti**: ultime 5 con data + durata
 - **Quick actions 3 link**: `/analisi`, `/ai-coach`, `/esercizi`
 - **Achievement recenti**: ultimi 3 con punti
+- **WelcomeTour** (M7): modal 5 step al primo accesso (`localStorage` `fitai-tour-completed`)
+
+### Daily Mission (M8)
+
+Server function `src/lib/dailyMission.ts::getDailyMission(userId)` ritorna 3 task derivati dallo stato dell'utente:
+
+| Task | Sorgente | Done quando |
+|---|---|---|
+| **Workout** | `WorkoutPlan` attivo + `WorkoutSession` di oggi | sessione COMPLETED oggi sul `planDay` target (calcolato come `sessionsCount % days.length`); rest day → auto-done |
+| **Nutrition** | `NutritionLog` `where date di oggi` | `count >= 3` (soglia `NUTRITION_TASK_THRESHOLD`) |
+| **Check-in mood** | `DailyCheckin` `where userId_date` | upsert via `POST /api/daily-checkin` (mood 1-5 emoji: 😩 😕 😐 🙂 💪) |
+
+Componente `src/components/dashboard/DailyMissionCard.tsx` (client) gestisce il check-in inline (5 bottoni emoji con `useTransition` + `router.refresh()` per riallineare lo stato server). Stato pending/in_progress/done con check icon, progress dots (1-3), evidenziazione "Missione completata 🎉" se tutti done.
+
+Endpoint `src/app/api/daily-checkin/route.ts` POST upsert con Zod validate (mood int 1-5, note opzionale max 500 char), rate-limit-free per UX fluida.
 
 ### Navbar
 

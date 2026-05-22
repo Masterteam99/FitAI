@@ -33,6 +33,14 @@ L'estrazione frame da video PT (Analisi v2 Livello 3) fallisce silenziosamente c
 
 ---
 
+## M8 — Daily Mission dashboard
+
+**Nessuna azione manuale richiesta.** Tutto codice locale: nuovo modello Prisma `DailyCheckin` (applicato via `db push --accept-data-loss` come da prassi M4/M8 — no migration file separato), nuovo endpoint `POST /api/daily-checkin`, componente hero `DailyMissionCard`, modifica `dashboard/page.tsx`. Coperto da 5 test E2E in `tests/e2e/m8-daily-mission.spec.ts`. Suite totale: 50/50 verde su `npm run test:e2e`.
+
+Quando arrivi al deploy Vercel (M5 sotto), il `prisma generate && next build` di `vercel.json` produce automaticamente il client aggiornato. Se la tabella `daily_checkins` non esiste sul DB Supabase di produzione, eseguire UNA volta `npx prisma db push --accept-data-loss` puntando alle env vars di produzione (stessa procedura di M4 Stripe schema).
+
+---
+
 ## M2 — Email transactional
 
 ### [ ] Account Resend + verifica dominio
