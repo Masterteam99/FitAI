@@ -33,6 +33,45 @@ L'estrazione frame da video PT (Analisi v2 Livello 3) fallisce silenziosamente c
 
 ---
 
+## M9 — Admin video PT upload
+
+Pagina `/admin/exercises` che permette di caricare per ogni esercizio il **video PT di riferimento** usato dalla Logica 3 dell'Analisi (confronto frame-by-frame utente vs PT). Senza video PT, L3 cade sempre nel fallback `(L1+L2)/2`.
+
+### [ ] Bootstrap del primo admin
+
+1. In `.env.local` (e in Vercel env vars per la prod): setta
+   ```
+   ADMIN_EMAILS="tuo@email.com"
+   ```
+   (CSV per più admin: `"a@x.com,b@x.com"`).
+2. Fai login con quell'email su `/login`.
+3. Visita `/admin/exercises` una sola volta: l'helper `requireAdmin()` rileva l'email in env, imposta `User.isAdmin=true` su DB e ti fa entrare. Idempotente.
+4. Da questo momento puoi togliere l'email da `ADMIN_EMAILS` senza perdere i privilegi (sono persistiti su DB). Tenerla in env è comunque utile come "safety net" in caso di reset DB.
+
+Per revocare admin a un utente: `UPDATE users SET "isAdmin" = false WHERE email = '...'` (Prisma Studio o SQL).
+
+### [ ] Bucket Supabase `exercise-videos` — policy + CORS
+
+L'API admin carica con il client **service-role** (bypassa RLS), ma il browser legge i video pubblicamente per estrarre i frame L3. Quindi serve:
+
+1. **Public read policy** sul bucket. Supabase dashboard → Storage → `exercise-videos` → Policies → INSERT/SELECT public (oppure crea policy custom solo per path `pt/*` se vuoi essere granulare).
+2. **CORS** (procedura già descritta nella sezione M0 sopra). Senza, l'estrazione frame fallisce silenziosamente lato client e L3 resta in fallback anche dopo l'upload.
+
+### [ ] Formato video PT consigliato
+
+- **MIME**: `video/mp4` (preferito, max compatibilità), `video/webm` o `video/quicktime` accettati
+- **Dimensione**: max 50MB per file (limite hard nell'API)
+- **Durata**: 8-30s (warning UX nel dialog, non bloccante)
+- **Risoluzione**: 720p sufficiente. Aspect ratio libero (l'analisi estrae 6 frame uniformi)
+- **Naming nel bucket**: automatico, path `pt/{slug-esercizio}.{ext}` (es. `pt/squat.mp4`). `upsert: true` → caricare un nuovo video sostituisce il vecchio.
+
+### Verifica end-to-end
+
+1. Avvia analisi su un esercizio CON video PT caricato → in `/analisi/report/{id}` deve apparire un L3 score reale (non più `(L1+L2)/2` fallback)
+2. Nel `videoSyncPlayer` del report devi vedere il video PT a fianco del tuo video
+
+---
+
 ## M8 — Daily Mission dashboard
 
 **Nessuna azione manuale richiesta.** Tutto codice locale: nuovo modello Prisma `DailyCheckin` (applicato via `db push --accept-data-loss` come da prassi M4/M8 — no migration file separato), nuovo endpoint `POST /api/daily-checkin`, componente hero `DailyMissionCard`, modifica `dashboard/page.tsx`. Coperto da 5 test E2E in `tests/e2e/m8-daily-mission.spec.ts`. Suite totale: 50/50 verde su `npm run test:e2e`.
