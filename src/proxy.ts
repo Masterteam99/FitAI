@@ -28,5 +28,7 @@ export const config = {
     "/api/community/:path*",
     "/api/account/:path*",
     "/api/daily-checkin/:path*",
+    "/admin/:path*",
+    "/api/admin/:path*",
   ],
 };
