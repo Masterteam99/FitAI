@@ -18,6 +18,7 @@ type CreateOptions = {
   onboarded?: boolean;
   fitnessLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ATHLETE";
   primaryGoal?: "LOSE_WEIGHT" | "BUILD_MUSCLE" | "ENDURANCE" | "FLEXIBILITY" | "GENERAL_FITNESS" | "ATHLETIC_PERFORMANCE";
+  isAdmin?: boolean;
 };
 
 export async function createTestUser(opts: CreateOptions = {}): Promise<TestUser> {
@@ -31,6 +32,7 @@ export async function createTestUser(opts: CreateOptions = {}): Promise<TestUser
       email,
       name,
       passwordHash,
+      isAdmin: opts.isAdmin ?? false,
       onboardingCompleted: opts.onboarded ?? false,
       fitnessLevel: opts.fitnessLevel ?? "BEGINNER",
       primaryGoal: opts.primaryGoal ?? "GENERAL_FITNESS",
