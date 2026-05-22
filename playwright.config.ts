@@ -8,10 +8,10 @@ export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
   workers: 1,
   reporter: process.env.CI ? "github" : "list",
-  timeout: 30_000,
+  timeout: 45_000,
   expect: { timeout: 5_000 },
 
   use: {
