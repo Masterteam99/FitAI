@@ -163,6 +163,16 @@ enum WearablePlatform {
   GARMIN
 }
 
+enum AdminActionType {
+  PROMOTE_ADMIN
+  REVOKE_ADMIN
+  GRANT_PREMIUM
+  RESET_USER_QUOTA
+  TOGGLE_EXERCISE_ACTIVE
+  UPLOAD_PT_VIDEO
+  DELETE_PT_VIDEO
+}
+
 // ─── Models ──────────────────────────────────────────────────────────────────
 
 model User {
@@ -217,6 +227,7 @@ model User {
   notifications         Notification[]
   wearables             WearableIntegration[]
   dailyCheckins         DailyCheckin[]
+  adminActions          AdminActionLog[]      @relation("AdminActionActor")
 
   @@map("users")
 }
@@ -719,4 +730,21 @@ model NutritionPlanTemplate {
   createdAt            DateTime    @default(now())
 
   @@index([dietType, targetGoal])
+}
+
+model AdminActionLog {
+  id          String          @id @default(cuid())
+  actorId     String
+  actorEmail  String
+  action      AdminActionType
+  targetType  String
+  targetId    String?
+  payload     Json?
+  createdAt   DateTime        @default(now())
+
+  actor       User            @relation("AdminActionActor", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([action])
 }
