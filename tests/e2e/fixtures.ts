@@ -76,6 +76,8 @@ export async function dismissCookieBanner(page: Page): Promise<void> {
 type Fixtures = {
   testUser: TestUser;
   authedPage: Page;
+  adminUser: TestUser;
+  authedAdminPage: Page;
 };
 
 export const test = base.extend<Fixtures>({
@@ -97,6 +99,15 @@ export const test = base.extend<Fixtures>({
   },
   authedPage: async ({ page, testUser }, use) => {
     await loginViaUI(page, testUser.email, testUser.password);
+    await use(page);
+  },
+  adminUser: async ({}, use) => {
+    const user = await createTestUser({ onboarded: true, isAdmin: true });
+    await use(user);
+    await deleteTestUser(user.id);
+  },
+  authedAdminPage: async ({ page, adminUser }, use) => {
+    await loginViaUI(page, adminUser.email, adminUser.password);
     await use(page);
   },
 });
