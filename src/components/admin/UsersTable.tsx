@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ConfirmActionButton } from "./ConfirmActionButton";
 import { AdminMetricCard } from "./AdminMetricCard";
+import { UserDetailDrawer } from "./UserDetailDrawer";
 
 type UserRow = {
   id: string;
@@ -34,6 +35,7 @@ export function UsersTable() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "premium" | "free" | "admin">("all");
   const [loading, setLoading] = useState(true);
+  const [drawerUserId, setDrawerUserId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   const fetchData = useCallback(async () => {
@@ -134,11 +136,16 @@ export function UsersTable() {
                     onConfirm={() => handleAction(`/api/admin/users/${u.id}/grant-premium`, "POST", "Grant Premium 30g")}
                   />
                 )}
+                <Button size="sm" variant="outline" onClick={() => setDrawerUserId(u.id)}>
+                  Dettaglio
+                </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {drawerUserId && <UserDetailDrawer userId={drawerUserId} onClose={() => setDrawerUserId(null)} />}
 
       <div className="flex justify-between items-center text-xs text-muted-foreground">
         <span>Pagina {data.page} di {data.totalPages}</span>
