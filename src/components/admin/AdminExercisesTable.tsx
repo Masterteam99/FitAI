@@ -15,12 +15,25 @@ type AdminExercise = {
   name: string;
   muscleGroupPrimary: string;
   videoUrl: string | null;
+  isActive: boolean;
 };
 
 export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [onlyMissing, setOnlyMissing] = useState(false);
   const [dialogExercise, setDialogExercise] = useState<AdminExercise | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  async function toggleActive(ex: AdminExercise) {
+    setTogglingId(ex.id);
+    try {
+      const res = await fetch(`/api/admin/exercises/${ex.id}/active`, { method: "PATCH" });
+      if (res.ok) router.refresh();
+    } finally {
+      setTogglingId(null);
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -81,9 +94,20 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
                       Mancante
                     </Badge>
                   )}
+                  <Badge variant={ex.isActive ? "default" : "outline"} className={ex.isActive ? "" : "text-muted-foreground"}>
+                    {ex.isActive ? "Attivo" : "Disattivo"}
+                  </Badge>
                   <Button size="sm" onClick={() => setDialogExercise(ex)} className="gap-1.5">
                     <Upload className="w-3.5 h-3.5" />
                     {ex.videoUrl ? "Sostituisci" : "Carica"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={togglingId === ex.id}
+                    onClick={() => toggleActive(ex)}
+                  >
+                    {ex.isActive ? "Disattiva" : "Attiva"}
                   </Button>
                 </li>
               ))}
