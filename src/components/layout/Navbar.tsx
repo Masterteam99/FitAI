@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
-  LayoutDashboard, Dumbbell, PlayCircle, Brain, Apple, Users, TrendingUp, User, LogOut, Zap, Menu, X, Sparkles,
+  LayoutDashboard, Dumbbell, PlayCircle, Brain, Apple, Users, TrendingUp, User, LogOut, Zap, Menu, X, Sparkles, ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,10 +22,14 @@ const NAV_ITEMS = [
   { href: "/abbonamento", label: "Abbonamento", icon: Sparkles },
 ];
 
-export function Navbar() {
+export function Navbar({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const items = isAdmin
+    ? [...NAV_ITEMS, { href: "/admin/exercises", label: "Admin", icon: ShieldCheck }]
+    : NAV_ITEMS;
 
   return (
     <>
@@ -41,7 +45,7 @@ export function Navbar() {
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {NAV_ITEMS.map((item) => {
+          {items.map((item) => {
             const Icon = item.icon;
             const active = pathname.startsWith(item.href);
             return (
@@ -91,7 +95,7 @@ export function Navbar() {
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-20 bg-background/95 pt-14">
           <nav className="p-4 space-y-1">
-            {NAV_ITEMS.map((item) => {
+            {items.map((item) => {
               const Icon = item.icon;
               const active = pathname.startsWith(item.href);
               return (

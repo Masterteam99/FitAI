@@ -9,13 +9,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id as string },
-    select: { onboardingCompleted: true },
+    select: { onboardingCompleted: true, isAdmin: true },
   });
   if (!user?.onboardingCompleted) redirect("/onboarding");
 
   return (
     <div className="flex min-h-screen">
-      <Navbar />
+      <Navbar isAdmin={user.isAdmin} />
       <main className="flex-1 lg:ml-64 pt-14 lg:pt-0">
         <div className="p-4 lg:p-6 max-w-7xl mx-auto">{children}</div>
       </main>
