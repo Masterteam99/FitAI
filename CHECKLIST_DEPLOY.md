@@ -280,3 +280,37 @@ Su Vercel → Project Settings → Environment Variables. Aggiungi tutte (Produc
 
 ### Passo 11 — Modalità maintenance (opzionale)
 Per metterti in modalità manutenzione: Vercel → Project → Settings → Production Domain → Disable deployment Protection è un altro tema. La via più semplice: redeploy con env var `MAINTENANCE_MODE=1` e middleware che redirige a `/maintenance.html` se la flag è on. Non implementato — aggiungere se serve.
+
+---
+
+## M10 — Admin Hub Dashboard
+
+**Cosa cambia in produzione**:
+- Nuova tabella DB `AdminActionLog` + enum `AdminActionType` (gia applicata via `prisma db push` in sviluppo; in produzione applicare con `prisma migrate deploy` se ci sono migration, altrimenti `prisma db push --accept-data-loss=false`).
+- ~25 nuove route/page sotto `/admin/*` e `/api/admin/*`.
+- Nessuna nuova env var obbligatoria.
+- Env opzionali per pricing display:
+  - `STRIPE_PRICE_MONTHLY_AMOUNT_EUR` (default `9.99`)
+  - `STRIPE_PRICE_YEARLY_AMOUNT_EUR` (default `79`)
+
+**Azioni manuali**:
+1. Dopo deploy, applicare schema in produzione:
+   ```bash
+   npx prisma db push
+   ```
+   (Coerente con come sono state applicate le altre tabelle M4-M9; usa `prisma migrate deploy` solo se hai migration files allineati al DB.)
+2. Verificare che l'admin con email in `ADMIN_EMAILS` (env Vercel) possa raggiungere `https://tuodominio/admin/users` (login → click "Admin" in sidebar).
+3. Promuovere eventuali co-admin via UI: `/admin/admins` → form "Promuovi un utente esistente".
+4. Le azioni soft eseguite (promote/revoke/grant premium/reset quota/toggle exercise/upload-delete video PT) finiscono in `AdminActionLog`. Audit visualizzabile in `/admin/activity`.
+
+**Limiti noti**:
+- "Grant Premium 30g" NON crea una subscription Stripe — è solo sblocco gating lato app. Allo scadere il gating ritorna FREE.
+- Pricing AI in `/admin/ai-usage` è stimato (token medi hard-coded per feature). Va calibrato post-deploy con dati reali.
+- Nessuna feature di refund Stripe / delete account / export CSV (out of scope MVP).
+
+**Verifica produzione**:
+- [ ] `/admin` → redirect `/admin/users` con dati reali
+- [ ] `/admin/subscriptions` → metriche MRR/churn popolate
+- [ ] `/admin/stats` → metriche aggregate + chart popolati
+- [ ] `/admin/ai-usage` → costo stimato visibile
+- [ ] Promuovere un utente test → verifica in `/admin/activity` che il log appaia
