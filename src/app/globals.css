@@ -115,6 +115,26 @@
     font-weight: 400;
   }
 
+  /* GradientMesh drift animation */
+  @keyframes mesh-drift-a {
+    0%, 100% { transform: translate3d(-10%, -10%, 0) scale(1); }
+    33% { transform: translate3d(15%, 5%, 0) scale(1.1); }
+    66% { transform: translate3d(-5%, 20%, 0) scale(0.95); }
+  }
+  @keyframes mesh-drift-b {
+    0%, 100% { transform: translate3d(20%, 30%, 0) scale(1.05); }
+    33% { transform: translate3d(-10%, 10%, 0) scale(1); }
+    66% { transform: translate3d(25%, -5%, 0) scale(1.15); }
+  }
+  @keyframes mesh-drift-c {
+    0%, 100% { transform: translate3d(-20%, 40%, 0) scale(0.9); }
+    33% { transform: translate3d(30%, 25%, 0) scale(1.2); }
+    66% { transform: translate3d(0%, -15%, 0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mesh-blob { animation: none !important; }
+  }
+
   /* Shimmer per Skeleton component */
   .shimmer {
     background: linear-gradient(90deg,
