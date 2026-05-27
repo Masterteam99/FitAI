@@ -110,6 +110,89 @@ export function PageTransition({
   );
 }
 
+export function SlideUp({
+  children,
+  delay = 0,
+  distance = 24,
+  className,
+}: {
+  children: ReactNode;
+  delay?: number;
+  distance?: number;
+  className?: string;
+}) {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div
+      className={className}
+      initial={reduced ? false : { opacity: 0, y: distance, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: reduced ? 0 : delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function RevealMask({
+  children,
+  delay = 0,
+  duration = 0.7,
+  className,
+}: {
+  children: ReactNode;
+  delay?: number;
+  duration?: number;
+  className?: string;
+}) {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div
+      className={className}
+      initial={reduced ? false : { clipPath: "inset(0 100% 0 0)", opacity: 0 }}
+      animate={{ clipPath: "inset(0 0% 0 0)", opacity: 1 }}
+      transition={{ duration, ease: [0.65, 0, 0.35, 1], delay: reduced ? 0 : delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function MagneticHover({
+  children,
+  strength = 0.15,
+  className,
+}: {
+  children: ReactNode;
+  strength?: number;
+  className?: string;
+}) {
+  const reduced = useReducedMotion();
+  const ref = useState<HTMLDivElement | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+
+  if (reduced) return <div className={className}>{children}</div>;
+
+  return (
+    <motion.div
+      ref={ref[1]}
+      className={className}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={{ type: "spring", stiffness: 200, damping: 18, mass: 0.5 }}
+      onMouseMove={(e) => {
+        const el = e.currentTarget;
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        setPos({ x: (e.clientX - cx) * strength, y: (e.clientY - cy) * strength });
+      }}
+      onMouseLeave={() => setPos({ x: 0, y: 0 })}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export function CountUp({
   value,
   duration = 1.2,
