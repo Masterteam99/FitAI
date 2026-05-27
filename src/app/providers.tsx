@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/toaster";
 import { CookieBanner } from "@/components/layout/CookieBanner";
 import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister";
+import { AchievementUnlockProvider } from "@/components/celebration/AchievementUnlock";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,6 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <Toaster />
         <CookieBanner />
         <ServiceWorkerRegister />
+        <AchievementUnlockProvider />
         <Analytics />
       </QueryClientProvider>
     </SessionProvider>
