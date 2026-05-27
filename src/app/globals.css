@@ -26,6 +26,7 @@
   --radius-lg: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
 :root {
@@ -87,6 +88,33 @@
     background-clip: text;
     color: transparent;
   }
+  /* Display typography utilities */
+  .font-display {
+    font-family: var(--font-display), system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .text-hero {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-size: clamp(56px, 12vw, 120px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+  }
+  .text-display-lg {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-size: clamp(36px, 6vw, 56px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+  .text-display-md {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-size: clamp(24px, 4vw, 32px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
   /* Shimmer per Skeleton component */
   .shimmer {
     background: linear-gradient(90deg,
