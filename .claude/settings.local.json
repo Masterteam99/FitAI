@@ -39,8 +39,11 @@
       "Bash(npx playwright *)",
       "Bash(npm view *)",
       "Bash(taskkill //F //PID 16844)",
-      "Bash(tasklist //FI \"IMAGENAME eq node.exe\")"
-    ]
+      "Bash(tasklist //FI \"IMAGENAME eq node.exe\")",
+      "Bash(C:/Users/maste/.claude/plugins/cache/superpowers-marketplace/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh *)",
+      "Bash(node -e \"const s=require\\('@sentry/nextjs'\\); console.log\\('withSentryConfig:', typeof s.withSentryConfig\\); console.log\\('init:', typeof s.init\\); console.log\\('captureException:', typeof s.captureException\\); console.log\\('captureMessage:', typeof s.captureMessage\\); console.log\\('setUser:', typeof s.setUser\\);\")"
+    ],
+    "defaultMode": "bypassPermissions"
   },
   "enabledPlugins": {}
 }
