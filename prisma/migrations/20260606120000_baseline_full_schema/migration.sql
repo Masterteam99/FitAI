@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateEnum
 CREATE TYPE "FitnessLevel" AS ENUM ('BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ATHLETE');
 
@@ -41,6 +44,15 @@ CREATE TYPE "MealType" AS ENUM ('BREAKFAST', 'LUNCH', 'DINNER', 'SNACK');
 CREATE TYPE "PostType" AS ENUM ('WORKOUT_SHARE', 'ACHIEVEMENT', 'PROGRESS_PHOTO', 'CHALLENGE_COMPLETION');
 
 -- CreateEnum
+CREATE TYPE "ProfileVisibility" AS ENUM ('PUBLIC', 'PRIVATE');
+
+-- CreateEnum
+CREATE TYPE "SubscriptionStatus" AS ENUM ('FREE', 'TRIALING', 'ACTIVE', 'PAST_DUE', 'CANCELED');
+
+-- CreateEnum
+CREATE TYPE "SubscriptionPlan" AS ENUM ('MONTHLY', 'YEARLY');
+
+-- CreateEnum
 CREATE TYPE "ChallengeType" AS ENUM ('STREAK', 'VOLUME', 'FREQUENCY', 'SPECIFIC_EXERCISE');
 
 -- CreateEnum
@@ -53,9 +65,17 @@ CREATE TYPE "WearablePlatform" AS ENUM ('APPLE_HEALTH', 'GOOGLE_FIT', 'FITBIT', 
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "emailVerified" TIMESTAMP(3),
     "name" TEXT,
     "avatar" TEXT,
+    "image" TEXT,
     "passwordHash" TEXT,
+    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
+    "profileVisibility" "ProfileVisibility" NOT NULL DEFAULT 'PUBLIC',
+    "stripeCustomerId" TEXT,
+    "subscriptionStatus" "SubscriptionStatus" NOT NULL DEFAULT 'FREE',
+    "subscriptionPlan" "SubscriptionPlan",
+    "subscriptionCurrentPeriodEnd" TIMESTAMP(3),
     "fitnessLevel" "FitnessLevel" NOT NULL DEFAULT 'BEGINNER',
     "age" INTEGER,
     "weightKg" DOUBLE PRECISION,
@@ -105,6 +125,59 @@ CREATE TABLE "auth_sessions" (
     "expires" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "auth_sessions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "password_reset_tokens" (
+    "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "usedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "password_reset_tokens_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "email_verification_tokens" (
+    "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "verifiedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "email_verification_tokens_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "subscriptions" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "stripeSubscriptionId" TEXT NOT NULL,
+    "stripePriceId" TEXT NOT NULL,
+    "status" "SubscriptionStatus" NOT NULL,
+    "plan" "SubscriptionPlan" NOT NULL,
+    "currentPeriodStart" TIMESTAMP(3) NOT NULL,
+    "currentPeriodEnd" TIMESTAMP(3) NOT NULL,
+    "cancelAtPeriodEnd" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "subscriptions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "usage_counters" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "feature" TEXT NOT NULL,
+    "period" TEXT NOT NULL,
+    "count" INTEGER NOT NULL DEFAULT 0,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "usage_counters_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -313,6 +386,18 @@ CREATE TABLE "nutrition_logs" (
 );
 
 -- CreateTable
+CREATE TABLE "daily_checkins" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "mood" INTEGER NOT NULL,
+    "note" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "daily_checkins_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "achievements" (
     "id" TEXT NOT NULL,
     "key" TEXT NOT NULL,
@@ -455,10 +540,43 @@ CREATE TABLE "NutritionPlanTemplate" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_stripeCustomerId_key" ON "users"("stripeCustomerId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "accounts_provider_providerAccountId_key" ON "accounts"("provider", "providerAccountId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "auth_sessions_sessionToken_key" ON "auth_sessions"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "password_reset_tokens_token_key" ON "password_reset_tokens"("token");
+
+-- CreateIndex
+CREATE INDEX "password_reset_tokens_userId_idx" ON "password_reset_tokens"("userId");
+
+-- CreateIndex
+CREATE INDEX "password_reset_tokens_token_idx" ON "password_reset_tokens"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "email_verification_tokens_token_key" ON "email_verification_tokens"("token");
+
+-- CreateIndex
+CREATE INDEX "email_verification_tokens_userId_idx" ON "email_verification_tokens"("userId");
+
+-- CreateIndex
+CREATE INDEX "email_verification_tokens_token_idx" ON "email_verification_tokens"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "subscriptions_stripeSubscriptionId_key" ON "subscriptions"("stripeSubscriptionId");
+
+-- CreateIndex
+CREATE INDEX "subscriptions_userId_idx" ON "subscriptions"("userId");
+
+-- CreateIndex
+CREATE INDEX "usage_counters_userId_idx" ON "usage_counters"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "usage_counters_userId_feature_period_key" ON "usage_counters"("userId", "feature", "period");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "verification_tokens_token_key" ON "verification_tokens"("token");
@@ -524,6 +642,12 @@ CREATE INDEX "nutrition_logs_userId_idx" ON "nutrition_logs"("userId");
 CREATE INDEX "nutrition_logs_date_idx" ON "nutrition_logs"("date");
 
 -- CreateIndex
+CREATE INDEX "daily_checkins_userId_date_idx" ON "daily_checkins"("userId", "date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "daily_checkins_userId_date_key" ON "daily_checkins"("userId", "date");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "achievements_key_key" ON "achievements"("key");
 
 -- CreateIndex
@@ -564,6 +688,18 @@ ALTER TABLE "accounts" ADD CONSTRAINT "accounts_userId_fkey" FOREIGN KEY ("userI
 
 -- AddForeignKey
 ALTER TABLE "auth_sessions" ADD CONSTRAINT "auth_sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "email_verification_tokens" ADD CONSTRAINT "email_verification_tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "usage_counters" ADD CONSTRAINT "usage_counters_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "exercise_biomechanical_specs" ADD CONSTRAINT "exercise_biomechanical_specs_exerciseId_fkey" FOREIGN KEY ("exerciseId") REFERENCES "exercises"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -617,6 +753,9 @@ ALTER TABLE "user_progress" ADD CONSTRAINT "user_progress_userId_fkey" FOREIGN K
 ALTER TABLE "nutrition_logs" ADD CONSTRAINT "nutrition_logs_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "daily_checkins" ADD CONSTRAINT "daily_checkins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "user_achievements" ADD CONSTRAINT "user_achievements_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -642,3 +781,4 @@ ALTER TABLE "notifications" ADD CONSTRAINT "notifications_userId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "wearable_integrations" ADD CONSTRAINT "wearable_integrations_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
