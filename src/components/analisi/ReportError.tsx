@@ -25,7 +25,7 @@ export default function ReportError({ message = "Si è verificato un errore dura
           <div className="flex flex-col gap-3 w-full">
             {onRetry && (
               <Button onClick={onRetry} className="w-full">
-                Riprova l'analisi
+                Riprova l&apos;analisi
               </Button>
             )}
             <Link href="/dashboard" className="w-full">
