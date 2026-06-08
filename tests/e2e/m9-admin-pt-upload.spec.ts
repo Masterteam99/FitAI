@@ -33,6 +33,10 @@ test.describe("M9 — Admin Video PT upload", () => {
   });
 
   test("admin: POST upload video PT aggiorna Exercise.videoUrl, DELETE lo rimuove", async ({ page }) => {
+    test.skip(
+      !process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "Richiede Supabase Storage, non configurato in questo ambiente (es. CI)",
+    );
     const user = await createTestUser({ onboarded: true, isAdmin: true });
     const exercise = await prisma.exercise.create({
       data: {
