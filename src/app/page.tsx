@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Zap, Brain, Camera, Trophy, Target, ChevronRight, BarChart } from "lucide-react";
 import { GradientMesh } from "@/components/visualizations/GradientMesh";
+import { MarketingHeader } from "@/components/marketing/MarketingHeader";
+import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { FadeIn, SlideUp, Stagger, StaggerItem, CardHover } from "@/components/motion/MotionPrimitives";
 
 const FEATURES = [
@@ -19,19 +21,7 @@ export default function LandingPage() {
     <div className="relative min-h-screen overflow-hidden bg-background">
       <GradientMesh palette="rainbow" intensity="medium" fixed />
 
-      {/* Header */}
-      <header className="relative border-b border-border px-4 py-4 flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center glow-primary">
-            <Zap className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold font-display">FitAI</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/login"><Button variant="ghost">Accedi</Button></Link>
-          <Link href="/registrati"><Button className="glow-energy">Inizia gratis <ChevronRight className="w-4 h-4" /></Button></Link>
-        </div>
-      </header>
+      <MarketingHeader />
 
       {/* Hero */}
       <section className="relative max-w-7xl mx-auto px-4 py-24 text-center space-y-8">
@@ -98,9 +88,7 @@ export default function LandingPage() {
         </Link>
       </section>
 
-      <footer className="relative border-t border-border py-8 text-center text-sm text-muted-foreground">
-        <p>© 2026 FitAI — Allenati più intelligente</p>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }
