@@ -53,6 +53,10 @@ jobs:
       - run: npx prisma generate
       - run: npx prisma migrate deploy
       - run: npm run seed
+      # Build di produzione: gli E2E girano contro `next start` (vedi
+      # playwright.config.ts). Precompilare qui evita la compilazione on-demand
+      # di `next dev`, troppo lenta/instabile sul runner.
+      - run: npm run build
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:

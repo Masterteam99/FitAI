@@ -13,6 +13,10 @@ const loginSchema = z.object({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  // NextAuth v5 si fida automaticamente dell'host solo in dev. In produzione
+  // (build + start, e dietro il proxy di Vercel) l'host va dichiarato fidato
+  // esplicitamente, altrimenti /api/auth/* risponde 500 UntrustedHost.
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
