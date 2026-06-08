@@ -106,12 +106,14 @@ In M2 abbiamo implementato il wrapper email (`src/lib/email.ts`) con fallback de
 
 ### [ ] Sentry (opzionale per produzione)
 
-Il wrapper `src/lib/observability.ts` funziona già senza Sentry (logga solo in console). Per abilitare il monitoring vero:
+`@sentry/nextjs` è **già installato e integrato** (Next 16: `src/instrumentation.ts` + `src/instrumentation-client.ts` + `sentry.server/edge.config.ts`, `next.config.ts` avvolto in `withSentryConfig`). Tutto è guardato dai DSN: **senza DSN, ZERO impatto** — `src/lib/observability.ts` logga solo in console e l'SDK resta no-op. Per abilitare il monitoring vero:
 
-1. Crea progetto Sentry (free tier 5K errors/mese): https://sentry.io → New Project → Next.js
-2. `npm install @sentry/nextjs`
-3. Aggiungi a `.env.local` e Vercel env: `SENTRY_DSN=https://...@sentry.io/...`
-4. Verifica deploy → triggera errore (es. visita `/api/test-error`) → controlla dashboard Sentry
+1. Crea progetto Sentry (free tier 5K errors/mese): https://sentry.io → New Project → Next.js. Copia il DSN.
+2. Aggiungi a `.env.local` e Vercel env:
+   - `SENTRY_DSN=https://...@sentry.io/...` → errori server/edge
+   - `NEXT_PUBLIC_SENTRY_DSN=https://...@sentry.io/...` → errori client/browser (stesso DSN)
+3. (Opzionale, solo per upload sourcemap in build CI) `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`. Senza auth token l'upload sourcemap viene saltato e il build resta verde.
+4. Verifica deploy → triggera un errore → controlla dashboard Sentry.
 
 ### [ ] Aggiornare email contatti
 
@@ -219,7 +221,8 @@ Su Vercel → Project Settings → Environment Variables. Aggiungi tutte (Produc
 | `UPSTASH_REDIS_REST_TOKEN` | xxx | |
 | `RESEND_API_KEY` | re_xxx (se vuoi email) | opzionale ma raccomandato |
 | `EMAIL_FROM` | `FitAI <noreply@<dominio>>` | |
-| `SENTRY_DSN` | (opzionale) | richiede `npm i @sentry/nextjs` prima |
+| `SENTRY_DSN` | (opzionale) | errori server/edge; senza, console-only |
+| `NEXT_PUBLIC_SENTRY_DSN` | (opzionale) | errori client/browser (stesso DSN) |
 | `STRIPE_SECRET_KEY` | sk_live_xxx (in prod) | sk_test_xxx in preview |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | pk_live_xxx | |
 | `STRIPE_WEBHOOK_SECRET` | whsec_xxx | da webhook config (passo 6) |

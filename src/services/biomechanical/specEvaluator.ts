@@ -31,6 +31,26 @@ const SEVERITY_WEIGHT: Record<string, number> = {
   CRITICAL: 10,
 };
 
+// Persistenza minima: una violazione conta solo se sostenuta per almeno questa
+// durata in frame CONSECUTIVI (misurata dai timestamp, in ms). ~200ms ≈ 5-6 frame
+// a 24-30fps. Calibrazione "bilanciata": cattura gli errori reali, scarta il jitter.
+const MIN_VIOLATION_MS = 200;
+// Fallback solo se i timestamp sono degeneri/non monotoni (dati anomali):
+// si torna a un conteggio in frame consecutivi.
+const MIN_VIOLATION_FRAMES_FALLBACK = 5;
+
+interface ViolationState {
+  trigger: PhaseTriggerData;
+  count: number; // frame totali in violazione (per persistence/penalty)
+  phaseFramesTotal: number;
+  lastFrameIndex: number; // ultimo indice frame che ha violato questa chiave
+  runStartTs: number; // timestamp inizio run consecutiva corrente
+  runLastTs: number; // timestamp ultimo frame della run corrente
+  maxRunMs: number; // run consecutiva più lunga vista (ms)
+  maxRunFrames: number; // run consecutiva più lunga vista (frame) — per fallback
+  curRunFrames: number; // lunghezza run corrente in frame
+}
+
 function jointAngleFor(joint: string, angles: JointAngles): number | undefined {
   switch (joint) {
     case "left_knee": return angles.leftKnee;
@@ -61,7 +81,7 @@ export function evaluateExerciseSpec(
   spec: BiomechanicalSpecData,
   timeline: PhaseTimeline
 ): L1Result {
-  const violationCounts = new Map<string, { trigger: PhaseTriggerData; count: number; phaseFramesTotal: number }>();
+  const violations = new Map<string, ViolationState>();
   const phaseFrameCount: Record<string, number> = {};
 
   timeline.framePhases.forEach((p) => {
@@ -71,6 +91,7 @@ export function evaluateExerciseSpec(
   for (let i = 0; i < frames.length; i++) {
     const phase = timeline.framePhases[i] ?? "THROUGHOUT";
     const angles = frames[i].angles;
+    const ts = frames[i].timestamp;
 
     for (const movement of spec.movements) {
       const angle = jointAngleFor(movement.joint, angles);
@@ -84,17 +105,52 @@ export function evaluateExerciseSpec(
         const trigger = violationFor(angle, phaseSpec);
         if (trigger) {
           const key = `${movement.joint}|${phaseSpec.phase}|${trigger.condition}|${trigger.feedback}`;
-          const existing = violationCounts.get(key);
+          const existing = violations.get(key);
           const total = phaseFrameCount[phaseName] || phaseFrameCount[phase] || frames.length;
-          if (existing) {
-            existing.count++;
+          if (!existing) {
+            violations.set(key, {
+              trigger,
+              count: 1,
+              phaseFramesTotal: total,
+              lastFrameIndex: i,
+              runStartTs: ts,
+              runLastTs: ts,
+              maxRunMs: 0,
+              maxRunFrames: 1,
+              curRunFrames: 1,
+            });
           } else {
-            violationCounts.set(key, { trigger, count: 1, phaseFramesTotal: total });
+            existing.count++;
+            if (existing.lastFrameIndex === i - 1) {
+              // run consecutiva: estendi
+              existing.runLastTs = ts;
+              existing.curRunFrames++;
+            } else {
+              // gap: chiudi la run precedente, aprine una nuova
+              existing.maxRunMs = Math.max(existing.maxRunMs, existing.runLastTs - existing.runStartTs);
+              existing.maxRunFrames = Math.max(existing.maxRunFrames, existing.curRunFrames);
+              existing.runStartTs = ts;
+              existing.runLastTs = ts;
+              existing.curRunFrames = 1;
+            }
+            existing.lastFrameIndex = i;
           }
         }
       }
     }
   }
+
+  // Finalizza le run aperte.
+  for (const v of violations.values()) {
+    v.maxRunMs = Math.max(v.maxRunMs, v.runLastTs - v.runStartTs);
+    v.maxRunFrames = Math.max(v.maxRunFrames, v.curRunFrames);
+  }
+
+  // Timestamp utilizzabili? (span > 0). Altrimenti fallback in frame consecutivi.
+  const tsSpan = frames.length > 1
+    ? frames[frames.length - 1].timestamp - frames[0].timestamp
+    : 0;
+  const useFrameFallback = tsSpan <= 0;
 
   const triggeredFeedback: L1Result["triggeredFeedback"] = [];
   let penaltySum = 0;
@@ -108,17 +164,20 @@ export function evaluateExerciseSpec(
   }
   if (evaluatedMovements === 0) evaluatedMovements = 1;
 
-  for (const { trigger, count, phaseFramesTotal } of violationCounts.values()) {
-    // Persistenza minima: ignora violazioni < 5 frame consecutivi non garantiti, ma usiamo count cumulativo
-    if (count < 5) continue;
-    const persistence = Math.min(1, count / Math.max(phaseFramesTotal, 1));
-    const sev = trigger.severity.toUpperCase();
+  for (const v of violations.values()) {
+    const passes = useFrameFallback
+      ? v.maxRunFrames >= MIN_VIOLATION_FRAMES_FALLBACK
+      : v.maxRunMs >= MIN_VIOLATION_MS;
+    if (!passes) continue;
+
+    const persistence = Math.min(1, v.count / Math.max(v.phaseFramesTotal, 1));
+    const sev = v.trigger.severity.toUpperCase();
     const weight = SEVERITY_WEIGHT[sev] ?? 1;
     penaltySum += weight * persistence;
     triggeredFeedback.push({
-      feedback: trigger.feedback,
+      feedback: v.trigger.feedback,
       severity: (sev === "WARNING" || sev === "ERROR" || sev === "CRITICAL") ? sev : "WARNING",
-      injuryRisk: !!trigger.injuryRisk,
+      injuryRisk: !!v.trigger.injuryRisk,
     });
   }
 

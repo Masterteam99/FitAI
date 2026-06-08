@@ -1,15 +1,34 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Le credenziali Supabase potrebbero non essere presenti in alcuni ambienti
+// (dev locale senza storage, CI). Inizializziamo il client in modo lazy: così
+// l'import del modulo non lancia mai, e l'errore arriva solo se si usa davvero
+// lo storage senza configurazione.
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} non configurato: Supabase Storage non disponibile in questo ambiente`);
+  }
+  return value;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+let cachedClient: SupabaseClient | null = null;
+function getSupabase(): SupabaseClient {
+  if (!cachedClient) {
+    cachedClient = createClient(
+      requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
+      requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    );
+  }
+  return cachedClient;
+}
 
-export function getSupabaseAdmin() {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  return createClient(supabaseUrl, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
+export function getSupabaseAdmin(): SupabaseClient {
+  return createClient(
+    requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
+    requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
 }
 
 export const STORAGE_BUCKETS = {
@@ -25,7 +44,7 @@ export async function uploadFile(
   file: File | Blob,
   options?: { contentType?: string; upsert?: boolean }
 ) {
-  const { data, error } = await supabase.storage
+  const { data, error } = await getSupabase().storage
     .from(bucket)
     .upload(path, file, { upsert: options?.upsert ?? false, contentType: options?.contentType });
   if (error) throw error;
@@ -33,11 +52,11 @@ export async function uploadFile(
 }
 
 export function getPublicUrl(bucket: string, path: string) {
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  const { data } = getSupabase().storage.from(bucket).getPublicUrl(path);
   return data.publicUrl;
 }
 
 export async function deleteFile(bucket: string, path: string) {
-  const { error } = await supabase.storage.from(bucket).remove([path]);
+  const { error } = await getSupabase().storage.from(bucket).remove([path]);
   if (error) throw error;
 }

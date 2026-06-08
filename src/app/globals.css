@@ -17,11 +17,16 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-energy-cold: var(--energy-cold);
+  --color-energy-cool: var(--energy-cool);
+  --color-energy-warm: var(--energy-warm);
+  --color-energy-hot: var(--energy-hot);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
 :root {
@@ -42,6 +47,107 @@
   --border: oklch(0.22 0.01 260);
   --input: oklch(0.18 0.01 260);
   --ring: oklch(0.65 0.2 145);
+
+  /* Energy scale per heatmap muscolare, intensità workout, streak */
+  --energy-cold: oklch(0.55 0.15 230);   /* blu/ciano: muscolo non lavorato */
+  --energy-cool: oklch(0.65 0.20 145);   /* verde: lavorato base (= primary) */
+  --energy-warm: oklch(0.75 0.18 70);    /* arancio: lavorato bene */
+  --energy-hot:  oklch(0.62 0.24 25);    /* rosso: intensità alta */
+}
+
+/* ─── Energy utilities ─────────────────────────────────────────────────── */
+
+@layer utilities {
+  .gradient-energy {
+    background: linear-gradient(135deg,
+      var(--energy-cool) 0%,
+      var(--energy-warm) 55%,
+      var(--energy-hot) 100%);
+  }
+  .gradient-energy-soft {
+    background: linear-gradient(135deg,
+      color-mix(in oklch, var(--energy-cool) 70%, transparent),
+      color-mix(in oklch, var(--energy-warm) 50%, transparent));
+  }
+  .gradient-cool-hot {
+    background: linear-gradient(90deg,
+      var(--energy-cold),
+      var(--energy-cool),
+      var(--energy-warm),
+      var(--energy-hot));
+  }
+  .glow-primary {
+    box-shadow: 0 0 24px -4px color-mix(in oklch, var(--primary) 60%, transparent);
+  }
+  .glow-energy {
+    box-shadow: 0 0 28px -2px color-mix(in oklch, var(--energy-warm) 65%, transparent);
+  }
+  .text-gradient-energy {
+    background: linear-gradient(135deg, var(--energy-cool), var(--energy-warm));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Display typography utilities */
+  .font-display {
+    font-family: var(--font-display), system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .text-hero {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-size: clamp(56px, 12vw, 120px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+  }
+  .text-display-lg {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-size: clamp(36px, 6vw, 56px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+  .text-display-md {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-size: clamp(24px, 4vw, 32px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  /* GradientMesh drift animation */
+  @keyframes mesh-drift-a {
+    0%, 100% { transform: translate3d(-10%, -10%, 0) scale(1); }
+    33% { transform: translate3d(15%, 5%, 0) scale(1.1); }
+    66% { transform: translate3d(-5%, 20%, 0) scale(0.95); }
+  }
+  @keyframes mesh-drift-b {
+    0%, 100% { transform: translate3d(20%, 30%, 0) scale(1.05); }
+    33% { transform: translate3d(-10%, 10%, 0) scale(1); }
+    66% { transform: translate3d(25%, -5%, 0) scale(1.15); }
+  }
+  @keyframes mesh-drift-c {
+    0%, 100% { transform: translate3d(-20%, 40%, 0) scale(0.9); }
+    33% { transform: translate3d(30%, 25%, 0) scale(1.2); }
+    66% { transform: translate3d(0%, -15%, 0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mesh-blob { animation: none !important; }
+  }
+
+  /* Shimmer per Skeleton component */
+  .shimmer {
+    background: linear-gradient(90deg,
+      var(--muted) 0%,
+      color-mix(in oklch, var(--muted-foreground) 20%, var(--muted)) 50%,
+      var(--muted) 100%);
+    background-size: 200% 100%;
+    animation: shimmer-slide 1.6s ease-in-out infinite;
+  }
+  @keyframes shimmer-slide {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 }
 
 * {

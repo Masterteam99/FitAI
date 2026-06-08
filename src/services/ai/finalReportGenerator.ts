@@ -1,28 +1,30 @@
 import { anthropic, MODELS } from "@/lib/anthropic";
 import type { L1Result, L2Result, L3Result, FinalReport } from "@/types/analysis";
+import { ANALYSIS_WEIGHTS, computeCombinedScore } from "@/services/analysis/weights";
 
 function buildFinalReportPrompt(
   exerciseName: string,
   l1: L1Result,
   l2: L2Result,
   l3: L3Result,
-  combinedScore: number
+  combinedScore: number,
+  weightsPct: { l1: number; l2: number; l3: number }
 ): string {
   const l1Critical = l1.triggeredFeedback.filter((t) => t.severity === "CRITICAL");
   const l1InjuryItems = l1.triggeredFeedback.filter((t) => t.injuryRisk);
 
   return `Sintetizza in italiano un giudizio finale di personal trainer su un'esecuzione di "${exerciseName}" basato sulle 3 analisi qui sotto.
 
-L1 — BIOMECCANICA NUMERICA (peso 34%, score ${l1.score}/100)
+L1 — BIOMECCANICA NUMERICA (peso ${weightsPct.l1}%, score ${l1.score}/100)
 Trigger attivati:
 ${l1.triggeredFeedback.map((t) => `- [${t.severity}${t.injuryRisk ? "/INJURY" : ""}] ${t.feedback}`).join("\n") || "- nessun trigger"}
 
-L2 — VISION ANALYSIS (peso 33%, score ${l2.score}/100)
+L2 — VISION ANALYSIS (peso ${weightsPct.l2}%, score ${l2.score}/100)
 ${l2.qualitativeAnalysis}
 Osservazioni visive: ${l2.visualObservations.join("; ") || "nessuna"}
 Rischi rilevati: ${l2.injuryRiskFlags.join("; ") || "nessuno"}
 
-L3 — CONFRONTO CON PT (peso 33%, score ${l3.score}/100)
+L3 — CONFRONTO CON PT (peso ${weightsPct.l3}%, score ${l3.score}/100)
 ${l3.comparisonFeedback}
 Differenze chiave: ${l3.keyDifferences.map((d) => `${d.aspect}: utente "${d.user}" vs PT "${d.pro}"`).join("; ") || "nessuna"}
 
@@ -53,10 +55,28 @@ export async function generateFinalReport(params: {
   l1: L1Result;
   l2: L2Result;
   l3: L3Result;
+  hasProVideo: boolean;
 }): Promise<FinalReport> {
-  const combinedScore = Math.round(
-    params.l1.score * 0.34 + params.l2.score * 0.33 + params.l3.score * 0.33
+  const combinedScore = computeCombinedScore(
+    params.l1.score,
+    params.l2.score,
+    params.l3.score,
+    { hasProVideo: params.hasProVideo }
   );
+
+  // Percentuali derivate dalla fonte di verità (weights.ts): quando manca il
+  // video PT, il peso di L3 è 0% (ridistribuito su L1/L2).
+  const weightsPct = params.hasProVideo
+    ? {
+        l1: Math.round(ANALYSIS_WEIGHTS.withProVideo.l1 * 100),
+        l2: Math.round(ANALYSIS_WEIGHTS.withProVideo.l2 * 100),
+        l3: Math.round(ANALYSIS_WEIGHTS.withProVideo.l3 * 100),
+      }
+    : {
+        l1: Math.round(ANALYSIS_WEIGHTS.withoutProVideo.l1 * 100),
+        l2: Math.round(ANALYSIS_WEIGHTS.withoutProVideo.l2 * 100),
+        l3: 0,
+      };
 
   const response = await anthropic.messages.create({
     model: MODELS.FAST,
@@ -64,7 +84,7 @@ export async function generateFinalReport(params: {
     messages: [
       {
         role: "user",
-        content: buildFinalReportPrompt(params.exerciseName, params.l1, params.l2, params.l3, combinedScore),
+        content: buildFinalReportPrompt(params.exerciseName, params.l1, params.l2, params.l3, combinedScore, weightsPct),
       },
     ],
   });

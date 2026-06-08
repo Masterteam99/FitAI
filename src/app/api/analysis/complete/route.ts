@@ -5,6 +5,7 @@ import { detectPhases } from "@/services/biomechanical/phaseDetector";
 import { evaluateExerciseSpec, type BiomechanicalSpecData } from "@/services/biomechanical/specEvaluator";
 import { analyzeUserVideoVision, compareVideoVision, type VisionFrame } from "@/services/ai/visionAnalyzer";
 import { generateFinalReport } from "@/services/ai/finalReportGenerator";
+import { computeCombinedScore } from "@/services/analysis/weights";
 import type { FrameAnalysis, L1Result, L2Result, L3Result } from "@/types/analysis";
 import { z } from "zod";
 
@@ -123,7 +124,10 @@ export async function POST(req: NextRequest) {
     keyDifferences: [],
   };
 
-  // Redistribuzione pesi: se L3 sentinel (-1), il finalReport calcola combinedScore solo su L1+L2
+  // Sentinel L3 (-1): nessun video PT. Lo score combinato è calcolato da
+  // computeCombinedScore con hasProVideo:false (pesi 62.5/37.5 su L1/L2), quindi
+  // L3 NON entra nel punteggio. Qui normalizziamo solo il valore esposto/persistito
+  // di l3.score (la media L1/L2) per non mostrare il sentinel nell'UI.
   if (l3.score === -1) {
     l3 = { ...l3, score: Math.round((l1.score + l2.score) / 2) };
   }
@@ -138,8 +142,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Analisi fallita: troppi sotto-step non disponibili.", analysisSessionId: analysisSession.id }, { status: 500 });
   }
 
-  const finalReport = await generateFinalReport({ exerciseName, l1, l2, l3 }).catch(() => ({
-    combinedScore: Math.round(l1.score * 0.34 + l2.score * 0.33 + l3.score * 0.33),
+  const finalReport = await generateFinalReport({ exerciseName, l1, l2, l3, hasProVideo: hasProFrames }).catch(() => ({
+    combinedScore: computeCombinedScore(l1.score, l2.score, l3.score, { hasProVideo: hasProFrames }),
     overallJudgment: `Esecuzione di ${exerciseName} elaborata. Sintesi finale non disponibile.`,
     prioritizedImprovements: l1.triggeredFeedback.slice(0, 5).map((t) => t.feedback),
     injuryRiskAlert: { level: "BASSO" as const, explanation: "Sintesi non generata.", affectedAreas: [] },

@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Bowlby_One_SC } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const bowlby = Bowlby_One_SC({ variable: "--font-display", subsets: ["latin"], weight: "400", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "FitAI", template: "%s | FitAI" },
@@ -20,7 +21,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${geist.variable} h-full antialiased`}>
+    <html lang="it" className={`${geist.variable} ${bowlby.variable} h-full antialiased`}>
       <body className="min-h-full bg-background text-foreground">
         <Providers>{children}</Providers>
       </body>
