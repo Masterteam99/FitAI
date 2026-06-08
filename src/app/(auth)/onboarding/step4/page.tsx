@@ -6,6 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Brain, ChevronLeft, AlertTriangle, Loader2, Sparkles } from "lucide-react";
 import { readOnboarding, clearOnboarding, type OnboardingState } from "../onboardingState";
+import { SkipOnboardingButton } from "../SkipOnboardingButton";
+
+// Claude può rispondere con JSON puro o dentro un fence ```json: estrazione robusta.
+function extractPlanJson(text: string): unknown {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  const candidate = fenced ? fenced[1] : text;
+  const start = candidate.indexOf("{");
+  const end = candidate.lastIndexOf("}");
+  if (start === -1 || end <= start) throw new Error("Formato piano non riconosciuto");
+  return JSON.parse(candidate.slice(start, end + 1));
+}
 
 const GOAL_LABELS: Record<string, string> = {
   LOSE_WEIGHT: "Perdita di peso",
@@ -29,6 +40,7 @@ export default function OnboardingStep4() {
   const [busy, setBusy] = useState(false);
   const [streamText, setStreamText] = useState("");
   const [error, setError] = useState("");
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
 
   useEffect(() => {
     const s = readOnboarding();
@@ -44,6 +56,7 @@ export default function OnboardingStep4() {
     setBusy(true);
     setError("");
     setStreamText("");
+    setQuotaExceeded(false);
 
     try {
       // 1. Save profile
@@ -81,16 +94,18 @@ export default function OnboardingStep4() {
           notes: "",
         }),
       });
+      // Il profilo è già salvato (onboardingCompleted=true): se la generazione
+      // fallisce per quota (402), l'utente può comunque proseguire alla dashboard.
       if (!planRes.ok) {
-        const errBody = await planRes.text().catch(() => "");
-        let errMsg = `HTTP ${planRes.status}`;
-        try {
-          const j = JSON.parse(errBody);
-          if (j.error) errMsg += ` — ${j.error}`;
-        } catch {
-          if (errBody) errMsg += ` — ${errBody.slice(0, 200)}`;
+        const errBody = await planRes.json().catch(() => ({} as { error?: string }));
+        if (planRes.status === 402) {
+          setQuotaExceeded(true);
+          setError(errBody.error || "Hai esaurito le generazioni AI di questo mese. Puoi comunque iniziare e creare un piano più tardi.");
+          setBusy(false);
+          return;
         }
-        throw new Error(`Errore generazione piano (${errMsg})`);
+        const detail = errBody.error ? ` — ${errBody.error}` : "";
+        throw new Error(`Errore generazione piano (HTTP ${planRes.status}${detail})`);
       }
       if (!planRes.body) throw new Error("Errore generazione piano: stream vuoto");
 
@@ -104,9 +119,13 @@ export default function OnboardingStep4() {
         setStreamText(fullText);
       }
 
-      const jsonMatch = fullText.match(/```json\n?([\s\S]*?)\n?```/);
-      if (!jsonMatch) throw new Error("Formato piano non riconosciuto");
-      const planData = JSON.parse(jsonMatch[1]);
+      const planData = extractPlanJson(fullText) as {
+        name: string; durationWeeks: number; workoutsPerWeek: number;
+        days?: Array<{
+          dayNumber: number; name: string; restDay?: boolean;
+          exercises?: Array<{ exerciseSlug: string; sets: number; reps?: number; durationSeconds?: number | null; restSeconds?: number; notes?: string }>;
+        }>;
+      };
 
       // 3. Translate slugs → ids and save
       const exRes = await fetch("/api/exercises?limit=100");
@@ -213,9 +232,16 @@ export default function OnboardingStep4() {
         </Card>
 
         {error && (
-          <div className="flex items-center gap-2 text-destructive text-sm p-3 bg-destructive/10 rounded-lg">
-            <AlertTriangle className="w-4 h-4 shrink-0" />
-            {error}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-destructive text-sm p-3 bg-destructive/10 rounded-lg">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              {error}
+            </div>
+            {quotaExceeded && (
+              <Button size="lg" className="w-full gap-2" onClick={() => { clearOnboarding(); router.push("/dashboard"); }}>
+                Continua alla dashboard
+              </Button>
+            )}
           </div>
         )}
 
@@ -225,8 +251,12 @@ export default function OnboardingStep4() {
           </Button>
           <Button size="lg" onClick={finish} className="flex-1 gap-2">
             {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Brain className="w-5 h-5" />}
-            Genera piano e inizia
+            {quotaExceeded ? "Riprova generazione" : "Genera piano e inizia"}
           </Button>
+        </div>
+
+        <div className="text-center">
+          <SkipOnboardingButton />
         </div>
       </div>
     </div>

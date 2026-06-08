@@ -31,7 +31,6 @@ export function buildPlanGeneratorPrompt(params: {
   dietType?: string;
   pastInjuries?: string[];
   pastSports?: string[];
-  fewShotExamples?: string;
 }): string {
   return `Crea un piano di allenamento personalizzato con queste specifiche:
 
@@ -47,18 +46,21 @@ ${params.pastInjuries && params.pastInjuries.length > 0 ? `- PROBLEMATICHE FISIC
 ${params.pastSports && params.pastSports.length > 0 ? `- ESPERIENZA PREGRESSA: ${params.pastSports.join(", ")} — considera adattamenti motori già acquisiti.` : ""}
 ${params.dietType ? `- Dieta attuale: ${params.dietType}` : ""}
 
-${params.fewShotExamples ? `ESEMPI DI PIANI ANALOGHI (segui logica e tono, NON copiare letteralmente):
-${params.fewShotExamples}
-` : ""}
 ESERCIZI DISPONIBILI NEL DATABASE:
 ${params.exerciseList}
 
+Ogni esercizio riporta dei TAG (obiettivo, gruppo muscolare, attrezzatura, livello, contesto, pattern motorio, eventuali controindicazioni). Sono il tuo strumento principale di selezione.
+
 REGOLE:
-1. Usa SOLO esercizi dalla lista sopra (usa il campo "slug" come identificatore)
-2. Bilancia i gruppi muscolari nell'arco della settimana (no stesso gruppo 2 giorni consecutivi)
-3. Inizia con volume conservativo per principianti, progressivo per avanzati
-4. Rispetta i giorni di allenamento richiesti (${params.daysPerWeek} giorni)
-5. Assegna nomi descrittivi ai giorni (es: "Giorno A - Parte Alta", "Giorno B - Gambe")
+1. Usa SOLO esercizi dalla lista sopra (usa il campo "slug" come identificatore).
+2. SELEZIONE TAG-DRIVEN: scegli gli esercizi i cui tag combaciano meglio con il profilo utente — obiettivi (${params.goals.join(", ")}), livello (${params.currentLevel}), attrezzatura disponibile (${params.equipment.join(", ")}) e aree da enfatizzare. Preferisci sempre l'esercizio con più tag rilevanti.
+3. SICUREZZA: se l'utente ha problematiche fisiche/limitazioni, ESCLUDI gli esercizi con tag di controindicazione corrispondenti e prediligi alternative più sicure.
+4. ATTREZZATURA: non proporre esercizi che richiedono attrezzatura non disponibile.
+5. Bilancia i gruppi muscolari nell'arco della settimana (no stesso gruppo 2 giorni consecutivi).
+6. Inizia con volume conservativo per principianti, progressivo per avanzati.
+7. Rispetta i giorni di allenamento richiesti (${params.daysPerWeek} giorni).
+8. Assegna nomi descrittivi ai giorni (es: "Giorno A - Parte Alta", "Giorno B - Gambe").
+9. Nel campo "rationale" spiega brevemente perché i tag scelti rispondono al profilo dell'utente.
 
 OUTPUT JSON (obbligatorio):
 {
@@ -151,7 +153,6 @@ export function buildNutritionPlanPrompt(params: {
   targetGoal: string;
   pastInjuries?: string[];
   targetMacros: { kcal: number; proteinG: number; carbsG: number; fatG: number };
-  fewShotExamples?: string;
 }): string {
   return `Crea un piano nutrizionale settimanale completo (lunedi-domenica, breakfast/lunch/dinner + snacks).
 
@@ -174,8 +175,6 @@ VINCOLI DIETETICI (rispetta rigorosamente):
 - vegana: solo vegetale (no animal-derived)
 - chetogenica: <50g carbo/giorno, alto grassi (60-70% kcal)
 - mediterranea: focus pesce, olio EVO, legumi, cereali integrali
-
-${params.fewShotExamples ? `ESEMPI DI PIANI ANALOGHI:\n${params.fewShotExamples}\n` : ""}
 
 REGOLE:
 1. Tutti e 7 i giorni popolati (lunedi, martedi, mercoledi, giovedi, venerdi, sabato, domenica)

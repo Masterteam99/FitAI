@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
+import { SkipOnboardingButton } from "../SkipOnboardingButton";
 
 const GENDERS = [
   { value: "M", label: "Uomo" },
@@ -198,6 +199,10 @@ export default function OnboardingStep3() {
           <Button size="lg" onClick={next} disabled={!valid} className="flex-1 gap-2">
             Continua <ChevronRight className="w-5 h-5" />
           </Button>
+        </div>
+
+        <div className="text-center">
+          <SkipOnboardingButton />
         </div>
       </div>
     </div>

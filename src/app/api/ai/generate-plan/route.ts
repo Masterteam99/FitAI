@@ -58,31 +58,25 @@ export async function POST(req: NextRequest) {
   const normalizedLevel = d.currentLevel ?? d.fitnessLevel ?? "INTERMEDIATE";
   const normalizedRestrictions = d.restrictions ?? d.notes ?? "";
 
-  // Recupera esercizi dal DB per il prompt
+  // Recupera esercizi dal DB per il prompt. I `tags` sono il segnale primario
+  // con cui Claude seleziona dinamicamente gli esercizi più rilevanti per il
+  // profilo utente (niente più template statici).
   const exercises = await prisma.exercise.findMany({
     where: { isActive: true },
-    select: { slug: true, name: true, muscleGroupPrimary: true, difficulty: true, equipment: true, category: true, caloriesPerMinute: true },
+    select: {
+      slug: true, name: true, muscleGroupPrimary: true, muscleGroupsSecondary: true,
+      difficulty: true, equipment: true, category: true, caloriesPerMinute: true, tags: true,
+    },
   });
 
   const exerciseList = exercises
-    .map((e) => `- ${e.slug}: "${e.name}" | muscolo: ${e.muscleGroupPrimary} | difficoltà: ${e.difficulty} | attrezzatura: ${e.equipment.join(",")} | categoria: ${e.category}`)
+    .map((e) => {
+      const secondary = e.muscleGroupsSecondary.length ? ` | secondari: ${e.muscleGroupsSecondary.join(",")}` : "";
+      const tags = e.tags.length ? ` | tag: ${e.tags.join(",")}` : "";
+      return `- ${e.slug}: "${e.name}" | muscolo: ${e.muscleGroupPrimary}${secondary} | difficoltà: ${e.difficulty} | attrezzatura: ${e.equipment.join(",")} | categoria: ${e.category}${tags}`;
+    })
     .join("\n");
   console.log("[generate-plan] exercises loaded", { count: exercises.length });
-
-  // Few-shot: 2-3 template più simili al profilo utente
-  const matchedTemplates = await prisma.workoutPlanTemplate.findMany({
-    where: {
-      difficulty: normalizedLevel as never,
-      targetGoals: { hasSome: normalizedGoals as never },
-    },
-    take: 3,
-    orderBy: { createdAt: "asc" },
-  });
-  const fewShotBlock = matchedTemplates.length > 0
-    ? matchedTemplates.map((t) =>
-        `### Esempio: ${t.name}\n${t.description}\nRationale: ${t.rationale}\nDays:\n${JSON.stringify(t.daysJson, null, 2)}`
-      ).join("\n\n---\n\n")
-    : "";
 
   const stream = await anthropic.messages.stream({
     model: MODELS.DEFAULT,
@@ -106,7 +100,6 @@ export async function POST(req: NextRequest) {
               pastInjuries: d.pastInjuries,
               pastSports: d.pastSports,
               exerciseList,
-              fewShotExamples: fewShotBlock,
             }),
           },
         ],

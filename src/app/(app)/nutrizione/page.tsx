@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
+import { AiNutritionPlan } from "./AiNutritionPlan";
 
 interface NutritionLog {
   id: string;
@@ -117,6 +118,9 @@ export default function NutrizionePage() {
           Aggiungi
         </Button>
       </div>
+
+      {/* Generatore piano AI settimanale */}
+      <AiNutritionPlan />
 
       {/* Date navigator */}
       <div className="flex items-center gap-3 justify-center">

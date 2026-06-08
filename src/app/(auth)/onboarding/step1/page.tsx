@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronRight, CheckCircle, Zap } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
+import { SkipOnboardingButton } from "../SkipOnboardingButton";
 
 const GOALS = [
   { value: "LOSE_WEIGHT", label: "Perdita di peso", emoji: "🔥" },
@@ -93,6 +94,10 @@ export default function OnboardingStep1() {
         <Button size="lg" onClick={next} disabled={!goal || !level} className="w-full gap-2">
           Continua <ChevronRight className="w-5 h-5" />
         </Button>
+
+        <div className="text-center">
+          <SkipOnboardingButton />
+        </div>
       </div>
     </div>
   );

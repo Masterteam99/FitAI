@@ -34,6 +34,17 @@ const EQUIPMENT_OPTIONS = [
 
 const DAYS_OPTIONS = [2, 3, 4, 5, 6];
 
+// Claude può rispondere con JSON puro o racchiuso in un fence ```json.
+// Estraiamo in modo robusto il primo oggetto JSON dalla risposta.
+function extractPlanJson(text: string): unknown {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  const candidate = fenced ? fenced[1] : text;
+  const start = candidate.indexOf("{");
+  const end = candidate.lastIndexOf("}");
+  if (start === -1 || end <= start) throw new Error("Formato piano non riconosciuto");
+  return JSON.parse(candidate.slice(start, end + 1));
+}
+
 export default function GeneraAIPage() {
   const router = useRouter();
   const [goal, setGoal] = useState("");
@@ -44,6 +55,7 @@ export default function GeneraAIPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [streamText, setStreamText] = useState("");
   const [error, setError] = useState("");
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
 
   function toggleEquipment(val: string) {
     setEquipment((prev) => prev.includes(val) ? prev.filter((e) => e !== val) : [...prev, val]);
@@ -54,6 +66,7 @@ export default function GeneraAIPage() {
     setIsGenerating(true);
     setStreamText("");
     setError("");
+    setQuotaExceeded(false);
 
     try {
       const res = await fetch("/api/ai/generate-plan", {
@@ -62,7 +75,22 @@ export default function GeneraAIPage() {
         body: JSON.stringify({ goal, fitnessLevel: level, daysPerWeek: days, equipment, notes }),
       });
 
-      if (!res.ok || !res.body) throw new Error("Errore generazione piano");
+      // Controlla lo status PRIMA di consumare lo stream: altrimenti il 402
+      // (quota AI esaurita) verrebbe ingoiato e l'utente resterebbe bloccato.
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({} as { error?: string }));
+        if (res.status === 402) {
+          setQuotaExceeded(true);
+          setError(errBody.error || "Hai esaurito le generazioni AI di questo mese.");
+        } else if (res.status === 429) {
+          setError(errBody.error || "Troppe richieste. Riprova tra un minuto.");
+        } else {
+          setError(errBody.error || "Errore generazione piano");
+        }
+        setIsGenerating(false);
+        return;
+      }
+      if (!res.body) throw new Error("Risposta vuota dal server");
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -75,11 +103,25 @@ export default function GeneraAIPage() {
         setStreamText(fullText);
       }
 
-      // Parse the JSON plan from the streamed response
-      const jsonMatch = fullText.match(/```json\n?([\s\S]*?)\n?```/);
-      if (!jsonMatch) throw new Error("Formato piano non riconosciuto");
-
-      const planData = JSON.parse(jsonMatch[1]);
+      // Parse the JSON plan from the streamed response (fenced o JSON puro)
+      const planData = extractPlanJson(fullText) as {
+        name: string;
+        durationWeeks: number;
+        workoutsPerWeek: number;
+        days?: Array<{
+          dayNumber: number;
+          name: string;
+          restDay?: boolean;
+          exercises?: Array<{
+            exerciseSlug: string;
+            sets: number;
+            reps?: number;
+            durationSeconds?: number | null;
+            restSeconds?: number;
+            notes?: string;
+          }>;
+        }>;
+      };
 
       // Translation layer: Claude generates exerciseSlug; API expects exerciseId.
       // (rest/duration field names already match Prisma — restSeconds/durationSeconds.)

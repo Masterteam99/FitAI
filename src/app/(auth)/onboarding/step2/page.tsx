@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Dumbbell } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
+import { SkipOnboardingButton } from "../SkipOnboardingButton";
 
 const EQUIPMENT_OPTIONS = [
   { value: "NONE", label: "Solo peso corporeo" },
@@ -78,6 +79,10 @@ export default function OnboardingStep2() {
           <Button size="lg" onClick={next} disabled={equipment.length === 0} className="flex-1 gap-2">
             Continua <ChevronRight className="w-5 h-5" />
           </Button>
+        </div>
+
+        <div className="text-center">
+          <SkipOnboardingButton />
         </div>
       </div>
     </div>

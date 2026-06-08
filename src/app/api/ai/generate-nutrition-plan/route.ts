@@ -75,15 +75,6 @@ export async function POST(req: NextRequest) {
   const d = parsed.data;
   const targetMacros = computeTargetMacros(d);
 
-  const matched = await prisma.nutritionPlanTemplate.findMany({
-    where: { dietType: d.dietType, targetGoal: d.targetGoal as never },
-    take: 2,
-    orderBy: { createdAt: "asc" },
-  });
-  const fewShotBlock = matched.length > 0
-    ? matched.map((t) => `### Esempio: ${t.name}\n${t.description}\nRationale: ${t.rationale}\nWeekly plan:\n${JSON.stringify(t.weeklyPlanJson, null, 2)}`).join("\n\n---\n\n")
-    : "";
-
   const response = await anthropic.messages.create({
     model: MODELS.DEFAULT,
     max_tokens: 6000,
@@ -97,7 +88,6 @@ export async function POST(req: NextRequest) {
             text: buildNutritionPlanPrompt({
               ...d,
               targetMacros,
-              fewShotExamples: fewShotBlock,
             }),
           },
         ],
@@ -108,7 +98,14 @@ export async function POST(req: NextRequest) {
   const text = response.content[0]?.type === "text" ? response.content[0].text : "";
   let plan: object | null = null;
   try {
-    plan = JSON.parse(text);
+    // Claude può rispondere con JSON puro o dentro un fence ```json: estraiamo
+    // il primo oggetto JSON in modo robusto.
+    const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    const candidate = fenced ? fenced[1] : text;
+    const start = candidate.indexOf("{");
+    const end = candidate.lastIndexOf("}");
+    if (start === -1 || end <= start) throw new Error("no-json");
+    plan = JSON.parse(candidate.slice(start, end + 1));
   } catch {
     return NextResponse.json({ error: "Output AI non valido", raw: text.slice(0, 500) }, { status: 500 });
   }
