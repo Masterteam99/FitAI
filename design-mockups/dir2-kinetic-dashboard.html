@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FitAI — Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#070b14;--bg-2:#0b1322;
+    --panel:rgba(17,26,43,0.55);--panel-solid:#0f1828;
+    --line:rgba(120,160,220,0.12);--line-strong:rgba(120,170,230,0.28);
+    --txt:#eaf1ff;--txt-dim:#8ea3c4;--txt-mute:#5d6f8e;
+    --cyan:#28e1ff;--blue:#3a7bff;--amber:#ffb454;--coral:#ff6b5d;--green:#3ce6a8;
+    --glow-cyan:0 0 0 1px rgba(40,225,255,.35),0 0 28px rgba(40,225,255,.28);
+    --r:18px;--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Sora',system-ui,sans-serif;
+    --sb:248px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:radial-gradient(rgba(120,160,220,.08) 1px,transparent 1px);background-size:34px 34px;
+    mask-image:radial-gradient(ellipse 80% 60% at 70% 0%,#000 30%,transparent 75%)}
+  body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(800px 480px at 88% -6%,rgba(58,123,255,.16),transparent 60%),radial-gradient(620px 420px at 10% 8%,rgba(40,225,255,.10),transparent 55%)}
+  a{color:inherit;text-decoration:none}
+  .mono{font-family:var(--mono);font-variant-ligatures:none}
+  svg.icn{stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+  .glass{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
+
+  /* ---------- APP SHELL ---------- */
+  .app{display:grid;grid-template-columns:var(--sb) 1fr;min-height:100vh;position:relative;z-index:1}
+
+  /* sidebar */
+  .sidebar{border-right:1px solid var(--line);padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(11,19,34,.6),rgba(7,11,20,.3))}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:700;font-size:18px;padding:6px 8px 22px}
+  .logo .mark{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(150deg,#102036,#0a1626);border:1px solid var(--line-strong);box-shadow:inset 0 0 14px rgba(40,225,255,.18);color:var(--cyan)}
+  .logo b{color:var(--cyan);font-weight:800}
+  .navsec{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--txt-mute);text-transform:uppercase;padding:14px 10px 8px}
+  .navitem{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:11px;color:var(--txt-dim);font-size:14.5px;font-weight:500;transition:.18s;cursor:pointer;position:relative}
+  .navitem svg{width:19px;height:19px;flex:none}
+  .navitem:hover{background:rgba(255,255,255,.03);color:var(--txt)}
+  .navitem.active{color:var(--txt);background:linear-gradient(100deg,rgba(40,225,255,.12),rgba(40,225,255,.02));border:1px solid var(--line-strong)}
+  .navitem.active::before{content:"";position:absolute;left:-16px;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+  .navitem.active svg{color:var(--cyan)}
+  .upsell{margin-top:auto;padding:16px;border-radius:14px;background:linear-gradient(150deg,rgba(40,225,255,.10),rgba(58,123,255,.04));border:1px solid var(--line-strong)}
+  .upsell .mono{font-size:10px;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase}
+  .upsell h4{font-size:14px;margin:8px 0 4px}
+  .upsell p{font-size:12px;color:var(--txt-dim);margin-bottom:12px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:13.5px;padding:9px 14px;border-radius:10px;cursor:pointer;transition:.2s;border:1px solid transparent;font-family:var(--sans)}
+  .btn-primary{background:linear-gradient(120deg,var(--cyan),var(--blue));color:#03121b;box-shadow:0 8px 22px rgba(40,225,255,.28);width:100%}
+  .btn-primary:hover{transform:translateY(-1px)}
+  .btn-ghost{border-color:var(--line-strong);color:var(--txt)}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+  /* main */
+  .main{padding:22px 28px 90px;min-width:0}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+  .hello h1{font-size:24px;letter-spacing:-.02em}
+  .hello p{color:var(--txt-dim);font-size:13.5px;margin-top:2px}
+  .chips{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:12px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px)}
+  .chip .ci{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none}
+  .chip .meta{display:flex;flex-direction:column;line-height:1.1}
+  .chip .v{font-family:var(--mono);font-size:16px;font-weight:700}
+  .chip .l{font-size:10.5px;color:var(--txt-mute);letter-spacing:.06em}
+  .chip.streak .ci{background:rgba(255,180,84,.12);color:var(--amber)}
+  .chip.vol .ci{background:rgba(40,225,255,.12);color:var(--cyan)}
+  .chip.kcal .ci{background:rgba(255,107,93,.12);color:var(--coral)}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+  .card{padding:20px}
+  .card h3{font-size:15.5px;display:flex;align-items:center;justify-content:space-between;letter-spacing:-.01em}
+  .card h3 .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--green);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(60,230,168,.6);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(60,230,168,.55)}70%{box-shadow:0 0 0 9px rgba(60,230,168,0)}100%{box-shadow:0 0 0 0 rgba(60,230,168,0)}}
+
+  .c4{grid-column:span 4}.c5{grid-column:span 5}.c7{grid-column:span 7}.c8{grid-column:span 8}.c3{grid-column:span 3}.c6{grid-column:span 6}.c12{grid-column:span 12}
+
+  /* stat tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .tile{padding:16px;border-radius:14px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px)}
+  .tile .l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--txt-mute);text-transform:uppercase}
+  .tile .v{font-family:var(--mono);font-size:26px;font-weight:700;margin-top:8px;line-height:1}
+  .tile .d{font-size:11.5px;margin-top:6px;display:flex;align-items:center;gap:5px}
+  .up{color:var(--green)}.down{color:var(--coral)}
+  .tile .v small{font-size:13px;color:var(--txt-mute);font-weight:500}
+
+  /* chart */
+  .legend{display:flex;gap:16px;margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--txt-dim)}
+  .legend i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:middle}
+  .ax{font-family:var(--mono);font-size:9px;fill:var(--txt-mute)}
+
+  /* pose analysis card */
+  .pose-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .pose-stage{background:radial-gradient(120% 120% at 50% 0%,#11203a,#080f1c);border:1px solid var(--line);border-radius:14px;position:relative;min-height:240px;overflow:hidden}
+  .pose-stage .scan{position:absolute;left:0;right:0;height:54px;background:linear-gradient(180deg,transparent,rgba(40,225,255,.16),transparent);animation:scan 3.4s ease-in-out infinite}
+  @keyframes scan{0%,100%{top:-54px}50%{top:100%}}
+  .gauge{position:relative;width:120px;height:120px;flex:none;margin:0 auto}
+  .gauge .val{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .gauge .val b{font-family:var(--mono);font-size:34px;font-weight:700;line-height:1}
+  .gauge .val span{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--txt-mute);text-transform:uppercase;display:block;margin-top:3px}
+  .angle{background:rgba(8,14,26,.6);border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+  .angle .k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--txt-mute);text-transform:uppercase}
+  .angle .vv{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:3px;display:flex;align-items:baseline;gap:4px}
+  .angle .vv .deg{font-size:12px;color:var(--cyan)}
+  .angle.warn .vv .deg{color:var(--amber)}
+  .angle .bar{height:4px;border-radius:3px;background:rgba(255,255,255,.07);margin-top:8px;overflow:hidden}
+  .angle .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--blue));width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+  .angle.warn .bar i{background:linear-gradient(90deg,var(--amber),var(--coral))}
+
+  /* heatmap */
+  .heat{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}
+  .heat .day{font-family:var(--mono);font-size:10px;color:var(--txt-mute);text-align:center}
+  .heat .cell{aspect-ratio:1;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+  .heat .cell.d1{background:rgba(40,225,255,.18)}
+  .heat .cell.d2{background:rgba(40,225,255,.4)}
+  .heat .cell.d3{background:rgba(40,225,255,.65);box-shadow:0 0 12px rgba(40,225,255,.4)}
+
+  /* body map */
+  .bodymap{display:flex;gap:14px;align-items:center;margin-top:8px}
+  .bodymap svg{flex:none}
+  .mz{transition:.4s}
+  .legend-body{display:flex;flex-direction:column;gap:9px;flex:1}
+  .mleg{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--txt-dim)}
+  .mleg b{font-family:var(--mono);margin-left:auto;color:var(--txt)}
+  .swatch{width:11px;height:11px;border-radius:3px}
+
+  /* plan of day */
+  .plan-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .plan-row:last-child{border-bottom:none}
+  .plan-row .num{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;background:rgba(40,225,255,.08);border:1px solid var(--line-strong);color:var(--cyan);flex:none}
+  .plan-row .info{flex:1}
+  .plan-row .info .t{font-size:14px;font-weight:600}
+  .plan-row .info .s{font-family:var(--mono);font-size:11px;color:var(--txt-mute);margin-top:1px}
+  .plan-row .st{font-family:var(--mono);font-size:11px;padding:4px 8px;border-radius:7px;border:1px solid var(--line-strong)}
+  .plan-row.done .st{color:var(--green);border-color:rgba(60,230,168,.3)}
+  .plan-row .st.now{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 12px rgba(40,225,255,.25)}
+  .plan-row .st.todo{color:var(--txt-mute)}
+
+  /* mobile bottom bar */
+  .bottombar{display:none}
+  .menu-btn{display:none}
+
+  @media (max-width:980px){
+    .app{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .pose-wrap{grid-template-columns:1fr}
+    .tiles{grid-template-columns:repeat(2,1fr)}
+    .c4,.c5,.c7,.c8,.c3,.c6{grid-column:span 12}
+    .main{padding:18px 16px 96px}
+    .bottombar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:60;justify-content:space-around;padding:10px 8px calc(10px + env(safe-area-inset-bottom));background:rgba(7,11,20,.92);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+    .bottombar a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--txt-mute);font-size:10px}
+    .bottombar a svg{width:22px;height:22px}
+    .bottombar a.active{color:var(--cyan)}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo"><span class="mark"><svg width="19" height="19" viewBox="0 0 24 24" class="icn"><path d="M4 13l4-7 4 11 4-9 4 5"/></svg></span>Fit<b>AI</b></div>
+    <div class="navsec">Cockpit</div>
+    <div class="navitem active"><svg viewBox="0 0 24 24" class="icn"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Dashboard</div>
+    <div class="navitem"><svg viewBox="0 0 24 24" class="icn"><path d="M6 8v8M18 8v8M4 12h16"/></svg>Allenamenti</div>
+    <div class="navitem"><svg viewBox="0 0 24 24" class="icn"><circle cx="12" cy="12" r="3"/><path d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Z"/></svg>Analisi forma</div>
+    <div class="navitem"><svg viewBox="0 0 24 24" class="icn"><path d="M6 3v8a3 3 0 0 0 6 0V3M9 3v18"/></svg>Nutrizione</div>
+    <div class="navsec">Libreria</div>
+    <div class="navitem"><svg viewBox="0 0 24 24" class="icn"><path d="M4 5h16v14H4zM4 9h16"/></svg>Esercizi</div>
+    <div class="navitem"><svg viewBox="0 0 24 24" class="icn"><path d="M3 3v18h18M7 14l3-4 3 3 4-6"/></svg>Progressi</div>
+    <div class="upsell">
+      <span class="mono">Piano Base</span>
+      <h4>Sblocca il cockpit Pro</h4>
+      <p>Analisi forma illimitata, mappa corporea avanzata e alert infortuni.</p>
+      <button class="btn btn-primary">Passa a Pro</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="hello">
+        <h1>Ciao, Marco</h1>
+        <p class="mono" style="font-family:var(--mono);font-size:12px">LUN 8 GIU · giorno gambe · settimana 6/12</p>
+      </div>
+      <div class="chips">
+        <div class="chip streak">
+          <span class="ci"><svg width="17" height="17" viewBox="0 0 24 24" class="icn"><path d="M12 2s5 4 5 9a5 5 0 0 1-10 0c0-2 1-3 1-3s3 1 4-6Z"/></svg></span>
+          <span class="meta"><b class="v"><span data-count="17">0</span>g</b><span class="l">Streak</span></span>
+        </div>
+        <div class="chip vol">
+          <span class="ci"><svg width="17" height="17" viewBox="0 0 24 24" class="icn"><path d="M6 8v8M18 8v8M4 12h16"/></svg></span>
+          <span class="meta"><b class="v"><span data-count="9420">0</span></b><span class="l">Volume kg · sett.</span></span>
+        </div>
+        <div class="chip kcal">
+          <span class="ci"><svg width="17" height="17" viewBox="0 0 24 24" class="icn"><path d="M12 3c3 4 4 6 4 9a4 4 0 0 1-8 0c0-1 .5-2 1-3"/></svg></span>
+          <span class="meta"><b class="v"><span data-count="2180">0</span></b><span class="l">Kcal · oggi</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- stat tiles -->
+      <div class="c12">
+        <div class="tiles">
+          <div class="tile"><div class="l">Score medio</div><div class="v"><span data-count="87">0</span><small>/100</small></div><div class="d up">▲ +4 vs settimana scorsa</div></div>
+          <div class="tile"><div class="l">Allenamenti</div><div class="v"><span data-count="5">0</span><small>/6</small></div><div class="d up">▲ in linea col piano</div></div>
+          <div class="tile"><div class="l">Volume totale</div><div class="v"><span data-count="9420">0</span><small>kg</small></div><div class="d up">▲ +12,4%</div></div>
+          <div class="tile"><div class="l">Rischio infortuni</div><div class="v" style="color:var(--green)">Basso</div><div class="d down">▼ ginocchio dx da tenere d'occhio</div></div>
+        </div>
+      </div>
+
+      <!-- progress chart -->
+      <div class="card glass c8">
+        <h3>Andamento volume &amp; score <span class="tag"><span class="live-dot"></span>live</span></h3>
+        <div class="legend"><span><i style="background:#28e1ff"></i>Volume kg</span><span><i style="background:#ffb454"></i>Score forma</span></div>
+        <svg viewBox="0 0 620 240" width="100%" height="240" style="margin-top:10px">
+          <g stroke="rgba(255,255,255,.05)"><line x1="0" y1="50" x2="620" y2="50"/><line x1="0" y1="100" x2="620" y2="100"/><line x1="0" y1="150" x2="620" y2="150"/><line x1="0" y1="200" x2="620" y2="200"/></g>
+          <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(40,225,255,.30)"/><stop offset="1" stop-color="rgba(40,225,255,0)"/></linearGradient></defs>
+          <path class="bigarea" d="M0 180 L88 165 L177 175 L265 130 L354 145 L442 98 L531 112 L620 70 L620 240 L0 240 Z" fill="url(#ar)" opacity="0"/>
+          <path class="bigline" d="M0 180 L88 165 L177 175 L265 130 L354 145 L442 98 L531 112 L620 70" fill="none" stroke="#28e1ff" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="bigline2" d="M0 160 L88 168 L177 150 L265 152 L354 126 L442 130 L531 104 L620 96" fill="none" stroke="#ffb454" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/>
+          <circle class="endpt" cx="620" cy="70" r="4" fill="#28e1ff"><animate attributeName="r" values="4;6.5;4" dur="2s" repeatCount="indefinite"/></circle>
+          <g class="ax"><text x="0" y="234">Sett 1</text><text x="265" y="234">Sett 3</text><text x="520" y="234">Sett 6</text></g>
+        </svg>
+      </div>
+
+      <!-- weekly heatmap + plan stacked -->
+      <div class="card glass c4">
+        <h3>Settimana <span class="tag" style="color:var(--cyan)">consistenza</span></h3>
+        <div class="heat">
+          <span class="day">L</span><span class="day">M</span><span class="day">M</span><span class="day">G</span><span class="day">V</span><span class="day">S</span><span class="day">D</span>
+          <span class="cell d2"></span><span class="cell d3"></span><span class="cell d1"></span><span class="cell d2"></span><span class="cell d3"></span><span class="cell"></span><span class="cell d1"></span>
+        </div>
+        <div style="margin-top:18px;display:flex;flex-direction:column;gap:8px">
+          <div class="angle"><div class="k">Volume settimana</div><div class="vv mono">9420<span class="deg"> kg</span></div><div class="bar"><i data-w="84%"></i></div></div>
+          <div class="angle"><div class="k">Obiettivo settimanale</div><div class="vv mono">5<span class="deg">/6 sessioni</span></div><div class="bar"><i data-w="83%"></i></div></div>
+        </div>
+      </div>
+
+      <!-- POSE ANALYSIS -->
+      <div class="card glass c7">
+        <h3>Ultima analisi forma · Squat <span class="tag"><span class="live-dot"></span>elaborata 2 min fa</span></h3>
+        <div class="pose-wrap">
+          <div class="pose-stage" id="poseStage">
+            <div class="scan"></div>
+            <svg viewBox="0 0 200 250" width="100%" height="100%" id="poseSvg" preserveAspectRatio="xMidYMid meet">
+              <g stroke="#28e1ff" stroke-width="2.4" stroke-linecap="round" opacity="0.85" filter="url(#g)">
+                <line x1="100" y1="40" x2="100" y2="104"/>
+                <line x1="100" y1="56" x2="66" y2="90"/><line x1="66" y1="90" x2="60" y2="132"/>
+                <line x1="100" y1="56" x2="134" y2="90"/><line x1="134" y1="90" x2="140" y2="132"/>
+                <line x1="100" y1="104" x2="78" y2="156"/><line x1="78" y1="156" x2="86" y2="214"/>
+                <line x1="100" y1="104" x2="122" y2="156"/><line x1="122" y1="156" x2="114" y2="214"/>
+              </g>
+              <defs><filter id="g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+              <g class="kp" fill="#28e1ff">
+                <circle cx="100" cy="36" r="9" fill="#0b1322" stroke="#28e1ff" stroke-width="2.4"/>
+                <circle cx="100" cy="56" r="4"/><circle cx="66" cy="90" r="4"/><circle cx="134" cy="90" r="4"/>
+                <circle cx="60" cy="132" r="4"/><circle cx="140" cy="132" r="4"/><circle cx="100" cy="104" r="4"/>
+                <circle cx="78" cy="156" r="5" class="hot"/><circle cx="122" cy="156" r="5" class="hot"/>
+                <circle cx="86" cy="214" r="4"/><circle cx="114" cy="214" r="4"/>
+              </g>
+              <text x="42" y="150" font-size="11" fill="#ffb454" font-family="JetBrains Mono">94°</text>
+            </svg>
+          </div>
+          <div>
+            <div class="gauge" data-score="86">
+              <svg width="120" height="120" viewBox="0 0 104 104">
+                <circle cx="52" cy="52" r="44" stroke="rgba(255,255,255,.08)" stroke-width="9" fill="none"/>
+                <circle class="gring" cx="52" cy="52" r="44" stroke="url(#gg)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"/>
+                <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#28e1ff"/><stop offset=".6" stop-color="#3a7bff"/><stop offset="1" stop-color="#ffb454"/></linearGradient></defs>
+              </svg>
+              <div class="val"><div><b class="gnum">0</b><span>Score</span></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:14px">
+              <div class="angle"><div class="k">Ginocchio dx</div><div class="vv mono">94<span class="deg">°</span></div><div class="bar"><i data-w="82%"></i></div></div>
+              <div class="angle warn"><div class="k">Anca · profondità</div><div class="vv mono">71<span class="deg">°</span></div><div class="bar"><i data-w="54%"></i></div></div>
+              <div class="angle"><div class="k">Schiena neutra</div><div class="vv mono">168<span class="deg">°</span></div><div class="bar"><i data-w="91%"></i></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BODY MAP -->
+      <div class="card glass c5">
+        <h3>Mappa corporea <span class="tag" style="color:var(--cyan)">7 giorni</span></h3>
+        <div class="bodymap">
+          <svg width="120" height="240" viewBox="0 0 120 240">
+            <defs>
+              <radialGradient id="hi" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#28e1ff"/><stop offset="1" stop-color="#3a7bff"/></radialGradient>
+              <radialGradient id="mid" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="rgba(40,225,255,.5)"/><stop offset="1" stop-color="rgba(58,123,255,.2)"/></radialGradient>
+            </defs>
+            <!-- silhouette -->
+            <g fill="rgba(120,160,220,.10)" stroke="rgba(120,170,230,.25)" stroke-width="1">
+              <circle cx="60" cy="22" r="13"/>
+              <path d="M44 38 h32 a8 8 0 0 1 8 8 v34 a6 6 0 0 1-6 6 h-3 v54 h-12 l-3-44 -3 44 h-12 v-54 h-3 a6 6 0 0 1-6-6 v-34 a8 8 0 0 1 8-8 Z"/>
+              <path d="M44 146 h11 l2 56 h-9 l-4-56Z"/><path d="M76 146 h-11 l-2 56 h9 l4-56Z"/>
+            </g>
+            <!-- trained zones (glow) -->
+            <ellipse class="mz" cx="60" cy="58" rx="15" ry="11" fill="url(#hi)" opacity=".85"><animate attributeName="opacity" values=".55;.9;.55" dur="2.4s" repeatCount="indefinite"/></ellipse>
+            <ellipse class="mz" cx="50" cy="170" rx="7" ry="22" fill="url(#hi)" opacity=".8"/>
+            <ellipse class="mz" cx="70" cy="170" rx="7" ry="22" fill="url(#hi)" opacity=".8"/>
+            <ellipse class="mz" cx="38" cy="62" rx="5" ry="9" fill="url(#mid)"/>
+            <ellipse class="mz" cx="82" cy="62" rx="5" ry="9" fill="url(#mid)"/>
+            <ellipse class="mz" cx="60" cy="92" rx="12" ry="9" fill="url(#mid)"/>
+          </svg>
+          <div class="legend-body">
+            <div class="mleg"><span class="swatch" style="background:#28e1ff"></span>Quadricipiti <b class="mono">alto</b></div>
+            <div class="mleg"><span class="swatch" style="background:#28e1ff"></span>Petto <b class="mono">alto</b></div>
+            <div class="mleg"><span class="swatch" style="background:rgba(40,225,255,.5)"></span>Spalle <b class="mono">medio</b></div>
+            <div class="mleg"><span class="swatch" style="background:rgba(40,225,255,.5)"></span>Core <b class="mono">medio</b></div>
+            <div class="mleg"><span class="swatch" style="background:rgba(255,107,93,.6)"></span>Dorsali <b class="mono">scarico</b></div>
+            <p style="font-size:12px;color:var(--txt-dim);margin-top:6px;line-height:1.5">Suggerimento IA: inserisci una sessione tirata per riequilibrare il dorso.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIANO DI OGGI -->
+      <div class="card glass c8">
+        <h3>Piano di oggi · Gambe <span class="tag" style="color:var(--amber)">52 min stimati</span></h3>
+        <div style="margin-top:8px">
+          <div class="plan-row done"><span class="num">01</span><div class="info"><div class="t">Squat con bilanciere</div><div class="s">4 × 8 · 80 kg · RPE 8</div></div><span class="st">fatto</span></div>
+          <div class="plan-row"><span class="num">02</span><div class="info"><div class="t">Affondi bulgari</div><div class="s">3 × 10 · 22 kg · per lato</div></div><span class="st now">in corso</span></div>
+          <div class="plan-row"><span class="num">03</span><div class="info"><div class="t">Leg curl sdraiato</div><div class="s">3 × 12 · 45 kg</div></div><span class="st todo">da fare</span></div>
+          <div class="plan-row"><span class="num">04</span><div class="info"><div class="t">Calf raise in piedi</div><div class="s">4 × 15 · 60 kg</div></div><span class="st todo">da fare</span></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;width:auto;padding:11px 20px">
+          <svg width="16" height="16" viewBox="0 0 24 24" class="icn" style="stroke:#03121b"><circle cx="12" cy="12" r="3"/><path d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Z"/></svg>
+          Avvia analisi forma live
+        </button>
+      </div>
+
+      <!-- nutrition mini -->
+      <div class="card glass c4">
+        <h3>Nutrizione · oggi</h3>
+        <div style="display:flex;flex-direction:column;gap:11px;margin-top:14px">
+          <div class="angle"><div class="k">Proteine</div><div class="vv mono">148<span class="deg">/ 165 g</span></div><div class="bar"><i data-w="90%"></i></div></div>
+          <div class="angle"><div class="k">Carboidrati</div><div class="vv mono">212<span class="deg">/ 280 g</span></div><div class="bar"><i data-w="76%"></i></div></div>
+          <div class="angle warn"><div class="k">Grassi</div><div class="vv mono">78<span class="deg">/ 70 g</span></div><div class="bar"><i data-w="100%"></i></div></div>
+        </div>
+        <p style="font-size:12px;color:var(--txt-dim);margin-top:14px;line-height:1.5">Restano <b class="mono" style="color:var(--cyan)">17 g</b> di proteine per chiudere il target.</p>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- MOBILE BOTTOM BAR -->
+<nav class="bottombar">
+  <a href="#" class="active"><svg viewBox="0 0 24 24" class="icn"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Home</a>
+  <a href="#"><svg viewBox="0 0 24 24" class="icn"><path d="M6 8v8M18 8v8M4 12h16"/></svg>Workout</a>
+  <a href="#"><svg viewBox="0 0 24 24" class="icn"><circle cx="12" cy="12" r="3"/><path d="M3 12s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7Z"/></svg>Forma</a>
+  <a href="#"><svg viewBox="0 0 24 24" class="icn"><path d="M3 3v18h18M7 14l3-4 3 3 4-6"/></svg>Progressi</a>
+  <a href="#"><svg viewBox="0 0 24 24" class="icn"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profilo</a>
+</nav>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function onVisible(el,fn){var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){fn(e.target);o.unobserve(e.target);}});},{threshold:.4});o.observe(el);}
+
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    onVisible(el,function(){
+      var target=+el.dataset.count,dur=1500,t0=null;
+      if(reduce){el.textContent=target.toLocaleString('it-IT');return;}
+      function step(t){if(!t0)t0=t;var p=Math.min((t-t0)/dur,1);el.textContent=Math.round(target*(1-Math.pow(1-p,3))).toLocaleString('it-IT');if(p<1)requestAnimationFrame(step);}
+      requestAnimationFrame(step);
+    });
+  });
+
+  document.querySelectorAll('.angle .bar i').forEach(function(el){
+    onVisible(el,function(){if(reduce){el.style.width=el.dataset.w;return;}setTimeout(function(){el.style.width=el.dataset.w;},120);});
+  });
+
+  document.querySelectorAll('.gauge').forEach(function(g){
+    onVisible(g,function(){
+      var score=+g.dataset.score,ring=g.querySelector('.gring'),num=g.querySelector('.gnum'),C=276.5,off=C-(C*score/100);
+      if(reduce){ring.style.strokeDashoffset=off;num.textContent=score;return;}
+      requestAnimationFrame(function(){ring.style.transition='stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)';ring.style.strokeDashoffset=off;});
+      var dur=1500,t0=null;function step(t){if(!t0)t0=t;var p=Math.min((t-t0)/dur,1);num.textContent=Math.round(score*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);
+    });
+  });
+
+  document.querySelectorAll('.bigline,.bigline2').forEach(function(p){
+    var len=p.getTotalLength(),dashed=p.classList.contains('bigline2');
+    p.style.strokeDasharray=len;p.style.strokeDashoffset=len;
+    onVisible(p,function(){
+      if(reduce){p.style.strokeDashoffset=0;if(dashed)p.style.strokeDasharray='3 5';return;}
+      requestAnimationFrame(function(){p.style.transition='stroke-dashoffset 1.8s ease';p.style.strokeDashoffset=0;if(dashed){setTimeout(function(){p.style.strokeDasharray='3 5';},1850);}});
+    });
+  });
+  document.querySelectorAll('.bigarea').forEach(function(a){onVisible(a,function(){if(reduce){a.style.opacity=1;return;}a.style.transition='opacity 1.2s ease .6s';a.style.opacity=1;});});
+
+  var pose=document.getElementById('poseSvg');
+  if(pose&&!reduce){var f=0;(function loop(){f+=0.018;pose.style.transform='translateY('+(Math.sin(f)*2.5).toFixed(2)+'px)';requestAnimationFrame(loop);})();}
+
+  // nav interactivity
+  document.querySelectorAll('.navitem').forEach(function(n){n.addEventListener('click',function(){document.querySelectorAll('.navitem').forEach(function(x){x.classList.remove('active');});n.classList.add('active');});});
+})();
+</script>
+<style>
+  #poseSvg .kp circle.hot{fill:#ffb454;animation:kp 1.6s ease-in-out infinite}
+  @keyframes kp{0%,100%{r:5;opacity:1}50%{r:8;opacity:.6}}
+  @media (prefers-reduced-motion:reduce){#poseSvg .kp circle.hot{animation:none}}
+</style>
+</body>
+</html>
