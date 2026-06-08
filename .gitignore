@@ -39,6 +39,9 @@ yarn-error.log*
 # superpowers brainstorm session files
 .superpowers/
 
+# admin video PT raw files (uploaded via admin UI, not kept in repo)
+VIDEO PT PER APP/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

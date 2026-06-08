@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, AdminAccessError } from "@/lib/admin";
 import { getSupabaseAdmin, STORAGE_BUCKETS } from "@/lib/supabase";
+import { logAdminAction } from "@/lib/admin-audit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -94,12 +95,22 @@ export async function POST(req: NextRequest, { params }: Props) {
     data: { videoUrl: pub.publicUrl },
   });
 
+  await logAdminAction({
+    actorId: adminCtx.userId,
+    actorEmail: adminCtx.email,
+    action: "UPLOAD_PT_VIDEO",
+    targetType: "exercise",
+    targetId: id,
+    payload: { slug: exercise.slug, videoUrl: pub.publicUrl },
+  });
+
   return NextResponse.json({ videoUrl: pub.publicUrl, path, adminEmail: adminCtx.email });
 }
 
 export async function DELETE(_req: NextRequest, { params }: Props) {
+  let adminCtx;
   try {
-    await requireAdmin();
+    adminCtx = await requireAdmin();
   } catch (e) {
     if (e instanceof AdminAccessError) {
       return NextResponse.json({ error: e.message }, { status: e.status });
@@ -111,7 +122,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
 
   const exercise = await prisma.exercise.findUnique({
     where: { id },
-    select: { id: true, videoUrl: true },
+    select: { id: true, slug: true, videoUrl: true },
   });
   if (!exercise) {
     return NextResponse.json({ error: "Esercizio non trovato" }, { status: 404 });
@@ -130,5 +141,15 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
   }
 
   await prisma.exercise.update({ where: { id }, data: { videoUrl: null } });
+
+  await logAdminAction({
+    actorId: adminCtx.userId,
+    actorEmail: adminCtx.email,
+    action: "DELETE_PT_VIDEO",
+    targetType: "exercise",
+    targetId: id,
+    payload: { slug: exercise.slug },
+  });
+
   return NextResponse.json({ ok: true });
 }
