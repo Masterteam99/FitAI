@@ -1,30 +1,8 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
+import { APP_NAME, copy } from "@/content/copy";
 
-const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
-  {
-    title: "Prodotto",
-    links: [
-      { href: "/funzionalita", label: "Funzionalità" },
-      { href: "/come-funziona", label: "Come funziona" },
-      { href: "/prezzi", label: "Prezzi" },
-    ],
-  },
-  {
-    title: "Azienda",
-    links: [
-      { href: "/chi-siamo", label: "Chi siamo" },
-      { href: "/faq", label: "FAQ" },
-    ],
-  },
-  {
-    title: "Inizia",
-    links: [
-      { href: "/registrati", label: "Crea account" },
-      { href: "/login", label: "Accedi" },
-    ],
-  },
-];
+const COLUMNS = copy.marketingFooter.columns;
 
 export function MarketingFooter() {
   return (
@@ -35,10 +13,10 @@ export function MarketingFooter() {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center glow-primary">
               <Zap className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold font-display">FitAI</span>
+            <span className="text-xl font-bold font-display">{APP_NAME}</span>
           </Link>
           <p className="text-sm text-muted-foreground max-w-xs">
-            Il tuo personal trainer AI: piani su misura, analisi video della tecnica e un coach disponibile 24/7.
+            {copy.marketingFooter.description}
           </p>
         </div>
 
@@ -59,7 +37,7 @@ export function MarketingFooter() {
       </div>
 
       <div className="border-t border-border py-6 text-center text-sm text-muted-foreground">
-        <p>© 2026 FitAI — Allenati più intelligente</p>
+        <p>{copy.marketingFooter.copyright}</p>
       </div>
     </footer>
   );

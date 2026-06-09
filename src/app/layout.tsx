@@ -2,13 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Bowlby_One_SC } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { copy } from "@/content/copy";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const bowlby = Bowlby_One_SC({ variable: "--font-display", subsets: ["latin"], weight: "400", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "FitAI", template: "%s | FitAI" },
-  description: "Il tuo personal trainer AI con analisi video in tempo reale",
+  title: { default: copy.layout.meta.titleDefault, template: copy.layout.meta.titleTemplate },
+  description: copy.layout.meta.description,
   manifest: "/manifest.json",
   icons: { apple: "/apple-icon.png" },
 };

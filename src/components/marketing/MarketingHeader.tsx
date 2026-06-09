@@ -1,14 +1,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Zap, ChevronRight } from "lucide-react";
+import { APP_NAME, copy } from "@/content/copy";
 
-const NAV = [
-  { href: "/funzionalita", label: "Funzionalità" },
-  { href: "/come-funziona", label: "Come funziona" },
-  { href: "/prezzi", label: "Prezzi" },
-  { href: "/chi-siamo", label: "Chi siamo" },
-  { href: "/faq", label: "FAQ" },
-];
+const NAV = copy.marketingHeader.nav;
 
 export function MarketingHeader() {
   return (
@@ -17,7 +12,7 @@ export function MarketingHeader() {
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center glow-primary">
           <Zap className="w-5 h-5 text-primary-foreground" />
         </div>
-        <span className="text-xl font-bold font-display">FitAI</span>
+        <span className="text-xl font-bold font-display">{APP_NAME}</span>
       </Link>
 
       <nav className="hidden md:flex items-center gap-6 text-sm">
@@ -29,8 +24,8 @@ export function MarketingHeader() {
       </nav>
 
       <div className="flex items-center gap-3">
-        <Link href="/login"><Button variant="ghost">Accedi</Button></Link>
-        <Link href="/registrati"><Button className="glow-energy">Inizia gratis <ChevronRight className="w-4 h-4" /></Button></Link>
+        <Link href="/login"><Button variant="ghost">{copy.marketingHeader.login}</Button></Link>
+        <Link href="/registrati"><Button className="glow-energy">{copy.marketingHeader.signup} <ChevronRight className="w-4 h-4" /></Button></Link>
       </div>
     </header>
   );

@@ -9,18 +9,21 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { APP_NAME, copy } from "@/content/copy";
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/esercizi", label: "Esercizi", icon: Dumbbell },
-  { href: "/allenamento", label: "Allenamento", icon: PlayCircle },
-  { href: "/analisi", label: "Analisi AI", icon: Brain },
-  { href: "/ai-coach", label: "AI Coach", icon: Zap },
-  { href: "/nutrizione", label: "Nutrizione", icon: Apple },
-  { href: "/community", label: "Community", icon: Users },
-  { href: "/progressi", label: "Progressi", icon: TrendingUp },
-  { href: "/abbonamento", label: "Abbonamento", icon: Sparkles },
-];
+const ICONS: Record<string, typeof LayoutDashboard> = {
+  "/dashboard": LayoutDashboard,
+  "/esercizi": Dumbbell,
+  "/allenamento": PlayCircle,
+  "/analisi": Brain,
+  "/ai-coach": Zap,
+  "/nutrizione": Apple,
+  "/community": Users,
+  "/progressi": TrendingUp,
+  "/abbonamento": Sparkles,
+};
+
+const NAV_ITEMS = copy.navbar.items.map((i) => ({ ...i, icon: ICONS[i.href] }));
 
 export function Navbar({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
@@ -28,7 +31,7 @@ export function Navbar({ isAdmin }: { isAdmin: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const items = isAdmin
-    ? [...NAV_ITEMS, { href: "/admin/exercises", label: "Admin", icon: ShieldCheck }]
+    ? [...NAV_ITEMS, { ...copy.navbar.admin, icon: ShieldCheck }]
     : NAV_ITEMS;
 
   return (
@@ -40,7 +43,7 @@ export function Navbar({ isAdmin }: { isAdmin: boolean }) {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <Zap className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">FitAI</span>
+            <span className="text-xl font-bold text-foreground">{APP_NAME}</span>
           </Link>
         </div>
 
@@ -84,7 +87,7 @@ export function Navbar({ isAdmin }: { isAdmin: boolean }) {
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
             <Zap className="w-4 h-4 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold">FitAI</span>
+          <span className="text-lg font-bold">{APP_NAME}</span>
         </Link>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2">
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
