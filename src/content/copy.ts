@@ -1032,37 +1032,124 @@ export const copy = {
     otherExercises: "Altri esercizi",
   },
 
-  // ── /admin/users → src/app/(app)/admin/users/page.tsx ──
+  // ── /admin/users → src/app/(app)/admin/users/page.tsx + src/components/admin/UsersTable.tsx ──
   adminUsers: {
     title: "Utenti",
     subtitle: "Gestione utenti registrati, promozioni admin, premium gratuiti.",
+    table: {
+      loading: "Caricamento…",
+      updating: "Aggiornamento…",
+      metricTotal: "Utenti totali",
+      metricPremium: "Premium",
+      metricAdmin: "Admin",
+      searchPlaceholder: "Cerca email o nome...",
+      filters: { all: "Tutti", premium: "Premium", free: "Free", admin: "Admin" },
+      badgeAdmin: "ADMIN",
+      badgePremium: "PREMIUM",
+      noName: "—",
+      meta: (date: string, sessions: number) => `iscritto ${date} · ${sessions} sessioni`,
+      revokeAdmin: "Revoca admin",
+      makeAdmin: "Rendi admin",
+      grantPremium: "Premium 30g",
+      detail: "Dettaglio",
+      actionFailed: (label: string, error: string) => `${label} fallita: ${error}`,
+      unknownError: "errore sconosciuto",
+      revokeAdminLabel: "Revoca admin",
+      promoteAdminLabel: "Promozione admin",
+      grantPremiumLabel: "Grant Premium 30g",
+      pageInfo: (page: number, total: number) => `Pagina ${page} di ${total}`,
+      prev: "← Prev",
+      next: "Next →",
+    },
   },
 
-  // ── /admin/subscriptions → src/app/(app)/admin/subscriptions/page.tsx ──
+  // ── /admin/subscriptions → src/app/(app)/admin/subscriptions/page.tsx + src/components/admin/SubscriptionsTable.tsx ──
   adminSubscriptions: {
     title: "Abbonamenti",
     subtitle: "Stato subscription Stripe e metriche aggregate.",
+    table: {
+      loading: "Caricamento…",
+      updating: "Aggiornamento…",
+      metricPremiumActive: "Premium attivi",
+      metricMrr: "MRR stimato",
+      metricChurn: "Churn 30g",
+      metricRenewals: "Rinnovi 7g",
+      filterAll: "Tutti",
+      periodUntil: (date: string) => `Periodo fino ${date}`,
+      stripeLink: "Stripe →",
+      pageInfo: (page: number, total: number) => `Pagina ${page} di ${total}`,
+      prev: "← Prev",
+      next: "Next →",
+    },
   },
 
-  // ── /admin/stats → src/app/(app)/admin/stats/page.tsx ──
+  // ── /admin/stats → src/app/(app)/admin/stats/page.tsx + src/components/admin/StatsDashboard.tsx ──
   adminStats: {
     title: "Statistiche d'uso",
     subtitle: "Aggregati globali sull'utilizzo dell'app.",
+    dashboard: {
+      loading: "Caricamento…",
+      metricTotalUsers: "Utenti totali",
+      metricMau: "MAU 30g",
+      metricDau: "DAU oggi",
+      metricWorkouts: "Workout 30g",
+      metricAnalyses: "Analisi 30g",
+      metricCheckins: "Check-in 30g",
+      newUsersChart: "Nuovi utenti per giorno (30g)",
+      workoutsChart: "Workout completati per giorno (30g)",
+      topExercisesTitle: "Top 10 esercizi (sessioni completate ultimi 30g)",
+      noData: "Nessun dato",
+      sessionsUnit: (count: number) => `${count} sess.`,
+      fitnessLevelTitle: "Distribuzione livello fitness",
+      levelNull: "—",
+      usersUnit: (count: number) => `${count} utenti`,
+    },
   },
 
-  // ── /admin/admins → src/app/(app)/admin/admins/page.tsx ──
+  // ── /admin/admins → src/app/(app)/admin/admins/page.tsx + src/components/admin/AdminsManager.tsx ──
   adminAdmins: {
     title: "Gestione admin",
     subtitle: "Chi può accedere all'area admin.",
+    manager: {
+      loading: "Caricamento…",
+      envTitle: "Email in ADMIN_EMAILS (env)",
+      envHintPre: "Queste email vengono promosse automaticamente al primo login. Modifica ",
+      envHintCode: ".env.local",
+      envHintPost: " e riavvia il server.",
+      envEmpty: "(nessuna)",
+      currentTitle: (count: number) => `Admin attuali (${count})`,
+      youBadge: "tu",
+      originAuto: "Auto-promosso",
+      originManual: "Promosso manualmente",
+      revoke: "Revoca",
+      promoteTitle: "Promuovi un utente esistente",
+      promotePlaceholder: "email utente registrato...",
+      promote: "Promuovi",
+      error: "Errore",
+    },
   },
 
-  // ── /admin/ai-usage → src/app/(app)/admin/ai-usage/page.tsx ──
+  // ── /admin/ai-usage → src/app/(app)/admin/ai-usage/page.tsx + src/components/admin/AiUsagePanel.tsx ──
   adminAiUsage: {
     title: "AI Usage",
     subtitle: "Uso e costi stimati delle feature AI.",
+    panel: {
+      loading: "Caricamento…",
+      metricCost: "Costo stimato mese",
+      metricCostHint: "basato su stime token",
+      metricFreeAtLimit: "Utenti FREE al limite",
+      metricFreeAtLimitHint: "almeno 1 quota maxata",
+      byFeatureTitle: "Uso per feature (mese corrente)",
+      byFeatureEmpty: "Nessuna chiamata questo mese",
+      byPeriodTitle: "Uso per mese (ultimi 6)",
+      byPeriodEmpty: "Nessun dato storico",
+      topUsersTitle: "Top 10 utenti per uso AI (mese corrente)",
+      topUsersEmpty: "Nessun utente attivo",
+      callsUnit: (count: number) => `${count} chiamate`,
+    },
   },
 
-  // ── /admin/exercises → src/app/(app)/admin/exercises/page.tsx ──
+  // ── /admin/exercises → src/app/(app)/admin/exercises/page.tsx + src/components/admin/AdminExercisesTable.tsx ──
   adminExercises: {
     meta: { title: "Admin · Esercizi & Video PT" },
     title: "Esercizi & Video PT",
@@ -1070,12 +1157,98 @@ export const copy = {
     metricTotal: "Esercizi totali",
     metricWithVideo: "Con video PT",
     metricActive: "Attivi",
+    table: {
+      searchPlaceholder: "Cerca per nome o slug…",
+      onlyMissing: "Solo mancanti",
+      videoCount: (present: number, total: number) => `${present}/${total} esercizi con video PT`,
+      empty: "Nessun esercizio.",
+      videoBadge: "Video PT",
+      missingBadge: "Mancante",
+      active: "Attivo",
+      inactive: "Disattivo",
+      replace: "Sostituisci",
+      upload: "Carica",
+      deactivate: "Disattiva",
+      activate: "Attiva",
+    },
+    dialog: {
+      closeLabel: "Chiudi",
+      ariaLabel: (name: string) => `Carica video PT per ${name}`,
+      title: (name: string) => `Video PT — ${name}`,
+      errorUnsupported: "Formato non supportato. Usa mp4, webm o mov.",
+      errorTooLarge: "File troppo grande (max 50MB).",
+      errorUnknown: "Errore sconosciuto",
+      uploadedTitle: "Video PT caricato",
+      removedTitle: "Video PT rimosso",
+      confirmRemove: (name: string) => `Rimuovere il video PT di ${name}?`,
+      durationWarning: (duration: string) => `Durata ${duration}s fuori range consigliato (8-30s).`,
+      removeCurrent: "Rimuovi attuale",
+      cancel: "Annulla",
+      uploading: "Carico…",
+      replace: "Sostituisci",
+      upload: "Carica",
+    },
   },
 
-  // ── /admin/activity → src/app/(app)/admin/activity/page.tsx ──
+  // ── /admin/activity → src/app/(app)/admin/activity/page.tsx + src/components/admin/ActivityLog.tsx ──
   adminActivity: {
     title: "Attività recente",
     subtitle: "Storico delle azioni admin sul sistema.",
+    log: {
+      empty: "Nessuna azione registrata.",
+      pageInfo: (page: number, total: number) => `Pagina ${page} di ${total}`,
+      prev: "← Prev",
+      next: "Next →",
+    },
+  },
+
+  // ── Sidebar admin → src/components/admin/AdminSidebar.tsx ──
+  adminSidebar: {
+    sectionLabel: "Sezione admin",
+    tabUsers: "Utenti",
+    tabSubscriptions: "Abbonamenti",
+    tabExercises: "Esercizi & PT",
+    tabStats: "Statistiche",
+    tabAdmins: "Gestione admin",
+    tabAiUsage: "AI Usage",
+    activity: "Attività recente →",
+  },
+
+  // ── Pulsante conferma azione → src/components/admin/ConfirmActionButton.tsx ──
+  confirmAction: {
+    pending: "...",
+    confirm: "Conferma",
+    cancel: "Annulla",
+  },
+
+  // ── Drawer dettaglio utente → src/components/admin/UserDetailDrawer.tsx ──
+  userDetail: {
+    loading: "Caricamento…",
+    title: "Dettaglio utente",
+    close: "✕",
+    profileTitle: "Profilo",
+    labelEmail: "Email",
+    labelName: "Nome",
+    labelLevel: "Livello",
+    labelAge: "Età",
+    labelRegistered: "Iscritto",
+    dash: "—",
+    weightUnit: "kg",
+    heightUnit: "cm",
+    badgeAdmin: "ADMIN",
+    engagementTitle: "Engagement",
+    engagementLine: (points: number, current: number, longest: number) =>
+      `Punti: ${points} · Streak attuale: ${current} · Max streak: ${longest}`,
+    billingTitle: "Billing",
+    billingStatus: (status: string) => `Status: ${status}`,
+    billingPeriod: (date: string) => `Periodo fino a: ${date}`,
+    stripeLink: "Apri in Stripe →",
+    sessionsTitle: "Ultime 10 sessioni workout",
+    sessionsEmpty: "Nessuna sessione",
+    sessionDuration: (minutes: number) => `${minutes}m`,
+    checkinsTitle: "Ultimi 5 check-in",
+    checkinsEmpty: "Nessun check-in",
+    mood: (mood: number) => `mood ${mood}/5`,
   },
 
   // ── /privacy → src/app/privacy/page.tsx ──

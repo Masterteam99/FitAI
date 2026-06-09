@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { copy } from "@/content/copy";
 
 type Item = {
   id: string;
@@ -43,7 +44,7 @@ export function ActivityLog() {
 
   return (
     <div className="space-y-2">
-      {items.length === 0 && <div className="text-sm text-muted-foreground">Nessuna azione registrata.</div>}
+      {items.length === 0 && <div className="text-sm text-muted-foreground">{copy.adminActivity.log.empty}</div>}
       {items.map((i) => (
         <Card key={i.id}>
           <CardContent className="p-3">
@@ -77,10 +78,10 @@ export function ActivityLog() {
       ))}
 
       <div className="flex justify-between items-center text-xs text-muted-foreground pt-2">
-        <span>Pagina {page} di {totalPages}</span>
+        <span>{copy.adminActivity.log.pageInfo(page, totalPages)}</span>
         <div className="flex gap-1">
-          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>← Prev</Button>
-          <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next →</Button>
+          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>{copy.adminActivity.log.prev}</Button>
+          <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>{copy.adminActivity.log.next}</Button>
         </div>
       </div>
     </div>

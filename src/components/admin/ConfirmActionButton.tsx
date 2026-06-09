@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { copy } from "@/content/copy";
 
 export function ConfirmActionButton({
   label,
@@ -39,10 +40,10 @@ export function ConfirmActionButton({
           disabled={pending || disabled}
           onClick={() => startTransition(async () => { await onConfirm(); setConfirming(false); })}
         >
-          {pending ? "..." : (confirmLabel ?? "Conferma")}
+          {pending ? copy.confirmAction.pending : (confirmLabel ?? copy.confirmAction.confirm)}
         </Button>
         <Button variant="ghost" size="sm" onClick={() => setConfirming(false)} disabled={pending}>
-          Annulla
+          {copy.confirmAction.cancel}
         </Button>
       </div>
     );

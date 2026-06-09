@@ -4,14 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Users, CreditCard, Dumbbell, BarChart3, ShieldCheck, Bot, History } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { copy } from "@/content/copy";
 
 const ADMIN_TABS = [
-  { href: "/admin/users", label: "Utenti", icon: Users },
-  { href: "/admin/subscriptions", label: "Abbonamenti", icon: CreditCard },
-  { href: "/admin/exercises", label: "Esercizi & PT", icon: Dumbbell },
-  { href: "/admin/stats", label: "Statistiche", icon: BarChart3 },
-  { href: "/admin/admins", label: "Gestione admin", icon: ShieldCheck },
-  { href: "/admin/ai-usage", label: "AI Usage", icon: Bot },
+  { href: "/admin/users", label: copy.adminSidebar.tabUsers, icon: Users },
+  { href: "/admin/subscriptions", label: copy.adminSidebar.tabSubscriptions, icon: CreditCard },
+  { href: "/admin/exercises", label: copy.adminSidebar.tabExercises, icon: Dumbbell },
+  { href: "/admin/stats", label: copy.adminSidebar.tabStats, icon: BarChart3 },
+  { href: "/admin/admins", label: copy.adminSidebar.tabAdmins, icon: ShieldCheck },
+  { href: "/admin/ai-usage", label: copy.adminSidebar.tabAiUsage, icon: Bot },
 ];
 
 export function AdminSidebar() {
@@ -19,7 +20,7 @@ export function AdminSidebar() {
   return (
     <>
       <aside className="hidden lg:flex flex-col w-[180px] bg-card border-r border-border p-3 gap-1 shrink-0">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-3 py-2">Sezione admin</div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-3 py-2">{copy.adminSidebar.sectionLabel}</div>
         {ADMIN_TABS.map((tab) => {
           const Icon = tab.icon;
           const active = pathname.startsWith(tab.href);
@@ -45,7 +46,7 @@ export function AdminSidebar() {
           )}
         >
           <History className="w-3.5 h-3.5" />
-          Attività recente →
+          {copy.adminSidebar.activity}
         </Link>
       </aside>
 

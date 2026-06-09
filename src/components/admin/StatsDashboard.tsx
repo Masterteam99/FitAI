@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AdminMetricCard } from "./AdminMetricCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { copy } from "@/content/copy";
 
 type Stats = {
   counters: {
@@ -25,22 +26,22 @@ export function StatsDashboard() {
     });
   }, []);
 
-  if (!data) return <div className="text-sm text-muted-foreground">Caricamento…</div>;
+  if (!data) return <div className="text-sm text-muted-foreground">{copy.adminStats.dashboard.loading}</div>;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <AdminMetricCard label="Utenti totali" value={data.counters.totalUsers} />
-        <AdminMetricCard label="MAU 30g" value={data.counters.mauUsers} tone="success" />
-        <AdminMetricCard label="DAU oggi" value={data.counters.dauUsers} tone="info" />
-        <AdminMetricCard label="Workout 30g" value={data.counters.workouts30} tone="warning" />
-        <AdminMetricCard label="Analisi 30g" value={data.counters.analyses30} tone="premium" />
-        <AdminMetricCard label="Check-in 30g" value={data.counters.checkins30} />
+        <AdminMetricCard label={copy.adminStats.dashboard.metricTotalUsers} value={data.counters.totalUsers} />
+        <AdminMetricCard label={copy.adminStats.dashboard.metricMau} value={data.counters.mauUsers} tone="success" />
+        <AdminMetricCard label={copy.adminStats.dashboard.metricDau} value={data.counters.dauUsers} tone="info" />
+        <AdminMetricCard label={copy.adminStats.dashboard.metricWorkouts} value={data.counters.workouts30} tone="warning" />
+        <AdminMetricCard label={copy.adminStats.dashboard.metricAnalyses} value={data.counters.analyses30} tone="premium" />
+        <AdminMetricCard label={copy.adminStats.dashboard.metricCheckins} value={data.counters.checkins30} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <Card>
-          <CardHeader><CardTitle className="text-sm">Nuovi utenti per giorno (30g)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">{copy.adminStats.dashboard.newUsersChart}</CardTitle></CardHeader>
           <CardContent className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.newUsersDaily}>
@@ -53,7 +54,7 @@ export function StatsDashboard() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="text-sm">Workout completati per giorno (30g)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">{copy.adminStats.dashboard.workoutsChart}</CardTitle></CardHeader>
           <CardContent className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.workoutsDaily}>
@@ -68,25 +69,25 @@ export function StatsDashboard() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Top 10 esercizi (sessioni completate ultimi 30g)</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">{copy.adminStats.dashboard.topExercisesTitle}</CardTitle></CardHeader>
         <CardContent className="text-xs space-y-1">
-          {data.topExercises.length === 0 && <div className="text-muted-foreground">Nessun dato</div>}
+          {data.topExercises.length === 0 && <div className="text-muted-foreground">{copy.adminStats.dashboard.noData}</div>}
           {data.topExercises.map((e) => (
             <div key={e.id} className="flex justify-between border-b border-border py-1 last:border-0">
               <span>{e.name}</span>
-              <span className="text-muted-foreground">{e.count} sess.</span>
+              <span className="text-muted-foreground">{copy.adminStats.dashboard.sessionsUnit(e.count)}</span>
             </div>
           ))}
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Distribuzione livello fitness</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">{copy.adminStats.dashboard.fitnessLevelTitle}</CardTitle></CardHeader>
         <CardContent className="text-xs space-y-1">
           {data.fitnessLevelDistribution.map((d) => (
             <div key={d.level ?? "null"} className="flex justify-between border-b border-border py-1 last:border-0">
-              <span>{d.level ?? "—"}</span>
-              <span className="text-muted-foreground">{d.count} utenti</span>
+              <span>{d.level ?? copy.adminStats.dashboard.levelNull}</span>
+              <span className="text-muted-foreground">{copy.adminStats.dashboard.usersUnit(d.count)}</span>
             </div>
           ))}
         </CardContent>

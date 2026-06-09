@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toaster";
 import { Check, X, Upload, Trash2, Video } from "lucide-react";
+import { copy } from "@/content/copy";
 
 type AdminExercise = {
   id: string;
@@ -51,7 +52,7 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
       <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <div className="flex gap-2 flex-1">
           <Input
-            placeholder="Cerca per nome o slug…"
+            placeholder={copy.adminExercises.table.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-sm"
@@ -61,18 +62,18 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
             size="sm"
             onClick={() => setOnlyMissing((v) => !v)}
           >
-            Solo mancanti
+            {copy.adminExercises.table.onlyMissing}
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
-          {presentCount}/{exercises.length} esercizi con video PT
+          {copy.adminExercises.table.videoCount(presentCount, exercises.length)}
         </p>
       </div>
 
       <Card>
         <CardContent className="p-0">
           {filtered.length === 0 ? (
-            <p className="p-6 text-sm text-center text-muted-foreground">Nessun esercizio.</p>
+            <p className="p-6 text-sm text-center text-muted-foreground">{copy.adminExercises.table.empty}</p>
           ) : (
             <ul className="divide-y">
               {filtered.map((ex) => (
@@ -86,20 +87,20 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
                   {ex.videoUrl ? (
                     <Badge variant="secondary" className="gap-1">
                       <Check className="w-3 h-3" />
-                      Video PT
+                      {copy.adminExercises.table.videoBadge}
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="gap-1 text-muted-foreground">
                       <X className="w-3 h-3" />
-                      Mancante
+                      {copy.adminExercises.table.missingBadge}
                     </Badge>
                   )}
                   <Badge variant={ex.isActive ? "default" : "outline"} className={ex.isActive ? "" : "text-muted-foreground"}>
-                    {ex.isActive ? "Attivo" : "Disattivo"}
+                    {ex.isActive ? copy.adminExercises.table.active : copy.adminExercises.table.inactive}
                   </Badge>
                   <Button size="sm" onClick={() => setDialogExercise(ex)} className="gap-1.5">
                     <Upload className="w-3.5 h-3.5" />
-                    {ex.videoUrl ? "Sostituisci" : "Carica"}
+                    {ex.videoUrl ? copy.adminExercises.table.replace : copy.adminExercises.table.upload}
                   </Button>
                   <Button
                     size="sm"
@@ -107,7 +108,7 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
                     disabled={togglingId === ex.id}
                     onClick={() => toggleActive(ex)}
                   >
-                    {ex.isActive ? "Disattiva" : "Attiva"}
+                    {ex.isActive ? copy.adminExercises.table.deactivate : copy.adminExercises.table.activate}
                   </Button>
                 </li>
               ))}
@@ -160,11 +161,11 @@ function UploadDialog({ exercise, onClose }: { exercise: AdminExercise; onClose:
     }
     const accepted = ["video/mp4", "video/webm", "video/quicktime"];
     if (!accepted.includes(f.type)) {
-      setError("Formato non supportato. Usa mp4, webm o mov.");
+      setError(copy.adminExercises.dialog.errorUnsupported);
       return;
     }
     if (f.size > 50 * 1024 * 1024) {
-      setError("File troppo grande (max 50MB).");
+      setError(copy.adminExercises.dialog.errorTooLarge);
       return;
     }
     setFile(f);
@@ -182,11 +183,11 @@ function UploadDialog({ exercise, onClose }: { exercise: AdminExercise; onClose:
         body: fd,
       });
       if (!res.ok) {
-        const j = await res.json().catch(() => ({ error: "Errore sconosciuto" }));
+        const j = await res.json().catch(() => ({ error: copy.adminExercises.dialog.errorUnknown }));
         setError(j.error ?? `HTTP ${res.status}`);
         return;
       }
-      toast({ title: "Video PT caricato", description: exercise.name, variant: "success" });
+      toast({ title: copy.adminExercises.dialog.uploadedTitle, description: exercise.name, variant: "success" });
       router.refresh();
       onClose();
     });
@@ -194,16 +195,16 @@ function UploadDialog({ exercise, onClose }: { exercise: AdminExercise; onClose:
 
   async function handleDelete() {
     if (!exercise.videoUrl) return;
-    if (!confirm(`Rimuovere il video PT di ${exercise.name}?`)) return;
+    if (!confirm(copy.adminExercises.dialog.confirmRemove(exercise.name))) return;
     setError("");
     startTransition(async () => {
       const res = await fetch(`/api/admin/exercises/${exercise.id}/pt-video`, { method: "DELETE" });
       if (!res.ok) {
-        const j = await res.json().catch(() => ({ error: "Errore sconosciuto" }));
+        const j = await res.json().catch(() => ({ error: copy.adminExercises.dialog.errorUnknown }));
         setError(j.error ?? `HTTP ${res.status}`);
         return;
       }
-      toast({ title: "Video PT rimosso", description: exercise.name });
+      toast({ title: copy.adminExercises.dialog.removedTitle, description: exercise.name });
       router.refresh();
       onClose();
     });
@@ -211,7 +212,7 @@ function UploadDialog({ exercise, onClose }: { exercise: AdminExercise; onClose:
 
   const durationWarning =
     duration !== null && (duration < 8 || duration > 30)
-      ? `Durata ${duration.toFixed(1)}s fuori range consigliato (8-30s).`
+      ? copy.adminExercises.dialog.durationWarning(duration.toFixed(1))
       : null;
 
   return (
@@ -224,18 +225,18 @@ function UploadDialog({ exercise, onClose }: { exercise: AdminExercise; onClose:
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={`Carica video PT per ${exercise.name}`}
+        aria-label={copy.adminExercises.dialog.ariaLabel(exercise.name)}
         className="relative w-full max-w-md bg-card border rounded-xl p-6 shadow-2xl space-y-4"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="font-bold">Video PT — {exercise.name}</h2>
+            <h2 className="font-bold">{copy.adminExercises.dialog.title(exercise.name)}</h2>
             <p className="text-xs text-muted-foreground">{exercise.slug}</p>
           </div>
           <button
             onClick={() => !pending && onClose()}
             disabled={pending}
-            aria-label="Chiudi"
+            aria-label={copy.adminExercises.dialog.closeLabel}
             className="text-muted-foreground hover:text-foreground"
           >
             <X className="w-5 h-5" />
@@ -286,16 +287,16 @@ function UploadDialog({ exercise, onClose }: { exercise: AdminExercise; onClose:
               className="gap-1.5"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              Rimuovi attuale
+              {copy.adminExercises.dialog.removeCurrent}
             </Button>
           )}
           <div className="flex-1" />
           <Button variant="outline" size="sm" onClick={onClose} disabled={pending}>
-            Annulla
+            {copy.adminExercises.dialog.cancel}
           </Button>
           <Button size="sm" onClick={handleUpload} disabled={!file || pending} className="gap-1.5">
             <Video className="w-3.5 h-3.5" />
-            {pending ? "Carico…" : exercise.videoUrl ? "Sostituisci" : "Carica"}
+            {pending ? copy.adminExercises.dialog.uploading : exercise.videoUrl ? copy.adminExercises.dialog.replace : copy.adminExercises.dialog.upload}
           </Button>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "next-auth/react";
 import { ConfirmActionButton } from "./ConfirmActionButton";
+import { copy } from "@/content/copy";
 
 type Data = {
   envEmails: string[];
@@ -31,34 +32,34 @@ export function AdminsManager() {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: promoteEmail }),
     });
     if (res.ok) { setPromoteEmail(""); fetchData(); router.refresh(); }
-    else { const d = await res.json().catch(() => ({})); setError(d.error ?? "Errore"); }
+    else { const d = await res.json().catch(() => ({})); setError(d.error ?? copy.adminAdmins.manager.error); }
   };
 
   const revoke = async (id: string) => {
     const res = await fetch(`/api/admin/users/${id}/admin`, { method: "DELETE" });
     if (res.ok) { fetchData(); router.refresh(); }
-    else { const d = await res.json().catch(() => ({})); setError(d.error ?? "Errore"); }
+    else { const d = await res.json().catch(() => ({})); setError(d.error ?? copy.adminAdmins.manager.error); }
   };
 
-  if (!data) return <div className="text-sm text-muted-foreground">Caricamento…</div>;
+  if (!data) return <div className="text-sm text-muted-foreground">{copy.adminAdmins.manager.loading}</div>;
 
   const selfEmail = (session?.user?.email ?? "").toLowerCase();
 
   return (
     <div className="space-y-4">
       <Card>
-        <CardHeader><CardTitle className="text-sm">Email in ADMIN_EMAILS (env)</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">{copy.adminAdmins.manager.envTitle}</CardTitle></CardHeader>
         <CardContent className="text-xs text-muted-foreground">
-          Queste email vengono promosse automaticamente al primo login. Modifica <code>.env.local</code> e riavvia il server.
+          {copy.adminAdmins.manager.envHintPre}<code>{copy.adminAdmins.manager.envHintCode}</code>{copy.adminAdmins.manager.envHintPost}
           <div className="mt-2 space-y-1">
-            {data.envEmails.length === 0 && <div>(nessuna)</div>}
+            {data.envEmails.length === 0 && <div>{copy.adminAdmins.manager.envEmpty}</div>}
             {data.envEmails.map((e) => <div key={e} className="font-mono">{e}</div>)}
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Admin attuali ({data.admins.length})</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">{copy.adminAdmins.manager.currentTitle(data.admins.length)}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           {data.admins.map((a) => {
             const isSelf = a.email.toLowerCase() === selfEmail;
@@ -67,14 +68,14 @@ export function AdminsManager() {
                 <div className="text-xs">
                   <div className="font-semibold flex items-center gap-2">
                     {a.email}
-                    {isSelf && <Badge variant="outline">tu</Badge>}
+                    {isSelf && <Badge variant="outline">{copy.adminAdmins.manager.youBadge}</Badge>}
                   </div>
                   <div className="text-muted-foreground">
-                    {a.origin === "auto" ? "Auto-promosso" : "Promosso manualmente"} · {new Date(a.createdAt).toLocaleDateString("it-IT")}
+                    {a.origin === "auto" ? copy.adminAdmins.manager.originAuto : copy.adminAdmins.manager.originManual} · {new Date(a.createdAt).toLocaleDateString("it-IT")}
                   </div>
                 </div>
                 <ConfirmActionButton
-                  label="Revoca"
+                  label={copy.adminAdmins.manager.revoke}
                   tone="danger"
                   disabled={isSelf}
                   onConfirm={() => revoke(a.id)}
@@ -86,16 +87,16 @@ export function AdminsManager() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Promuovi un utente esistente</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">{copy.adminAdmins.manager.promoteTitle}</CardTitle></CardHeader>
         <CardContent>
           <div className="flex gap-2">
             <Input
               value={promoteEmail}
               onChange={(e) => setPromoteEmail(e.target.value)}
-              placeholder="email utente registrato..."
+              placeholder={copy.adminAdmins.manager.promotePlaceholder}
               className="flex-1"
             />
-            <Button onClick={promote} disabled={!promoteEmail.trim()}>Promuovi</Button>
+            <Button onClick={promote} disabled={!promoteEmail.trim()}>{copy.adminAdmins.manager.promote}</Button>
           </div>
           {error && <div className="text-xs text-red-600 mt-2">{error}</div>}
         </CardContent>

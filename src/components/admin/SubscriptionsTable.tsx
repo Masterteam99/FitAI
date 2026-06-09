@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AdminMetricCard } from "./AdminMetricCard";
+import { copy } from "@/content/copy";
 
 type Row = {
   id: string;
@@ -35,15 +36,15 @@ export function SubscriptionsTable() {
       .finally(() => setLoading(false));
   }, [page, status]);
 
-  if (!data) return <div className="text-sm text-muted-foreground">Caricamento…</div>;
+  if (!data) return <div className="text-sm text-muted-foreground">{copy.adminSubscriptions.table.loading}</div>;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <AdminMetricCard label="Premium attivi" value={data.metrics.premiumActive} tone="success" />
-        <AdminMetricCard label="MRR stimato" value={`€ ${data.metrics.mrrEur}`} tone="premium" />
-        <AdminMetricCard label="Churn 30g" value={`${data.metrics.churn30dPct}%`} tone="danger" />
-        <AdminMetricCard label="Rinnovi 7g" value={data.metrics.renewalsNext7d} tone="info" />
+        <AdminMetricCard label={copy.adminSubscriptions.table.metricPremiumActive} value={data.metrics.premiumActive} tone="success" />
+        <AdminMetricCard label={copy.adminSubscriptions.table.metricMrr} value={`€ ${data.metrics.mrrEur}`} tone="premium" />
+        <AdminMetricCard label={copy.adminSubscriptions.table.metricChurn} value={`${data.metrics.churn30dPct}%`} tone="danger" />
+        <AdminMetricCard label={copy.adminSubscriptions.table.metricRenewals} value={data.metrics.renewalsNext7d} tone="info" />
       </div>
 
       <div className="flex gap-1 flex-wrap">
@@ -54,12 +55,12 @@ export function SubscriptionsTable() {
             variant={status === s ? "default" : "outline"}
             onClick={() => { setStatus(s); setPage(1); }}
           >
-            {s === "all" ? "Tutti" : s.replace("_", " ")}
+            {s === "all" ? copy.adminSubscriptions.table.filterAll : s.replace("_", " ")}
           </Button>
         ))}
       </div>
 
-      {loading && <div className="text-sm text-muted-foreground">Aggiornamento…</div>}
+      {loading && <div className="text-sm text-muted-foreground">{copy.adminSubscriptions.table.updating}</div>}
 
       <div className="space-y-2">
         {data.list.map((s) => (
@@ -68,14 +69,14 @@ export function SubscriptionsTable() {
               <div className="min-w-0 flex-1">
                 <div className="font-semibold text-sm truncate">{s.email}</div>
                 <div className="text-xs text-muted-foreground">
-                  {s.subscriptionCurrentPeriodEnd && `Periodo fino ${new Date(s.subscriptionCurrentPeriodEnd).toLocaleDateString("it-IT")}`}
+                  {s.subscriptionCurrentPeriodEnd && copy.adminSubscriptions.table.periodUntil(new Date(s.subscriptionCurrentPeriodEnd).toLocaleDateString("it-IT"))}
                   {s.stripeCustomerId && (
                     <a
                       className="ml-2 text-cyan-600 underline"
                       href={`https://dashboard.stripe.com/customers/${s.stripeCustomerId}`}
                       target="_blank" rel="noopener noreferrer"
                     >
-                      Stripe →
+                      {copy.adminSubscriptions.table.stripeLink}
                     </a>
                   )}
                 </div>
@@ -90,10 +91,10 @@ export function SubscriptionsTable() {
       </div>
 
       <div className="flex justify-between items-center text-xs text-muted-foreground">
-        <span>Pagina {data.page} di {data.totalPages}</span>
+        <span>{copy.adminSubscriptions.table.pageInfo(data.page, data.totalPages)}</span>
         <div className="flex gap-1">
-          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>← Prev</Button>
-          <Button size="sm" variant="outline" disabled={page >= data.totalPages} onClick={() => setPage(page + 1)}>Next →</Button>
+          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>{copy.adminSubscriptions.table.prev}</Button>
+          <Button size="sm" variant="outline" disabled={page >= data.totalPages} onClick={() => setPage(page + 1)}>{copy.adminSubscriptions.table.next}</Button>
         </div>
       </div>
     </div>

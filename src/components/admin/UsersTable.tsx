@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ConfirmActionButton } from "./ConfirmActionButton";
 import { AdminMetricCard } from "./AdminMetricCard";
 import { UserDetailDrawer } from "./UserDetailDrawer";
+import { copy } from "@/content/copy";
 
 type UserRow = {
   id: string;
@@ -60,18 +61,18 @@ export function UsersTable() {
       startTransition(() => { fetchData(); router.refresh(); });
     } else {
       const data = await res.json().catch(() => ({}));
-      alert(`${successLabel} fallita: ${data.error ?? "errore sconosciuto"}`);
+      alert(copy.adminUsers.table.actionFailed(successLabel, data.error ?? copy.adminUsers.table.unknownError));
     }
   };
 
-  if (!data) return <div className="text-sm text-muted-foreground">Caricamento…</div>;
+  if (!data) return <div className="text-sm text-muted-foreground">{copy.adminUsers.table.loading}</div>;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3">
-        <AdminMetricCard label="Utenti totali" value={data.counters.total} />
-        <AdminMetricCard label="Premium" value={data.counters.premium} tone="premium" />
-        <AdminMetricCard label="Admin" value={data.counters.admin} tone="success" />
+        <AdminMetricCard label={copy.adminUsers.table.metricTotal} value={data.counters.total} />
+        <AdminMetricCard label={copy.adminUsers.table.metricPremium} value={data.counters.premium} tone="premium" />
+        <AdminMetricCard label={copy.adminUsers.table.metricAdmin} value={data.counters.admin} tone="success" />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -79,7 +80,7 @@ export function UsersTable() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Cerca email o nome..."
+            placeholder={copy.adminUsers.table.searchPlaceholder}
             className="max-w-md"
           />
         </form>
@@ -91,13 +92,13 @@ export function UsersTable() {
               variant={filter === f ? "default" : "outline"}
               onClick={() => { setFilter(f); setPage(1); }}
             >
-              {f === "all" ? "Tutti" : f === "premium" ? "Premium" : f === "free" ? "Free" : "Admin"}
+              {copy.adminUsers.table.filters[f]}
             </Button>
           ))}
         </div>
       </div>
 
-      {loading && <div className="text-sm text-muted-foreground">Aggiornamento…</div>}
+      {loading && <div className="text-sm text-muted-foreground">{copy.adminUsers.table.updating}</div>}
 
       <div className="space-y-2">
         {data.users.map((u) => (
@@ -105,39 +106,39 @@ export function UsersTable() {
             <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-sm flex items-center gap-2">
-                  <span className="truncate">{u.name ?? "—"}</span>
-                  {u.isAdmin && <Badge className="bg-green-600 text-white">ADMIN</Badge>}
+                  <span className="truncate">{u.name ?? copy.adminUsers.table.noName}</span>
+                  {u.isAdmin && <Badge className="bg-green-600 text-white">{copy.adminUsers.table.badgeAdmin}</Badge>}
                   {(u.subscriptionStatus === "ACTIVE" || u.subscriptionStatus === "TRIALING") && (
-                    <Badge className="bg-amber-500 text-white">PREMIUM</Badge>
+                    <Badge className="bg-amber-500 text-white">{copy.adminUsers.table.badgePremium}</Badge>
                   )}
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
-                  {u.email} · iscritto {new Date(u.createdAt).toLocaleDateString("it-IT")} · {u.sessionsCount} sessioni
+                  {u.email} · {copy.adminUsers.table.meta(new Date(u.createdAt).toLocaleDateString("it-IT"), u.sessionsCount)}
                 </div>
               </div>
               <div className="flex gap-2 flex-wrap shrink-0">
                 {u.isAdmin ? (
                   <ConfirmActionButton
-                    label="Revoca admin"
+                    label={copy.adminUsers.table.revokeAdmin}
                     tone="danger"
-                    onConfirm={() => handleAction(`/api/admin/users/${u.id}/admin`, "DELETE", "Revoca admin")}
+                    onConfirm={() => handleAction(`/api/admin/users/${u.id}/admin`, "DELETE", copy.adminUsers.table.revokeAdminLabel)}
                   />
                 ) : (
                   <ConfirmActionButton
-                    label="Rendi admin"
+                    label={copy.adminUsers.table.makeAdmin}
                     tone="success"
-                    onConfirm={() => handleAction(`/api/admin/users/${u.id}/admin`, "POST", "Promozione admin")}
+                    onConfirm={() => handleAction(`/api/admin/users/${u.id}/admin`, "POST", copy.adminUsers.table.promoteAdminLabel)}
                   />
                 )}
                 {u.subscriptionStatus === "FREE" && (
                   <ConfirmActionButton
-                    label="Premium 30g"
+                    label={copy.adminUsers.table.grantPremium}
                     tone="warning"
-                    onConfirm={() => handleAction(`/api/admin/users/${u.id}/grant-premium`, "POST", "Grant Premium 30g")}
+                    onConfirm={() => handleAction(`/api/admin/users/${u.id}/grant-premium`, "POST", copy.adminUsers.table.grantPremiumLabel)}
                   />
                 )}
                 <Button size="sm" variant="outline" onClick={() => setDrawerUserId(u.id)}>
-                  Dettaglio
+                  {copy.adminUsers.table.detail}
                 </Button>
               </div>
             </CardContent>
@@ -148,10 +149,10 @@ export function UsersTable() {
       {drawerUserId && <UserDetailDrawer userId={drawerUserId} onClose={() => setDrawerUserId(null)} />}
 
       <div className="flex justify-between items-center text-xs text-muted-foreground">
-        <span>Pagina {data.page} di {data.totalPages}</span>
+        <span>{copy.adminUsers.table.pageInfo(data.page, data.totalPages)}</span>
         <div className="flex gap-1">
-          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>← Prev</Button>
-          <Button size="sm" variant="outline" disabled={page >= data.totalPages} onClick={() => setPage(page + 1)}>Next →</Button>
+          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>{copy.adminUsers.table.prev}</Button>
+          <Button size="sm" variant="outline" disabled={page >= data.totalPages} onClick={() => setPage(page + 1)}>{copy.adminUsers.table.next}</Button>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { copy } from "@/content/copy";
 
 type Detail = {
   user: {
@@ -54,22 +55,22 @@ export function UserDetailDrawer({ userId, onClose }: { userId: string; onClose:
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Dettaglio utente</h2>
-          <Button variant="ghost" size="sm" onClick={onClose}>✕</Button>
+          <h2 className="text-lg font-semibold">{copy.userDetail.title}</h2>
+          <Button variant="ghost" size="sm" onClick={onClose}>{copy.userDetail.close}</Button>
         </div>
 
-        {loading && <div className="text-sm text-muted-foreground">Caricamento…</div>}
+        {loading && <div className="text-sm text-muted-foreground">{copy.userDetail.loading}</div>}
         {data && (
           <div className="space-y-4">
             <Card>
-              <CardHeader><CardTitle className="text-sm">Profilo</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm">{copy.userDetail.profileTitle}</CardTitle></CardHeader>
               <CardContent className="text-xs space-y-1">
-                <div><strong>Email</strong>: {data.user.email}</div>
-                <div><strong>Nome</strong>: {data.user.name ?? "—"}</div>
-                <div><strong>Livello</strong>: {data.user.fitnessLevel ?? "—"} · Età {data.user.age ?? "—"} · {data.user.weightKg ?? "—"}kg / {data.user.heightCm ?? "—"}cm</div>
-                <div><strong>Iscritto</strong>: {new Date(data.user.createdAt).toLocaleString("it-IT")}</div>
+                <div><strong>{copy.userDetail.labelEmail}</strong>: {data.user.email}</div>
+                <div><strong>{copy.userDetail.labelName}</strong>: {data.user.name ?? copy.userDetail.dash}</div>
+                <div><strong>{copy.userDetail.labelLevel}</strong>: {data.user.fitnessLevel ?? copy.userDetail.dash} · {copy.userDetail.labelAge} {data.user.age ?? copy.userDetail.dash} · {data.user.weightKg ?? copy.userDetail.dash}{copy.userDetail.weightUnit} / {data.user.heightCm ?? copy.userDetail.dash}{copy.userDetail.heightUnit}</div>
+                <div><strong>{copy.userDetail.labelRegistered}</strong>: {new Date(data.user.createdAt).toLocaleString("it-IT")}</div>
                 <div className="flex gap-2 mt-2">
-                  {data.user.isAdmin && <Badge className="bg-green-600 text-white">ADMIN</Badge>}
+                  {data.user.isAdmin && <Badge className="bg-green-600 text-white">{copy.userDetail.badgeAdmin}</Badge>}
                   <Badge variant="outline">{data.user.subscriptionStatus}</Badge>
                   {data.user.subscriptionPlan && <Badge variant="outline">{data.user.subscriptionPlan}</Badge>}
                 </div>
@@ -77,18 +78,18 @@ export function UserDetailDrawer({ userId, onClose }: { userId: string; onClose:
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="text-sm">Engagement</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm">{copy.userDetail.engagementTitle}</CardTitle></CardHeader>
               <CardContent className="text-xs space-y-1">
-                <div>Punti: {data.user.totalPoints} · Streak attuale: {data.user.currentStreak} · Max streak: {data.user.longestStreak}</div>
+                <div>{copy.userDetail.engagementLine(data.user.totalPoints, data.user.currentStreak, data.user.longestStreak)}</div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="text-sm">Billing</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm">{copy.userDetail.billingTitle}</CardTitle></CardHeader>
               <CardContent className="text-xs space-y-1">
-                <div>Status: {data.user.subscriptionStatus}</div>
+                <div>{copy.userDetail.billingStatus(data.user.subscriptionStatus)}</div>
                 {data.user.subscriptionCurrentPeriodEnd && (
-                  <div>Periodo fino a: {new Date(data.user.subscriptionCurrentPeriodEnd).toLocaleDateString("it-IT")}</div>
+                  <div>{copy.userDetail.billingPeriod(new Date(data.user.subscriptionCurrentPeriodEnd).toLocaleDateString("it-IT"))}</div>
                 )}
                 {data.user.stripeCustomerId && (
                   <a
@@ -97,21 +98,21 @@ export function UserDetailDrawer({ userId, onClose }: { userId: string; onClose:
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Apri in Stripe →
+                    {copy.userDetail.stripeLink}
                   </a>
                 )}
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="text-sm">Ultime 10 sessioni workout</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm">{copy.userDetail.sessionsTitle}</CardTitle></CardHeader>
               <CardContent className="text-xs space-y-1">
-                {data.recentSessions.length === 0 && <div className="text-muted-foreground">Nessuna sessione</div>}
+                {data.recentSessions.length === 0 && <div className="text-muted-foreground">{copy.userDetail.sessionsEmpty}</div>}
                 {data.recentSessions.map((s) => (
                   <div key={s.id} className="flex justify-between border-b border-border py-1 last:border-0">
                     <span>{new Date(s.startedAt).toLocaleDateString("it-IT")}</span>
                     <span className="text-muted-foreground">
-                      {s.status} · {s.totalSeconds ? Math.round(s.totalSeconds / 60) + "m" : "—"}
+                      {s.status} · {s.totalSeconds ? copy.userDetail.sessionDuration(Math.round(s.totalSeconds / 60)) : copy.userDetail.dash}
                     </span>
                   </div>
                 ))}
@@ -119,13 +120,13 @@ export function UserDetailDrawer({ userId, onClose }: { userId: string; onClose:
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="text-sm">Ultimi 5 check-in</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm">{copy.userDetail.checkinsTitle}</CardTitle></CardHeader>
               <CardContent className="text-xs space-y-1">
-                {data.recentCheckins.length === 0 && <div className="text-muted-foreground">Nessun check-in</div>}
+                {data.recentCheckins.length === 0 && <div className="text-muted-foreground">{copy.userDetail.checkinsEmpty}</div>}
                 {data.recentCheckins.map((c) => (
                   <div key={c.id} className="flex justify-between border-b border-border py-1 last:border-0">
                     <span>{new Date(c.date).toLocaleDateString("it-IT")}</span>
-                    <span className="text-muted-foreground">mood {c.mood}/5</span>
+                    <span className="text-muted-foreground">{copy.userDetail.mood(c.mood)}</span>
                   </div>
                 ))}
               </CardContent>
