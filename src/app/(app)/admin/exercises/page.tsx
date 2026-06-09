@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { AdminExercisesTable } from "@/components/admin/AdminExercisesTable";
 import { AdminMetricCard } from "@/components/admin/AdminMetricCard";
+import { copy } from "@/content/copy";
 
-export const metadata: Metadata = { title: "Admin · Esercizi & Video PT" };
+export const metadata: Metadata = { title: copy.adminExercises.meta.title };
 export const dynamic = "force-dynamic";
 
 export default async function AdminExercisesPage() {
@@ -20,16 +21,16 @@ export default async function AdminExercisesPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Esercizi &amp; Video PT</h1>
+        <h1 className="text-2xl font-bold">{copy.adminExercises.title}</h1>
         <p className="text-sm text-muted-foreground">
-          Carica i video del Personal Trainer usati dall&apos;Analisi L3 per il confronto frame-by-frame.
+          {copy.adminExercises.subtitle}
         </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <AdminMetricCard label="Esercizi totali" value={total} />
-        <AdminMetricCard label="Con video PT" value={withVideo} tone="success" />
-        <AdminMetricCard label="Attivi" value={activeCount} tone="info" />
+        <AdminMetricCard label={copy.adminExercises.metricTotal} value={total} />
+        <AdminMetricCard label={copy.adminExercises.metricWithVideo} value={withVideo} tone="success" />
+        <AdminMetricCard label={copy.adminExercises.metricActive} value={activeCount} tone="info" />
       </div>
 
       <AdminExercisesTable exercises={exercises} />
