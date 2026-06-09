@@ -8,16 +8,13 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
+import { copy } from "@/content/copy";
 
-const GENDERS = [
-  { value: "M", label: "Uomo" },
-  { value: "F", label: "Donna" },
-  { value: "X", label: "Altro" },
-];
+const GENDERS = copy.onboardingStep3.genders;
 
 const DAYS_OPTIONS = [2, 3, 4, 5, 6];
-const DIET_OPTIONS = ["Onnivora", "Vegetariana", "Vegana", "Chetogenica", "Mediterranea", "Altro"];
-const SPORT_OPTIONS = ["Nessuno", "Calcio", "Pallavolo", "Basket", "Nuoto", "Corsa", "Ciclismo", "Palestra", "Arti marziali", "Altro"];
+const DIET_OPTIONS = copy.onboardingStep3.dietOptions;
+const SPORT_OPTIONS = copy.onboardingStep3.sportOptions;
 
 export default function OnboardingStep3() {
   const router = useRouter();
@@ -26,7 +23,7 @@ export default function OnboardingStep3() {
   const [heightCm, setHeightCm] = useState("");
   const [gender, setGender] = useState("");
   const [days, setDays] = useState(3);
-  const [dietType, setDietType] = useState("Onnivora");
+  const [dietType, setDietType] = useState<string>(DIET_OPTIONS[0]);
   const [pastInjuries, setPastInjuries] = useState("");
   const [pastSports, setPastSports] = useState<string[]>([]);
 
@@ -71,12 +68,12 @@ export default function OnboardingStep3() {
   }
 
   function toggleSport(s: string) {
-    if (s === "Nessuno") {
-      setPastSports(["Nessuno"]);
+    if (s === SPORT_OPTIONS[0]) {
+      setPastSports([SPORT_OPTIONS[0]]);
       return;
     }
     setPastSports(prev => {
-      const withoutNessuno = prev.filter(x => x !== "Nessuno");
+      const withoutNessuno = prev.filter(x => x !== SPORT_OPTIONS[0]);
       if (withoutNessuno.includes(s)) {
         return withoutNessuno.filter(x => x !== s);
       }
@@ -91,30 +88,30 @@ export default function OnboardingStep3() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <User className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">I tuoi dati</h1>
-          <p className="text-muted-foreground text-sm">Step 3 di 4 — dati fisici e disponibilità</p>
+          <h1 className="text-2xl font-bold">{copy.onboardingStep3.title}</h1>
+          <p className="text-muted-foreground text-sm">{copy.onboardingStep3.stepLabel}</p>
         </div>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Dati fisici</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{copy.onboardingStep3.physicalDataTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">Età</label>
-                <Input type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} placeholder="30" />
+                <label className="text-xs text-muted-foreground">{copy.onboardingStep3.ageLabel}</label>
+                <Input type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} placeholder={copy.onboardingStep3.agePlaceholder} />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">Peso (kg)</label>
-                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="75" />
+                <label className="text-xs text-muted-foreground">{copy.onboardingStep3.weightLabel}</label>
+                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder={copy.onboardingStep3.weightPlaceholder} />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">Altezza (cm)</label>
-                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="175" />
+                <label className="text-xs text-muted-foreground">{copy.onboardingStep3.heightLabel}</label>
+                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder={copy.onboardingStep3.heightPlaceholder} />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">Genere</label>
+              <label className="text-xs text-muted-foreground">{copy.onboardingStep3.genderLabel}</label>
               <div className="flex gap-2">
                 {GENDERS.map((g) => (
                   <button
@@ -133,7 +130,7 @@ export default function OnboardingStep3() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Giorni di allenamento a settimana</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{copy.onboardingStep3.daysTitle}</CardTitle></CardHeader>
           <CardContent className="flex gap-2 flex-wrap">
             {DAYS_OPTIONS.map((d) => (
               <button
@@ -150,10 +147,10 @@ export default function OnboardingStep3() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Stile di Vita e Storico</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{copy.onboardingStep3.lifestyleTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Dieta attuale</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{copy.onboardingStep3.dietLabel}</label>
               <select 
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={dietType}
@@ -164,17 +161,17 @@ export default function OnboardingStep3() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Problematiche fisiche</label>
-              <textarea 
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{copy.onboardingStep3.injuriesLabel}</label>
+              <textarea
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={pastInjuries}
                 onChange={(e) => setPastInjuries(e.target.value)}
-                placeholder="Es. dolore lombare, problemi al ginocchio sinistro, ecc."
+                placeholder={copy.onboardingStep3.injuriesPlaceholder}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sport Pregresso</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{copy.onboardingStep3.sportsLabel}</label>
               <div className="flex flex-wrap gap-2">
                 {SPORT_OPTIONS.map(s => (
                   <button
@@ -194,10 +191,10 @@ export default function OnboardingStep3() {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => router.push("/onboarding/step2")} className="gap-2">
-            <ChevronLeft className="w-4 h-4" /> Indietro
+            <ChevronLeft className="w-4 h-4" /> {copy.onboardingStep3.back}
           </Button>
           <Button size="lg" onClick={next} disabled={!valid} className="flex-1 gap-2">
-            Continua <ChevronRight className="w-5 h-5" />
+            {copy.onboardingStep3.continue} <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 

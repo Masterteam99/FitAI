@@ -7,19 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Dumbbell } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
+import { copy } from "@/content/copy";
 
-const EQUIPMENT_OPTIONS = [
-  { value: "NONE", label: "Solo peso corporeo" },
-  { value: "DUMBBELLS", label: "Manubri" },
-  { value: "BARBELL", label: "Bilanciere" },
-  { value: "MACHINE", label: "Macchinari palestra" },
-  { value: "CABLES", label: "Cavi/Pulegge" },
-  { value: "RESISTANCE_BANDS", label: "Elastici" },
-  { value: "PULL_UP_BAR", label: "Sbarra trazioni" },
-  { value: "BENCH", label: "Panca" },
-  { value: "KETTLEBELL", label: "Kettlebell" },
-  { value: "FULL_GYM", label: "Palestra completa" },
-];
+const EQUIPMENT_OPTIONS = copy.onboardingStep2.equipment;
 
 export default function OnboardingStep2() {
   const router = useRouter();
@@ -51,12 +41,12 @@ export default function OnboardingStep2() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <Dumbbell className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Attrezzatura disponibile</h1>
-          <p className="text-muted-foreground text-sm">Step 2 di 4 — cosa hai a disposizione</p>
+          <h1 className="text-2xl font-bold">{copy.onboardingStep2.title}</h1>
+          <p className="text-muted-foreground text-sm">{copy.onboardingStep2.stepLabel}</p>
         </div>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Seleziona tutto quello che puoi usare</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{copy.onboardingStep2.cardTitle}</CardTitle></CardHeader>
           <CardContent className="flex gap-2 flex-wrap">
             {EQUIPMENT_OPTIONS.map((e) => (
               <button
@@ -74,10 +64,10 @@ export default function OnboardingStep2() {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => router.push("/onboarding/step1")} className="gap-2">
-            <ChevronLeft className="w-4 h-4" /> Indietro
+            <ChevronLeft className="w-4 h-4" /> {copy.onboardingStep2.back}
           </Button>
           <Button size="lg" onClick={next} disabled={equipment.length === 0} className="flex-1 gap-2">
-            Continua <ChevronRight className="w-5 h-5" />
+            {copy.onboardingStep2.continue} <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 

@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Brain, ChevronLeft, AlertTriangle, Loader2, Sparkles } from "lucide-react";
 import { readOnboarding, clearOnboarding, type OnboardingState } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
+import { copy } from "@/content/copy";
 
 // Claude può rispondere con JSON puro o dentro un fence ```json: estrazione robusta.
 function extractPlanJson(text: string): unknown {
@@ -14,25 +15,13 @@ function extractPlanJson(text: string): unknown {
   const candidate = fenced ? fenced[1] : text;
   const start = candidate.indexOf("{");
   const end = candidate.lastIndexOf("}");
-  if (start === -1 || end <= start) throw new Error("Formato piano non riconosciuto");
+  if (start === -1 || end <= start) throw new Error(copy.onboardingStep4.errors.planFormat);
   return JSON.parse(candidate.slice(start, end + 1));
 }
 
-const GOAL_LABELS: Record<string, string> = {
-  LOSE_WEIGHT: "Perdita di peso",
-  BUILD_MUSCLE: "Aumento massa muscolare",
-  ATHLETIC_PERFORMANCE: "Performance atletica",
-  ENDURANCE: "Resistenza cardiovascolare",
-  FLEXIBILITY: "Flessibilità e mobilità",
-  GENERAL_FITNESS: "Forma fisica generale",
-};
+const GOAL_LABELS: Record<string, string> = copy.onboardingStep4.goalLabels;
 
-const LEVEL_LABELS: Record<string, string> = {
-  BEGINNER: "Principiante",
-  INTERMEDIATE: "Intermedio",
-  ADVANCED: "Avanzato",
-  ATHLETE: "Atleta",
-};
+const LEVEL_LABELS: Record<string, string> = copy.onboardingStep4.levelLabels;
 
 export default function OnboardingStep4() {
   const router = useRouter();
@@ -77,7 +66,7 @@ export default function OnboardingStep4() {
           pastSports: state.pastSports,
         }),
       });
-      if (!profileRes.ok) throw new Error("Errore salvataggio profilo");
+      if (!profileRes.ok) throw new Error(copy.onboardingStep4.errors.profileSave);
 
       // 2. Generate starter plan via streaming
       const planRes = await fetch("/api/ai/generate-plan", {
@@ -100,14 +89,14 @@ export default function OnboardingStep4() {
         const errBody = await planRes.json().catch(() => ({} as { error?: string }));
         if (planRes.status === 402) {
           setQuotaExceeded(true);
-          setError(errBody.error || "Hai esaurito le generazioni AI di questo mese. Puoi comunque iniziare e creare un piano più tardi.");
+          setError(errBody.error || copy.onboardingStep4.errors.quotaExceeded);
           setBusy(false);
           return;
         }
         const detail = errBody.error ? ` — ${errBody.error}` : "";
-        throw new Error(`Errore generazione piano (HTTP ${planRes.status}${detail})`);
+        throw new Error(copy.onboardingStep4.errors.planGeneration(planRes.status, detail));
       }
-      if (!planRes.body) throw new Error("Errore generazione piano: stream vuoto");
+      if (!planRes.body) throw new Error(copy.onboardingStep4.errors.planStreamEmpty);
 
       const reader = planRes.body.getReader();
       const decoder = new TextDecoder();
@@ -129,7 +118,7 @@ export default function OnboardingStep4() {
 
       // 3. Translate slugs → ids and save
       const exRes = await fetch("/api/exercises?limit=100");
-      if (!exRes.ok) throw new Error("Errore caricamento esercizi");
+      if (!exRes.ok) throw new Error(copy.onboardingStep4.errors.exercisesLoad);
       const exerciseList: Array<{ id: string; slug: string }> = await exRes.json();
       const slugToId = new Map(exerciseList.map((e) => [e.slug, e.id]));
 
@@ -166,12 +155,12 @@ export default function OnboardingStep4() {
           days,
         }),
       });
-      if (!saveRes.ok) throw new Error("Errore salvataggio piano");
+      if (!saveRes.ok) throw new Error(copy.onboardingStep4.errors.planSave);
 
       clearOnboarding();
       router.push("/dashboard");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Errore sconosciuto");
+      setError(e instanceof Error ? e.message : copy.onboardingStep4.errors.unknown);
       setBusy(false);
     }
   }
@@ -185,8 +174,8 @@ export default function OnboardingStep4() {
           <div className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center mx-auto">
             <Brain className="w-8 h-8 text-primary animate-pulse" />
           </div>
-          <h2 className="text-xl font-bold">Sto preparando il tuo piano…</h2>
-          <p className="text-muted-foreground text-sm">Claude sta creando un piano personalizzato per te</p>
+          <h2 className="text-xl font-bold">{copy.onboardingStep4.busyTitle}</h2>
+          <p className="text-muted-foreground text-sm">{copy.onboardingStep4.busySubtitle}</p>
           {streamText && (
             <Card>
               <CardContent className="p-4">
@@ -212,22 +201,22 @@ export default function OnboardingStep4() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <Sparkles className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Tutto pronto</h1>
-          <p className="text-muted-foreground text-sm">Step 4 di 4 — riepilogo e generazione piano AI</p>
+          <h1 className="text-2xl font-bold">{copy.onboardingStep4.title}</h1>
+          <p className="text-muted-foreground text-sm">{copy.onboardingStep4.stepLabel}</p>
         </div>
 
         <Card>
           <CardContent className="p-5 space-y-3 text-sm">
-            <Row label="Obiettivo" value={GOAL_LABELS[state.primaryGoal!] ?? state.primaryGoal!} />
-            <Row label="Livello" value={LEVEL_LABELS[state.fitnessLevel!] ?? state.fitnessLevel!} />
-            <Row label="Attrezzatura" value={state.availableEquipment!.join(", ")} />
-            <Row label="Età" value={`${state.age} anni`} />
-            <Row label="Peso" value={`${state.weightKg} kg`} />
-            <Row label="Altezza" value={`${state.heightCm} cm`} />
-            <Row label="Allenamenti / settimana" value={String(state.weeklyWorkoutDays)} />
-            {state.dietType && <Row label="Dieta" value={state.dietType} />}
-            {state.pastSports && state.pastSports.length > 0 && <Row label="Sport" value={state.pastSports.join(", ")} />}
-            {state.pastInjuries && state.pastInjuries.length > 0 && <Row label="Problematiche" value={state.pastInjuries.join(", ")} />}
+            <Row label={copy.onboardingStep4.rows.goal} value={GOAL_LABELS[state.primaryGoal!] ?? state.primaryGoal!} />
+            <Row label={copy.onboardingStep4.rows.level} value={LEVEL_LABELS[state.fitnessLevel!] ?? state.fitnessLevel!} />
+            <Row label={copy.onboardingStep4.rows.equipment} value={state.availableEquipment!.join(", ")} />
+            <Row label={copy.onboardingStep4.rows.age} value={`${state.age} ${copy.onboardingStep4.rows.ageSuffix}`} />
+            <Row label={copy.onboardingStep4.rows.weight} value={`${state.weightKg} ${copy.onboardingStep4.rows.weightSuffix}`} />
+            <Row label={copy.onboardingStep4.rows.height} value={`${state.heightCm} ${copy.onboardingStep4.rows.heightSuffix}`} />
+            <Row label={copy.onboardingStep4.rows.workoutsPerWeek} value={String(state.weeklyWorkoutDays)} />
+            {state.dietType && <Row label={copy.onboardingStep4.rows.diet} value={state.dietType} />}
+            {state.pastSports && state.pastSports.length > 0 && <Row label={copy.onboardingStep4.rows.sports} value={state.pastSports.join(", ")} />}
+            {state.pastInjuries && state.pastInjuries.length > 0 && <Row label={copy.onboardingStep4.rows.injuries} value={state.pastInjuries.join(", ")} />}
           </CardContent>
         </Card>
 
@@ -239,7 +228,7 @@ export default function OnboardingStep4() {
             </div>
             {quotaExceeded && (
               <Button size="lg" className="w-full gap-2" onClick={() => { clearOnboarding(); router.push("/dashboard"); }}>
-                Continua alla dashboard
+                {copy.onboardingStep4.continueToDashboard}
               </Button>
             )}
           </div>
@@ -247,11 +236,11 @@ export default function OnboardingStep4() {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => router.push("/onboarding/step3")} className="gap-2">
-            <ChevronLeft className="w-4 h-4" /> Indietro
+            <ChevronLeft className="w-4 h-4" /> {copy.onboardingStep4.back}
           </Button>
           <Button size="lg" onClick={finish} className="flex-1 gap-2">
             {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Brain className="w-5 h-5" />}
-            {quotaExceeded ? "Riprova generazione" : "Genera piano e inizia"}
+            {quotaExceeded ? copy.onboardingStep4.retry : copy.onboardingStep4.generate}
           </Button>
         </div>
 

@@ -5,13 +5,14 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, AlertCircle, Mail, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { copy } from "@/content/copy";
 
 const MESSAGES = {
-  ok: { title: "Email verificata", desc: "Il tuo indirizzo email è stato confermato. Puoi accedere alla dashboard.", icon: "ok" as const },
-  expired: { title: "Link scaduto", desc: "Il link di verifica è scaduto. Richiedi una nuova email dal tuo profilo.", icon: "err" as const },
-  already: { title: "Email già verificata", desc: "Questo indirizzo email è già stato verificato in precedenza.", icon: "ok" as const },
-  invalid: { title: "Link non valido", desc: "Il link di verifica non è valido. Richiedi una nuova email.", icon: "err" as const },
-  pending: { title: "Controlla la tua casella email", desc: "Ti abbiamo inviato un link per verificare il tuo indirizzo. Apri l'email e clicca sul pulsante.", icon: "pending" as const },
+  ok: { title: copy.verifyEmail.messages.ok.title, desc: copy.verifyEmail.messages.ok.desc, icon: "ok" as const },
+  expired: { title: copy.verifyEmail.messages.expired.title, desc: copy.verifyEmail.messages.expired.desc, icon: "err" as const },
+  already: { title: copy.verifyEmail.messages.already.title, desc: copy.verifyEmail.messages.already.desc, icon: "ok" as const },
+  invalid: { title: copy.verifyEmail.messages.invalid.title, desc: copy.verifyEmail.messages.invalid.desc, icon: "err" as const },
+  pending: { title: copy.verifyEmail.messages.pending.title, desc: copy.verifyEmail.messages.pending.desc, icon: "pending" as const },
 };
 
 export default function VerifyEmailPage() {
@@ -34,7 +35,7 @@ function VerifyEmailInner() {
     const res = await fetch("/api/auth/send-verification", { method: "POST" });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setResendError(body.error ?? "Errore invio");
+      setResendError(body.error ?? copy.verifyEmail.errors.resend);
       return;
     }
     setResent(true);
@@ -59,15 +60,15 @@ function VerifyEmailInner() {
 
           {status === "ok" && (
             <Button asChild className="w-full mt-2">
-              <Link href="/dashboard">Vai alla dashboard</Link>
+              <Link href="/dashboard">{copy.verifyEmail.dashboardButton}</Link>
             </Button>
           )}
           {(status === "expired" || status === "pending") && (
             <div className="space-y-2">
               {resent ? (
-                <p className="text-sm text-primary">Email inviata di nuovo. Controlla la casella.</p>
+                <p className="text-sm text-primary">{copy.verifyEmail.resendSent}</p>
               ) : (
-                <Button onClick={resend} variant="outline" className="w-full">Invia nuovo link</Button>
+                <Button onClick={resend} variant="outline" className="w-full">{copy.verifyEmail.resendButton}</Button>
               )}
               {resendError && <p className="text-sm text-destructive">{resendError}</p>}
             </div>
@@ -75,7 +76,7 @@ function VerifyEmailInner() {
         </div>
 
         <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-          Torna al login
+          {copy.verifyEmail.backToLogin}
         </Link>
       </div>
     </div>

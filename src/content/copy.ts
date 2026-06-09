@@ -251,4 +251,276 @@ export const copy = {
     ctaSubtitle: `Il modo migliore per capire ${APP_NAME} è provarlo.`,
     ctaButton: "Inizia gratis",
   },
+
+  // ── /login → src/app/(auth)/login/page.tsx ──
+  login: {
+    title: "Bentornato",
+    subtitle: `Accedi al tuo account ${APP_NAME}`,
+    googleButton: "Continua con Google",
+    divider: "oppure",
+    emailLabel: "Email",
+    emailPlaceholder: "nome@email.com",
+    passwordLabel: "Password",
+    passwordPlaceholder: "••••••••",
+    submit: "Accedi",
+    submitting: "Accesso in corso...",
+    forgotPassword: "Password dimenticata?",
+    noAccount: "Non hai un account?",
+    signupLink: "Registrati gratis",
+    errors: {
+      invalidCredentials: "Email o password non corretti.",
+    },
+    validation: {
+      emailInvalid: "Email non valida",
+      passwordMin: "Minimo 6 caratteri",
+    },
+  },
+
+  // ── /registrati → src/app/(auth)/registrati/page.tsx ──
+  registrati: {
+    title: "Inizia ora",
+    subtitle: `Crea il tuo account ${APP_NAME} gratuito`,
+    googleButton: "Registrati con Google",
+    divider: "oppure",
+    fields: {
+      name: { label: "Nome completo", placeholder: "Mario Rossi" },
+      email: { label: "Email", placeholder: "nome@email.com" },
+      password: { label: "Password", placeholder: "Minimo 8 caratteri" },
+      confirmPassword: { label: "Conferma password", placeholder: "Ripeti la password" },
+    },
+    submit: "Crea account",
+    submitting: "Registrazione...",
+    hasAccount: "Hai già un account?",
+    loginLink: "Accedi",
+    errors: {
+      generic: "Errore durante la registrazione.",
+    },
+    validation: {
+      nameMin: "Minimo 2 caratteri",
+      emailInvalid: "Email non valida",
+      passwordMin: "Minimo 8 caratteri",
+      passwordsMismatch: "Le password non coincidono",
+    },
+  },
+
+  // ── /forgot-password → src/app/(auth)/forgot-password/page.tsx ──
+  forgotPassword: {
+    title: "Password dimenticata?",
+    subtitle: "Inseriamo la tua email e ti invieremo un link per reimpostarla.",
+    sentTitle: "Email inviata",
+    sentBody: "Se l'indirizzo è registrato, riceverai a breve un'email con il link per reimpostare la password. Controlla anche lo spam.",
+    emailLabel: "Email",
+    emailPlaceholder: "nome@email.com",
+    submit: "Invia link di reset",
+    submitting: "Invio in corso...",
+    backToLogin: "Torna al login",
+    errors: {
+      generic: "Errore durante l'invio",
+    },
+    validation: {
+      emailInvalid: "Email non valida",
+    },
+  },
+
+  // ── /reset-password → src/app/(auth)/reset-password/page.tsx ──
+  resetPassword: {
+    title: "Nuova password",
+    subtitle: "Scegli una password sicura per il tuo account.",
+    invalidLink: "Link non valido. Richiedi un nuovo reset.",
+    requestReset: "Richiedi reset",
+    doneTitle: "Password aggiornata",
+    doneBody: "Stai per essere reindirizzato al login...",
+    passwordLabel: "Nuova password",
+    passwordPlaceholder: "Minimo 8 caratteri",
+    confirmPasswordLabel: "Conferma password",
+    confirmPasswordPlaceholder: "Ripeti la password",
+    submit: "Imposta nuova password",
+    submitting: "Salvataggio...",
+    errors: {
+      tokenMissing: "Token mancante",
+      generic: "Errore durante il reset",
+    },
+    validation: {
+      passwordMin: "Minimo 8 caratteri",
+      passwordsMismatch: "Le password non coincidono",
+    },
+  },
+
+  // ── /verify-email → src/app/(auth)/verify-email/page.tsx ──
+  verifyEmail: {
+    messages: {
+      ok: { title: "Email verificata", desc: "Il tuo indirizzo email è stato confermato. Puoi accedere alla dashboard." },
+      expired: { title: "Link scaduto", desc: "Il link di verifica è scaduto. Richiedi una nuova email dal tuo profilo." },
+      already: { title: "Email già verificata", desc: "Questo indirizzo email è già stato verificato in precedenza." },
+      invalid: { title: "Link non valido", desc: "Il link di verifica non è valido. Richiedi una nuova email." },
+      pending: { title: "Controlla la tua casella email", desc: "Ti abbiamo inviato un link per verificare il tuo indirizzo. Apri l'email e clicca sul pulsante." },
+    },
+    dashboardButton: "Vai alla dashboard",
+    resendSent: "Email inviata di nuovo. Controlla la casella.",
+    resendButton: "Invia nuovo link",
+    backToLogin: "Torna al login",
+    errors: {
+      resend: "Errore invio",
+    },
+  },
+
+  // ── /onboarding/step1 → src/app/(auth)/onboarding/step1/page.tsx ──
+  onboardingStep1: {
+    title: "Configuriamo il tuo profilo",
+    stepLabel: "Step 1 di 4 — obiettivi e livello",
+    goalsTitle: "Qual è il tuo obiettivo principale?",
+    goals: [
+      { value: "LOSE_WEIGHT", label: "Perdita di peso" },
+      { value: "BUILD_MUSCLE", label: "Aumento massa muscolare" },
+      { value: "ATHLETIC_PERFORMANCE", label: "Performance atletica" },
+      { value: "ENDURANCE", label: "Resistenza cardiovascolare" },
+      { value: "FLEXIBILITY", label: "Flessibilità e mobilità" },
+      { value: "GENERAL_FITNESS", label: "Forma fisica generale" },
+    ],
+    levelsTitle: "Qual è il tuo livello?",
+    levels: [
+      { value: "BEGINNER", label: "Principiante", desc: "< 6 mesi di allenamento" },
+      { value: "INTERMEDIATE", label: "Intermedio", desc: "6 mesi — 2 anni" },
+      { value: "ADVANCED", label: "Avanzato", desc: "2+ anni regolari" },
+      { value: "ATHLETE", label: "Atleta", desc: "Competizioni / atleta agonista" },
+    ],
+    continue: "Continua",
+  },
+
+  // ── /onboarding/step2 → src/app/(auth)/onboarding/step2/page.tsx ──
+  onboardingStep2: {
+    title: "Attrezzatura disponibile",
+    stepLabel: "Step 2 di 4 — cosa hai a disposizione",
+    cardTitle: "Seleziona tutto quello che puoi usare",
+    equipment: [
+      { value: "NONE", label: "Solo peso corporeo" },
+      { value: "DUMBBELLS", label: "Manubri" },
+      { value: "BARBELL", label: "Bilanciere" },
+      { value: "MACHINE", label: "Macchinari palestra" },
+      { value: "CABLES", label: "Cavi/Pulegge" },
+      { value: "RESISTANCE_BANDS", label: "Elastici" },
+      { value: "PULL_UP_BAR", label: "Sbarra trazioni" },
+      { value: "BENCH", label: "Panca" },
+      { value: "KETTLEBELL", label: "Kettlebell" },
+      { value: "FULL_GYM", label: "Palestra completa" },
+    ],
+    back: "Indietro",
+    continue: "Continua",
+  },
+
+  // ── /onboarding/step3 → src/app/(auth)/onboarding/step3/page.tsx ──
+  onboardingStep3: {
+    title: "I tuoi dati",
+    stepLabel: "Step 3 di 4 — dati fisici e disponibilità",
+    physicalDataTitle: "Dati fisici",
+    ageLabel: "Età",
+    agePlaceholder: "30",
+    weightLabel: "Peso (kg)",
+    weightPlaceholder: "75",
+    heightLabel: "Altezza (cm)",
+    heightPlaceholder: "175",
+    genderLabel: "Genere",
+    genders: [
+      { value: "M", label: "Uomo" },
+      { value: "F", label: "Donna" },
+      { value: "X", label: "Altro" },
+    ],
+    daysTitle: "Giorni di allenamento a settimana",
+    lifestyleTitle: "Stile di Vita e Storico",
+    dietLabel: "Dieta attuale",
+    dietOptions: ["Onnivora", "Vegetariana", "Vegana", "Chetogenica", "Mediterranea", "Altro"],
+    injuriesLabel: "Problematiche fisiche",
+    injuriesPlaceholder: "Es. dolore lombare, problemi al ginocchio sinistro, ecc.",
+    sportsLabel: "Sport Pregresso",
+    sportOptions: ["Nessuno", "Calcio", "Pallavolo", "Basket", "Nuoto", "Corsa", "Ciclismo", "Palestra", "Arti marziali", "Altro"],
+    back: "Indietro",
+    continue: "Continua",
+  },
+
+  // ── /onboarding/step4 → src/app/(auth)/onboarding/step4/page.tsx ──
+  onboardingStep4: {
+    title: "Tutto pronto",
+    stepLabel: "Step 4 di 4 — riepilogo e generazione piano AI",
+    goalLabels: {
+      LOSE_WEIGHT: "Perdita di peso",
+      BUILD_MUSCLE: "Aumento massa muscolare",
+      ATHLETIC_PERFORMANCE: "Performance atletica",
+      ENDURANCE: "Resistenza cardiovascolare",
+      FLEXIBILITY: "Flessibilità e mobilità",
+      GENERAL_FITNESS: "Forma fisica generale",
+    },
+    levelLabels: {
+      BEGINNER: "Principiante",
+      INTERMEDIATE: "Intermedio",
+      ADVANCED: "Avanzato",
+      ATHLETE: "Atleta",
+    },
+    rows: {
+      goal: "Obiettivo",
+      level: "Livello",
+      equipment: "Attrezzatura",
+      age: "Età",
+      ageSuffix: "anni",
+      weight: "Peso",
+      weightSuffix: "kg",
+      height: "Altezza",
+      heightSuffix: "cm",
+      workoutsPerWeek: "Allenamenti / settimana",
+      diet: "Dieta",
+      sports: "Sport",
+      injuries: "Problematiche",
+    },
+    busyTitle: "Sto preparando il tuo piano…",
+    busySubtitle: "Claude sta creando un piano personalizzato per te",
+    back: "Indietro",
+    generate: "Genera piano e inizia",
+    retry: "Riprova generazione",
+    continueToDashboard: "Continua alla dashboard",
+    errors: {
+      profileSave: "Errore salvataggio profilo",
+      quotaExceeded: "Hai esaurito le generazioni AI di questo mese. Puoi comunque iniziare e creare un piano più tardi.",
+      planGeneration: (status: number, detail: string) => `Errore generazione piano (HTTP ${status}${detail})`,
+      planStreamEmpty: "Errore generazione piano: stream vuoto",
+      planFormat: "Formato piano non riconosciuto",
+      exercisesLoad: "Errore caricamento esercizi",
+      planSave: "Errore salvataggio piano",
+      unknown: "Errore sconosciuto",
+    },
+  },
+
+  // ── WelcomeTour → src/components/onboarding/WelcomeTour.tsx ──
+  welcomeTour: {
+    steps: [
+      {
+        title: `Benvenuto in ${APP_NAME}! 💪`,
+        body: "Il tuo personal trainer AI personale. In pochi minuti puoi: generare piani di allenamento personalizzati, analizzare la tua tecnica con video AI, tracciare nutrizione e progressi.",
+        cta: null as { href: string; label: string } | null,
+      },
+      {
+        title: "Genera il tuo piano AI",
+        body: "Claude crea un piano basato su obiettivi, livello e attrezzatura. Puoi sostituirlo quando vuoi o crearne uno manuale.",
+        cta: { href: "/allenamento/genera-ai", label: "Vai ai piani" } as { href: string; label: string } | null,
+      },
+      {
+        title: "Analizza la tua tecnica",
+        body: "Filma una serie con la camera, il nostro sistema 3-in-1 (biomeccanica + AI vision + confronto PT) ti dà feedback personalizzato.",
+        cta: { href: "/analisi", label: "Prova l'analisi" } as { href: string; label: string } | null,
+      },
+      {
+        title: "Traccia nutrizione e progressi",
+        body: "Calorie, macros, sessioni completate, streak. Tutto in un colpo d'occhio. Il piano nutrizionale AI è incluso.",
+        cta: null as { href: string; label: string } | null,
+      },
+      {
+        title: "Tutto pronto!",
+        body: "Esplora dalla navbar laterale. Quando completi una sessione apparirà nel feed Community. Buon allenamento!",
+        cta: null as { href: string; label: string } | null,
+      },
+    ],
+    close: "Chiudi tour",
+    back: "Indietro",
+    next: "Avanti",
+    start: "Inizia",
+    skip: "Salta il tour",
+  },
 } as const;

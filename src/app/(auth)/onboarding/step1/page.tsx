@@ -7,22 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronRight, CheckCircle, Zap } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
+import { copy } from "@/content/copy";
 
-const GOALS = [
-  { value: "LOSE_WEIGHT", label: "Perdita di peso", emoji: "🔥" },
-  { value: "BUILD_MUSCLE", label: "Aumento massa muscolare", emoji: "💪" },
-  { value: "ATHLETIC_PERFORMANCE", label: "Performance atletica", emoji: "🏋️" },
-  { value: "ENDURANCE", label: "Resistenza cardiovascolare", emoji: "🏃" },
-  { value: "FLEXIBILITY", label: "Flessibilità e mobilità", emoji: "🧘" },
-  { value: "GENERAL_FITNESS", label: "Forma fisica generale", emoji: "⚡" },
-];
+const GOAL_EMOJI = ["🔥", "💪", "🏋️", "🏃", "🧘", "⚡"];
+const GOALS = copy.onboardingStep1.goals.map((g, i) => ({ ...g, emoji: GOAL_EMOJI[i] }));
 
-const LEVELS = [
-  { value: "BEGINNER", label: "Principiante", desc: "< 6 mesi di allenamento" },
-  { value: "INTERMEDIATE", label: "Intermedio", desc: "6 mesi — 2 anni" },
-  { value: "ADVANCED", label: "Avanzato", desc: "2+ anni regolari" },
-  { value: "ATHLETE", label: "Atleta", desc: "Competizioni / atleta agonista" },
-];
+const LEVELS = copy.onboardingStep1.levels;
 
 export default function OnboardingStep1() {
   const router = useRouter();
@@ -48,12 +38,12 @@ export default function OnboardingStep1() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <Zap className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Configuriamo il tuo profilo</h1>
-          <p className="text-muted-foreground text-sm">Step 1 di 4 — obiettivi e livello</p>
+          <h1 className="text-2xl font-bold">{copy.onboardingStep1.title}</h1>
+          <p className="text-muted-foreground text-sm">{copy.onboardingStep1.stepLabel}</p>
         </div>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Qual è il tuo obiettivo principale?</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{copy.onboardingStep1.goalsTitle}</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {GOALS.map((g) => (
               <button
@@ -71,7 +61,7 @@ export default function OnboardingStep1() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Qual è il tuo livello?</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{copy.onboardingStep1.levelsTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {LEVELS.map((l) => (
               <button
@@ -92,7 +82,7 @@ export default function OnboardingStep1() {
         </Card>
 
         <Button size="lg" onClick={next} disabled={!goal || !level} className="w-full gap-2">
-          Continua <ChevronRight className="w-5 h-5" />
+          {copy.onboardingStep1.continue} <ChevronRight className="w-5 h-5" />
         </Button>
 
         <div className="text-center">

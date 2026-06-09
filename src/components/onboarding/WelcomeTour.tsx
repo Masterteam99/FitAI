@@ -4,42 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Zap, Dumbbell, Brain, Apple, Users, ChevronRight, X } from "lucide-react";
+import { copy } from "@/content/copy";
 
 const STORAGE_KEY = "fitai-tour-completed";
 
-const STEPS = [
-  {
-    icon: Zap,
-    title: "Benvenuto in FitAI! 💪",
-    body:
-      "Il tuo personal trainer AI personale. In pochi minuti puoi: generare piani di allenamento personalizzati, analizzare la tua tecnica con video AI, tracciare nutrizione e progressi.",
-    cta: null as { href: string; label: string } | null,
-  },
-  {
-    icon: Dumbbell,
-    title: "Genera il tuo piano AI",
-    body: "Claude crea un piano basato su obiettivi, livello e attrezzatura. Puoi sostituirlo quando vuoi o crearne uno manuale.",
-    cta: { href: "/allenamento/genera-ai", label: "Vai ai piani" },
-  },
-  {
-    icon: Brain,
-    title: "Analizza la tua tecnica",
-    body: "Filma una serie con la camera, il nostro sistema 3-in-1 (biomeccanica + AI vision + confronto PT) ti dà feedback personalizzato.",
-    cta: { href: "/analisi", label: "Prova l'analisi" },
-  },
-  {
-    icon: Apple,
-    title: "Traccia nutrizione e progressi",
-    body: "Calorie, macros, sessioni completate, streak. Tutto in un colpo d'occhio. Il piano nutrizionale AI è incluso.",
-    cta: null,
-  },
-  {
-    icon: Users,
-    title: "Tutto pronto!",
-    body: "Esplora dalla navbar laterale. Quando completi una sessione apparirà nel feed Community. Buon allenamento!",
-    cta: null,
-  },
-];
+const STEP_ICONS = [Zap, Dumbbell, Brain, Apple, Users];
+const STEPS = copy.welcomeTour.steps.map((s, i) => ({ ...s, icon: STEP_ICONS[i] }));
 
 export function WelcomeTour() {
   const [visible, setVisible] = useState(false);
@@ -71,7 +41,7 @@ export function WelcomeTour() {
       <div className="relative w-full max-w-md bg-card border border-border rounded-2xl p-6 shadow-2xl">
         <button
           onClick={dismiss}
-          aria-label="Chiudi tour"
+          aria-label={copy.welcomeTour.close}
           className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors p-1"
         >
           <X className="w-4 h-4" />
@@ -97,7 +67,7 @@ export function WelcomeTour() {
         <div className="flex gap-2 mt-5">
           {step > 0 && (
             <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="flex-1">
-              Indietro
+              {copy.welcomeTour.back}
             </Button>
           )}
           {s.cta && (
@@ -109,10 +79,10 @@ export function WelcomeTour() {
           )}
           {!isLast ? (
             <Button onClick={() => setStep((s) => s + 1)} className="flex-1 gap-1.5">
-              Avanti <ChevronRight className="w-4 h-4" />
+              {copy.welcomeTour.next} <ChevronRight className="w-4 h-4" />
             </Button>
           ) : (
-            <Button onClick={dismiss} className="flex-1">Inizia</Button>
+            <Button onClick={dismiss} className="flex-1">{copy.welcomeTour.start}</Button>
           )}
         </div>
 
@@ -121,7 +91,7 @@ export function WelcomeTour() {
             onClick={dismiss}
             className="block mx-auto mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            Salta il tour
+            {copy.welcomeTour.skip}
           </button>
         )}
       </div>
