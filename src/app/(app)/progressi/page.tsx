@@ -7,6 +7,7 @@ import { TrendingUp, Dumbbell, Flame, Trophy, Star, Loader2, Calendar } from "lu
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 import { format, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
+import { copy } from "@/content/copy";
 
 interface StatsData {
   totalSessions: number;
@@ -70,18 +71,18 @@ export default function ProgressiPage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <TrendingUp className="w-7 h-7 text-primary" />
-          I miei Progressi
+          {copy.progressi.title}
         </h1>
-        <p className="text-muted-foreground">Tieni traccia dei tuoi risultati</p>
+        <p className="text-muted-foreground">{copy.progressi.subtitle}</p>
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { icon: Dumbbell, label: "Sessioni totali", value: stats.totalSessions, color: "text-primary" },
-          { icon: Calendar, label: "Minuti totali", value: stats.totalMinutes, color: "text-blue-400" },
-          { icon: Flame, label: "Streak attuale", value: `${stats.currentStreak}🔥`, color: "text-orange-400" },
-          { icon: Trophy, label: "Punti totali", value: stats.totalPoints, color: "text-yellow-400" },
+          { icon: Dumbbell, label: copy.progressi.stats.totalSessions, value: stats.totalSessions, color: "text-primary" },
+          { icon: Calendar, label: copy.progressi.stats.totalMinutes, value: stats.totalMinutes, color: "text-blue-400" },
+          { icon: Flame, label: copy.progressi.stats.currentStreak, value: `${stats.currentStreak}🔥`, color: "text-orange-400" },
+          { icon: Trophy, label: copy.progressi.stats.totalPoints, value: stats.totalPoints, color: "text-yellow-400" },
         ].map((s) => {
           const Icon = s.icon;
           return (
@@ -99,7 +100,7 @@ export default function ProgressiPage() {
       {/* Weekly chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Sessioni ultimi 7 giorni</CardTitle>
+          <CardTitle className="text-base">{copy.progressi.weeklyChartTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={180}>
@@ -108,7 +109,7 @@ export default function ProgressiPage() {
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip
                 contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
-                formatter={(v) => [`${v ?? 0} sessioni`, ""]}
+                formatter={(v) => [copy.progressi.sessionsTooltip(Number(v ?? 0)), ""]}
               />
               <Bar dataKey="sessioni" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -120,7 +121,7 @@ export default function ProgressiPage() {
       {stats.totalSessions >= 3 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Minuti allenamento (ultimi 30 giorni)</CardTitle>
+            <CardTitle className="text-base">{copy.progressi.minutesTrendTitle}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={160}>
@@ -130,7 +131,7 @@ export default function ProgressiPage() {
                 <YAxis tick={{ fontSize: 10 }} />
                 <Tooltip
                   contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
-                  formatter={(v) => [`${v ?? 0} min`, ""]}
+                  formatter={(v) => [copy.progressi.minutesTooltip(Number(v ?? 0)), ""]}
                 />
                 <Line type="monotone" dataKey="minuti" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
               </LineChart>
@@ -143,19 +144,19 @@ export default function ProgressiPage() {
       {stats.totalSessions > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">I tuoi insight</CardTitle>
+            <CardTitle className="text-base">{copy.progressi.insightsTitle}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
               <div>
                 <div className="text-2xl font-bold text-primary">{stats.daysActive30}</div>
-                <p className="text-xs text-muted-foreground mt-0.5">Giorni attivi (30g)</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightDaysActive}</p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-blue-400">
                   {stats.totalSessions > 0 ? Math.round(stats.totalMinutes / stats.totalSessions) : 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">Min/sessione media</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightAvgMinPerSession}</p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-orange-400">
@@ -163,13 +164,13 @@ export default function ProgressiPage() {
                     ? Math.round(stats.weeklyVolume.reduce((a, w) => a + w.minutes, 0) / stats.weeklyVolume.length)
                     : 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">Min/sett. media (8 sett.)</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightAvgMinPerWeek}</p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-yellow-400">
                   {stats.avgFeeling != null ? stats.avgFeeling.toFixed(1) : "—"}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">Feeling medio (1-5)</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightAvgFeeling}</p>
               </div>
             </div>
           </CardContent>
@@ -180,7 +181,7 @@ export default function ProgressiPage() {
       {stats.weeklyVolume.some((w) => w.minutes > 0) && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Volume settimanale (ultime 8 settimane)</CardTitle>
+            <CardTitle className="text-base">{copy.progressi.weeklyVolumeTitle}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={160}>
@@ -192,7 +193,7 @@ export default function ProgressiPage() {
                 <YAxis tick={{ fontSize: 10 }} />
                 <Tooltip
                   contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
-                  formatter={(v) => [`${v ?? 0} min`, ""]}
+                  formatter={(v) => [copy.progressi.minutesTooltip(Number(v ?? 0)), ""]}
                 />
                 <Bar dataKey="minuti" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -207,7 +208,7 @@ export default function ProgressiPage() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Star className="w-5 h-5 text-yellow-400" />
-              Achievement sbloccati ({stats.achievements.length})
+              {copy.progressi.achievementsTitle(stats.achievements.length)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -232,7 +233,7 @@ export default function ProgressiPage() {
         <Card className="border-dashed border-2">
           <CardContent className="py-12 text-center space-y-3">
             <Dumbbell className="w-10 h-10 text-muted-foreground mx-auto" />
-            <p className="text-muted-foreground">Completa la prima sessione per vedere i tuoi progressi!</p>
+            <p className="text-muted-foreground">{copy.progressi.emptyState}</p>
           </CardContent>
         </Card>
       )}

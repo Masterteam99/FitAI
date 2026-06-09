@@ -5,32 +5,13 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Brain, ChevronRight, Loader2, Zap, CheckCircle, AlertTriangle } from "lucide-react";
+import { copy } from "@/content/copy";
 
-const GOALS = [
-  { value: "LOSE_WEIGHT", label: "Perdita di peso", emoji: "🔥" },
-  { value: "BUILD_MUSCLE", label: "Aumento massa muscolare", emoji: "💪" },
-  { value: "ATHLETIC_PERFORMANCE", label: "Performance atletica", emoji: "🏋️" },
-  { value: "ENDURANCE", label: "Resistenza cardiovascolare", emoji: "🏃" },
-  { value: "FLEXIBILITY", label: "Flessibilità e mobilità", emoji: "🧘" },
-  { value: "GENERAL_FITNESS", label: "Forma fisica generale", emoji: "⚡" },
-];
+const GOALS = copy.generaAi.goals;
 
-const LEVELS = [
-  { value: "BEGINNER", label: "Principiante", desc: "< 6 mesi di allenamento" },
-  { value: "INTERMEDIATE", label: "Intermedio", desc: "6 mesi — 2 anni" },
-  { value: "ADVANCED", label: "Avanzato", desc: "2+ anni regolari" },
-];
+const LEVELS = copy.generaAi.levels;
 
-const EQUIPMENT_OPTIONS = [
-  { value: "BARBELL", label: "Bilanciere" },
-  { value: "DUMBBELLS", label: "Manubri" },
-  { value: "MACHINE", label: "Macchinari palestra" },
-  { value: "CABLES", label: "Cavi/Pulegge" },
-  { value: "BODYWEIGHT", label: "Solo peso corporeo" },
-  { value: "RESISTANCE_BANDS", label: "Elastici" },
-  { value: "PULL_UP_BAR", label: "Sbarra trazioni" },
-  { value: "BENCH", label: "Panca" },
-];
+const EQUIPMENT_OPTIONS = copy.generaAi.equipment;
 
 const DAYS_OPTIONS = [2, 3, 4, 5, 6];
 
@@ -41,7 +22,7 @@ function extractPlanJson(text: string): unknown {
   const candidate = fenced ? fenced[1] : text;
   const start = candidate.indexOf("{");
   const end = candidate.lastIndexOf("}");
-  if (start === -1 || end <= start) throw new Error("Formato piano non riconosciuto");
+  if (start === -1 || end <= start) throw new Error(copy.generaAi.errors.planFormat);
   return JSON.parse(candidate.slice(start, end + 1));
 }
 
@@ -81,16 +62,16 @@ export default function GeneraAIPage() {
         const errBody = await res.json().catch(() => ({} as { error?: string }));
         if (res.status === 402) {
           setQuotaExceeded(true);
-          setError(errBody.error || "Hai esaurito le generazioni AI di questo mese.");
+          setError(errBody.error || copy.generaAi.errors.quotaExceeded);
         } else if (res.status === 429) {
-          setError(errBody.error || "Troppe richieste. Riprova tra un minuto.");
+          setError(errBody.error || copy.generaAi.errors.tooManyRequests);
         } else {
-          setError(errBody.error || "Errore generazione piano");
+          setError(errBody.error || copy.generaAi.errors.planGeneration);
         }
         setIsGenerating(false);
         return;
       }
-      if (!res.body) throw new Error("Risposta vuota dal server");
+      if (!res.body) throw new Error(copy.generaAi.errors.emptyResponse);
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -126,7 +107,7 @@ export default function GeneraAIPage() {
       // Translation layer: Claude generates exerciseSlug; API expects exerciseId.
       // (rest/duration field names already match Prisma — restSeconds/durationSeconds.)
       const exRes = await fetch("/api/exercises?limit=100");
-      if (!exRes.ok) throw new Error("Errore caricamento esercizi");
+      if (!exRes.ok) throw new Error(copy.generaAi.errors.exercisesLoad);
       const exerciseList: Array<{ id: string; slug: string }> = await exRes.json();
       const slugToId = new Map(exerciseList.map((e) => [e.slug, e.id]));
 
@@ -181,11 +162,11 @@ export default function GeneraAIPage() {
         body: JSON.stringify(payload),
       });
 
-      if (!saveRes.ok) throw new Error("Errore salvataggio piano");
+      if (!saveRes.ok) throw new Error(copy.generaAi.errors.planSave);
       const saved = await saveRes.json();
       router.push(`/allenamento/${saved.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Errore sconosciuto");
+      setError(e instanceof Error ? e.message : copy.generaAi.errors.unknown);
       setIsGenerating(false);
     }
   }
@@ -199,8 +180,8 @@ export default function GeneraAIPage() {
           <div className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center mx-auto">
             <Brain className="w-8 h-8 text-primary animate-pulse" />
           </div>
-          <h2 className="text-xl font-bold">Claude sta generando il tuo piano...</h2>
-          <p className="text-muted-foreground text-sm">L&apos;AI sta creando un piano personalizzato per i tuoi obiettivi</p>
+          <h2 className="text-xl font-bold">{copy.generaAi.busyTitle}</h2>
+          <p className="text-muted-foreground text-sm">{copy.generaAi.busySubtitle}</p>
         </div>
 
         {streamText && (
@@ -226,14 +207,14 @@ export default function GeneraAIPage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Zap className="w-7 h-7 text-primary" />
-          Genera Piano con AI
+          {copy.generaAi.title}
         </h1>
-        <p className="text-muted-foreground">Claude creerà un piano personalizzato in pochi secondi</p>
+        <p className="text-muted-foreground">{copy.generaAi.subtitle}</p>
       </div>
 
       {/* Goal */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Qual è il tuo obiettivo principale?</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.generaAi.goalQuestion}</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {GOALS.map((g) => (
             <button
@@ -252,7 +233,7 @@ export default function GeneraAIPage() {
 
       {/* Level */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Qual è il tuo livello?</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.generaAi.levelQuestion}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           {LEVELS.map((l) => (
             <button
@@ -274,7 +255,7 @@ export default function GeneraAIPage() {
 
       {/* Days */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Quante volte a settimana?</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.generaAi.daysQuestion}</CardTitle></CardHeader>
         <CardContent className="flex gap-2 flex-wrap">
           {DAYS_OPTIONS.map((d) => (
             <button
@@ -292,7 +273,7 @@ export default function GeneraAIPage() {
 
       {/* Equipment */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Attrezzatura disponibile</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.generaAi.equipmentQuestion}</CardTitle></CardHeader>
         <CardContent className="flex gap-2 flex-wrap">
           {EQUIPMENT_OPTIONS.map((e) => (
             <button
@@ -310,12 +291,12 @@ export default function GeneraAIPage() {
 
       {/* Notes */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Note aggiuntive (opzionale)</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.generaAi.notesQuestion}</CardTitle></CardHeader>
         <CardContent>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Es: dolore alla spalla destra, preferisco non fare corsa, ho 45-60 minuti a sessione..."
+            placeholder={copy.generaAi.notesPlaceholder}
             className="w-full bg-secondary/50 border border-border rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[80px]"
             maxLength={500}
           />
@@ -336,7 +317,7 @@ export default function GeneraAIPage() {
         className="w-full gap-2"
       >
         {isGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Brain className="w-5 h-5" />}
-        Genera piano personalizzato
+        {copy.generaAi.generateButton}
         <ChevronRight className="w-5 h-5" />
       </Button>
     </div>

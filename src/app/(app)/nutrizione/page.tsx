@@ -9,6 +9,7 @@ import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
 import { AiNutritionPlan } from "./AiNutritionPlan";
+import { copy } from "@/content/copy";
 
 interface NutritionLog {
   id: string;
@@ -22,14 +23,7 @@ interface NutritionLog {
 
 interface Totals { calories: number; protein: number; carbs: number; fat: number }
 
-const MEAL_LABELS: Record<string, string> = {
-  BREAKFAST: "Colazione",
-  LUNCH: "Pranzo",
-  DINNER: "Cena",
-  SNACK: "Spuntino",
-  PRE_WORKOUT: "Pre-allenamento",
-  POST_WORKOUT: "Post-allenamento",
-};
+const MEAL_LABELS: Record<string, string> = copy.nutrizione.mealLabels;
 
 const MEAL_TYPES = Object.keys(MEAL_LABELS);
 
@@ -109,13 +103,13 @@ export default function NutrizionePage() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Apple className="w-7 h-7 text-primary" />
-            Nutrizione
+            {copy.nutrizione.title}
           </h1>
-          <p className="text-muted-foreground">Traccia la tua alimentazione</p>
+          <p className="text-muted-foreground">{copy.nutrizione.subtitle}</p>
         </div>
         <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
           <Plus className="w-4 h-4" />
-          Aggiungi
+          {copy.nutrizione.add}
         </Button>
       </div>
 
@@ -138,10 +132,10 @@ export default function NutrizionePage() {
       {/* Macro totals */}
       <div className="grid grid-cols-4 gap-2">
         {[
-          { label: "Calorie", value: totals.calories, unit: "kcal", target: TARGETS.calories, color: "text-primary" },
-          { label: "Proteine", value: Math.round(totals.protein), unit: "g", target: TARGETS.protein, color: "text-blue-400" },
-          { label: "Carboidrati", value: Math.round(totals.carbs), unit: "g", target: TARGETS.carbs, color: "text-orange-400" },
-          { label: "Grassi", value: Math.round(totals.fat), unit: "g", target: TARGETS.fat, color: "text-yellow-400" },
+          { label: copy.nutrizione.macros.calories, value: totals.calories, unit: copy.nutrizione.caloriesUnit, target: TARGETS.calories, color: "text-primary" },
+          { label: copy.nutrizione.macros.protein, value: Math.round(totals.protein), unit: copy.nutrizione.gramsUnit, target: TARGETS.protein, color: "text-blue-400" },
+          { label: copy.nutrizione.macros.carbs, value: Math.round(totals.carbs), unit: copy.nutrizione.gramsUnit, target: TARGETS.carbs, color: "text-orange-400" },
+          { label: copy.nutrizione.macros.fat, value: Math.round(totals.fat), unit: copy.nutrizione.gramsUnit, target: TARGETS.fat, color: "text-yellow-400" },
         ].map((m) => {
           const pct = Math.min(Math.round((m.value / m.target) * 100), 100);
           return (
@@ -163,7 +157,7 @@ export default function NutrizionePage() {
       {/* Add form */}
       {showForm && (
         <Card className="border-primary/30">
-          <CardHeader><CardTitle className="text-base">Nuovo alimento</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{copy.nutrizione.newFoodTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <select
               value={form.mealType}
@@ -172,18 +166,18 @@ export default function NutrizionePage() {
             >
               {MEAL_TYPES.map((mt) => <option key={mt} value={mt}>{MEAL_LABELS[mt]}</option>)}
             </select>
-            <Input placeholder="Nome alimento *" value={form.foodName} onChange={(e) => setForm((f) => ({ ...f, foodName: e.target.value }))} />
+            <Input placeholder={copy.nutrizione.foodNamePlaceholder} value={form.foodName} onChange={(e) => setForm((f) => ({ ...f, foodName: e.target.value }))} />
             <div className="grid grid-cols-2 gap-2">
-              <Input placeholder="Calorie *" type="number" value={form.calories} onChange={(e) => setForm((f) => ({ ...f, calories: e.target.value }))} />
-              <Input placeholder="Proteine (g)" type="number" value={form.protein} onChange={(e) => setForm((f) => ({ ...f, protein: e.target.value }))} />
-              <Input placeholder="Carboidrati (g)" type="number" value={form.carbs} onChange={(e) => setForm((f) => ({ ...f, carbs: e.target.value }))} />
-              <Input placeholder="Grassi (g)" type="number" value={form.fat} onChange={(e) => setForm((f) => ({ ...f, fat: e.target.value }))} />
+              <Input placeholder={copy.nutrizione.caloriesPlaceholder} type="number" value={form.calories} onChange={(e) => setForm((f) => ({ ...f, calories: e.target.value }))} />
+              <Input placeholder={copy.nutrizione.proteinPlaceholder} type="number" value={form.protein} onChange={(e) => setForm((f) => ({ ...f, protein: e.target.value }))} />
+              <Input placeholder={copy.nutrizione.carbsPlaceholder} type="number" value={form.carbs} onChange={(e) => setForm((f) => ({ ...f, carbs: e.target.value }))} />
+              <Input placeholder={copy.nutrizione.fatPlaceholder} type="number" value={form.fat} onChange={(e) => setForm((f) => ({ ...f, fat: e.target.value }))} />
             </div>
             <div className="flex gap-2">
               <Button onClick={addLog} disabled={saving || !form.foodName || !form.calories} className="flex-1">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : copy.nutrizione.add}
               </Button>
-              <Button variant="outline" onClick={() => setShowForm(false)}>Annulla</Button>
+              <Button variant="outline" onClick={() => setShowForm(false)}>{copy.nutrizione.cancel}</Button>
             </div>
           </CardContent>
         </Card>
@@ -200,7 +194,7 @@ export default function NutrizionePage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm">{MEAL_LABELS[mt]}</CardTitle>
                   <Badge variant="secondary" className="text-xs">
-                    {grouped[mt].reduce((a, l) => a + l.calories, 0)} kcal
+                    {grouped[mt].reduce((a, l) => a + l.calories, 0)} {copy.nutrizione.caloriesUnit}
                   </Badge>
                 </div>
               </CardHeader>
@@ -208,8 +202,8 @@ export default function NutrizionePage() {
                 {grouped[mt].map((log) => (
                   <div key={log.id} className="flex items-center justify-between gap-3 text-sm p-2 rounded-lg bg-secondary/40">
                     <span className="flex-1 truncate">{log.foodName}</span>
-                    <span className="text-muted-foreground text-xs shrink-0">P:{log.proteinG}g C:{log.carbsG}g G:{log.fatG}g</span>
-                    <span className="font-medium shrink-0">{log.calories} kcal</span>
+                    <span className="text-muted-foreground text-xs shrink-0">{copy.nutrizione.macroSummary(log.proteinG, log.carbsG, log.fatG)}</span>
+                    <span className="font-medium shrink-0">{log.calories} {copy.nutrizione.caloriesUnit}</span>
                     <button onClick={() => deleteLog(log.id)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0">
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -223,7 +217,7 @@ export default function NutrizionePage() {
             <Card className="border-dashed border-2">
               <CardContent className="py-10 text-center">
                 <Apple className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground text-sm">Nessun alimento registrato per questo giorno</p>
+                <p className="text-muted-foreground text-sm">{copy.nutrizione.emptyDay}</p>
               </CardContent>
             </Card>
           )}

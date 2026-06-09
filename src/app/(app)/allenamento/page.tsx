@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dumbbell, Plus, Zap, Calendar, ChevronRight, CheckCircle, Loader2, Trash2 } from "lucide-react";
+import { copy } from "@/content/copy";
 
 interface WorkoutPlan {
   id: string;
@@ -18,15 +19,7 @@ interface WorkoutPlan {
   days: { id: string; dayNumber: number; name: string; restDay: boolean; exercises: { id: string }[] }[];
 }
 
-const GOAL_LABELS: Record<string, string> = {
-  WEIGHT_LOSS: "Perdita di peso",
-  MUSCLE_GAIN: "Aumento massa",
-  STRENGTH: "Forza",
-  ENDURANCE: "Resistenza",
-  FLEXIBILITY: "Flessibilità",
-  GENERAL_FITNESS: "Forma generale",
-  SPORT_PERFORMANCE: "Performance sportiva",
-};
+const GOAL_LABELS: Record<string, string> = copy.allenamento.goalLabels;
 
 export default function AllenamentoPage() {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
@@ -69,14 +62,14 @@ export default function AllenamentoPage() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Dumbbell className="w-7 h-7 text-primary" />
-            I miei Allenamenti
+            {copy.allenamento.title}
           </h1>
-          <p className="text-muted-foreground">Gestisci i tuoi piani di allenamento</p>
+          <p className="text-muted-foreground">{copy.allenamento.subtitle}</p>
         </div>
         <Link href="/allenamento/nuovo">
           <Button className="gap-2">
             <Plus className="w-4 h-4" />
-            Nuovo piano
+            {copy.allenamento.newPlan}
           </Button>
         </Link>
       </div>
@@ -86,18 +79,18 @@ export default function AllenamentoPage() {
           <CardContent className="py-16 text-center space-y-4">
             <Dumbbell className="w-12 h-12 text-muted-foreground mx-auto" />
             <div>
-              <p className="font-semibold">Nessun piano ancora</p>
-              <p className="text-sm text-muted-foreground">Crea un piano manualmente o generane uno con l&apos;AI</p>
+              <p className="font-semibold">{copy.allenamento.emptyTitle}</p>
+              <p className="text-sm text-muted-foreground">{copy.allenamento.emptySubtitle}</p>
             </div>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Link href="/allenamento/genera-ai">
                 <Button className="gap-2">
                   <Zap className="w-4 h-4" />
-                  Genera con AI
+                  {copy.allenamento.generateWithAi}
                 </Button>
               </Link>
               <Link href="/allenamento/nuovo">
-                <Button variant="outline">Crea manualmente</Button>
+                <Button variant="outline">{copy.allenamento.createManually}</Button>
               </Link>
             </div>
           </CardContent>
@@ -106,14 +99,14 @@ export default function AllenamentoPage() {
         <>
           {activePlan && (
             <div>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Piano Attivo</h2>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{copy.allenamento.activePlanSection}</h2>
               <PlanCard plan={activePlan} onSetActive={setActive} onDelete={deletePlan} />
             </div>
           )}
 
           {plans.filter((p) => !p.isActive).length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Altri Piani</h2>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{copy.allenamento.otherPlansSection}</h2>
               <div className="space-y-3">
                 {plans.filter((p) => !p.isActive).map((plan) => (
                   <PlanCard key={plan.id} plan={plan} onSetActive={setActive} onDelete={deletePlan} />
@@ -126,7 +119,7 @@ export default function AllenamentoPage() {
             <Link href="/allenamento/genera-ai">
               <Button variant="outline" className="gap-2 w-full sm:w-auto">
                 <Zap className="w-4 h-4 text-primary" />
-                Genera nuovo piano con AI
+                {copy.allenamento.generateNewWithAi}
               </Button>
             </Link>
           </div>
@@ -151,7 +144,7 @@ function PlanCard({ plan, onSetActive, onDelete }: {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <CardTitle className="text-base">{plan.name}</CardTitle>
-              {plan.isActive && <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">Attivo</Badge>}
+              {plan.isActive && <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">{copy.allenamento.activeBadge}</Badge>}
               {plan.generatedByAI && (
                 <Badge variant="secondary" className="text-xs gap-1">
                   <Zap className="w-3 h-3" />AI
@@ -163,7 +156,7 @@ function PlanCard({ plan, onSetActive, onDelete }: {
           <button
             onClick={() => onDelete(plan.id)}
             className="text-muted-foreground hover:text-destructive transition-colors p-1 shrink-0"
-            aria-label="Elimina piano"
+            aria-label={copy.allenamento.deletePlanAria}
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -173,15 +166,15 @@ function PlanCard({ plan, onSetActive, onDelete }: {
         <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
           <span className="flex items-center gap-1.5">
             <Calendar className="w-4 h-4" />
-            {plan.durationWeeks} settimane
+            {plan.durationWeeks} {copy.allenamento.weeksSuffix}
           </span>
           <span className="flex items-center gap-1.5">
             <Dumbbell className="w-4 h-4" />
-            {plan.workoutsPerWeek}x/settimana
+            {plan.workoutsPerWeek}{copy.allenamento.workoutsPerWeekSuffix}
           </span>
           <span className="flex items-center gap-1.5">
             <CheckCircle className="w-4 h-4" />
-            {totalExercises} esercizi
+            {totalExercises} {copy.allenamento.exercisesSuffix}
           </span>
         </div>
 
@@ -191,7 +184,7 @@ function PlanCard({ plan, onSetActive, onDelete }: {
               <span key={day.id} className="text-xs bg-secondary rounded-md px-2 py-1">{day.name}</span>
             ))}
             {workoutDays.length > 4 && (
-              <span className="text-xs text-muted-foreground px-1 py-1">+{workoutDays.length - 4} altri</span>
+              <span className="text-xs text-muted-foreground px-1 py-1">{copy.allenamento.moreDays(workoutDays.length - 4)}</span>
             )}
           </div>
         )}
@@ -199,13 +192,13 @@ function PlanCard({ plan, onSetActive, onDelete }: {
         <div className="flex gap-2 flex-wrap">
           <Link href={`/allenamento/${plan.id}`} className="flex-1 min-w-[120px]">
             <Button size="sm" className="w-full gap-1.5">
-              Vai al piano <ChevronRight className="w-4 h-4" />
+              {copy.allenamento.goToPlan} <ChevronRight className="w-4 h-4" />
             </Button>
           </Link>
           {!plan.isActive && (
             <Button size="sm" variant="outline" onClick={() => onSetActive(plan.id)} className="gap-1.5">
               <CheckCircle className="w-4 h-4" />
-              Imposta attivo
+              {copy.allenamento.setActive}
             </Button>
           )}
         </div>

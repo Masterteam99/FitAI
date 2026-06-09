@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { User, LogOut, Save, Loader2, Trophy, Flame, Dumbbell, Download, Trash2, AlertTriangle } from "lucide-react";
 import { signOut as nextSignOut } from "next-auth/react";
+import { copy } from "@/content/copy";
 
 interface ProfileData {
   name: string;
@@ -23,22 +24,9 @@ interface ProfileData {
   longestStreak: number;
 }
 
-const LEVEL_LABELS: Record<string, string> = {
-  BEGINNER: "Principiante",
-  INTERMEDIATE: "Intermedio",
-  ADVANCED: "Avanzato",
-  EXPERT: "Expert",
-};
+const LEVEL_LABELS: Record<string, string> = copy.profilo.levelLabels;
 
-const GOAL_LABELS: Record<string, string> = {
-  WEIGHT_LOSS: "Perdita di peso",
-  MUSCLE_GAIN: "Aumento massa",
-  STRENGTH: "Forza",
-  ENDURANCE: "Resistenza",
-  FLEXIBILITY: "Flessibilità",
-  GENERAL_FITNESS: "Forma generale",
-  SPORT_PERFORMANCE: "Performance sportiva",
-};
+const GOAL_LABELS: Record<string, string> = copy.profilo.goalLabels;
 
 export default function ProfiloPage() {
   const { data: session } = useSession();
@@ -93,17 +81,17 @@ export default function ProfiloPage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <User className="w-7 h-7 text-primary" />
-          Il mio Profilo
+          {copy.profilo.title}
         </h1>
-        <p className="text-muted-foreground">Gestisci le tue informazioni personali</p>
+        <p className="text-muted-foreground">{copy.profilo.subtitle}</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: Trophy, label: "Punti", value: profile?.totalPoints ?? 0, color: "text-yellow-400" },
-          { icon: Flame, label: "Streak", value: `${profile?.currentStreak ?? 0}🔥`, color: "text-orange-400" },
-          { icon: Dumbbell, label: "Record streak", value: profile?.longestStreak ?? 0, color: "text-primary" },
+          { icon: Trophy, label: copy.profilo.stats.points, value: profile?.totalPoints ?? 0, color: "text-yellow-400" },
+          { icon: Flame, label: copy.profilo.stats.streak, value: `${profile?.currentStreak ?? 0}🔥`, color: "text-orange-400" },
+          { icon: Dumbbell, label: copy.profilo.stats.longestStreak, value: profile?.longestStreak ?? 0, color: "text-primary" },
         ].map((s) => {
           const Icon = s.icon;
           return (
@@ -120,7 +108,7 @@ export default function ProfiloPage() {
 
       {/* Account info */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Account</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.profilo.accountTitle}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
@@ -144,29 +132,29 @@ export default function ProfiloPage() {
 
       {/* Edit form */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Modifica informazioni</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.profilo.editTitle}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium mb-1.5 block">Nome</label>
-            <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Il tuo nome" />
+            <label className="text-sm font-medium mb-1.5 block">{copy.profilo.nameLabel}</label>
+            <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder={copy.profilo.namePlaceholder} />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Età</label>
-              <Input type="number" value={form.age} onChange={(e) => setForm((f) => ({ ...f, age: e.target.value }))} placeholder="30" min="10" max="99" />
+              <label className="text-sm font-medium mb-1.5 block">{copy.profilo.ageLabel}</label>
+              <Input type="number" value={form.age} onChange={(e) => setForm((f) => ({ ...f, age: e.target.value }))} placeholder={copy.profilo.agePlaceholder} min="10" max="99" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Peso (kg)</label>
-              <Input type="number" value={form.weight} onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))} placeholder="75" min="30" max="300" />
+              <label className="text-sm font-medium mb-1.5 block">{copy.profilo.weightLabel}</label>
+              <Input type="number" value={form.weight} onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))} placeholder={copy.profilo.weightPlaceholder} min="30" max="300" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Altezza (cm)</label>
-              <Input type="number" value={form.height} onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))} placeholder="175" min="100" max="250" />
+              <label className="text-sm font-medium mb-1.5 block">{copy.profilo.heightLabel}</label>
+              <Input type="number" value={form.height} onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))} placeholder={copy.profilo.heightPlaceholder} min="100" max="250" />
             </div>
           </div>
           <Button onClick={saveProfile} disabled={saving} className="gap-2">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {saved ? "Salvato!" : "Salva modifiche"}
+            {saved ? copy.profilo.saved : copy.profilo.save}
           </Button>
         </CardContent>
       </Card>
@@ -174,11 +162,11 @@ export default function ProfiloPage() {
       {/* Visibilità profilo */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Visibilità profilo</CardTitle>
+          <CardTitle className="text-base">{copy.profilo.visibilityTitle}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Profilo pubblico: i tuoi allenamenti completati appaiono nel feed Community. Profilo privato: niente di visibile agli altri utenti.
+            {copy.profilo.visibilityDesc}
           </p>
           <div className="flex gap-2">
             <Button
@@ -193,7 +181,7 @@ export default function ProfiloPage() {
               }}
               className="flex-1"
             >
-              Pubblico
+              {copy.profilo.visibilityPublic}
             </Button>
             <Button
               variant={profile?.profileVisibility === "PRIVATE" ? "default" : "outline"}
@@ -207,7 +195,7 @@ export default function ProfiloPage() {
               }}
               className="flex-1"
             >
-              Privato
+              {copy.profilo.visibilityPrivate}
             </Button>
           </div>
         </CardContent>
@@ -216,16 +204,16 @@ export default function ProfiloPage() {
       {/* I miei dati (GDPR) */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">I miei dati</CardTitle>
+          <CardTitle className="text-base">{copy.profilo.dataTitle}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Scarica una copia completa di tutti i tuoi dati in formato JSON, come previsto dal GDPR (diritto alla portabilità).
+            {copy.profilo.dataDesc}
           </p>
           <Button variant="outline" asChild className="gap-2">
             <a href="/api/account/export">
               <Download className="w-4 h-4" />
-              Scarica i miei dati (.json)
+              {copy.profilo.dataDownload}
             </a>
           </Button>
         </CardContent>
@@ -235,12 +223,12 @@ export default function ProfiloPage() {
       <Card className="border-destructive/30">
         <CardContent className="p-4 flex items-center justify-between">
           <div>
-            <p className="font-medium">Esci dall&apos;account</p>
-            <p className="text-sm text-muted-foreground">Verrai disconnesso da tutti i dispositivi</p>
+            <p className="font-medium">{copy.profilo.logoutTitle}</p>
+            <p className="text-sm text-muted-foreground">{copy.profilo.logoutDesc}</p>
           </div>
           <Button variant="destructive" onClick={() => signOut({ callbackUrl: "/" })} className="gap-2">
             <LogOut className="w-4 h-4" />
-            Esci
+            {copy.profilo.logout}
           </Button>
         </CardContent>
       </Card>
@@ -267,7 +255,7 @@ function DeleteAccountSection() {
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setError(body.error ?? "Errore eliminazione");
+      setError(body.error ?? copy.profilo.deleteError);
       setBusy(false);
       return;
     }
@@ -279,40 +267,40 @@ function DeleteAccountSection() {
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2 text-destructive">
           <AlertTriangle className="w-4 h-4" />
-          Elimina account
+          {copy.profilo.deleteTitle}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {!open ? (
           <>
             <p className="text-sm text-muted-foreground">
-              Operazione irreversibile. Tutti i tuoi dati (piani, sessioni, analisi, log) saranno eliminati definitivamente.
+              {copy.profilo.deleteDesc}
             </p>
             <Button variant="destructive" onClick={() => setOpen(true)} className="gap-2">
               <Trash2 className="w-4 h-4" />
-              Elimina account
+              {copy.profilo.deleteTitle}
             </Button>
           </>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Per confermare, scrivi <span className="font-mono font-semibold text-foreground">ELIMINA</span> e inserisci la tua password.
+              {copy.profilo.deleteConfirmPre}<span className="font-mono font-semibold text-foreground">{copy.profilo.deleteConfirmKeyword}</span>{copy.profilo.deleteConfirmPost}
             </p>
-            <Input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="ELIMINA" />
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="La tua password" />
+            <Input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder={copy.profilo.deleteConfirmTextPlaceholder} />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={copy.profilo.deletePasswordPlaceholder} />
             {error && <p className="text-sm text-destructive">{error}</p>}
             <div className="flex gap-2 flex-wrap">
               <Button
                 variant="destructive"
                 onClick={handleDelete}
-                disabled={busy || confirmText !== "ELIMINA" || !password}
+                disabled={busy || confirmText !== copy.profilo.deleteConfirmKeyword || !password}
                 className="gap-2"
               >
                 {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                Conferma eliminazione
+                {copy.profilo.deleteConfirm}
               </Button>
               <Button variant="outline" onClick={() => { setOpen(false); setConfirmText(""); setPassword(""); setError(null); }}>
-                Annulla
+                {copy.profilo.cancel}
               </Button>
             </div>
           </div>

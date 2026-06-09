@@ -12,6 +12,7 @@ import Link from "next/link";
 import CountdownCircle from "@/components/analisi/CountdownCircle";
 import RecordingIndicator from "@/components/analisi/RecordingIndicator";
 import AnalysisProgress from "@/components/analisi/AnalysisProgress";
+import { copy } from "@/content/copy";
 
 type Phase = "IDLE" | "COUNTDOWN" | "RECORDING" | "UPLOADING" | "ANALYZING" | "ERROR";
 
@@ -120,7 +121,7 @@ function SessioneContent() {
         setExercise(data.exercise);
         setAnalysisSessionId(data.analysisSessionId);
       })
-      .catch(() => setError("Esercizio non trovato."));
+      .catch(() => setError(copy.analisiSessione.exerciseNotFound));
   }, [exerciseId]);
 
   const cleanup = useCallback(() => {
@@ -143,7 +144,7 @@ function SessioneContent() {
       const uploadRes = await fetch("/api/analysis/upload-video", { method: "POST", body: fd });
       if (!uploadRes.ok) {
         const err = await uploadRes.json().catch(() => ({}));
-        throw new Error(err.error ?? "Upload fallito");
+        throw new Error(err.error ?? copy.analisiSessione.uploadFailed);
       }
 
       // 2. Run analysis
@@ -163,12 +164,12 @@ function SessioneContent() {
       const data = await completeRes.json();
       setAnalysisStep(2);
       if (!completeRes.ok || data.error) {
-        throw new Error(data.error ?? "Analisi fallita");
+        throw new Error(data.error ?? copy.analisiSessione.analysisFailed);
       }
       router.push(`/analisi/report/${data.analysisSessionId}`);
     } catch (e) {
       setPhase("ERROR");
-      setError(e instanceof Error ? e.message : "Errore durante l'elaborazione");
+      setError(e instanceof Error ? e.message : copy.analisiSessione.processingError);
     } finally {
       stopCamera();
       storeReset();
@@ -255,8 +256,8 @@ function SessioneContent() {
     return (
       <div className="text-center py-16 space-y-4">
         <AlertTriangle className="w-12 h-12 text-destructive mx-auto" />
-        <p className="text-muted-foreground">{error ?? "Seleziona un esercizio dalla pagina Analisi AI."}</p>
-        <Link href="/analisi"><Button>Torna agli esercizi</Button></Link>
+        <p className="text-muted-foreground">{error ?? copy.analisiSessione.noExerciseSelected}</p>
+        <Link href="/analisi"><Button>{copy.analisiSessione.backToExercises}</Button></Link>
       </div>
     );
   }
@@ -265,11 +266,11 @@ function SessioneContent() {
     return (
       <div className="text-center py-16 space-y-4 max-w-md mx-auto">
         <AlertTriangle className="w-12 h-12 text-destructive mx-auto" />
-        <h2 className="text-xl font-semibold">Analisi non completata</h2>
+        <h2 className="text-xl font-semibold">{copy.analisiSessione.notCompletedTitle}</h2>
         <p className="text-muted-foreground text-sm">{error}</p>
         <div className="flex justify-center gap-2">
-          <Button onClick={retry}>Riprova</Button>
-          <Link href="/analisi"><Button variant="outline">Esci</Button></Link>
+          <Button onClick={retry}>{copy.analisiSessione.retry}</Button>
+          <Link href="/analisi"><Button variant="outline">{copy.analisiSessione.exit}</Button></Link>
         </div>
       </div>
     );
@@ -279,20 +280,20 @@ function SessioneContent() {
     return (
       <div className="py-12 px-4 max-w-3xl mx-auto flex flex-col items-center gap-8">
         <h2 className="text-2xl font-bold text-center">
-          {phase === "UPLOADING" ? "Carico il video..." : "Analisi in corso..."}
+          {phase === "UPLOADING" ? copy.analisiSessione.uploadingTitle : copy.analisiSessione.analyzingTitle}
         </h2>
         <AnalysisProgress
           steps={[
-            { label: "Upload", icon: <Loader2 className="w-5 h-5" /> },
-            { label: "L1+L2+L3", icon: <Brain className="w-5 h-5" /> },
-            { label: "Sintesi", icon: <TrendingUp className="w-5 h-5" /> },
+            { label: copy.analisiSessione.steps.upload, icon: <Loader2 className="w-5 h-5" /> },
+            { label: copy.analisiSessione.steps.layers, icon: <Brain className="w-5 h-5" /> },
+            { label: copy.analisiSessione.steps.synthesis, icon: <TrendingUp className="w-5 h-5" /> },
           ]}
           currentStep={phase === "UPLOADING" ? 0 : analysisStep}
         />
         <p className="mt-12 text-muted-foreground text-center text-sm">
           {phase === "UPLOADING"
-            ? "Stiamo trasferendo il tuo video al server."
-            : "I 3 sistemi AI stanno elaborando: questo richiede 1-2 minuti."}
+            ? copy.analisiSessione.uploadingDesc
+            : copy.analisiSessione.analyzingDesc}
         </p>
       </div>
     );
@@ -302,14 +303,14 @@ function SessioneContent() {
     <div className="space-y-4 max-w-4xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">{exercise?.name ?? "Caricamento..."}</h1>
+          <h1 className="text-xl font-bold">{exercise?.name ?? copy.analisiSessione.loadingExercise}</h1>
           <p className="text-sm text-muted-foreground">
-            {phase === "IDLE" && "Pronto a iniziare"}
-            {phase === "COUNTDOWN" && "Posizionati di fronte alla camera"}
-            {phase === "RECORDING" && "Registrazione in corso"}
+            {phase === "IDLE" && copy.analisiSessione.phaseIdle}
+            {phase === "COUNTDOWN" && copy.analisiSessione.phaseCountdown}
+            {phase === "RECORDING" && copy.analisiSessione.phaseRecording}
           </p>
         </div>
-        {phase === "IDLE" && <Link href="/analisi"><Button variant="outline" size="sm">← Indietro</Button></Link>}
+        {phase === "IDLE" && <Link href="/analisi"><Button variant="outline" size="sm">{copy.analisiSessione.back}</Button></Link>}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4">
@@ -320,7 +321,7 @@ function SessioneContent() {
               {!stream && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                   <Camera className="w-12 h-12 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Fotocamera non attiva</p>
+                  <p className="text-sm text-muted-foreground">{copy.analisiSessione.cameraInactive}</p>
                 </div>
               )}
               {phase === "COUNTDOWN" && (
@@ -348,7 +349,7 @@ function SessioneContent() {
               ) : (
                 <div className="text-center text-muted-foreground p-4">
                   <Camera className="w-8 h-8 mx-auto mb-2" />
-                  <p className="text-xs">Video PT non disponibile</p>
+                  <p className="text-xs">{copy.analisiSessione.proVideoUnavailable}</p>
                 </div>
               )}
             </div>
@@ -367,7 +368,7 @@ function SessioneContent() {
             className="gap-2 px-8"
           >
             {cameraLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Brain className="w-5 h-5" />}
-            Inizia
+            {copy.analisiSessione.start}
           </Button>
         )}
       </div>

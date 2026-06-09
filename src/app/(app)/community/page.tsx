@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, Dumbbell, Trophy, Image as ImageIcon, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
+import { copy } from "@/content/copy";
 
 interface FeedPost {
   id: string;
@@ -25,15 +26,10 @@ const TYPE_ICON = {
   CHALLENGE_COMPLETION: Trophy,
 } as const;
 
-const TYPE_LABEL = {
-  WORKOUT_SHARE: "Allenamento",
-  ACHIEVEMENT: "Achievement",
-  PROGRESS_PHOTO: "Foto progressi",
-  CHALLENGE_COMPLETION: "Sfida",
-} as const;
+const TYPE_LABEL = copy.community.typeLabels;
 
 function initials(name: string | null): string {
-  if (!name) return "??";
+  if (!name) return copy.community.unknownInitials;
   return name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
 }
 
@@ -79,11 +75,10 @@ export default function CommunityPage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Users className="w-7 h-7 text-primary" />
-          Community
+          {copy.community.title}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Attività recenti della community FitAI. I tuoi allenamenti completati appaiono automaticamente nel feed —
-          puoi disattivarli rendendo il profilo privato dalle impostazioni.
+          {copy.community.subtitle}
         </p>
       </div>
 
@@ -91,8 +86,8 @@ export default function CommunityPage() {
         <Card className="border-dashed border-2">
           <CardContent className="py-12 text-center space-y-2">
             <Users className="w-10 h-10 text-muted-foreground mx-auto" />
-            <p className="font-medium">Nessun post ancora</p>
-            <p className="text-sm text-muted-foreground">Completa un allenamento e sarai il primo!</p>
+            <p className="font-medium">{copy.community.emptyTitle}</p>
+            <p className="text-sm text-muted-foreground">{copy.community.emptySubtitle}</p>
           </CardContent>
         </Card>
       ) : (
@@ -108,7 +103,7 @@ export default function CommunityPage() {
                         {initials(post.user.name)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{post.user.name ?? "Anonimo"}</p>
+                        <p className="font-medium text-sm truncate">{post.user.name ?? copy.community.anonymous}</p>
                         <p className="text-xs text-muted-foreground">
                           {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: it })}
                         </p>
@@ -128,7 +123,7 @@ export default function CommunityPage() {
           {hasMore && (
             <div className="flex justify-center pt-2">
               <Button variant="outline" onClick={loadMore} disabled={loadingMore}>
-                {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : "Carica altri"}
+                {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : copy.community.loadMore}
               </Button>
             </div>
           )}

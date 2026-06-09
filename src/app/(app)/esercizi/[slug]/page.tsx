@@ -6,13 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Brain, CheckCircle, AlertTriangle, PlayCircle, Target } from "lucide-react";
+import { copy } from "@/content/copy";
 
 interface Props { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const ex = await prisma.exercise.findUnique({ where: { slug }, select: { name: true } });
-  return { title: ex?.name ?? "Esercizio" };
+  return { title: ex?.name ?? copy.esercizioDettaglio.fallbackTitle };
 }
 
 export default async function EsercizioPage({ params }: Props) {
@@ -48,7 +49,7 @@ export default async function EsercizioPage({ params }: Props) {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-3">
-        <Link href="/esercizi"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4" />Torna agli esercizi</Button></Link>
+        <Link href="/esercizi"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4" />{copy.esercizioDettaglio.backToExercises}</Button></Link>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -60,14 +61,14 @@ export default async function EsercizioPage({ params }: Props) {
             ) : (
               <div className="text-center space-y-2">
                 <PlayCircle className="w-16 h-16 text-muted-foreground mx-auto" />
-                <p className="text-sm text-muted-foreground">Video disponibile a breve</p>
+                <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.videoComingSoon}</p>
               </div>
             )}
           </div>
           <Link href={`/analisi?esercizio=${exercise.slug}`}>
             <Button className="w-full gap-2">
               <Brain className="w-4 h-4" />
-              Analizza la mia esecuzione con AI
+              {copy.esercizioDettaglio.analyzeWithAi}
             </Button>
           </Link>
         </div>
@@ -91,21 +92,21 @@ export default async function EsercizioPage({ params }: Props) {
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-secondary/50 rounded-lg p-3 text-center">
               <p className="text-lg font-bold text-primary">{exercise.caloriesPerMinute}</p>
-              <p className="text-xs text-muted-foreground">Cal/min</p>
+              <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statCalPerMin}</p>
             </div>
             <div className="bg-secondary/50 rounded-lg p-3 text-center">
               <p className="text-lg font-bold text-primary">{biomechanicalRules.length}</p>
-              <p className="text-xs text-muted-foreground">Regole AI</p>
+              <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statAiRules}</p>
             </div>
             <div className="bg-secondary/50 rounded-lg p-3 text-center">
               <p className="text-lg font-bold text-primary">{exercise.equipment.length}</p>
-              <p className="text-xs text-muted-foreground">Attrezzature</p>
+              <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statEquipment}</p>
             </div>
           </div>
 
           {/* Attrezzatura */}
           <div>
-            <p className="text-sm font-medium mb-2">Attrezzatura necessaria</p>
+            <p className="text-sm font-medium mb-2">{copy.esercizioDettaglio.equipmentNeeded}</p>
             <div className="flex flex-wrap gap-2">
               {exercise.equipment.map((eq) => (
                 <span key={eq} className="text-xs bg-secondary/50 border border-border rounded-full px-2.5 py-1">
@@ -119,7 +120,7 @@ export default async function EsercizioPage({ params }: Props) {
 
       {/* Istruzioni */}
       <Card>
-        <CardHeader><CardTitle>Istruzioni di Esecuzione</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{copy.esercizioDettaglio.instructionsTitle}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           {exercise.instructions.map((step, i) => (
             <div key={i} className="flex gap-3">
@@ -136,11 +137,11 @@ export default async function EsercizioPage({ params }: Props) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="w-5 h-5 text-primary" />
-              Parametri Biomeccanici AI
+              {copy.esercizioDettaglio.biomechanicalTitle}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">Il sistema AI monitora questi parametri durante l&apos;analisi in tempo reale:</p>
+            <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.biomechanicalIntro}</p>
             {biomechanicalRules.map((r) => (
               <div key={r.id} className="flex gap-3 p-3 rounded-lg bg-secondary/30">
                 <span className="text-lg shrink-0">{severityIcon[r.severity]}</span>
@@ -161,7 +162,7 @@ export default async function EsercizioPage({ params }: Props) {
       {/* Note professionali */}
       {exercise.professionalNotes && (
         <Card className="border-primary/20 bg-primary/5">
-          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary" />Note del Professionista</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary" />{copy.esercizioDettaglio.professionalNotesTitle}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground whitespace-pre-line">{exercise.professionalNotes}</p>
           </CardContent>

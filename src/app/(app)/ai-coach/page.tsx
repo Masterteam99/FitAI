@@ -5,19 +5,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Brain, Send, User, Loader2, Zap } from "lucide-react";
+import { copy } from "@/content/copy";
 
 interface Message { role: "user" | "assistant"; content: string }
 
-const SUGGESTIONS = [
-  "Come miglioro la mia tecnica nello squat?",
-  "Quante proteine dovrei mangiare al giorno?",
-  "Ho dolore alla spalla, posso allenarmi?",
-  "Crea un piano di recupero post-allenamento",
-];
+const SUGGESTIONS = copy.aiCoach.suggestions;
 
 export default function AICoachPage() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Ciao! Sono il tuo AI Coach personale 💪 Sono qui per rispondere a qualsiasi domanda su allenamento, nutrizione, recupero o tecnica degli esercizi. Come posso aiutarti oggi?" },
+    { role: "assistant", content: copy.aiCoach.welcomeMessage },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +53,7 @@ export default function AICoachPage() {
         setMessages((prev) => prev.map((m, i) => i === prev.length - 1 ? { ...m, content: fullText } : m));
       }
     } catch {
-      setMessages((prev) => prev.map((m, i) => i === prev.length - 1 ? { ...m, content: "Mi dispiace, si è verificato un errore. Riprova." } : m));
+      setMessages((prev) => prev.map((m, i) => i === prev.length - 1 ? { ...m, content: copy.aiCoach.errorMessage } : m));
     } finally {
       setIsLoading(false);
     }
@@ -68,9 +64,9 @@ export default function AICoachPage() {
       <div className="mb-4">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Brain className="w-7 h-7 text-primary" />
-          AI Coach
+          {copy.aiCoach.title}
         </h1>
-        <p className="text-muted-foreground">Il tuo personal trainer AI disponibile 24/7</p>
+        <p className="text-muted-foreground">{copy.aiCoach.subtitle}</p>
       </div>
 
       {/* Messages */}
@@ -121,11 +117,11 @@ export default function AICoachPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-          placeholder="Scrivi un messaggio..."
+          placeholder={copy.aiCoach.inputPlaceholder}
           disabled={isLoading}
           className="flex-1"
         />
-        <Button onClick={() => sendMessage()} disabled={isLoading || !input.trim()} size="icon" aria-label="Invia messaggio">
+        <Button onClick={() => sendMessage()} disabled={isLoading || !input.trim()} size="icon" aria-label={copy.aiCoach.sendAria}>
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </Button>
       </div>

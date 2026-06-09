@@ -10,6 +10,7 @@ import { GradientMesh } from "@/components/visualizations/GradientMesh";
 import { NumberPunch } from "@/components/motion/NumberPunch";
 import { emitAchievement } from "@/components/celebration/AchievementUnlock";
 import { cn } from "@/lib/utils";
+import { copy } from "@/content/copy";
 
 interface Exercise {
   id: string;
@@ -23,18 +24,7 @@ interface Exercise {
   notes: string | null;
 }
 
-const MOTIVATIONAL_QUOTES = [
-  "Recupera, conquista.",
-  "Il riposo costruisce il muscolo.",
-  "Respira. Ricarica.",
-  "La prossima serie è la tua.",
-  "Focus sul prossimo rep.",
-  "L'energia torna. Tienila pronta.",
-  "Un set alla volta.",
-  "Resta presente.",
-  "Il muscolo cresce quando recuperi.",
-  "Sei più forte di un minuto fa.",
-];
+const MOTIVATIONAL_QUOTES = copy.allenamentoSessione.motivationalQuotes;
 
 function WorkoutSessionContent() {
   const { id: planId } = useParams<{ id: string }>();
@@ -70,7 +60,7 @@ function WorkoutSessionContent() {
       .then((r) => r.json())
       .then((plan) => {
         const day = plan.days?.find((d: { id: string }) => d.id === dayId);
-        if (!day) throw new Error("Giorno non trovato");
+        if (!day) throw new Error(copy.allenamentoSessione.dayNotFound);
         const exs: Exercise[] = day.exercises.map((e: {
           id: string; exercise: { id: string; name: string; slug: string; muscleGroupPrimary: string };
           sets: number; reps: number | null; durationSeconds: number | null; restSeconds: number; notes: string | null;
@@ -162,7 +152,7 @@ function WorkoutSessionContent() {
       setTimeout(() => {
         emitAchievement({
           icon: "💪",
-          name: "Sessione completata",
+          name: copy.allenamentoSessione.achievementName,
           points: 25,
           rarity: "UNCOMMON",
         });
@@ -184,8 +174,8 @@ function WorkoutSessionContent() {
       <div className="relative h-screen flex items-center justify-center">
         <GradientMesh palette="warm" intensity="low" />
         <div className="text-center space-y-4 relative">
-          <p className="text-muted-foreground">{error ?? "Nessun esercizio per questo giorno."}</p>
-          <Link href={`/allenamento/${planId}`}><Button>Torna al piano</Button></Link>
+          <p className="text-muted-foreground">{error ?? copy.allenamentoSessione.noExercisesError}</p>
+          <Link href={`/allenamento/${planId}`}><Button>{copy.allenamentoSessione.backToPlan}</Button></Link>
         </div>
       </div>
     );
@@ -216,25 +206,25 @@ function WorkoutSessionContent() {
           </motion.div>
 
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-energy-warm">Sessione completata</p>
-            <h1 className="text-display-lg text-foreground">Ottimo lavoro 💪</h1>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-energy-warm">{copy.allenamentoSessione.completedLabel}</p>
+            <h1 className="text-display-lg text-foreground">{copy.allenamentoSessione.completedTitle}</h1>
           </div>
 
           <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
             <div className="bg-card/60 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Durata</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{copy.allenamentoSessione.statDuration}</div>
               <div className="font-display text-3xl">
                 <NumberPunch value={durationMin} unit="m" />
               </div>
             </div>
             <div className="bg-card/60 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Esercizi</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{copy.allenamentoSessione.statExercises}</div>
               <div className="font-display text-3xl">
                 <NumberPunch value={exercises.length} />
               </div>
             </div>
             <div className="bg-card/60 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Set tot.</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{copy.allenamentoSessione.statTotalSets}</div>
               <div className="font-display text-3xl">
                 <NumberPunch value={totalSets} />
               </div>
@@ -242,7 +232,7 @@ function WorkoutSessionContent() {
           </div>
 
           <div className="bg-card/60 backdrop-blur border border-border rounded-xl p-4 max-w-md mx-auto">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Muscoli colpiti oggi</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">{copy.allenamentoSessione.musclesHitToday}</div>
             <div className="flex flex-wrap gap-2 justify-center">
               {muscles.map((m) => (
                 <span key={m} className="px-3 py-1 rounded-full bg-energy-warm/20 text-energy-warm text-xs font-medium border border-energy-warm/30">
@@ -255,11 +245,11 @@ function WorkoutSessionContent() {
           <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
             <Link href="/dashboard">
               <Button size="lg" className="gap-2">
-                <ChevronRight className="w-5 h-5" /> Dashboard
+                <ChevronRight className="w-5 h-5" /> {copy.allenamentoSessione.dashboard}
               </Button>
             </Link>
             <Link href={`/allenamento/${planId}`}>
-              <Button size="lg" variant="outline">Piano</Button>
+              <Button size="lg" variant="outline">{copy.allenamentoSessione.plan}</Button>
             </Link>
           </div>
         </motion.div>
@@ -283,7 +273,7 @@ function WorkoutSessionContent() {
       <div className="relative z-10 flex items-center justify-between p-4 lg:p-6">
         <Link href={`/allenamento/${planId}`}>
           <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground">
-            <X className="w-4 h-4" /> Esci
+            <X className="w-4 h-4" /> {copy.allenamentoSessione.exit}
           </Button>
         </Link>
         <div className="flex items-center gap-3">
@@ -315,7 +305,7 @@ function WorkoutSessionContent() {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="flex flex-col items-center justify-center min-h-[70vh]"
             >
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">Recupero</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">{copy.allenamentoSessione.rest}</p>
 
               <div className="relative">
                 <svg viewBox="0 0 200 200" className="w-64 h-64 -rotate-90">
@@ -338,7 +328,7 @@ function WorkoutSessionContent() {
                     className="text-hero text-foreground"
                   />
                   {isPaused && (
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-energy-warm mt-2">in pausa</span>
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-energy-warm mt-2">{copy.allenamentoSessione.paused}</span>
                   )}
                 </div>
               </div>
@@ -348,10 +338,10 @@ function WorkoutSessionContent() {
               <div className="flex items-center gap-3 mt-8">
                 <Button variant="outline" size="lg" onClick={() => setIsPaused((p) => !p)} className="gap-2">
                   {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                  {isPaused ? "Riprendi" : "Pausa"}
+                  {isPaused ? copy.allenamentoSessione.resume : copy.allenamentoSessione.pause}
                 </Button>
                 <Button size="lg" onClick={skipRest} className="gap-2">
-                  <SkipForward className="w-4 h-4" /> Salta
+                  <SkipForward className="w-4 h-4" /> {copy.allenamentoSessione.skip}
                 </Button>
               </div>
             </motion.div>
@@ -385,7 +375,7 @@ function WorkoutSessionContent() {
                       tone="energy"
                       className="text-hero leading-none"
                     />
-                    <span className="text-lg text-muted-foreground pb-3 uppercase tracking-wider">reps</span>
+                    <span className="text-lg text-muted-foreground pb-3 uppercase tracking-wider">{copy.allenamentoSessione.repsUnit}</span>
                   </>
                 )}
                 {currentEx.reps === null && currentEx.durationSeconds !== null && (
@@ -428,7 +418,7 @@ function WorkoutSessionContent() {
               {/* Serie attuale label */}
               <div className="text-center mb-6">
                 <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Serie {currentSet} di {currentEx.sets}
+                  {copy.allenamentoSessione.seriesLabel(currentSet, currentEx.sets)}
                 </span>
               </div>
 
@@ -440,7 +430,7 @@ function WorkoutSessionContent() {
                   className="w-full h-16 text-base gap-3 gradient-energy text-background hover:opacity-90 font-display tracking-wide"
                 >
                   <CheckCircle className="w-6 h-6" />
-                  Serie completata
+                  {copy.allenamentoSessione.setCompleted}
                   <ChevronRight className="w-6 h-6" />
                 </Button>
               </motion.div>
@@ -448,7 +438,7 @@ function WorkoutSessionContent() {
               {/* Upcoming */}
               {currentExIndex < exercises.length - 1 && (
                 <div className="mt-10">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">Prossimi</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">{copy.allenamentoSessione.upcoming}</p>
                   <div className="space-y-2">
                     {exercises.slice(currentExIndex + 1, currentExIndex + 3).map((ex) => (
                       <div key={ex.id} className="flex items-center gap-3 p-3 rounded-lg bg-card/40 backdrop-blur border border-border text-sm">

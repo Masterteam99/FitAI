@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Dumbbell, Search } from "lucide-react";
 import type { Metadata } from "next";
+import { copy } from "@/content/copy";
 
-export const metadata: Metadata = { title: "Esercizi" };
+export const metadata: Metadata = { title: copy.esercizi.meta.title };
 
 interface Props {
   searchParams: Promise<{ muscolo?: string; difficolta?: string; cerca?: string }>;
@@ -33,8 +34,8 @@ export default async function EserciziPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Libreria Esercizi</h1>
-        <p className="text-muted-foreground">{exercises.length} esercizi disponibili</p>
+        <h1 className="text-2xl font-bold">{copy.esercizi.title}</h1>
+        <p className="text-muted-foreground">{copy.esercizi.countAvailable(exercises.length)}</p>
       </div>
 
       {/* Filtri */}
@@ -44,14 +45,14 @@ export default async function EserciziPage({ searchParams }: Props) {
           <input
             name="cerca"
             defaultValue={params.cerca}
-            placeholder="Cerca esercizio..."
+            placeholder={copy.esercizi.searchPlaceholder}
             className="w-full h-9 pl-9 pr-3 rounded-lg border border-border bg-input text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </form>
 
         <div className="flex flex-wrap gap-2">
           <Link href="/esercizi" className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${!params.muscolo ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
-            Tutti
+            {copy.esercizi.allFilter}
           </Link>
           {muscleGroups.map(([key, label]) => (
             <Link key={key} href={`/esercizi?muscolo=${key}${params.difficolta ? `&difficolta=${params.difficolta}` : ""}`}
@@ -75,7 +76,7 @@ export default async function EserciziPage({ searchParams }: Props) {
       {exercises.length === 0 ? (
         <div className="text-center py-16 space-y-3">
           <Dumbbell className="w-12 h-12 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground">Nessun esercizio trovato per i filtri selezionati.</p>
+          <p className="text-muted-foreground">{copy.esercizi.noResults}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

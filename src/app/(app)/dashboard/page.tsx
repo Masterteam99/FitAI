@@ -14,9 +14,10 @@ import { computeImbalances, muscleLabel } from "@/lib/body-map";
 import { BodyMap } from "@/components/visualizations/BodyMap/BodyMap";
 import { StreakHeatmap } from "@/components/visualizations/StreakHeatmap";
 import { FadeIn, Stagger, StaggerItem, CardHover, CountUp, PageTransition } from "@/components/motion/MotionPrimitives";
+import { copy } from "@/content/copy";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: copy.dashboard.meta.title };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -56,19 +57,19 @@ export default async function DashboardPage() {
         <FadeIn>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold">Ciao, {user?.name?.split(" ")[0] ?? "Atleta"} <span className="inline-block animate-wave">👋</span></h1>
-              <p className="text-muted-foreground">Pronto per l&apos;allenamento di oggi?</p>
+              <h1 className="text-2xl font-bold">{copy.dashboard.greeting(user?.name?.split(" ")[0] ?? copy.dashboard.greetingFallback)} <span className="inline-block animate-wave">👋</span></h1>
+              <p className="text-muted-foreground">{copy.dashboard.subtitle}</p>
             </div>
             <div className="flex items-center gap-4 text-sm">
               <span className="inline-flex items-center gap-1.5">
                 <Flame className="w-4 h-4 text-energy-warm" />
                 <CountUp value={user?.currentStreak ?? 0} className="font-semibold" />
-                <span className="text-muted-foreground">gg streak</span>
+                <span className="text-muted-foreground">{copy.dashboard.streakSuffix}</span>
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Target className="w-4 h-4 text-primary" />
                 <CountUp value={user?.totalPoints ?? 0} className="font-semibold" />
-                <span className="text-muted-foreground">pt</span>
+                <span className="text-muted-foreground">{copy.dashboard.pointsSuffix}</span>
               </span>
             </div>
           </div>
@@ -84,8 +85,8 @@ export default async function DashboardPage() {
               <Card>
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle>Piano Attivo</CardTitle>
-                    <Link href="/allenamento"><Button size="sm">Vai all&apos;allenamento <ChevronRight className="w-4 h-4" /></Button></Link>
+                    <CardTitle>{copy.dashboard.activePlanTitle}</CardTitle>
+                    <Link href="/allenamento"><Button size="sm">{copy.dashboard.goToWorkout} <ChevronRight className="w-4 h-4" /></Button></Link>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -94,10 +95,10 @@ export default async function DashboardPage() {
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-medium">{activePlan.name}</span>
-                          <Badge variant="secondary">{activePlan.workoutsPerWeek}x/sett</Badge>
+                          <Badge variant="secondary">{activePlan.workoutsPerWeek}{copy.dashboard.workoutsPerWeekSuffix}</Badge>
                         </div>
                         <Progress value={Math.round((recentSessions.length / (activePlan.durationWeeks * activePlan.workoutsPerWeek)) * 100)} />
-                        <p className="text-xs text-muted-foreground mt-1">{recentSessions.length} sessioni completate</p>
+                        <p className="text-xs text-muted-foreground mt-1">{copy.dashboard.sessionsCompleted(recentSessions.length)}</p>
                       </div>
                       <Stagger className="space-y-2">
                         {activePlan.days.slice(0, 3).map((day) => (
@@ -108,7 +109,7 @@ export default async function DashboardPage() {
                               </div>
                               <div>
                                 <p className="text-sm font-medium">{day.name}</p>
-                                <p className="text-xs text-muted-foreground">{day.restDay ? "Riposo" : `${day.exercises.length} esercizi`}</p>
+                                <p className="text-xs text-muted-foreground">{day.restDay ? copy.dashboard.restDay : copy.dashboard.exercisesCount(day.exercises.length)}</p>
                               </div>
                             </div>
                           </StaggerItem>
@@ -118,8 +119,8 @@ export default async function DashboardPage() {
                   ) : (
                     <div className="text-center py-8 space-y-3">
                       <Brain className="w-12 h-12 text-muted-foreground mx-auto" />
-                      <p className="text-muted-foreground">Nessun piano attivo</p>
-                      <Link href="/allenamento"><Button><Plus className="w-4 h-4" />Crea piano con AI</Button></Link>
+                      <p className="text-muted-foreground">{copy.dashboard.noActivePlan}</p>
+                      <Link href="/allenamento"><Button><Plus className="w-4 h-4" />{copy.dashboard.createPlanAi}</Button></Link>
                     </div>
                   )}
                 </CardContent>
@@ -130,9 +131,9 @@ export default async function DashboardPage() {
               <Card>
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">Costanza ultimi 90 giorni</CardTitle>
+                    <CardTitle className="text-base">{copy.dashboard.consistencyTitle}</CardTitle>
                     <Link href="/progressi" className="text-xs text-muted-foreground hover:text-primary">
-                      Vedi tutto →
+                      {copy.dashboard.seeAll}
                     </Link>
                   </div>
                 </CardHeader>
@@ -145,17 +146,17 @@ export default async function DashboardPage() {
             <FadeIn delay={0.2}>
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Sessioni Recenti</CardTitle>
+                  <CardTitle className="text-base">{copy.dashboard.recentSessionsTitle}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {recentSessions.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">Nessuna sessione ancora. Inizia il tuo allenamento!</p>
+                    <p className="text-sm text-muted-foreground text-center py-4">{copy.dashboard.noSessions}</p>
                   ) : (
                     recentSessions.map((s) => (
                       <div key={s.id} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/60 transition-colors">
                         <Dumbbell className="w-5 h-5 text-primary shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{s.planDay?.name ?? "Sessione libera"}</p>
+                          <p className="text-sm font-medium truncate">{s.planDay?.name ?? copy.dashboard.freeSession}</p>
                           <p className="text-xs text-muted-foreground">{formatDate(s.completedAt!)}</p>
                         </div>
                         <div className="text-right text-xs text-muted-foreground">
@@ -176,10 +177,10 @@ export default async function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-base flex items-center gap-2">
                       <Activity className="w-4 h-4 text-energy-hot" />
-                      Squilibri muscolari
+                      {copy.dashboard.imbalancesTitle}
                     </CardTitle>
                     <Link href="/progressi" className="text-xs text-muted-foreground hover:text-primary">
-                      Mappa →
+                      {copy.dashboard.mapLink}
                     </Link>
                   </div>
                 </CardHeader>
@@ -194,7 +195,7 @@ export default async function DashboardPage() {
                     />
                   </div>
                   {topImbalances.length === 0 ? (
-                    <p className="text-xs text-center text-muted-foreground">Buon equilibrio 💪</p>
+                    <p className="text-xs text-center text-muted-foreground">{copy.dashboard.goodBalance}</p>
                   ) : (
                     <ul className="space-y-1.5 text-xs">
                       {topImbalances.map((i) => (
@@ -214,13 +215,14 @@ export default async function DashboardPage() {
 
             <FadeIn delay={0.15}>
               <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-base">Azioni rapide</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-base">{copy.dashboard.quickActionsTitle}</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
                   {[
-                    { href: "/analisi", label: "Analizza esercizio", icon: Brain, desc: "Analisi video AI" },
-                    { href: "/ai-coach", label: "Chiedi all'AI Coach", icon: Target, desc: "Consigli personalizzati" },
-                    { href: "/esercizi", label: "Sfoglia esercizi", icon: Dumbbell, desc: "Libreria completa" },
-                  ].map((a) => {
+                    { href: "/analisi", icon: Brain },
+                    { href: "/ai-coach", icon: Target },
+                    { href: "/esercizi", icon: Dumbbell },
+                  ].map((pres, i) => {
+                    const a = { ...pres, ...copy.dashboard.quickActions[i] };
                     const Icon = a.icon;
                     return (
                       <CardHover key={a.href}>
@@ -243,14 +245,14 @@ export default async function DashboardPage() {
             {achievements.length > 0 && (
               <FadeIn delay={0.2}>
                 <Card>
-                  <CardHeader className="pb-2"><CardTitle className="text-base">Ultimi Achievement</CardTitle></CardHeader>
+                  <CardHeader className="pb-2"><CardTitle className="text-base">{copy.dashboard.lastAchievementsTitle}</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     {achievements.map((ua) => (
                       <div key={ua.id} className="flex items-center gap-3">
                         <span className="text-2xl">{ua.achievement.icon}</span>
                         <div>
                           <p className="text-sm font-medium">{ua.achievement.name}</p>
-                          <p className="text-xs text-muted-foreground">+{ua.achievement.points} punti</p>
+                          <p className="text-xs text-muted-foreground">{copy.dashboard.pointsLabel(ua.achievement.points)}</p>
                         </div>
                       </div>
                     ))}

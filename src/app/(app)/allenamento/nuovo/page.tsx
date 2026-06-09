@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dumbbell, Plus, Trash2, Loader2, ArrowLeft, AlertCircle } from "lucide-react";
+import { copy } from "@/content/copy";
 
 interface ExerciseOption {
   id: string;
@@ -22,14 +23,7 @@ interface DayDraft {
   exercises: { exerciseId: string; sets: number; reps: number; restSeconds: number }[];
 }
 
-const GOALS = [
-  { value: "LOSE_WEIGHT", label: "Perdita di peso" },
-  { value: "BUILD_MUSCLE", label: "Massa muscolare" },
-  { value: "ATHLETIC_PERFORMANCE", label: "Performance" },
-  { value: "ENDURANCE", label: "Resistenza" },
-  { value: "FLEXIBILITY", label: "Flessibilità" },
-  { value: "GENERAL_FITNESS", label: "Forma generale" },
-] as const;
+const GOALS = copy.allenamentoNuovo.goals;
 
 export default function NuovoPianoPage() {
   const router = useRouter();
@@ -43,7 +37,7 @@ export default function NuovoPianoPage() {
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState(3);
   const [primaryGoal, setPrimaryGoal] = useState<typeof GOALS[number]["value"]>("GENERAL_FITNESS");
   const [days, setDays] = useState<DayDraft[]>([
-    { name: "Giorno 1", restDay: false, exercises: [] },
+    { name: copy.allenamentoNuovo.dayNameDefault(1), restDay: false, exercises: [] },
   ]);
 
   useEffect(() => {
@@ -58,7 +52,7 @@ export default function NuovoPianoPage() {
   }
 
   function addDay() {
-    setDays((prev) => [...prev, { name: `Giorno ${prev.length + 1}`, restDay: false, exercises: [] }]);
+    setDays((prev) => [...prev, { name: copy.allenamentoNuovo.dayNameDefault(prev.length + 1), restDay: false, exercises: [] }]);
   }
 
   function removeDay(idx: number) {
@@ -113,7 +107,7 @@ export default function NuovoPianoPage() {
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setError(typeof body.error === "string" ? body.error : "Errore salvataggio");
+      setError(typeof body.error === "string" ? body.error : copy.allenamentoNuovo.saveError);
       setSaving(false);
       return;
     }
@@ -128,16 +122,16 @@ export default function NuovoPianoPage() {
   return (
     <div className="space-y-6 max-w-3xl">
       <Link href="/allenamento" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Tutti i piani
+        <ArrowLeft className="w-4 h-4" /> {copy.allenamentoNuovo.backToPlans}
       </Link>
 
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Dumbbell className="w-7 h-7 text-primary" />
-          Nuovo piano manuale
+          {copy.allenamentoNuovo.title}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Costruisci il tuo piano scegliendo esercizi giorno per giorno. In alternativa puoi <Link href="/allenamento/genera-ai" className="text-primary hover:underline">generarlo con l&apos;AI</Link>.
+          {copy.allenamentoNuovo.subtitlePre}<Link href="/allenamento/genera-ai" className="text-primary hover:underline">{copy.allenamentoNuovo.subtitleLink}</Link>{copy.allenamentoNuovo.subtitlePost}
         </p>
       </div>
 
@@ -148,23 +142,23 @@ export default function NuovoPianoPage() {
       )}
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Dettagli piano</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{copy.allenamentoNuovo.detailsTitle}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium mb-1.5 block">Nome del piano</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Es. Forza base 4 settimane" />
+            <label className="text-sm font-medium mb-1.5 block">{copy.allenamentoNuovo.nameLabel}</label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={copy.allenamentoNuovo.namePlaceholder} />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Settimane</label>
+              <label className="text-sm font-medium mb-1.5 block">{copy.allenamentoNuovo.weeksLabel}</label>
               <Input type="number" min={1} max={52} value={durationWeeks} onChange={(e) => setDurationWeeks(Number(e.target.value))} />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Giorni / sett.</label>
+              <label className="text-sm font-medium mb-1.5 block">{copy.allenamentoNuovo.daysPerWeekLabel}</label>
               <Input type="number" min={1} max={7} value={workoutsPerWeek} onChange={(e) => setWorkoutsPerWeek(Number(e.target.value))} />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Obiettivo</label>
+              <label className="text-sm font-medium mb-1.5 block">{copy.allenamentoNuovo.goalLabel}</label>
               <select
                 value={primaryGoal}
                 onChange={(e) => setPrimaryGoal(e.target.value as typeof GOALS[number]["value"])}
@@ -179,9 +173,9 @@ export default function NuovoPianoPage() {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Giorni del piano</h2>
+          <h2 className="text-lg font-semibold">{copy.allenamentoNuovo.daysSectionTitle}</h2>
           <Button variant="outline" size="sm" onClick={addDay} className="gap-2">
-            <Plus className="w-4 h-4" /> Aggiungi giorno
+            <Plus className="w-4 h-4" /> {copy.allenamentoNuovo.addDay}
           </Button>
         </div>
 
@@ -192,7 +186,7 @@ export default function NuovoPianoPage() {
                 <Input
                   value={day.name}
                   onChange={(e) => updateDay(dayIdx, { name: e.target.value })}
-                  placeholder="Nome giorno"
+                  placeholder={copy.allenamentoNuovo.dayNamePlaceholder}
                   className="flex-1"
                 />
                 <Button
@@ -200,7 +194,7 @@ export default function NuovoPianoPage() {
                   size="sm"
                   onClick={() => updateDay(dayIdx, { restDay: !day.restDay, exercises: !day.restDay ? [] : day.exercises })}
                 >
-                  Riposo
+                  {copy.allenamentoNuovo.restDay}
                 </Button>
                 {days.length > 1 && (
                   <Button variant="ghost" size="icon" onClick={() => removeDay(dayIdx)}>
@@ -212,7 +206,7 @@ export default function NuovoPianoPage() {
             {!day.restDay && (
               <CardContent className="space-y-3">
                 {day.exercises.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Nessun esercizio. Aggiungine almeno uno dal menu sotto.</p>
+                  <p className="text-sm text-muted-foreground">{copy.allenamentoNuovo.noDayExercises}</p>
                 ) : (
                   <div className="space-y-2">
                     {day.exercises.map((ex, exIdx) => {
@@ -220,13 +214,13 @@ export default function NuovoPianoPage() {
                       return (
                         <div key={exIdx} className="flex items-center gap-2 p-2 rounded-lg bg-secondary/40">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{exDef?.name ?? "?"}</p>
+                            <p className="text-sm font-medium truncate">{exDef?.name ?? copy.allenamentoNuovo.unknownExercise}</p>
                             <Badge variant="secondary" className="text-xs mt-0.5">{exDef?.muscleGroupPrimary ?? ""}</Badge>
                           </div>
                           <Input type="number" min={1} max={20} value={ex.sets} onChange={(e) => updateExercise(dayIdx, exIdx, { sets: Number(e.target.value) })} className="w-16 text-center" aria-label="sets" />
                           <span className="text-xs text-muted-foreground">×</span>
                           <Input type="number" min={1} max={100} value={ex.reps} onChange={(e) => updateExercise(dayIdx, exIdx, { reps: Number(e.target.value) })} className="w-16 text-center" aria-label="reps" />
-                          <span className="text-xs text-muted-foreground">rep</span>
+                          <span className="text-xs text-muted-foreground">{copy.allenamentoNuovo.repUnit}</span>
                           <Button variant="ghost" size="icon" onClick={() => removeExercise(dayIdx, exIdx)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -240,7 +234,7 @@ export default function NuovoPianoPage() {
                   onChange={(e) => { if (e.target.value) { addExerciseToDay(dayIdx, e.target.value); e.target.value = ""; } }}
                   className="flex h-10 w-full rounded-lg border border-input bg-input px-3 py-2 text-sm"
                 >
-                  <option value="">+ Aggiungi esercizio...</option>
+                  <option value="">{copy.allenamentoNuovo.addExercisePlaceholder}</option>
                   {exercises.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
                 </select>
               </CardContent>
@@ -251,11 +245,11 @@ export default function NuovoPianoPage() {
 
       <div className="flex gap-2 sticky bottom-4 bg-background/95 py-3 -mx-4 px-4 border-t border-border lg:static lg:mx-0 lg:px-0 lg:border-0 lg:py-0">
         <Button asChild variant="outline" className="flex-1">
-          <Link href="/allenamento">Annulla</Link>
+          <Link href="/allenamento">{copy.allenamentoNuovo.cancel}</Link>
         </Button>
         <Button onClick={save} disabled={!valid || saving} className="flex-1 gap-2">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          Crea piano
+          {copy.allenamentoNuovo.createPlan}
         </Button>
       </div>
     </div>

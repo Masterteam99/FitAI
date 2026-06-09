@@ -12,8 +12,9 @@ import ReportError from "@/components/analisi/ReportError";
 import AnalysisProgress from "@/components/analisi/AnalysisProgress";
 import AnalysisDetails from "@/components/analisi/AnalysisDetails";
 import VideoSyncPlayer from "@/components/analisi/VideoSyncPlayer";
+import { copy } from "@/content/copy";
 
-export const metadata: Metadata = { title: "Report Analisi" };
+export const metadata: Metadata = { title: copy.analisiReport.meta.title };
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -28,28 +29,27 @@ export default async function ReportPage({ params }: Props) {
   if (!report) notFound();
 
   if (report.status === "ERROR") {
-    return <ReportError message="Il sistema non è riuscito a completare l'analisi del video." />;
+    return <ReportError message={copy.analisiReport.errorMessage} />;
   }
 
   if (report.status === "PROCESSING" || report.status === "RECORDING") {
     return (
       <div className="py-12 px-4 max-w-3xl mx-auto flex flex-col items-center">
-        <h2 className="text-2xl font-bold mb-12">Analisi in corso...</h2>
-        <AnalysisProgress 
+        <h2 className="text-2xl font-bold mb-12">{copy.analisiReport.processingTitle}</h2>
+        <AnalysisProgress
           steps={[
-            { label: "L1 Biomeccanica", icon: <Target className="w-5 h-5" /> },
-            { label: "L2 PT Expert", icon: <Brain className="w-5 h-5" /> },
-            { label: "L3 Confronto", icon: <TrendingUp className="w-5 h-5" /> }
+            { label: copy.analisiReport.steps.l1, icon: <Target className="w-5 h-5" /> },
+            { label: copy.analisiReport.steps.l2, icon: <Brain className="w-5 h-5" /> },
+            { label: copy.analisiReport.steps.l3, icon: <TrendingUp className="w-5 h-5" /> }
           ]}
-          currentStep={1} 
+          currentStep={1}
         />
         <p className="mt-12 text-muted-foreground text-center">
-          Stiamo elaborando il tuo video. Questo processo richiede 1-2 minuti.
-          La pagina si aggiornerà automaticamente.
+          {copy.analisiReport.processingDesc}
         </p>
         <div className="mt-8">
           <Link href="/dashboard">
-            <Button variant="outline">Torna alla dashboard</Button>
+            <Button variant="outline">{copy.analisiReport.backToDashboard}</Button>
           </Link>
         </div>
       </div>
@@ -83,12 +83,12 @@ export default async function ReportPage({ params }: Props) {
   return (
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-3">
-        <Link href="/analisi"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4" />Nuova analisi</Button></Link>
+        <Link href="/analisi"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4" />{copy.analisiReport.newAnalysis}</Button></Link>
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold">Report: {report.exercise.name}</h1>
-        <p className="text-muted-foreground">Analisi completata il {new Date(report.completedAt!).toLocaleDateString("it-IT")}</p>
+        <h1 className="text-2xl font-bold">{copy.analisiReport.reportTitle(report.exercise.name)}</h1>
+        <p className="text-muted-foreground">{copy.analisiReport.completedOn(new Date(report.completedAt!).toLocaleDateString("it-IT"))}</p>
       </div>
 
       {/* Score principale con anello SVG */}
@@ -108,17 +108,17 @@ export default async function ReportPage({ params }: Props) {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <div className={`text-5xl font-bold ${combinedColor}`}>{combined}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">su 100</div>
+              <div className="text-xs text-muted-foreground mt-0.5">{copy.analisiReport.outOf100}</div>
             </div>
           </div>
           <div className={`text-xl font-semibold ${combinedColor}`}>{combinedLabel}</div>
-          <p className="text-sm text-muted-foreground mt-1">Punteggio Complessivo</p>
+          <p className="text-sm text-muted-foreground mt-1">{copy.analisiReport.overallScore}</p>
 
           <div className="grid grid-cols-3 gap-3 mt-6 w-full">
             {[
-              { label: "Biomeccanica", score: bioScore, pct: "34%", icon: Target },
-              { label: "PT Vision", score: aiScore, pct: "33%", icon: Brain },
-              { label: "Confronto PT", score: videoScore, pct: "33%", icon: TrendingUp },
+              { label: copy.analisiReport.scoreCards.biomechanics, score: bioScore, pct: "34%", icon: Target },
+              { label: copy.analisiReport.scoreCards.ptVision, score: aiScore, pct: "33%", icon: Brain },
+              { label: copy.analisiReport.scoreCards.ptComparison, score: videoScore, pct: "33%", icon: TrendingUp },
             ].map((s) => {
               const Icon = s.icon;
               const { color } = scoreToLabel(s.score);
@@ -141,13 +141,13 @@ export default async function ReportPage({ params }: Props) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-400">
               <ShieldAlert className="w-5 h-5" />
-              Allerta sicurezza — livello {injuryAlert.level}
+              {copy.analisiReport.safetyAlert(injuryAlert.level)}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm leading-relaxed">{injuryAlert.explanation}</p>
             {injuryAlert.affectedAreas.length > 0 && (
-              <p className="text-xs text-muted-foreground">Aree coinvolte: {injuryAlert.affectedAreas.join(", ")}</p>
+              <p className="text-xs text-muted-foreground">{copy.analisiReport.affectedAreas(injuryAlert.affectedAreas.join(", "))}</p>
             )}
           </CardContent>
         </Card>
@@ -156,7 +156,7 @@ export default async function ReportPage({ params }: Props) {
       {/* Giudizio del Coach (overall) */}
       {finalReport?.overallJudgment && (
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><Brain className="w-5 h-5 text-primary" />Giudizio del Coach</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2"><Brain className="w-5 h-5 text-primary" />{copy.analisiReport.coachJudgmentTitle}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-sm leading-relaxed">{finalReport.overallJudgment}</p>
           </CardContent>
@@ -166,7 +166,7 @@ export default async function ReportPage({ params }: Props) {
       {/* Aree di miglioramento */}
       {improvementAreas.length > 0 && (
         <Card className="border-yellow-500/20">
-          <CardHeader><CardTitle className="flex items-center gap-2 text-yellow-400"><AlertTriangle className="w-5 h-5" />Aree da Migliorare</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-yellow-400"><AlertTriangle className="w-5 h-5" />{copy.analisiReport.improvementAreasTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {improvementAreas.map((area, i) => (
               <div key={i} className="flex gap-3 p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
@@ -181,7 +181,7 @@ export default async function ReportPage({ params }: Props) {
       {/* Punti di forza */}
       {positiveAspects.length > 0 && (
         <Card className="border-green-500/20">
-          <CardHeader><CardTitle className="flex items-center gap-2 text-green-400"><CheckCircle className="w-5 h-5" />Punti di Forza</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-green-400"><CheckCircle className="w-5 h-5" />{copy.analisiReport.strengthsTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {positiveAspects.map((p, i) => (
               <div key={i} className="flex gap-2 items-start">
@@ -196,7 +196,7 @@ export default async function ReportPage({ params }: Props) {
       {/* Feedback biomeccanico */}
       {bioFeedback.length > 0 && (
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-blue-400" />Feedback Biomeccanico</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-blue-400" />{copy.analisiReport.biomechanicalFeedbackTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {bioFeedback.map((f, i) => (
               <div key={i} className="flex gap-2 items-start p-2 rounded-lg bg-blue-500/5">
@@ -211,7 +211,7 @@ export default async function ReportPage({ params }: Props) {
       {/* Video confronto feedback */}
       {videoComparisonFeedback && (
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="w-5 h-5 text-purple-400" />Confronto con Professionista</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="w-5 h-5 text-purple-400" />{copy.analisiReport.proComparisonTitle}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-sm leading-relaxed">{videoComparisonFeedback}</p>
           </CardContent>
@@ -221,7 +221,7 @@ export default async function ReportPage({ params }: Props) {
       {/* Side-by-side video sync */}
       {(report.videoUrl || report.exercise.videoUrl) && (
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2 text-base">Video sincronizzati</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-base">{copy.analisiReport.syncedVideosTitle}</CardTitle></CardHeader>
           <CardContent>
             <VideoSyncPlayer
               userVideoUrl={report.videoUrl}
@@ -236,10 +236,10 @@ export default async function ReportPage({ params }: Props) {
 
       <div className="flex gap-3 pt-2">
         <Link href={`/analisi/sessione?id=${report.exerciseId}`} className="flex-1">
-          <Button className="w-full">Ripeti l&apos;analisi</Button>
+          <Button className="w-full">{copy.analisiReport.repeatAnalysis}</Button>
         </Link>
         <Link href="/analisi">
-          <Button variant="outline">Altri esercizi</Button>
+          <Button variant="outline">{copy.analisiReport.otherExercises}</Button>
         </Link>
       </div>
     </div>
