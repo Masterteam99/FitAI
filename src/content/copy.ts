@@ -99,4 +99,156 @@ export const copy = {
     profileFallback: "Profilo",
     logout: "Esci",
   },
+
+  // ── Landing → src/app/page.tsx ──
+  landing: {
+    badge: "Powered by Claude AI + MediaPipe",
+    heroTitle: { pre: "Il tuo ", highlight: "Personal Trainer AI", post: "sempre con te" } as HeroTitle,
+    heroSubtitle:
+      "Allenati con piani personalizzati dall'AI, analizza la tua tecnica con la computer vision e ricevi feedback da un coach digitale disponibile 24/7.",
+    ctaPrimary: "Inizia gratis",
+    ctaSecondary: "Hai già un account",
+    featuresTitle: "Tutto ciò di cui hai bisogno per allenarti meglio",
+    features: [
+      { title: "Piani AI Personalizzati", desc: "Claude crea piani su misura basandosi sui tuoi obiettivi, livello e attrezzatura disponibile." },
+      { title: "Analisi Video Real-Time", desc: "Computer vision Google MediaPipe rileva i tuoi movimenti in tempo reale. Feedback istantaneo su postura e tecnica." },
+      { title: "Analisi Triplice 50/30/20", desc: "Biomeccanica oggettiva, AI Expert e confronto con video PT: feedback completo come quello di un personal trainer privato." },
+      { title: "Progressi Dettagliati", desc: "Traccia sessioni, misurazioni e miglioramenti nel tempo con grafici interattivi." },
+      { title: "Gamification", desc: "Achievements, streak, punti e sfide per mantenerti motivato ogni giorno." },
+      { title: "AI Coach 24/7", desc: "Domande su nutrizione, recupero o tecnica? Il tuo coach AI risponde sempre." },
+    ],
+    finalCtaTitle: "Pronto ad allenarti come un atleta?",
+    finalCtaSubtitle: `Unisciti a migliaia di utenti che si allenano con ${APP_NAME}`,
+    finalCtaButton: "Crea account gratuito",
+  },
+
+  // ── /funzionalita → src/app/(marketing)/funzionalita/page.tsx ──
+  funzionalita: {
+    meta: {
+      title: `Funzionalità — ${APP_NAME}`,
+      description: "Piani AI personalizzati, analisi video della tecnica, coach 24/7, nutrizione e gamification. Tutto in un'unica app.",
+    },
+    badge: "Funzionalità",
+    heroTitle: { pre: "Tutto quello che serve, ", highlight: "un solo posto" } as HeroTitle,
+    heroSubtitle: `${APP_NAME} unisce intelligenza artificiale e computer vision per offrirti l'esperienza di un personal trainer privato, sempre disponibile.`,
+    features: [
+      { title: "Piani allenamento AI", desc: "Claude compone il tuo piano scegliendo gli esercizi più adatti dal database in base a obiettivo, livello, attrezzatura e storico infortuni." },
+      { title: "Analisi video real-time", desc: "La computer vision di MediaPipe traccia i tuoi movimenti dalla fotocamera e misura gli angoli articolari fotogramma per fotogramma." },
+      { title: "Feedback triplice 50/30/20", desc: "Biomeccanica oggettiva, valutazione dell'AI Expert e confronto con i video dei personal trainer: un giudizio completo sulla tua tecnica." },
+      { title: "Piani nutrizionali AI", desc: "Macro e pasti calibrati su peso, altezza, obiettivo e stile alimentare, generati dall'AI e aggiornabili quando vuoi." },
+      { title: "Progressi e misurazioni", desc: "Sessioni, carichi, peso corporeo e circonferenze tracciati nel tempo con grafici interattivi e trend chiari." },
+      { title: "Gamification", desc: "Achievement, streak giornaliere, punti e sfide per trasformare la costanza in qualcosa di divertente." },
+      { title: "AI Coach 24/7", desc: "Dubbi su tecnica, recupero o alimentazione? Il coach digitale risponde in qualsiasi momento, con il contesto del tuo profilo." },
+      { title: "Libreria esercizi", desc: "Schede dettagliate con muscoli coinvolti, attrezzatura e istruzioni: esplorabili anche senza un piano attivo." },
+    ],
+    ctaTitle: "Provalo gratis, oggi",
+    ctaSubtitle: "Crea il tuo profilo e genera il primo piano in pochi minuti.",
+    ctaButton: "Inizia gratis",
+  },
+
+  // ── /come-funziona → src/app/(marketing)/come-funziona/page.tsx ──
+  comeFunziona: {
+    meta: {
+      title: `Come funziona — ${APP_NAME}`,
+      description: "Dal profilo al piano AI all'analisi della tecnica: scopri come FitAI ti accompagna in cinque passi.",
+    },
+    heroTitle: { pre: "Come ", highlight: "funziona" } as HeroTitle,
+    heroSubtitle: "Dal primo accesso al miglioramento misurabile: cinque passi semplici, guidati dall'intelligenza artificiale.",
+    stepLabel: "Passo",
+    steps: [
+      { title: "Crea il tuo profilo", desc: "Registrati e rispondi a poche domande: obiettivo, livello, attrezzatura disponibile, dati fisici e storico sportivo." },
+      { title: "Imposta le preferenze", desc: "Indica quanti giorni a settimana ti alleni, lo stile alimentare ed eventuali problematiche fisiche da tenere in considerazione." },
+      { title: "L'AI genera il piano", desc: "Claude analizza il tuo profilo e compone allenamento e nutrizione scegliendo gli esercizi più rilevanti dal database, evitando quelli controindicati." },
+      { title: "Allenati e filma la tecnica", desc: "Durante la sessione attivi la fotocamera: la computer vision misura i tuoi movimenti e ti dà feedback su postura ed esecuzione." },
+      { title: "Monitora i progressi", desc: "Sessioni, carichi e misurazioni vengono tracciati nel tempo. Il coach AI adatta i consigli mano a mano che migliori." },
+    ],
+    ctaTitle: "Pronto a iniziare?",
+    ctaButton: "Crea account gratuito",
+  },
+
+  // ── /prezzi → src/app/(marketing)/prezzi/page.tsx ──
+  prezzi: {
+    meta: {
+      title: `Prezzi — ${APP_NAME}`,
+      description: "Inizia gratis con piani AI, analisi video e nutrizione. Passa a Premium per uso illimitato a €9,99 al mese.",
+    },
+    heroTitle: { pre: "Un piano per ", highlight: "ogni obiettivo" } as HeroTitle,
+    heroSubtitle: "Inizia gratis e passa a Premium quando vuoi più potenza. Nessun vincolo, disdici quando vuoi.",
+    free: {
+      name: "Free",
+      tagline: "Per iniziare ad allenarti con l'AI",
+      price: "€0",
+      period: "/ per sempre",
+      features: [
+        "3 piani di allenamento AI al mese",
+        "1 piano nutrizionale AI al mese",
+        "5 analisi video della tecnica al mese",
+        "Libreria esercizi completa",
+        "Tracciamento progressi e gamification",
+      ],
+      cta: "Inizia gratis",
+    },
+    premium: {
+      name: "Premium",
+      tagline: "Uso illimitato, risultati senza freni",
+      badge: "Consigliato",
+      price: "€9,99",
+      period: "/ al mese",
+      yearlyNote: "oppure €79 all'anno (risparmi il 34%)",
+      features: [
+        "Piani di allenamento AI illimitati",
+        "Piani nutrizionali AI illimitati",
+        "Analisi video illimitate",
+        "Coach AI 24/7 senza limiti",
+        "Storico completo e statistiche avanzate",
+        "Supporto prioritario",
+      ],
+      cta: "Passa a Premium",
+    },
+    footnote: "Tutti i limiti del piano Free si azzerano all'inizio di ogni mese. Puoi aggiornare o disdire l'abbonamento in qualsiasi momento dal tuo profilo.",
+  },
+
+  // ── /chi-siamo → src/app/(marketing)/chi-siamo/page.tsx ──
+  chiSiamo: {
+    meta: {
+      title: `Chi siamo — ${APP_NAME}`,
+      description: "La nostra missione: rendere l'allenamento personalizzato e sicuro accessibile a tutti grazie all'intelligenza artificiale.",
+    },
+    heroTitle: { pre: "Allenamento intelligente, ", highlight: "per tutti" } as HeroTitle,
+    heroSubtitle: `${APP_NAME} nasce da un'idea semplice: la guida di un personal trainer esperto non dovrebbe dipendere dal budget o dalla città in cui vivi.`,
+    intro: [
+      "Abbiamo unito l'intelligenza artificiale e la computer vision per ricreare l'esperienza di un allenatore privato: un piano costruito su misura, un occhio attento sulla tua tecnica e un coach pronto a rispondere a ogni domanda.",
+      "Non vendiamo programmi preconfezionati uguali per tutti. Ogni piano viene composto a partire dal tuo profilo — obiettivi, livello, attrezzatura e storico — scegliendo gli esercizi più adatti e scartando quelli rischiosi per te.",
+    ],
+    values: [
+      { title: "Allenamento per tutti", desc: "Un personal trainer privato è un lusso. Vogliamo offrire la stessa qualità di guida a chiunque, ovunque." },
+      { title: "Sicurezza prima di tutto", desc: "I nostri piani considerano infortuni e controindicazioni, e l'analisi della tecnica aiuta a prevenire errori che fanno male." },
+      { title: "Tecnologia trasparente", desc: "Combiniamo l'AI di Claude e la computer vision di MediaPipe, spiegandoti sempre il perché di ogni consiglio." },
+    ],
+    ctaTitle: "Unisciti a noi",
+    ctaSubtitle: `Inizia il tuo percorso con ${APP_NAME}, gratis.`,
+    ctaButton: "Inizia gratis",
+  },
+
+  // ── /faq → src/app/(marketing)/faq/page.tsx ──
+  faq: {
+    meta: {
+      title: `FAQ — ${APP_NAME}`,
+      description: "Risposte alle domande più frequenti su piani AI, analisi video, abbonamenti e privacy.",
+    },
+    heroTitle: { pre: "Domande ", highlight: "frequenti" } as HeroTitle,
+    heroSubtitle: "Tutto quello che c'è da sapere prima di iniziare.",
+    faqs: [
+      { q: `${APP_NAME} è davvero gratis?`, a: "Sì. Il piano Free include 3 piani di allenamento AI, 1 piano nutrizionale e 5 analisi video al mese, oltre alla libreria esercizi completa. Passi a Premium solo se ti serve uso illimitato." },
+      { q: "Come vengono creati i piani di allenamento?", a: "L'AI di Claude analizza il tuo profilo — obiettivo, livello, attrezzatura, giorni disponibili e storico infortuni — e compone il piano scegliendo gli esercizi più adatti dal nostro database, escludendo quelli controindicati." },
+      { q: "Cosa serve per l'analisi video?", a: "Solo la fotocamera del tuo dispositivo. La computer vision di MediaPipe elabora i movimenti in tempo reale per misurare gli angoli articolari e darti feedback su postura ed esecuzione." },
+      { q: "Ho bisogno di attrezzatura in palestra?", a: "No. Durante la configurazione indichi cosa hai a disposizione, anche solo il peso corporeo: i piani vengono adattati di conseguenza." },
+      { q: "Posso usare l'app senza generare subito un piano?", a: "Certo. Puoi saltare l'onboarding e la generazione del piano in qualsiasi momento e continuare a esplorare gli esercizi e le altre sezioni dell'app." },
+      { q: "Posso disdire Premium quando voglio?", a: "Sì, l'abbonamento si disdice in qualsiasi momento dal tuo profilo e resta attivo fino alla fine del periodo già pagato." },
+      { q: "I miei dati sono al sicuro?", a: "Trattiamo i tuoi dati con cura e li usiamo solo per personalizzare la tua esperienza di allenamento. L'analisi video avviene per fornirti feedback, non per scopi pubblicitari." },
+    ],
+    ctaTitle: "Hai ancora dubbi?",
+    ctaSubtitle: `Il modo migliore per capire ${APP_NAME} è provarlo.`,
+    ctaButton: "Inizia gratis",
+  },
 } as const;

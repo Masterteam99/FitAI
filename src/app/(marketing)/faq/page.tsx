@@ -4,31 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { FadeIn, SlideUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
+import { copy } from "@/content/copy";
 
 export const metadata: Metadata = {
-  title: "FAQ — FitAI",
-  description: "Risposte alle domande più frequenti su piani AI, analisi video, abbonamenti e privacy.",
+  title: copy.faq.meta.title,
+  description: copy.faq.meta.description,
 };
 
-const FAQS = [
-  { q: "FitAI è davvero gratis?", a: "Sì. Il piano Free include 3 piani di allenamento AI, 1 piano nutrizionale e 5 analisi video al mese, oltre alla libreria esercizi completa. Passi a Premium solo se ti serve uso illimitato." },
-  { q: "Come vengono creati i piani di allenamento?", a: "L'AI di Claude analizza il tuo profilo — obiettivo, livello, attrezzatura, giorni disponibili e storico infortuni — e compone il piano scegliendo gli esercizi più adatti dal nostro database, escludendo quelli controindicati." },
-  { q: "Cosa serve per l'analisi video?", a: "Solo la fotocamera del tuo dispositivo. La computer vision di MediaPipe elabora i movimenti in tempo reale per misurare gli angoli articolari e darti feedback su postura ed esecuzione." },
-  { q: "Ho bisogno di attrezzatura in palestra?", a: "No. Durante la configurazione indichi cosa hai a disposizione, anche solo il peso corporeo: i piani vengono adattati di conseguenza." },
-  { q: "Posso usare l'app senza generare subito un piano?", a: "Certo. Puoi saltare l'onboarding e la generazione del piano in qualsiasi momento e continuare a esplorare gli esercizi e le altre sezioni dell'app." },
-  { q: "Posso disdire Premium quando voglio?", a: "Sì, l'abbonamento si disdice in qualsiasi momento dal tuo profilo e resta attivo fino alla fine del periodo già pagato." },
-  { q: "I miei dati sono al sicuro?", a: "Trattiamo i tuoi dati con cura e li usiamo solo per personalizzare la tua esperienza di allenamento. L'analisi video avviene per fornirti feedback, non per scopi pubblicitari." },
-];
+const FAQS = copy.faq.faqs;
 
 export default function FaqPage() {
   return (
     <>
       <section className="max-w-3xl mx-auto px-4 py-20 text-center space-y-6">
         <SlideUp>
-          <h1 className="text-display-lg">Domande <span className="text-gradient-energy">frequenti</span></h1>
+          <h1 className="text-display-lg">{copy.faq.heroTitle.pre}<span className="text-gradient-energy">{copy.faq.heroTitle.highlight}</span></h1>
         </SlideUp>
         <FadeIn delay={0.15}>
-          <p className="text-xl text-muted-foreground">Tutto quello che c&apos;è da sapere prima di iniziare.</p>
+          <p className="text-xl text-muted-foreground">{copy.faq.heroSubtitle}</p>
         </FadeIn>
       </section>
 
@@ -48,10 +41,10 @@ export default function FaqPage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 py-16 text-center space-y-6">
-        <h2 className="text-display-md">Hai ancora dubbi?</h2>
-        <p className="text-muted-foreground">Il modo migliore per capire FitAI è provarlo.</p>
+        <h2 className="text-display-md">{copy.faq.ctaTitle}</h2>
+        <p className="text-muted-foreground">{copy.faq.ctaSubtitle}</p>
         <Link href="/registrati">
-          <Button size="lg" className="gap-2 px-8 glow-energy">Inizia gratis <ChevronRight className="w-5 h-5" /></Button>
+          <Button size="lg" className="gap-2 px-8 glow-energy">{copy.faq.ctaButton} <ChevronRight className="w-5 h-5" /></Button>
         </Link>
       </section>
     </>

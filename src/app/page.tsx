@@ -6,15 +6,17 @@ import { GradientMesh } from "@/components/visualizations/GradientMesh";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { FadeIn, SlideUp, Stagger, StaggerItem, CardHover } from "@/components/motion/MotionPrimitives";
+import { copy } from "@/content/copy";
 
-const FEATURES = [
-  { icon: Brain, title: "Piani AI Personalizzati", desc: "Claude crea piani su misura basandosi sui tuoi obiettivi, livello e attrezzatura disponibile.", color: "text-primary" },
-  { icon: Camera, title: "Analisi Video Real-Time", desc: "Computer vision Google MediaPipe rileva i tuoi movimenti in tempo reale. Feedback istantaneo su postura e tecnica.", color: "text-blue-400" },
-  { icon: Target, title: "Analisi Triplice 50/30/20", desc: "Biomeccanica oggettiva, AI Expert e confronto con video PT: feedback completo come quello di un personal trainer privato.", color: "text-purple-400" },
-  { icon: BarChart, title: "Progressi Dettagliati", desc: "Traccia sessioni, misurazioni e miglioramenti nel tempo con grafici interattivi.", color: "text-orange-400" },
-  { icon: Trophy, title: "Gamification", desc: "Achievements, streak, punti e sfide per mantenerti motivato ogni giorno.", color: "text-yellow-400" },
-  { icon: Zap, title: "AI Coach 24/7", desc: "Domande su nutrizione, recupero o tecnica? Il tuo coach AI risponde sempre.", color: "text-green-400" },
+const FEATURE_STYLES = [
+  { icon: Brain, color: "text-primary" },
+  { icon: Camera, color: "text-blue-400" },
+  { icon: Target, color: "text-purple-400" },
+  { icon: BarChart, color: "text-orange-400" },
+  { icon: Trophy, color: "text-yellow-400" },
+  { icon: Zap, color: "text-green-400" },
 ];
+const FEATURES = copy.landing.features.map((f, i) => ({ ...f, ...FEATURE_STYLES[i] }));
 
 export default function LandingPage() {
   return (
@@ -28,27 +30,26 @@ export default function LandingPage() {
         <FadeIn>
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 text-sm text-primary font-medium">
             <Brain className="w-4 h-4" />
-            Powered by Claude AI + MediaPipe
+            {copy.landing.badge}
           </div>
         </FadeIn>
         <SlideUp delay={0.05}>
           <h1 className="text-display-lg">
-            Il tuo <span className="text-gradient-energy">Personal Trainer AI</span><br />sempre con te
+            {copy.landing.heroTitle.pre}<span className="text-gradient-energy">{copy.landing.heroTitle.highlight}</span><br />{copy.landing.heroTitle.post}
           </h1>
         </SlideUp>
         <FadeIn delay={0.15}>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Allenati con piani personalizzati dall&apos;AI, analizza la tua tecnica con la computer vision
-            e ricevi feedback da un coach digitale disponibile 24/7.
+            {copy.landing.heroSubtitle}
           </p>
         </FadeIn>
         <FadeIn delay={0.25}>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link href="/registrati">
-              <Button size="lg" className="gap-2 px-8 glow-energy">Inizia gratis <ChevronRight className="w-5 h-5" /></Button>
+              <Button size="lg" className="gap-2 px-8 glow-energy">{copy.landing.ctaPrimary} <ChevronRight className="w-5 h-5" /></Button>
             </Link>
             <Link href="/login">
-              <Button size="lg" variant="outline">Hai già un account</Button>
+              <Button size="lg" variant="outline">{copy.landing.ctaSecondary}</Button>
             </Link>
           </div>
         </FadeIn>
@@ -56,7 +57,7 @@ export default function LandingPage() {
 
       {/* Feature cards */}
       <section className="relative max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-display-md text-center mb-12">Tutto ciò di cui hai bisogno per allenarti meglio</h2>
+        <h2 className="text-display-md text-center mb-12">{copy.landing.featuresTitle}</h2>
         <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {FEATURES.map((f) => {
             const Icon = f.icon;
@@ -81,10 +82,10 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section className="relative max-w-7xl mx-auto px-4 py-16 text-center space-y-6">
-        <h2 className="text-display-md">Pronto ad allenarti come un atleta?</h2>
-        <p className="text-muted-foreground">Unisciti a migliaia di utenti che si allenano con FitAI</p>
+        <h2 className="text-display-md">{copy.landing.finalCtaTitle}</h2>
+        <p className="text-muted-foreground">{copy.landing.finalCtaSubtitle}</p>
         <Link href="/registrati">
-          <Button size="lg" className="gap-2 px-8 glow-energy">Crea account gratuito <ChevronRight className="w-5 h-5" /></Button>
+          <Button size="lg" className="gap-2 px-8 glow-energy">{copy.landing.finalCtaButton} <ChevronRight className="w-5 h-5" /></Button>
         </Link>
       </section>
 

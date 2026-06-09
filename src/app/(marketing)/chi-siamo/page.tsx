@@ -4,28 +4,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, ShieldCheck, Cpu, ChevronRight } from "lucide-react";
 import { FadeIn, SlideUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
+import { copy } from "@/content/copy";
 
 export const metadata: Metadata = {
-  title: "Chi siamo — FitAI",
-  description: "La nostra missione: rendere l'allenamento personalizzato e sicuro accessibile a tutti grazie all'intelligenza artificiale.",
+  title: copy.chiSiamo.meta.title,
+  description: copy.chiSiamo.meta.description,
 };
 
-const VALUES = [
-  { icon: Heart, title: "Allenamento per tutti", desc: "Un personal trainer privato è un lusso. Vogliamo offrire la stessa qualità di guida a chiunque, ovunque." },
-  { icon: ShieldCheck, title: "Sicurezza prima di tutto", desc: "I nostri piani considerano infortuni e controindicazioni, e l'analisi della tecnica aiuta a prevenire errori che fanno male." },
-  { icon: Cpu, title: "Tecnologia trasparente", desc: "Combiniamo l'AI di Claude e la computer vision di MediaPipe, spiegandoti sempre il perché di ogni consiglio." },
-];
+const VALUE_ICONS = [Heart, ShieldCheck, Cpu];
+const VALUES = copy.chiSiamo.values.map((v, i) => ({ ...v, icon: VALUE_ICONS[i] }));
 
 export default function ChiSiamoPage() {
   return (
     <>
       <section className="max-w-3xl mx-auto px-4 py-20 text-center space-y-6">
         <SlideUp>
-          <h1 className="text-display-lg">Allenamento intelligente, <span className="text-gradient-energy">per tutti</span></h1>
+          <h1 className="text-display-lg">{copy.chiSiamo.heroTitle.pre}<span className="text-gradient-energy">{copy.chiSiamo.heroTitle.highlight}</span></h1>
         </SlideUp>
         <FadeIn delay={0.15}>
           <p className="text-xl text-muted-foreground">
-            FitAI nasce da un&apos;idea semplice: la guida di un personal trainer esperto non dovrebbe dipendere dal budget o dalla città in cui vivi.
+            {copy.chiSiamo.heroSubtitle}
           </p>
         </FadeIn>
       </section>
@@ -34,14 +32,9 @@ export default function ChiSiamoPage() {
         <FadeIn>
           <Card className="bg-card/60 backdrop-blur-sm">
             <CardContent className="p-8 space-y-4 text-muted-foreground">
-              <p>
-                Abbiamo unito l&apos;intelligenza artificiale e la computer vision per ricreare l&apos;esperienza di un allenatore privato:
-                un piano costruito su misura, un occhio attento sulla tua tecnica e un coach pronto a rispondere a ogni domanda.
-              </p>
-              <p>
-                Non vendiamo programmi preconfezionati uguali per tutti. Ogni piano viene composto a partire dal tuo profilo —
-                obiettivi, livello, attrezzatura e storico — scegliendo gli esercizi più adatti e scartando quelli rischiosi per te.
-              </p>
+              {copy.chiSiamo.intro.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
             </CardContent>
           </Card>
         </FadeIn>
@@ -69,10 +62,10 @@ export default function ChiSiamoPage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 py-16 text-center space-y-6">
-        <h2 className="text-display-md">Unisciti a noi</h2>
-        <p className="text-muted-foreground">Inizia il tuo percorso con FitAI, gratis.</p>
+        <h2 className="text-display-md">{copy.chiSiamo.ctaTitle}</h2>
+        <p className="text-muted-foreground">{copy.chiSiamo.ctaSubtitle}</p>
         <Link href="/registrati">
-          <Button size="lg" className="gap-2 px-8 glow-energy">Inizia gratis <ChevronRight className="w-5 h-5" /></Button>
+          <Button size="lg" className="gap-2 px-8 glow-energy">{copy.chiSiamo.ctaButton} <ChevronRight className="w-5 h-5" /></Button>
         </Link>
       </section>
     </>

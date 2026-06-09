@@ -4,30 +4,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserPlus, Sliders, Sparkles, Camera, TrendingUp, ChevronRight } from "lucide-react";
 import { FadeIn, SlideUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
+import { copy } from "@/content/copy";
 
 export const metadata: Metadata = {
-  title: "Come funziona — FitAI",
-  description: "Dal profilo al piano AI all'analisi della tecnica: scopri come FitAI ti accompagna in cinque passi.",
+  title: copy.comeFunziona.meta.title,
+  description: copy.comeFunziona.meta.description,
 };
 
-const STEPS = [
-  { icon: UserPlus, title: "Crea il tuo profilo", desc: "Registrati e rispondi a poche domande: obiettivo, livello, attrezzatura disponibile, dati fisici e storico sportivo." },
-  { icon: Sliders, title: "Imposta le preferenze", desc: "Indica quanti giorni a settimana ti alleni, lo stile alimentare ed eventuali problematiche fisiche da tenere in considerazione." },
-  { icon: Sparkles, title: "L'AI genera il piano", desc: "Claude analizza il tuo profilo e compone allenamento e nutrizione scegliendo gli esercizi più rilevanti dal database, evitando quelli controindicati." },
-  { icon: Camera, title: "Allenati e filma la tecnica", desc: "Durante la sessione attivi la fotocamera: la computer vision misura i tuoi movimenti e ti dà feedback su postura ed esecuzione." },
-  { icon: TrendingUp, title: "Monitora i progressi", desc: "Sessioni, carichi e misurazioni vengono tracciati nel tempo. Il coach AI adatta i consigli mano a mano che migliori." },
-];
+const STEP_ICONS = [UserPlus, Sliders, Sparkles, Camera, TrendingUp];
+const STEPS = copy.comeFunziona.steps.map((s, i) => ({ ...s, icon: STEP_ICONS[i] }));
 
 export default function ComeFunzionaPage() {
   return (
     <>
       <section className="max-w-7xl mx-auto px-4 py-20 text-center space-y-6">
         <SlideUp>
-          <h1 className="text-display-lg">Come <span className="text-gradient-energy">funziona</span></h1>
+          <h1 className="text-display-lg">{copy.comeFunziona.heroTitle.pre}<span className="text-gradient-energy">{copy.comeFunziona.heroTitle.highlight}</span></h1>
         </SlideUp>
         <FadeIn delay={0.15}>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Dal primo accesso al miglioramento misurabile: cinque passi semplici, guidati dall&apos;intelligenza artificiale.
+            {copy.comeFunziona.heroSubtitle}
           </p>
         </FadeIn>
       </section>
@@ -45,7 +41,7 @@ export default function ComeFunzionaPage() {
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-primary">Passo {i + 1}</span>
+                        <span className="text-xs font-semibold text-primary">{copy.comeFunziona.stepLabel} {i + 1}</span>
                       </div>
                       <h3 className="font-semibold text-lg">{s.title}</h3>
                       <p className="text-sm text-muted-foreground">{s.desc}</p>
@@ -59,9 +55,9 @@ export default function ComeFunzionaPage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 py-16 text-center space-y-6">
-        <h2 className="text-display-md">Pronto a iniziare?</h2>
+        <h2 className="text-display-md">{copy.comeFunziona.ctaTitle}</h2>
         <Link href="/registrati">
-          <Button size="lg" className="gap-2 px-8 glow-energy">Crea account gratuito <ChevronRight className="w-5 h-5" /></Button>
+          <Button size="lg" className="gap-2 px-8 glow-energy">{copy.comeFunziona.ctaButton} <ChevronRight className="w-5 h-5" /></Button>
         </Link>
       </section>
     </>
