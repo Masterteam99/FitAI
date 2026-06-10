@@ -52,11 +52,20 @@ export async function checkQuota(userId: string, feature: GatedFeature): Promise
 
 export async function incrementUsage(userId: string, feature: GatedFeature): Promise<void> {
   const period = currentPeriod();
-  await prisma.usageCounter.upsert({
-    where: { userId_feature_period: { userId, feature, period } },
-    create: { userId, feature, period, count: 1 },
-    update: { count: { increment: 1 } },
-  });
+  const upsert = () =>
+    prisma.usageCounter.upsert({
+      where: { userId_feature_period: { userId, feature, period } },
+      create: { userId, feature, period, count: 1 },
+      update: { count: { increment: 1 } },
+    });
+  try {
+    await upsert();
+  } catch {
+    // Un solo retry dopo breve attesa: se fallisce ancora l'errore risale
+    // al chiamante, che deve registrarlo (quota free non addebitata)
+    await new Promise((r) => setTimeout(r, 500));
+    await upsert();
+  }
 }
 
 export async function requirePremium(userId: string): Promise<GatingResult> {

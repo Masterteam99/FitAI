@@ -5,6 +5,7 @@ import { aiRatelimit } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 import { NUTRITION_SYSTEM_PROMPT, buildNutritionPlanPrompt } from "@/services/ai/promptTemplates";
 import { checkQuota, incrementUsage } from "@/lib/billing/gating";
+import { captureError } from "@/lib/observability";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -117,7 +118,7 @@ export async function POST(req: NextRequest) {
 
   if (!gate.premium) {
     await incrementUsage(session.user.id as string, "generate_nutrition_plan").catch((e) =>
-      console.error("[generate-nutrition-plan] incrementUsage failed", e)
+      captureError(e, { stage: "incrementUsage", feature: "generate_nutrition_plan", userId: session.user?.id })
     );
   }
 

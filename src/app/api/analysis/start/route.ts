@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { analysisRatelimit } from "@/lib/redis";
 import { checkQuota, incrementUsage } from "@/lib/billing/gating";
+import { captureError } from "@/lib/observability";
 import { z } from "zod";
 
 const schema = z.object({ exerciseId: z.string() });
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   if (!gate.premium) {
     await incrementUsage(session.user.id as string, "analysis_start").catch((e) =>
-      console.error("[analysis-start] incrementUsage failed", e)
+      captureError(e, { stage: "incrementUsage", feature: "analysis_start", userId: session.user?.id })
     );
   }
 

@@ -5,6 +5,7 @@ import { aiRatelimit } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 import { SYSTEM_PROMPTS, buildPlanGeneratorPrompt } from "@/services/ai/promptTemplates";
 import { checkQuota, incrementUsage } from "@/lib/billing/gating";
+import { captureError } from "@/lib/observability";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -128,7 +129,7 @@ export async function POST(req: NextRequest) {
         }
         if (streamOk && !gate.premium) {
           await incrementUsage(userId, "generate_plan").catch((e) =>
-            console.error("[generate-plan] incrementUsage failed", e)
+            captureError(e, { stage: "incrementUsage", feature: "generate_plan", userId })
           );
         }
       },
