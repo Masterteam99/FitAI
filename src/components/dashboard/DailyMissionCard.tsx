@@ -9,6 +9,7 @@ import { Check, Dumbbell, Apple, Heart, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DailyMission } from "@/lib/dailyMission-shared";
 import { MOOD_EMOJI, CHECKIN_MOODS } from "@/lib/dailyMission-shared";
+import { copy } from "@/content/copy";
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("it-IT", {
   weekday: "long",
@@ -38,7 +39,7 @@ export function DailyMissionCard({ mission }: { mission: DailyMission }) {
       });
       if (!res.ok) {
         setOptimisticMood(prev);
-        setError("Errore salvataggio check-in");
+        setError(copy.dailyMission.checkinSaveError);
         return;
       }
       router.refresh();
@@ -54,10 +55,10 @@ export function DailyMissionCard({ mission }: { mission: DailyMission }) {
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">{dateLabel}</p>
             <h2 className="text-lg font-bold">
-              {allDone ? "Missione completata! 🎉" : "La tua missione di oggi"}
+              {allDone ? copy.dailyMission.missionDoneTitle : copy.dailyMission.missionTitle}
             </h2>
           </div>
-          <div className="flex items-center gap-1.5" aria-label={`${mission.completedCount} di 3 task completati`}>
+          <div className="flex items-center gap-1.5" aria-label={copy.dailyMission.tasksProgressAria(mission.completedCount)}>
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
@@ -74,11 +75,11 @@ export function DailyMissionCard({ mission }: { mission: DailyMission }) {
           icon={<Dumbbell className="w-5 h-5" />}
           status={mission.workout.status}
           label={mission.workout.label}
-          subtitle={mission.workout.hasPlan ? undefined : "Inizia da qui"}
+          subtitle={mission.workout.hasPlan ? undefined : copy.dailyMission.startHere}
           action={
             <Link href={mission.workout.ctaHref}>
               <Button size="sm" variant={mission.workout.status === "done" ? "outline" : "default"}>
-                {mission.workout.status === "done" ? "Vedi" : mission.workout.hasPlan ? "Inizia" : "Crea"}
+                {mission.workout.status === "done" ? copy.dailyMission.ctaSee : mission.workout.hasPlan ? copy.dailyMission.ctaStart : copy.dailyMission.ctaCreate}
                 <ChevronRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
@@ -92,7 +93,7 @@ export function DailyMissionCard({ mission }: { mission: DailyMission }) {
           action={
             <Link href={mission.nutrition.ctaHref}>
               <Button size="sm" variant={mission.nutrition.status === "done" ? "outline" : "default"}>
-                {mission.nutrition.status === "done" ? "Vedi" : "Logga"}
+                {mission.nutrition.status === "done" ? copy.dailyMission.ctaSee : copy.dailyMission.ctaLog}
                 <ChevronRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
@@ -110,14 +111,14 @@ export function DailyMissionCard({ mission }: { mission: DailyMission }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className={cn("text-sm font-medium", checkinDone && "text-muted-foreground")}>
-              {checkinDone ? `Oggi ti senti ${MOOD_EMOJI[optimisticMood!]}` : "Come ti senti oggi?"}
+              {checkinDone ? copy.dailyMission.checkinFeeling(MOOD_EMOJI[optimisticMood!]) : copy.dailyMission.checkinQuestion}
             </p>
             <div className="mt-2 flex gap-1.5">
               {CHECKIN_MOODS.map((m) => (
                 <button
                   key={m}
                   type="button"
-                  aria-label={`Mood ${m}`}
+                  aria-label={copy.dailyMission.moodAria(m)}
                   disabled={pending}
                   onClick={() => handleMood(m)}
                   className={cn(

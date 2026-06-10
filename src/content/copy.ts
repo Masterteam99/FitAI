@@ -558,6 +558,22 @@ export const copy = {
     pointsLabel: (n: number) => `+${n} punti`,
   },
 
+  // ── DailyMissionCard → src/components/dashboard/DailyMissionCard.tsx ──
+  dailyMission: {
+    missionDoneTitle: "Missione completata! 🎉",
+    missionTitle: "La tua missione di oggi",
+    tasksProgressAria: (done: number) => `${done} di 3 task completati`,
+    startHere: "Inizia da qui",
+    ctaSee: "Vedi",
+    ctaStart: "Inizia",
+    ctaCreate: "Crea",
+    ctaLog: "Logga",
+    checkinQuestion: "Come ti senti oggi?",
+    checkinFeeling: (emoji: string) => `Oggi ti senti ${emoji}`,
+    moodAria: (mood: number) => `Mood ${mood}`,
+    checkinSaveError: "Errore salvataggio check-in",
+  },
+
   // ── /allenamento → src/app/(app)/allenamento/page.tsx ──
   allenamento: {
     goalLabels: {
@@ -777,6 +793,7 @@ export const copy = {
     welcomeMessage:
       "Ciao! Sono il tuo AI Coach personale 💪 Sono qui per rispondere a qualsiasi domanda su allenamento, nutrizione, recupero o tecnica degli esercizi. Come posso aiutarti oggi?",
     errorMessage: "Mi dispiace, si è verificato un errore. Riprova.",
+    genericError: "Errore",
     title: "AI Coach",
     subtitle: "Il tuo personal trainer AI disponibile 24/7",
     inputPlaceholder: "Scrivi un messaggio...",

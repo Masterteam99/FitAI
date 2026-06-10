@@ -40,7 +40,7 @@ export default function AICoachPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg, history: messages.slice(-10) }),
       });
-      if (!res.ok || !res.body) throw new Error("Errore");
+      if (!res.ok || !res.body) throw new Error(copy.aiCoach.genericError);
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
