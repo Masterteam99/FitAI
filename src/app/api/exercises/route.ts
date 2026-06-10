@@ -12,17 +12,14 @@ export async function GET(req: NextRequest) {
   const cerca = searchParams.get("cerca");
   const limit = Math.min(parseInt(searchParams.get("limit") ?? "50"), 100);
 
+  // Niente albero biomeccanico qui: nessun consumer della lista lo usa e
+  // moltiplicava le righe per ~12. Il dettaglio vive in /esercizi/[slug].
   const exercises = await prisma.exercise.findMany({
     where: {
       isActive: true,
       ...(muscolo && { muscleGroupPrimary: muscolo as never }),
       ...(difficolta && { difficulty: difficolta as never }),
       ...(cerca && { name: { contains: cerca, mode: "insensitive" } }),
-    },
-    include: {
-      biomechanicalSpec: {
-        include: { movements: { include: { phases: { include: { triggers: true } } } } },
-      },
     },
     orderBy: { name: "asc" },
     take: limit,

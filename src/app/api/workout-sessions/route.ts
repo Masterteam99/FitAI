@@ -62,7 +62,7 @@ export async function PATCH(req: NextRequest) {
 
   // Aggiorna streak e punti utente se completato
   if (data.status === "COMPLETED") {
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { currentStreak: true, lastWorkoutDate: true, totalPoints: true } });
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { currentStreak: true, longestStreak: true, lastWorkoutDate: true, totalPoints: true } });
     if (user) {
       const today = new Date(); today.setHours(0, 0, 0, 0);
       const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
@@ -73,7 +73,7 @@ export async function PATCH(req: NextRequest) {
 
       await prisma.user.update({
         where: { id: userId },
-        data: { currentStreak: newStreak, longestStreak: { set: Math.max(newStreak, user.currentStreak) }, lastWorkoutDate: new Date(), totalPoints: { increment: 10 } },
+        data: { currentStreak: newStreak, longestStreak: { set: Math.max(newStreak, user.longestStreak) }, lastWorkoutDate: new Date(), totalPoints: { increment: 10 } },
       });
 
       await checkAndUnlockAchievements(userId, { currentStreak: newStreak });
@@ -131,13 +131,6 @@ async function checkAndUnlockAchievements(
     where: { userId, status: "COMPLETED" },
   });
 
-  const unlockedKeys = new Set(
-    (await prisma.userAchievement.findMany({
-      where: { userId },
-      select: { achievement: { select: { key: true } } },
-    })).map((ua) => ua.achievement.key),
-  );
-
   const candidates: string[] = [];
   if (totalCompletedSessions >= 1) candidates.push("first_workout");
   if (totalCompletedSessions >= 10) candidates.push("ten_workouts");
@@ -146,11 +139,11 @@ async function checkAndUnlockAchievements(
   if (ctx.currentStreak >= 30) candidates.push("month_streak");
   if (new Date().getHours() < 7) candidates.push("early_bird");
 
-  const toUnlock = candidates.filter((key) => !unlockedKeys.has(key));
-  if (toUnlock.length === 0) return;
+  if (candidates.length === 0) return;
 
+  // Singola query: achievement candidati non ancora sbloccati dall'utente
   const achievements = await prisma.achievement.findMany({
-    where: { key: { in: toUnlock } },
+    where: { key: { in: candidates }, userAchievements: { none: { userId } } },
     select: { id: true, points: true },
   });
 
