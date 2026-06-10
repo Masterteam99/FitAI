@@ -117,6 +117,36 @@ export async function POST(req: NextRequest) {
         }
         break;
       }
+      case "charge.dispute.created": {
+        // Chargeback: segnale di frode, sospendiamo subito l'accesso premium.
+        // L'evento va registrato anche nella config webhook su dashboard Stripe.
+        const dispute = event.data.object as Stripe.Dispute;
+        let customerId: string | undefined;
+        const charge = typeof dispute.charge === "string"
+          ? await stripe.charges.retrieve(dispute.charge)
+          : dispute.charge;
+        if (charge?.customer) {
+          customerId = typeof charge.customer === "string" ? charge.customer : charge.customer.id;
+        }
+        if (customerId) {
+          const updated = await prisma.user.updateMany({
+            where: { stripeCustomerId: customerId },
+            data: { subscriptionStatus: "PAST_DUE" },
+          });
+          captureError(new Error("Stripe dispute ricevuta"), {
+            stage: "stripe.webhook.dispute",
+            customerId,
+            disputeId: dispute.id,
+            usersUpdated: updated.count,
+          });
+        } else {
+          captureError(new Error("Stripe dispute senza customer risolvibile"), {
+            stage: "stripe.webhook.dispute",
+            disputeId: dispute.id,
+          });
+        }
+        break;
+      }
     }
   } catch (err) {
     captureError(err, { stage: "stripe.webhook.handler", eventType: event.type });
