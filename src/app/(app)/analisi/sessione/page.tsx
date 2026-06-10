@@ -5,13 +5,11 @@ import { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { usePoseDetection } from "@/hooks/usePoseDetection";
 import { useAnalysisStore } from "@/stores/analysisStore";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Camera, AlertTriangle, Loader2, Brain, TrendingUp } from "lucide-react";
-import Link from "next/link";
-import CountdownCircle from "@/components/analisi/CountdownCircle";
-import RecordingIndicator from "@/components/analisi/RecordingIndicator";
-import AnalysisProgress from "@/components/analisi/AnalysisProgress";
+import { Loader2 } from "lucide-react";
+import { captureFrame, extractProFrames, type LabeledFrame } from "@/lib/analysis/frame-capture";
+import { AnalysisErrorState } from "@/components/analisi/AnalysisErrorState";
+import { AnalysisProcessingView } from "@/components/analisi/AnalysisProcessingView";
+import { RecordingStage } from "@/components/analisi/RecordingStage";
 import { copy } from "@/content/copy";
 
 type Phase = "IDLE" | "COUNTDOWN" | "RECORDING" | "UPLOADING" | "ANALYZING" | "ERROR";
@@ -28,57 +26,6 @@ interface ExerciseData {
 const COUNTDOWN_SECONDS = 15;
 const NUM_USER_FRAMES = 8;
 
-async function captureFrame(video: HTMLVideoElement): Promise<{ base64: string; mediaType: "image/jpeg" } | null> {
-  if (video.videoWidth === 0 || video.videoHeight === 0) return null;
-  const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return null;
-  try {
-    ctx.drawImage(video, 0, 0);
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
-    const base64 = dataUrl.split(",")[1] ?? "";
-    if (!base64) return null;
-    return { base64, mediaType: "image/jpeg" };
-  } catch {
-    // Es. tainted canvas (CORS): fallisce silenziosamente
-    return null;
-  }
-}
-
-async function extractProFrames(url: string, count: number): Promise<{ base64: string; mediaType: "image/jpeg"; label: string }[]> {
-  return new Promise((resolve) => {
-    const video = document.createElement("video");
-    video.crossOrigin = "anonymous";
-    video.muted = true;
-    video.playsInline = true;
-    video.preload = "auto";
-    video.src = url;
-
-    const out: { base64: string; mediaType: "image/jpeg"; label: string }[] = [];
-    const fail = () => resolve(out);
-
-    video.addEventListener("error", fail, { once: true });
-    video.addEventListener("loadedmetadata", async () => {
-      const duration = isFinite(video.duration) && video.duration > 0 ? video.duration : 0;
-      if (duration === 0) return fail();
-
-      for (let i = 0; i < count; i++) {
-        const t = count === 1 ? duration / 2 : (i / (count - 1)) * duration;
-        await new Promise<void>((seekResolve) => {
-          const onSeeked = () => { video.removeEventListener("seeked", onSeeked); seekResolve(); };
-          video.addEventListener("seeked", onSeeked);
-          video.currentTime = Math.min(t, duration - 0.01);
-        });
-        const snap = await captureFrame(video);
-        if (snap) out.push({ ...snap, label: `t=${t.toFixed(1)}s` });
-      }
-      resolve(out);
-    }, { once: true });
-  });
-}
-
 function SessioneContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -94,8 +41,8 @@ function SessioneContent() {
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const userFramesRef = useRef<{ base64: string; mediaType: "image/jpeg"; label: string }[]>([]);
-  const proFramesRef = useRef<{ base64: string; mediaType: "image/jpeg"; label: string }[]>([]);
+  const userFramesRef = useRef<LabeledFrame[]>([]);
+  const proFramesRef = useRef<LabeledFrame[]>([]);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const frameTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -253,126 +200,37 @@ function SessioneContent() {
   }, [storeReset]);
 
   if (!exerciseId || (error && phase === "IDLE")) {
-    return (
-      <div className="text-center py-16 space-y-4">
-        <AlertTriangle className="w-12 h-12 text-destructive mx-auto" />
-        <p className="text-muted-foreground">{error ?? copy.analisiSessione.noExerciseSelected}</p>
-        <Link href="/analisi"><Button>{copy.analisiSessione.backToExercises}</Button></Link>
-      </div>
-    );
+    return <AnalysisErrorState message={error ?? copy.analisiSessione.noExerciseSelected} />;
   }
 
   if (phase === "ERROR") {
     return (
-      <div className="text-center py-16 space-y-4 max-w-md mx-auto">
-        <AlertTriangle className="w-12 h-12 text-destructive mx-auto" />
-        <h2 className="text-xl font-semibold">{copy.analisiSessione.notCompletedTitle}</h2>
-        <p className="text-muted-foreground text-sm">{error}</p>
-        <div className="flex justify-center gap-2">
-          <Button onClick={retry}>{copy.analisiSessione.retry}</Button>
-          <Link href="/analisi"><Button variant="outline">{copy.analisiSessione.exit}</Button></Link>
-        </div>
-      </div>
+      <AnalysisErrorState
+        title={copy.analisiSessione.notCompletedTitle}
+        message={error ?? copy.analisiSessione.processingError}
+        onRetry={retry}
+      />
     );
   }
 
   if (phase === "UPLOADING" || phase === "ANALYZING") {
-    return (
-      <div className="py-12 px-4 max-w-3xl mx-auto flex flex-col items-center gap-8">
-        <h2 className="text-2xl font-bold text-center">
-          {phase === "UPLOADING" ? copy.analisiSessione.uploadingTitle : copy.analisiSessione.analyzingTitle}
-        </h2>
-        <AnalysisProgress
-          steps={[
-            { label: copy.analisiSessione.steps.upload, icon: <Loader2 className="w-5 h-5" /> },
-            { label: copy.analisiSessione.steps.layers, icon: <Brain className="w-5 h-5" /> },
-            { label: copy.analisiSessione.steps.synthesis, icon: <TrendingUp className="w-5 h-5" /> },
-          ]}
-          currentStep={phase === "UPLOADING" ? 0 : analysisStep}
-        />
-        <p className="mt-12 text-muted-foreground text-center text-sm">
-          {phase === "UPLOADING"
-            ? copy.analisiSessione.uploadingDesc
-            : copy.analisiSessione.analyzingDesc}
-        </p>
-      </div>
-    );
+    return <AnalysisProcessingView uploading={phase === "UPLOADING"} analysisStep={analysisStep} />;
   }
 
   return (
-    <div className="space-y-4 max-w-4xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold">{exercise?.name ?? copy.analisiSessione.loadingExercise}</h1>
-          <p className="text-sm text-muted-foreground">
-            {phase === "IDLE" && copy.analisiSessione.phaseIdle}
-            {phase === "COUNTDOWN" && copy.analisiSessione.phaseCountdown}
-            {phase === "RECORDING" && copy.analisiSessione.phaseRecording}
-          </p>
-        </div>
-        {phase === "IDLE" && <Link href="/analisi"><Button variant="outline" size="sm">{copy.analisiSessione.back}</Button></Link>}
-      </div>
-
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="overflow-hidden">
-          <CardContent className="p-0 relative">
-            <div className="aspect-video bg-black relative">
-              <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
-              {!stream && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                  <Camera className="w-12 h-12 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">{copy.analisiSessione.cameraInactive}</p>
-                </div>
-              )}
-              {phase === "COUNTDOWN" && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/70 backdrop-blur-sm">
-                  <CountdownCircle seconds={countdown} onComplete={onCountdownComplete} />
-                </div>
-              )}
-            </div>
-            {phase === "RECORDING" && exercise && (
-              <div className="p-3">
-                <RecordingIndicator
-                  durationSeconds={exercise.recordingDurationSeconds}
-                  elapsedSeconds={elapsedSeconds}
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden">
-          <CardContent className="p-0">
-            <div className="aspect-video bg-secondary/50 flex items-center justify-center">
-              {exercise?.videoUrl ? (
-                <video src={exercise.videoUrl} loop autoPlay muted playsInline className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-center text-muted-foreground p-4">
-                  <Camera className="w-8 h-8 mx-auto mb-2" />
-                  <p className="text-xs">{copy.analisiSessione.proVideoUnavailable}</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {cameraError && <p className="text-sm text-destructive text-center">{cameraError}</p>}
-
-      <div className="flex justify-center">
-        {phase === "IDLE" && (
-          <Button
-            size="lg"
-            onClick={startCountdown}
-            disabled={cameraLoading || !analysisSessionId}
-            className="gap-2 px-8"
-          >
-            {cameraLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Brain className="w-5 h-5" />}
-            {copy.analisiSessione.start}
-          </Button>
-        )}
-      </div>
-    </div>
+    <RecordingStage
+      phase={phase}
+      exercise={exercise}
+      videoRef={videoRef}
+      stream={stream}
+      countdown={countdown}
+      elapsedSeconds={elapsedSeconds}
+      cameraError={cameraError}
+      cameraLoading={cameraLoading}
+      canStart={!!analysisSessionId}
+      onCountdownComplete={onCountdownComplete}
+      onStart={startCountdown}
+    />
   );
 }
 
