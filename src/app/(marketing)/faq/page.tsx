@@ -13,9 +13,24 @@ export const metadata: Metadata = {
 
 const FAQS = copy.faq.faqs;
 
+// Schema FAQPage generato dalle stesse Q&A visibili: non possono divergere
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 export default function FaqPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <section className="max-w-3xl mx-auto px-4 py-20 text-center space-y-6">
         <SlideUp>
           <h1 className="text-display-lg">{copy.faq.heroTitle.pre}<span className="text-gradient-energy">{copy.faq.heroTitle.highlight}</span></h1>

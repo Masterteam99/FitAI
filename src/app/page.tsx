@@ -6,6 +6,7 @@ import { GradientMesh } from "@/components/visualizations/GradientMesh";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { FadeIn, SlideUp, Stagger, StaggerItem, CardHover } from "@/components/motion/MotionPrimitives";
+import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
 import { copy } from "@/content/copy";
 
 const FEATURE_STYLES = [
@@ -21,6 +22,7 @@ const FEATURES = copy.landing.features.map((f, i) => ({ ...f, ...FEATURE_STYLES[
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
+      <OrganizationJsonLd />
       <GradientMesh palette="rainbow" intensity="medium" fixed />
 
       <MarketingHeader />
