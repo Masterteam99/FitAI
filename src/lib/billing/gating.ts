@@ -22,9 +22,11 @@ function currentPeriod(): string {
 export async function isPremium(userId: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { subscriptionStatus: true, subscriptionCurrentPeriodEnd: true },
+    select: { subscriptionStatus: true, subscriptionCurrentPeriodEnd: true, premiumGrantedUntil: true },
   });
   if (!user) return false;
+  // Premium concesso manualmente dall'admin: vive separato dallo stato Stripe
+  if (user.premiumGrantedUntil && user.premiumGrantedUntil > new Date()) return true;
   if (!PREMIUM_STATUSES.has(user.subscriptionStatus)) return false;
   if (user.subscriptionCurrentPeriodEnd && user.subscriptionCurrentPeriodEnd < new Date()) return false;
   return true;

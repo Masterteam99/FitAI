@@ -18,6 +18,7 @@ type UserRow = {
   isAdmin: boolean;
   subscriptionStatus: string;
   subscriptionPlan: string | null;
+  premiumGrantedUntil: string | null;
   createdAt: string;
   sessionsCount: number;
 };
@@ -110,6 +111,9 @@ export function UsersTable() {
                   {u.isAdmin && <Badge className="bg-green-600 text-white">{copy.adminUsers.table.badgeAdmin}</Badge>}
                   {(u.subscriptionStatus === "ACTIVE" || u.subscriptionStatus === "TRIALING") && (
                     <Badge className="bg-amber-500 text-white">{copy.adminUsers.table.badgePremium}</Badge>
+                  )}
+                  {u.premiumGrantedUntil && (
+                    <Badge className="bg-violet-600 text-white">{copy.adminUsers.table.badgeGranted}</Badge>
                   )}
                 </div>
                 <div className="text-xs text-muted-foreground truncate">

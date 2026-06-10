@@ -189,6 +189,7 @@ model User {
   subscriptionStatus  SubscriptionStatus @default(FREE)
   subscriptionPlan    SubscriptionPlan?
   subscriptionCurrentPeriodEnd DateTime?
+  premiumGrantedUntil DateTime?
   fitnessLevel        FitnessLevel @default(BEGINNER)
   age                 Int?
   weightKg            Float?
@@ -639,6 +640,7 @@ model ChallengeParticipant {
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([challengeId, userId])
+  @@index([userId])
   @@map("challenge_participants")
 }
 

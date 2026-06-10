@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, AdminAccessError } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma";
 
 const PAGE_SIZE = 50;
 
@@ -24,13 +25,22 @@ export async function GET(req: NextRequest) {
       { name: { contains: q, mode: "insensitive" } },
     ];
   }
-  if (filter === "premium") where.subscriptionStatus = { in: ["ACTIVE", "TRIALING"] };
-  else if (filter === "free") where.subscriptionStatus = "FREE";
-  else if (filter === "admin") where.isAdmin = true;
+  const now = new Date();
+  const premiumWhere: Prisma.UserWhereInput = {
+    OR: [
+      { subscriptionStatus: { in: ["ACTIVE", "TRIALING"] } },
+      { premiumGrantedUntil: { gt: now } },
+    ],
+  };
+  if (filter === "premium") where.OR = premiumWhere.OR;
+  else if (filter === "free") {
+    where.subscriptionStatus = "FREE";
+    where.AND = [{ OR: [{ premiumGrantedUntil: null }, { premiumGrantedUntil: { lte: now } }] }];
+  } else if (filter === "admin") where.isAdmin = true;
 
   const [total, totalPremium, totalAdmin, users, filteredCount] = await Promise.all([
     prisma.user.count(),
-    prisma.user.count({ where: { subscriptionStatus: { in: ["ACTIVE", "TRIALING"] } } }),
+    prisma.user.count({ where: premiumWhere }),
     prisma.user.count({ where: { isAdmin: true } }),
     prisma.user.findMany({
       where,
@@ -44,6 +54,7 @@ export async function GET(req: NextRequest) {
         isAdmin: true,
         subscriptionStatus: true,
         subscriptionPlan: true,
+        premiumGrantedUntil: true,
         createdAt: true,
         _count: { select: { workoutSessions: true } },
       },
@@ -59,6 +70,7 @@ export async function GET(req: NextRequest) {
       isAdmin: u.isAdmin,
       subscriptionStatus: u.subscriptionStatus,
       subscriptionPlan: u.subscriptionPlan,
+      premiumGrantedUntil: u.premiumGrantedUntil && u.premiumGrantedUntil > now ? u.premiumGrantedUntil.toISOString() : null,
       createdAt: u.createdAt.toISOString(),
       sessionsCount: u._count.workoutSessions,
     })),

@@ -13,6 +13,7 @@ interface BillingState {
   subscriptionPlan: "MONTHLY" | "YEARLY" | null;
   subscriptionCurrentPeriodEnd: string | null;
   cancelAtPeriodEnd: boolean;
+  premiumGrantedUntil: string | null;
 }
 
 const STATUS_LABEL: Record<BillingState["subscriptionStatus"], string> = copy.abbonamento.statusLabels;
@@ -70,7 +71,9 @@ export default function AbbonamentoPage() {
     return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
-  const isPremium = billing && ["ACTIVE", "TRIALING"].includes(billing.subscriptionStatus);
+  const stripePremium = !!billing && ["ACTIVE", "TRIALING"].includes(billing.subscriptionStatus);
+  const grantActive = !!billing?.premiumGrantedUntil;
+  const isPremium = stripePremium || grantActive;
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -107,13 +110,15 @@ export default function AbbonamentoPage() {
           <div className="flex items-center justify-between gap-3">
             <CardTitle className="text-base">{copy.abbonamento.yourPlanTitle}</CardTitle>
             <Badge variant={isPremium ? "default" : "secondary"}>
-              {STATUS_LABEL[billing?.subscriptionStatus ?? "FREE"]}
-              {billing?.subscriptionPlan && ` · ${billing.subscriptionPlan === "MONTHLY" ? copy.abbonamento.planMonthly : copy.abbonamento.planYearly}`}
+              {!stripePremium && grantActive
+                ? copy.abbonamento.statusGranted
+                : STATUS_LABEL[billing?.subscriptionStatus ?? "FREE"]}
+              {stripePremium && billing?.subscriptionPlan && ` · ${billing.subscriptionPlan === "MONTHLY" ? copy.abbonamento.planMonthly : copy.abbonamento.planYearly}`}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          {isPremium ? (
+          {stripePremium ? (
             <>
               <p className="text-sm text-muted-foreground">
                 {billing?.cancelAtPeriodEnd
@@ -128,6 +133,14 @@ export default function AbbonamentoPage() {
                 {copy.abbonamento.managePlan}
               </Button>
             </>
+          ) : grantActive ? (
+            <p className="text-sm text-muted-foreground">
+              {copy.abbonamento.grantedNote}
+              {billing?.premiumGrantedUntil && (
+                <>{copy.abbonamento.grantedUntilPre}<span className="text-foreground">{new Date(billing.premiumGrantedUntil).toLocaleDateString("it-IT")}</span></>
+              )}
+              .
+            </p>
           ) : (
             <p className="text-sm text-muted-foreground">{copy.abbonamento.freePlanNote}</p>
           )}

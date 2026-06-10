@@ -13,17 +13,16 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   }
   const { id } = await params;
 
-  const target = await prisma.user.findUnique({ where: { id }, select: { id: true, email: true } });
+  const target = await prisma.user.findUnique({ where: { id }, select: { id: true, email: true, premiumGrantedUntil: true } });
   if (!target) return NextResponse.json({ error: "Utente non trovato" }, { status: 404 });
 
-  const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  // Estende un grant ancora attivo invece di sovrascriverlo; non tocca i campi
+  // subscription*, che restano di proprietà esclusiva del webhook Stripe
+  const base = target.premiumGrantedUntil && target.premiumGrantedUntil > new Date() ? target.premiumGrantedUntil : new Date();
+  const periodEnd = new Date(base.getTime() + 30 * 24 * 60 * 60 * 1000);
   await prisma.user.update({
     where: { id },
-    data: {
-      subscriptionStatus: "ACTIVE",
-      subscriptionPlan: "MONTHLY",
-      subscriptionCurrentPeriodEnd: periodEnd,
-    },
+    data: { premiumGrantedUntil: periodEnd },
   });
 
   await logAdminAction({

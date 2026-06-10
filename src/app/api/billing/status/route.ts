@@ -12,6 +12,7 @@ export async function GET() {
       subscriptionStatus: true,
       subscriptionPlan: true,
       subscriptionCurrentPeriodEnd: true,
+      premiumGrantedUntil: true,
       subscriptions: {
         orderBy: { createdAt: "desc" },
         take: 1,
@@ -21,10 +22,13 @@ export async function GET() {
   });
   if (!user) return NextResponse.json({ error: "Non trovato" }, { status: 404 });
 
+  const grantActive = !!user.premiumGrantedUntil && user.premiumGrantedUntil > new Date();
+
   return NextResponse.json({
     subscriptionStatus: user.subscriptionStatus,
     subscriptionPlan: user.subscriptionPlan,
     subscriptionCurrentPeriodEnd: user.subscriptionCurrentPeriodEnd,
     cancelAtPeriodEnd: user.subscriptions[0]?.cancelAtPeriodEnd ?? false,
+    premiumGrantedUntil: grantActive ? user.premiumGrantedUntil : null,
   });
 }
