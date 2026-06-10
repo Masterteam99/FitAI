@@ -665,6 +665,9 @@ export const copy = {
     seriesLabel: (current: number, total: number) => `Serie ${current} di ${total}`,
     setCompleted: "Serie completata",
     upcoming: "Prossimi",
+    progressAria: "Avanzamento sessione",
+    setDotAria: (n: number, done: boolean) => (done ? `Serie ${n} completata` : `Serie ${n} da fare`),
+    restCountdownAria: "Secondi di recupero rimanenti",
   },
 
   // ── /allenamento/nuovo → src/app/(app)/allenamento/nuovo/page.tsx ──
@@ -700,6 +703,8 @@ export const copy = {
     addExercisePlaceholder: "+ Aggiungi esercizio...",
     cancel: "Annulla",
     createPlan: "Crea piano",
+    removeDayAria: "Rimuovi giorno",
+    removeExerciseAria: "Rimuovi esercizio",
   },
 
   // ── /allenamento/genera-ai → src/app/(app)/allenamento/genera-ai/page.tsx ──
@@ -780,6 +785,8 @@ export const copy = {
     cancel: "Annulla",
     macroSummary: (p: number, c: number, f: number) => `P:${p}g C:${c}g G:${f}g`,
     emptyDay: "Nessun alimento registrato per questo giorno",
+    prevDayAria: "Giorno precedente",
+    nextDayAria: "Giorno successivo",
   },
 
   // ── /ai-coach → src/app/(app)/ai-coach/page.tsx ──

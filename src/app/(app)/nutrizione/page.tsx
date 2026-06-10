@@ -118,13 +118,13 @@ export default function NutrizionePage() {
 
       {/* Date navigator */}
       <div className="flex items-center gap-3 justify-center">
-        <Button variant="ghost" size="icon" onClick={() => setDate(format(subDays(parseISO(date), 1), "yyyy-MM-dd"))}>
+        <Button variant="ghost" size="icon" aria-label={copy.nutrizione.prevDayAria} onClick={() => setDate(format(subDays(parseISO(date), 1), "yyyy-MM-dd"))}>
           <ChevronLeft className="w-5 h-5" />
         </Button>
         <span className="font-medium min-w-[160px] text-center">
           {format(parseISO(date), "EEEE d MMMM yyyy", { locale: it })}
         </span>
-        <Button variant="ghost" size="icon" onClick={() => setDate(format(addDays(parseISO(date), 1), "yyyy-MM-dd"))} disabled={date >= format(new Date(), "yyyy-MM-dd")}>
+        <Button variant="ghost" size="icon" aria-label={copy.nutrizione.nextDayAria} onClick={() => setDate(format(addDays(parseISO(date), 1), "yyyy-MM-dd"))} disabled={date >= format(new Date(), "yyyy-MM-dd")}>
           <ChevronRight className="w-5 h-5" />
         </Button>
       </div>

@@ -23,7 +23,14 @@ export function SessionTopBar({ planId, currentIndex, total, progressPct }: {
         <span className="text-xs text-muted-foreground tabular-nums">
           {currentIndex + 1} / {total}
         </span>
-        <div className="w-32 h-1.5 bg-secondary rounded-full overflow-hidden">
+        <div
+          className="w-32 h-1.5 bg-secondary rounded-full overflow-hidden"
+          role="progressbar"
+          aria-label={copy.allenamentoSessione.progressAria}
+          aria-valuenow={progressPct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
           <motion.div
             className="h-full gradient-energy"
             initial={{ width: 0 }}

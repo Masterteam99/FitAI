@@ -31,7 +31,7 @@ export function RestView({ restSecondsLeft, restTotal, isPaused, quote, onToggle
       <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">{copy.allenamentoSessione.rest}</p>
 
       <div className="relative">
-        <svg viewBox="0 0 200 200" className="w-64 h-64 -rotate-90">
+        <svg viewBox="0 0 200 200" className="w-64 h-64 -rotate-90" aria-hidden="true">
           <circle cx="100" cy="100" r="90" fill="none" stroke="var(--secondary)" strokeWidth="6" />
           <motion.circle
             cx="100" cy="100" r="90"
@@ -43,7 +43,11 @@ export function RestView({ restSecondsLeft, restTotal, isPaused, quote, onToggle
             style={{ strokeDashoffset: REST_CIRCUMFERENCE * (1 - restProgress) }}
           />
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center"
+          aria-live="polite"
+          aria-label={copy.allenamentoSessione.restCountdownAria}
+        >
           <NumberPunch
             value={restSecondsLeft}
             unit="s"

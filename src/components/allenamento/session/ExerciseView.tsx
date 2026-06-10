@@ -73,6 +73,7 @@ export function ExerciseView({ exercises, currentExIndex, currentSet, completedS
               initial={false}
               animate={done ? { scale: [1, 1.2, 1] } : {}}
               transition={{ duration: 0.3 }}
+              aria-label={copy.allenamentoSessione.setDotAria(i + 1, done)}
               className={cn(
                 "w-12 h-12 rounded-full flex items-center justify-center font-display text-lg transition-all",
                 done && "bg-energy-warm text-background shadow-[0_0_20px_-2px_var(--energy-warm)]",

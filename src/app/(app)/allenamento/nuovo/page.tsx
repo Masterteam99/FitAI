@@ -197,7 +197,7 @@ export default function NuovoPianoPage() {
                   {copy.allenamentoNuovo.restDay}
                 </Button>
                 {days.length > 1 && (
-                  <Button variant="ghost" size="icon" onClick={() => removeDay(dayIdx)}>
+                  <Button variant="ghost" size="icon" aria-label={copy.allenamentoNuovo.removeDayAria} onClick={() => removeDay(dayIdx)}>
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
                 )}
@@ -221,7 +221,7 @@ export default function NuovoPianoPage() {
                           <span className="text-xs text-muted-foreground">×</span>
                           <Input type="number" min={1} max={100} value={ex.reps} onChange={(e) => updateExercise(dayIdx, exIdx, { reps: Number(e.target.value) })} className="w-16 text-center" aria-label="reps" />
                           <span className="text-xs text-muted-foreground">{copy.allenamentoNuovo.repUnit}</span>
-                          <Button variant="ghost" size="icon" onClick={() => removeExercise(dayIdx, exIdx)}>
+                          <Button variant="ghost" size="icon" aria-label={copy.allenamentoNuovo.removeExerciseAria} onClick={() => removeExercise(dayIdx, exIdx)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
