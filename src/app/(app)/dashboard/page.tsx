@@ -25,7 +25,7 @@ export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user!.id as string;
 
-  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions] = await Promise.all([
+  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions, totalSessions] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, currentStreak: true, totalPoints: true, longestStreak: true } }),
     prisma.workoutPlan.findFirst({ where: { userId, isActive: true }, include: { days: { include: { exercises: { include: { exercise: true } } } } } }),
     prisma.workoutSession.findMany({ where: { userId, status: "COMPLETED" }, orderBy: { completedAt: "desc" }, take: 5, include: { planDay: true } }),
@@ -36,6 +36,7 @@ export default async function DashboardPage() {
       where: { userId, status: "COMPLETED", completedAt: { gte: new Date(Date.now() - 90 * DAY_MS) } },
       select: { completedAt: true },
     }),
+    prisma.workoutSession.count({ where: { userId, status: "COMPLETED" } }),
   ]);
 
   // Aggrega streak ultimi 90 giorni
@@ -55,22 +56,59 @@ export default async function DashboardPage() {
         <WelcomeTour />
 
         <FadeIn>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-bold">{copy.dashboard.greeting(user?.name?.split(" ")[0] ?? copy.dashboard.greetingFallback)} <span className="inline-block animate-wave">👋</span></h1>
-              <p className="text-muted-foreground">{copy.dashboard.subtitle}</p>
-            </div>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="inline-flex items-center gap-1.5">
-                <Flame className="w-4 h-4 text-energy-warm" />
-                <CountUp value={user?.currentStreak ?? 0} className="font-semibold" />
-                <span className="text-muted-foreground">{copy.dashboard.streakSuffix}</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Target className="w-4 h-4 text-primary" />
-                <CountUp value={user?.totalPoints ?? 0} className="font-semibold" />
-                <span className="text-muted-foreground">{copy.dashboard.pointsSuffix}</span>
-              </span>
+          <div>
+            <h1 className="font-display text-4xl">
+              {copy.dashboard.greeting(user?.name?.split(" ")[0] ?? copy.dashboard.greetingFallback)} <span className="inline-block animate-wave">👋</span>
+            </h1>
+            <p className="text-muted-foreground mt-1">{copy.dashboard.subtitle}</p>
+          </div>
+        </FadeIn>
+
+        {/* Statband mix: contatori oversize su fondo espresso (dir-mix-dashboard) */}
+        <FadeIn delay={0.03}>
+          <div className="relative overflow-hidden rounded-[28px] p-1.5" style={{ background: "var(--organic-espresso, #1a1a1a)" }}>
+            <div
+              className="pointer-events-none absolute w-80 h-80 rounded-full blur-[70px] -top-36 -right-14 opacity-20"
+              style={{ background: "var(--organic-terracotta, #c66a4a)" }}
+            />
+            <div className="relative z-[2] grid sm:grid-cols-3">
+              {[
+                { value: totalSessions, unit: null as string | null, label: copy.dashboard.statband.workouts, delta: null as string | null, icon: Dumbbell },
+                { value: user?.currentStreak ?? 0, unit: copy.dashboard.statband.streakUnit, label: copy.dashboard.statband.streak, delta: copy.dashboard.statband.streakRecord(user?.longestStreak ?? 0), icon: Flame },
+                { value: user?.totalPoints ?? 0, unit: copy.dashboard.statband.pointsUnit, label: copy.dashboard.statband.points, delta: null, icon: Target },
+              ].map((s, i) => {
+                const Icon = s.icon;
+                return (
+                  <div
+                    key={s.label}
+                    className={`relative p-7 ${i < 2 ? "sm:border-r" : ""} ${i > 0 ? "max-sm:border-t" : ""}`}
+                    style={{ borderColor: "rgba(246,240,231,.12)" }}
+                  >
+                    {s.delta && (
+                      <span className="absolute top-7 right-7 text-[11px] font-bold tracking-wide" style={{ color: "#cdd9bf" }}>
+                        {s.delta}
+                      </span>
+                    )}
+                    <div
+                      className="w-10 h-10 rounded-xl grid place-items-center mb-5"
+                      style={{ background: "rgba(246,240,231,.08)", color: "var(--organic-terracotta-soft, #e4a07e)" }}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="font-display text-6xl leading-[.85] tracking-tight flex items-baseline gap-1.5" style={{ color: "var(--organic-cream, #fbf7f0)" }}>
+                      <CountUp value={s.value} />
+                      {s.unit && (
+                        <span className="text-base font-bold tracking-wide font-sans" style={{ color: "var(--organic-terracotta-soft, #e4a07e)" }}>
+                          {s.unit}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] uppercase tracking-[0.14em] mt-3.5" style={{ color: "rgba(246,240,231,.62)" }}>
+                      {s.label}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </FadeIn>

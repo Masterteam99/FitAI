@@ -14,9 +14,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user?.onboardingCompleted) redirect("/onboarding");
 
   return (
-    <div className="flex min-h-screen">
+    // Tema "mix" Track A: skin organica (token rimappati) sull'app loggata,
+    // con gli accenti energy esistenti come componente atletica.
+    <div className="theme-organic flex min-h-screen bg-background text-foreground">
+      <div className="organic-grain" />
       <Navbar isAdmin={user.isAdmin} />
-      <main className="flex-1 lg:ml-64 pt-14 lg:pt-0">
+      <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 relative z-[2]">
         <div className="p-4 lg:p-6 max-w-7xl mx-auto">{children}</div>
       </main>
     </div>
