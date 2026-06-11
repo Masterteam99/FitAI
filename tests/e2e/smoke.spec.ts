@@ -25,6 +25,9 @@ test.describe("Smoke — basic routing", () => {
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.status).toBe("ok");
-    expect(data.checks.database).toBe("ok");
+    // La risposta pubblica non espone i dettagli dei check (servono solo
+    // con header x-health-token == HEALTH_CHECK_TOKEN)
+    expect(data.checks).toBeUndefined();
+    expect(data.timestamp).toBeTruthy();
   });
 });

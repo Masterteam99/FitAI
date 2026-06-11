@@ -37,15 +37,18 @@ test.describe("M10 admin hub", () => {
     expect(body.error).toMatch(/te stesso/i);
   });
 
-  test("admin → grant premium 30g → subscriptionStatus diventa ACTIVE", async ({ authedAdminPage, testUser }) => {
+  test("admin → grant premium 30g → premiumGrantedUntil futuro, Stripe non toccato", async ({ authedAdminPage, testUser }) => {
     const resp = await authedAdminPage.request.post(`/api/admin/users/${testUser.id}/grant-premium`);
     expect(resp.status()).toBe(200);
     const dbUser = await prisma.user.findUnique({
       where: { id: testUser.id },
-      select: { subscriptionStatus: true, subscriptionCurrentPeriodEnd: true },
+      select: { subscriptionStatus: true, premiumGrantedUntil: true },
     });
-    expect(dbUser?.subscriptionStatus).toBe("ACTIVE");
-    expect(dbUser?.subscriptionCurrentPeriodEnd).not.toBeNull();
+    // Il grant manuale vive in premiumGrantedUntil; i campi subscription*
+    // restano di proprietà esclusiva del webhook Stripe
+    expect(dbUser?.premiumGrantedUntil).not.toBeNull();
+    expect(dbUser!.premiumGrantedUntil!.getTime()).toBeGreaterThan(Date.now());
+    expect(dbUser?.subscriptionStatus).toBe("FREE");
     await prisma.adminActionLog.deleteMany({ where: { targetId: testUser.id } });
   });
 
