@@ -55,6 +55,71 @@
   --energy-hot:  oklch(0.62 0.24 25);    /* rosso: intensità alta */
 }
 
+/* ─── Tema organico (landing + superficie marketing) ───────────────────────
+   Rimappa i token Tailwind nel sottoalbero: crema/terracotta/salvia con serif
+   Fraunces come display. Direzione design dir3-organic (design-mockups/). */
+.theme-organic {
+  --background: #fbf7f0;          /* cream */
+  --foreground: #2a231d;          /* ink */
+  --card: #fffdf9;                /* paper */
+  --card-foreground: #2a231d;
+  --primary: #c66a4a;             /* terracotta */
+  --primary-foreground: #fbf7f0;
+  --secondary: #f6f0e7;           /* sand */
+  --secondary-foreground: #2a231d;
+  --muted: #f6f0e7;
+  --muted-foreground: #6b5f54;    /* ink-soft */
+  --accent: #8a9a7b;              /* sage */
+  --accent-foreground: #2e3a2c;
+  --border: #e7ddcd;              /* line */
+  --input: #fffdf9;
+  --ring: #c66a4a;
+  --font-display: var(--font-fraunces);
+
+  /* palette nominata, per gli accenti che non passano dai token */
+  --organic-terracotta: #c66a4a;
+  --organic-terracotta-soft: #e4a07e;
+  --organic-terracotta-deep: #a8492c;
+  --organic-sage: #8a9a7b;
+  --organic-sage-deep: #5f6f54;
+  --organic-sage-pale: #bcc8ad;
+  --organic-forest: #2e3a2c;
+  --organic-espresso: #33271f;
+  --organic-sand: #f6f0e7;
+  --organic-cream: #fbf7f0;
+  --organic-paper: #fffdf9;
+  --organic-line: #e7ddcd;
+
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Le utility display nel tema organico usano la serif con pesi/spaziature dolci */
+.theme-organic .text-hero,
+.theme-organic .text-display-lg,
+.theme-organic .text-display-md,
+.theme-organic .font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+.theme-organic .text-display-lg { line-height: 1.05; }
+
+/* Gradienti/glow energy riarmonizzati su terracotta/salvia nel tema organico */
+.theme-organic .text-gradient-energy {
+  background: linear-gradient(135deg, var(--organic-sage-deep), var(--organic-terracotta));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.theme-organic .glow-energy {
+  box-shadow: 0 14px 30px -10px rgba(198, 106, 74, 0.5);
+}
+.theme-organic .glow-primary {
+  box-shadow: 0 10px 24px -8px rgba(198, 106, 74, 0.45);
+}
+
 /* ─── Energy utilities ─────────────────────────────────────────────────── */
 
 @layer utilities {
@@ -133,6 +198,48 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .mesh-blob { animation: none !important; }
+  }
+
+  /* Tema organico: texture e forme morbide */
+  .organic-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .organic-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(48px);
+    opacity: 0.55;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .organic-glass {
+    background: rgba(255, 253, 249, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 30px 70px -30px rgba(51, 39, 31, 0.32);
+  }
+  @keyframes organic-breathe {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.6); opacity: 0.55; }
+  }
+  .organic-dot {
+    animation: organic-breathe 3.4s ease-in-out infinite;
+  }
+  @keyframes organic-floaty {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .organic-floaty {
+    animation: organic-floaty 5s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .organic-dot, .organic-floaty { animation: none !important; }
   }
 
   /* Shimmer per Skeleton component */

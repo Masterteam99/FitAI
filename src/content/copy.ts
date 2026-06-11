@@ -80,6 +80,7 @@ export const copy = {
       },
     ],
     copyright: `© 2026 ${APP_NAME} — ${APP_TAGLINE}`,
+    tagline: "Fatto con cura in Italia",
   },
 
   // ── Navbar app loggata → src/components/layout/Navbar.tsx ──
@@ -102,24 +103,79 @@ export const copy = {
 
   // ── Landing → src/app/page.tsx ──
   landing: {
-    badge: "Powered by Claude AI + MediaPipe",
-    heroTitle: { pre: "Il tuo ", highlight: "Personal Trainer AI", post: "sempre con te" } as HeroTitle,
-    heroSubtitle:
-      "Allenati con piani personalizzati dall'AI, analizza la tua tecnica con la computer vision e ricevi feedback da un coach digitale disponibile 24/7.",
-    ctaPrimary: "Inizia gratis",
-    ctaSecondary: "Hai già un account",
-    featuresTitle: "Tutto ciò di cui hai bisogno per allenarti meglio",
-    features: [
-      { title: "Piani AI Personalizzati", desc: "Claude crea piani su misura basandosi sui tuoi obiettivi, livello e attrezzatura disponibile." },
-      { title: "Analisi Video Real-Time", desc: "Computer vision Google MediaPipe rileva i tuoi movimenti in tempo reale. Feedback istantaneo su postura e tecnica." },
-      { title: "Analisi Triplice 50/30/20", desc: "Biomeccanica oggettiva, AI Expert e confronto con video PT: feedback completo come quello di un personal trainer privato." },
-      { title: "Progressi Dettagliati", desc: "Traccia sessioni, misurazioni e miglioramenti nel tempo con grafici interattivi." },
-      { title: "Gamification", desc: "Achievements, streak, punti e sfide per mantenerti motivato ogni giorno." },
-      { title: "AI Coach 24/7", desc: "Domande su nutrizione, recupero o tecnica? Il tuo coach AI risponde sempre." },
+    eyebrow: "Personal trainer con intelligenza artificiale",
+    heroTitle: { pre: "Il tuo benessere, guidato con ", highlight: "cura", post: " e precisione." } as HeroTitle,
+    heroLead:
+      `${APP_NAME} unisce allenamento intelligente, nutrizione su misura e analisi della forma in tempo reale. Una guida raffinata, calibrata su di te — giorno dopo giorno.`,
+    ctaPrimary: "Inizia il percorso",
+    ctaSecondary: "Scopri come funziona",
+    metrics: [
+      { value: "100%", label: "su misura per te" },
+      { value: "24/7", label: "coach sempre disponibile" },
+      { value: "0–100", label: "punteggio forma oggettivo" },
     ],
-    finalCtaTitle: "Pronto ad allenarti come un atleta?",
-    finalCtaSubtitle: `Unisciti a migliaia di utenti che si allenano con ${APP_NAME}`,
-    finalCtaButton: "Crea account gratuito",
+    scoreCard: {
+      tag: "Analisi biomeccanica",
+      title: "Squat — sessione di oggi",
+      score: 94,
+      scoreLabel: "punteggio",
+      rows: [
+        { label: "Allineamento ginocchia", value: "Ottimo", chip: true },
+        { label: "Profondità", value: "92%", chip: false },
+        { label: "Rischio infortuni", value: "Basso", chip: true },
+        { label: "Tempo medio rep", value: "2,4s", chip: false },
+      ],
+    },
+    floatCard: { title: "Streak: 14 giorni", sub: "Costanza eccellente" },
+    pillarsEyebrow: "Cosa trovi dentro",
+    pillarsTitle: { pre: "Tre pilastri, ", highlight: "un solo", post: " percorso." } as HeroTitle,
+    pillarsSubtitle:
+      "Ogni elemento è pensato per integrarsi con gli altri: l'allenamento informa la nutrizione, l'analisi della forma protegge il tuo corpo.",
+    pillars: [
+      { title: "Piani di allenamento IA", desc: "Programmi che si adattano ai tuoi progressi, al recupero e agli obiettivi. Niente schede statiche: un percorso che evolve con te." },
+      { title: "Analisi della forma", desc: "La fotocamera valuta ogni ripetizione: punteggio da 0 a 100, allineamento e rischio infortuni. Correzioni delicate, in tempo reale." },
+      { title: "Nutrizione su misura", desc: "Piani alimentari calibrati su fabbisogno, gusti e abitudini. Equilibrio e gusto, calcolati dall'IA e curati per il benessere." },
+    ],
+    pillarMore: "Esplora",
+    stepsEyebrow: "Come funziona",
+    stepsTitle: { pre: "Quattro passi verso ", highlight: "il tuo equilibrio", post: "." } as HeroTitle,
+    steps: [
+      { num: "01", title: "Raccontati", desc: "Obiettivi, livello, abitudini e disponibilità. L'IA ascolta prima di proporre." },
+      { num: "02", title: "Ricevi il piano", desc: "Allenamento e nutrizione costruiti su misura, pronti dal primo giorno." },
+      { num: "03", title: "Allenati guidato", desc: "La fotocamera analizza la forma e ti corregge con delicatezza, rep dopo rep." },
+      { num: "04", title: "Osserva i progressi", desc: "Grafici, heatmap e mappa corporea raccontano la tua evoluzione." },
+    ],
+    showcaseEyebrow: "Dati che ispirano",
+    showcaseTitle: { pre: "Ogni progresso, reso ", highlight: "bellissimo", post: "." } as HeroTitle,
+    showcaseText:
+      "Visualizzazioni eleganti che trasformano i numeri in motivazione. Volume settimanale, punteggio della forma e costanza — sempre a colpo d'occhio.",
+    showcaseStats: [
+      { value: 91, label: "punteggio forma" },
+      { value: 248, label: "min / settimana" },
+      { value: 37, label: "obiettivi raggiunti" },
+    ],
+    showcaseChartLabel: "Volume di allenamento",
+    showcaseChartDelta: "+18% questo mese",
+    pricingEyebrow: "Prezzi trasparenti",
+    pricingTitle: { pre: "Inizia gratis. ", highlight: "Cresci", post: " quando vuoi." } as HeroTitle,
+    priceFree: {
+      name: "Essenziale",
+      amount: "€0",
+      period: " / per sempre",
+      desc: "Tutto il necessario per iniziare il tuo percorso.",
+      features: ["3 piani AI al mese", "5 analisi video al mese", "Libreria esercizi e progressi"],
+      cta: "Crea account",
+    },
+    pricePro: {
+      name: "Premium",
+      badge: "Più scelto",
+      amount: "€9,99",
+      period: " / mese",
+      desc: "L'esperienza completa, senza limiti.",
+      features: ["Piani IA illimitati e adattivi", "Analisi biomeccanica illimitata", "Nutrizione personalizzata", "AI Coach 24/7 e report PDF"],
+      cta: "Passa a Premium",
+      yearlyNote: "oppure €79/anno (risparmi il 34%)",
+    },
   },
 
   // ── /funzionalita → src/app/(marketing)/funzionalita/page.tsx ──

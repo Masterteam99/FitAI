@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Bowlby_One_SC } from "next/font/google";
+import { Geist, Bowlby_One_SC, Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { copy } from "@/content/copy";
@@ -7,6 +7,9 @@ import { SITE_URL } from "@/lib/site-url";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const bowlby = Bowlby_One_SC({ variable: "--font-display", subsets: ["latin"], weight: "400", display: "swap" });
+// Tema organico (landing + marketing): serif espressiva + sans morbida
+const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], style: ["normal", "italic"], display: "swap" });
+const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -31,7 +34,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${geist.variable} ${bowlby.variable} h-full antialiased`}>
+    <html lang="it" className={`${geist.variable} ${bowlby.variable} ${fraunces.variable} ${manrope.variable} h-full antialiased`}>
       <body className="min-h-full bg-background text-foreground">
         <Providers>{children}</Providers>
       </body>

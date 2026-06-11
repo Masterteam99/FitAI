@@ -1,31 +1,43 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Zap, ChevronRight } from "lucide-react";
-import { APP_NAME, copy } from "@/content/copy";
+import { ChevronRight } from "lucide-react";
+import { copy } from "@/content/copy";
+import { OrganicLogo } from "./OrganicLogo";
 
 const NAV = copy.marketingHeader.nav;
 
 export function MarketingHeader() {
   return (
-    <header className="relative border-b border-border px-4 py-4 flex items-center justify-between max-w-7xl mx-auto">
-      <Link href="/" className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center glow-primary">
-          <Zap className="w-5 h-5 text-primary-foreground" />
-        </div>
-        <span className="text-xl font-bold font-display">{APP_NAME}</span>
-      </Link>
+    <header className="sticky top-0 z-40 border-b border-border/70 backdrop-blur-md" style={{ background: "rgba(251,247,240,.82)" }}>
+      <div className="max-w-[1180px] mx-auto px-7 py-5 flex items-center justify-between">
+        <OrganicLogo />
 
-      <nav className="hidden md:flex items-center gap-6 text-sm">
-        {NAV.map((n) => (
-          <Link key={n.href} href={n.href} className="text-muted-foreground hover:text-foreground transition-colors">
-            {n.label}
+        <nav className="hidden md:flex items-center gap-8 text-sm">
+          {NAV.map((n) => (
+            <Link
+              key={n.href}
+              href={n.href}
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
+            >
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="hidden sm:inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold border border-border hover:border-foreground transition-colors"
+          >
+            {copy.marketingHeader.login}
           </Link>
-        ))}
-      </nav>
-
-      <div className="flex items-center gap-3">
-        <Link href="/login"><Button variant="ghost">{copy.marketingHeader.login}</Button></Link>
-        <Link href="/registrati"><Button className="glow-energy">{copy.marketingHeader.signup} <ChevronRight className="w-4 h-4" /></Button></Link>
+          <Link
+            href="/registrati"
+            className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(198,106,74,.5)]"
+            style={{ background: "var(--organic-espresso)", color: "var(--organic-cream)" }}
+          >
+            {copy.marketingHeader.signup} <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     </header>
   );

@@ -1,43 +1,43 @@
 import Link from "next/link";
-import { Zap } from "lucide-react";
-import { APP_NAME, copy } from "@/content/copy";
+import { copy } from "@/content/copy";
+import { OrganicLogo } from "./OrganicLogo";
 
 const COLUMNS = copy.marketingFooter.columns;
 
 export function MarketingFooter() {
   return (
-    <footer className="relative border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 py-12 grid gap-10 md:grid-cols-4">
-        <div className="space-y-3">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center glow-primary">
-              <Zap className="w-5 h-5 text-primary-foreground" />
+    <footer className="relative" style={{ background: "var(--organic-espresso)", color: "rgba(246,240,231,.7)" }}>
+      <div className="max-w-[1180px] mx-auto px-7 pt-16 pb-9">
+        <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr_1fr] mb-12">
+          <div className="space-y-4" style={{ color: "var(--organic-sand)" }}>
+            <OrganicLogo dark />
+            <p className="text-sm max-w-xs" style={{ color: "rgba(246,240,231,.7)" }}>
+              {copy.marketingFooter.description}
+            </p>
+          </div>
+
+          {COLUMNS.map((col) => (
+            <div key={col.title}>
+              <h4 className="text-xs font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "var(--organic-sand)" }}>
+                {col.title}
+              </h4>
+              <ul className="space-y-1 text-sm">
+                {col.links.map((l) => (
+                  <li key={l.href} className="py-1">
+                    <Link href={l.href} className="transition-colors hover:text-[var(--organic-terracotta-soft)]">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <span className="text-xl font-bold font-display">{APP_NAME}</span>
-          </Link>
-          <p className="text-sm text-muted-foreground max-w-xs">
-            {copy.marketingFooter.description}
-          </p>
+          ))}
         </div>
 
-        {COLUMNS.map((col) => (
-          <div key={col.title} className="space-y-3">
-            <h4 className="text-sm font-semibold">{col.title}</h4>
-            <ul className="space-y-2 text-sm">
-              {col.links.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-muted-foreground hover:text-foreground transition-colors">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <div className="border-t border-border py-6 text-center text-sm text-muted-foreground">
-        <p>{copy.marketingFooter.copyright}</p>
+        <div className="pt-6 text-sm flex flex-wrap justify-between gap-3" style={{ borderTop: "1px solid rgba(246,240,231,.12)" }}>
+          <span>{copy.marketingFooter.copyright}</span>
+          <span>{copy.marketingFooter.tagline}</span>
+        </div>
       </div>
     </footer>
   );
