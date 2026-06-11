@@ -1,10 +1,15 @@
-# Revisione trigger biomeccanici critici — 32 nuovi esercizi (Track B1)
+# [SUPERATO] Revisione trigger biomeccanici critici — 32 nuovi esercizi (Track B1)
 
-> **GATE DI SICUREZZA.** Questi trigger pilotano l'analisi della forma e la stima del rischio
-> infortuni mostrata all'utente. Vanno **revisionati da un umano** prima del seed definitivo.
-> Generati con assistenza AI, formato di `prisma/seed-biomechanical-specs.ts`.
+> **REVISIONE COMPLETATA il 10/06/2026.** Questo file è superato: la revisione interna
+> ha corretto fasi invertite, baseline colonna e trigger non misurabili, e il seed è
+> stato eseguito. Documenti aggiornati:
+> - `docs/revisione-trigger-biomeccanici.md` — catalogo completo auto-generato (52 esercizi,
+>   per la validazione da parte di un esperto di biomeccanica)
+> - `docs/revisione-trigger-NOTE-CORREZIONI.md` — correzioni applicate e domande aperte
+>
+> Il contenuto sotto è la fotografia PRE-correzione, conservata per riferimento storico.
 
-**Conteggio:** 19 trigger `CRITICAL` · 35 trigger con `injuryRisk: true`.
+**Conteggio (storico):** 19 trigger `CRITICAL` · 35 trigger con `injuryRisk: true`.
 
 **Come leggere:** ogni riga è una condizione angolare che, se violata nella fase indicata,
 fa scattare il feedback. `BELOW_MIN` = angolo sotto la soglia minima; `ABOVE_MAX` = oltre la massima;

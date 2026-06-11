@@ -5,6 +5,10 @@ export type ExercisePhase = "TOP" | "BOTTOM" | "CONCENTRIC" | "ECCENTRIC" | "ISO
 interface KeyAngleConfig {
   static?: boolean;
   keyAngle?: (a: JointAngles) => number | undefined;
+  // Esercizi "pull" in cui la posizione contratta (il top del movimento) coincide
+  // con l'angolo MINIMO: con invert, angolo minimo → TOP e angolo massimo → BOTTOM,
+  // così le fasi delle spec (nominate per posizione) corrispondono ai frame giusti.
+  invert?: boolean;
 }
 
 function avg(...vals: (number | undefined)[]): number | undefined {
@@ -13,38 +17,80 @@ function avg(...vals: (number | undefined)[]): number | undefined {
   return present.reduce((s, v) => s + v, 0) / present.length;
 }
 
-const EXERCISE_PHASE_CONFIG: Record<string, KeyAngleConfig> = {
+const kneeKey = (a: JointAngles) => avg(a.leftKnee, a.rightKnee);
+const hipKey = (a: JointAngles) => avg(a.leftHip, a.rightHip);
+const elbowKey = (a: JointAngles) => avg(a.leftElbow, a.rightElbow);
+const shoulderKey = (a: JointAngles) => avg(a.leftShoulder, a.rightShoulder);
+
+export const EXERCISE_PHASE_CONFIG: Record<string, KeyAngleConfig> = {
   // Esercizi statici: una sola fase THROUGHOUT
   "plank": { static: true },
   "plank-laterale": { static: true },
 
   // Esercizi knee-driven (bottom = ginocchio più flesso = angolo più piccolo)
-  "squat": { keyAngle: (a) => avg(a.leftKnee, a.rightKnee) },
-  "goblet-squat": { keyAngle: (a) => avg(a.leftKnee, a.rightKnee) },
-  "affondi": { keyAngle: (a) => avg(a.leftKnee, a.rightKnee) },
-  "bulgarian-split-squat": { keyAngle: (a) => avg(a.leftKnee, a.rightKnee) },
-  "leg-press": { keyAngle: (a) => avg(a.leftKnee, a.rightKnee) },
+  "squat": { keyAngle: kneeKey },
+  "goblet-squat": { keyAngle: kneeKey },
+  "affondi": { keyAngle: kneeKey },
+  "bulgarian-split-squat": { keyAngle: kneeKey },
+  "leg-press": { keyAngle: kneeKey },
+  "front-squat": { keyAngle: kneeKey },
+  "overhead-squat": { keyAngle: kneeKey },
+  "pistol-squat": { keyAngle: kneeKey },
+  "leg-extension": { keyAngle: kneeKey },
+  "kettlebell-goblet-squat": { keyAngle: kneeKey },
+  "jump-squat": { keyAngle: kneeKey },
+  "box-jump": { keyAngle: kneeKey },
+  "step-up": { keyAngle: kneeKey },
+  "burpee": { keyAngle: kneeKey },
+  // Tenuta statica: il range ridotto (<15°) produce ISOMETRIC, come da spec
+  "wall-sit": { keyAngle: kneeKey },
+  // Leg curl sdraiato: contratto (tallone al gluteo) = angolo minimo = top del movimento
+  "leg-curl": { keyAngle: kneeKey, invert: true },
 
   // Esercizi hip-driven
-  "stacco-da-terra": { keyAngle: (a) => avg(a.leftHip, a.rightHip) },
-  "romanian-deadlift": { keyAngle: (a) => avg(a.leftHip, a.rightHip) },
-  "hip-thrust": { keyAngle: (a) => avg(a.leftHip, a.rightHip) },
+  "stacco-da-terra": { keyAngle: hipKey },
+  "romanian-deadlift": { keyAngle: hipKey },
+  "hip-thrust": { keyAngle: hipKey },
+  "kettlebell-swing": { keyAngle: hipKey },
+  "good-morning": { keyAngle: hipKey },
+  "glute-bridge": { keyAngle: hipKey },
+  "bird-dog": { keyAngle: hipKey },
+  "hip-flexor-stretch": { keyAngle: hipKey },
+  "hamstring-stretch": { keyAngle: hipKey },
+  // Ginocchio al petto = anca più flessa = angolo minimo = top del movimento
+  "mountain-climber": { keyAngle: hipKey, invert: true },
 
-  // Esercizi elbow-driven
-  "panca-piana": { keyAngle: (a) => avg(a.leftElbow, a.rightElbow) },
-  "push-up": { keyAngle: (a) => avg(a.leftElbow, a.rightElbow) },
-  "military-press": { keyAngle: (a) => avg(a.leftElbow, a.rightElbow) },
-  "tricipiti-cavi": { keyAngle: (a) => avg(a.leftElbow, a.rightElbow) },
-  "curl-bicipiti": { keyAngle: (a) => avg(a.leftElbow, a.rightElbow) },
-  "trazioni": { keyAngle: (a) => avg(a.leftElbow, a.rightElbow) },
-  "rematore-bilanciere": { keyAngle: (a) => avg(a.leftElbow, a.rightElbow) },
+  // Esercizi elbow-driven (spinta: bottom = gomito più flesso)
+  "panca-piana": { keyAngle: elbowKey },
+  "push-up": { keyAngle: elbowKey },
+  "military-press": { keyAngle: elbowKey },
+  "incline-bench-press": { keyAngle: elbowKey },
+  "dumbbell-bench-press": { keyAngle: elbowKey },
+  "dips": { keyAngle: elbowKey },
+  "skull-crusher": { keyAngle: elbowKey },
+  "arnold-press": { keyAngle: elbowKey },
+  // Lat machine: barra al petto = gomito flesso = bottom del movimento (coincide)
+  "lat-pulldown": { keyAngle: elbowKey },
+  // Tirate: contratto = gomito più flesso = top del movimento → invert
+  "tricipiti-cavi": { keyAngle: elbowKey, invert: true },
+  "curl-bicipiti": { keyAngle: elbowKey, invert: true },
+  "trazioni": { keyAngle: elbowKey, invert: true },
+  "rematore-bilanciere": { keyAngle: elbowKey, invert: true },
+  "seated-cable-row": { keyAngle: elbowKey, invert: true },
+  "dumbbell-row": { keyAngle: elbowKey, invert: true },
+  "hammer-curl": { keyAngle: elbowKey, invert: true },
+  // Face pull: l'angolo spalla varia poco, il gomito discrimina le fasi
+  "face-pull": { keyAngle: elbowKey, invert: true },
 
   // Esercizi shoulder-driven
-  "lateral-raise": { keyAngle: (a) => avg(a.leftShoulder, a.rightShoulder) },
-  "face-pull": { keyAngle: (a) => avg(a.leftShoulder, a.rightShoulder) },
+  "lateral-raise": { keyAngle: shoulderKey },
+  "front-raise": { keyAngle: shoulderKey },
 
-  // Esercizi spine-driven
-  "crunch": { keyAngle: (a) => a.spineInclination },
+  // Esercizi spine-driven (crunch: contratto = inclinazione minima = top del movimento)
+  "crunch": { keyAngle: (a) => a.spineInclination, invert: true },
+
+  // Volutamente NON configurati (le spec usano solo THROUGHOUT, nessuna fase richiesta):
+  // chest-fly, calf-raise, russian-twist, cat-cow
 };
 
 function smooth(values: (number | undefined)[], window: number): (number | undefined)[] {
@@ -116,16 +162,19 @@ export function detectPhases(frames: FrameAnalysis[], exerciseSlug: string): Pha
 
   const bottomThreshold = minVal + range * 0.18;
   const topThreshold = maxVal - range * 0.18;
+  const invert = !!config.invert;
 
   const framePhases: ExercisePhase[] = smoothed.map((v, i) => {
     if (typeof v !== "number") return "THROUGHOUT";
-    if (v <= bottomThreshold) return "BOTTOM";
-    if (v >= topThreshold) return "TOP";
+    if (v <= bottomThreshold) return invert ? "TOP" : "BOTTOM";
+    if (v >= topThreshold) return invert ? "BOTTOM" : "TOP";
     const prev = smoothed[Math.max(0, i - 3)];
     const next = smoothed[Math.min(smoothed.length - 1, i + 3)];
     if (typeof prev === "number" && typeof next === "number") {
-      if (next < prev) return "ECCENTRIC";
-      if (next > prev) return "CONCENTRIC";
+      // Angolo che diminuisce = discesa (eccentrica); per i pull invertiti
+      // l'angolo che diminuisce è la contrazione (concentrica).
+      if (next < prev) return invert ? "CONCENTRIC" : "ECCENTRIC";
+      if (next > prev) return invert ? "ECCENTRIC" : "CONCENTRIC";
     }
     return "THROUGHOUT";
   });

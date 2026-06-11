@@ -6,6 +6,10 @@ function frameWithKnee(timestamp: number, knee: number): FrameAnalysis {
   return { timestamp, keypoints: [], angles: { leftKnee: knee, rightKnee: knee } };
 }
 
+function frameWithElbow(timestamp: number, elbow: number): FrameAnalysis {
+  return { timestamp, keypoints: [], angles: { leftElbow: elbow, rightElbow: elbow } };
+}
+
 describe("detectPhases", () => {
   it("ritorna timeline vuota senza frame", () => {
     const t = detectPhases([], "squat");
@@ -60,5 +64,34 @@ describe("detectPhases", () => {
     const frames = pattern.map((k, i) => frameWithKnee(i, k));
     const t = detectPhases(frames, "squat");
     expect(t.framePhases.every((p) => p === "THROUGHOUT")).toBe(true);
+  });
+
+  it("esercizio pull invertito (curl): angolo minimo = TOP, massimo = BOTTOM", () => {
+    // curl-bicipiti: contratto (gomito ~40) = top del movimento,
+    // disteso (gomito ~170) = bottom del movimento
+    const pattern = [
+      ...Array(10).fill(170),
+      ...Array(10).fill(40),
+      ...Array(10).fill(170),
+    ];
+    const frames = pattern.map((k, i) => frameWithElbow(i, k));
+    const t = detectPhases(frames, "curl-bicipiti");
+    // I frame contratti (angolo minimo) devono essere etichettati TOP
+    expect(t.framePhases[14]).toBe("TOP");
+    // I frame distesi (angolo massimo) devono essere etichettati BOTTOM
+    expect(t.framePhases[2]).toBe("BOTTOM");
+    expect(t.framePhases[27]).toBe("BOTTOM");
+  });
+
+  it("esercizio push non invertito (panca): angolo minimo = BOTTOM", () => {
+    const pattern = [
+      ...Array(10).fill(170),
+      ...Array(10).fill(80),
+      ...Array(10).fill(170),
+    ];
+    const frames = pattern.map((k, i) => frameWithElbow(i, k));
+    const t = detectPhases(frames, "panca-piana");
+    expect(t.framePhases[14]).toBe("BOTTOM");
+    expect(t.framePhases[2]).toBe("TOP");
   });
 });

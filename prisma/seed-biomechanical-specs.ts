@@ -340,7 +340,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
         movementType: "abduzione",
         phases: [
           {
-            phase: "THROUGHOUT",
+            // Valutato solo nella fase bassa: al lockout il braccio è perpendicolare
+            // al busto (~90°) per geometria, non per errore di flare.
+            phase: "BOTTOM",
             minAngle: 40,
             maxAngle: 75,
             triggers: [
@@ -435,25 +437,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           },
         ],
       },
-      {
-        joint: "left_shoulder",
-        movementType: "abduzione",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 60,
-            triggers: [
-              {
-                condition: "ABOVE_MAX",
-                severity: "WARNING",
-                feedback: "Spalle che salgono verso le orecchie durante la trazione. Deprimì attivamente le scapole prima di tirare.",
-                injuryRisk: false,
-              },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spalla 0-60°: a braccia overhead l'angolo
+      // gomito-spalla-anca è sempre >120° e il trigger scattava su ogni frame.
+      // L'elevazione delle scapole non è misurabile con i keypoint 2D attuali.
     ],
   },
 
@@ -841,16 +827,19 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
         ],
       },
       {
-        joint: "spine",
-        movementType: "inclinazione",
+        // In posizione di push-up il busto è quasi orizzontale: l'inclinazione
+        // della colonna rispetto alla verticale non è utilizzabile. La linea del
+        // corpo (fianchi che cadono o si alzano) si misura con l'angolo dell'anca.
+        joint: "left_hip",
+        movementType: "neutrale",
         phases: [
           {
             phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 15,
+            minAngle: 160,
+            maxAngle: 180,
             triggers: [
               {
-                condition: "ABOVE_MAX",
+                condition: "BELOW_MIN",
                 severity: "ERROR",
                 feedback: "Fianchi che cadono verso il basso o si alzano verso l'alto. Mantieni il corpo come una tavola rigida dal tallone alla testa.",
                 injuryRisk: true,
@@ -864,7 +853,8 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
         movementType: "abduzione",
         phases: [
           {
-            phase: "THROUGHOUT",
+            // Solo in fase bassa: in alto il braccio è perpendicolare al busto per geometria.
+            phase: "BOTTOM",
             minAngle: 30,
             maxAngle: 65,
             triggers: [
@@ -883,25 +873,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
 
   "plank": {
     movements: [
-      {
-        joint: "spine",
-        movementType: "neutrale",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 15,
-            triggers: [
-              {
-                condition: "ABOVE_MAX",
-                severity: "ERROR",
-                feedback: "Fianchi che scendono o si alzano: il corpo perde l'allineamento. Attiva l'addome e i glutei per mantenere la posizione orizzontale.",
-                injuryRisk: true,
-              },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spine 0-15°: in plank il busto è orizzontale e
+      // l'inclinazione rispetto alla verticale è ~80-90° su ogni frame → il
+      // trigger scattava sempre. La linea del corpo è già misurata dall'anca.
       {
         joint: "left_hip",
         movementType: "neutrale",
@@ -913,9 +887,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
             triggers: [
               {
                 condition: "BELOW_MIN",
-                severity: "WARNING",
-                feedback: "L'anca si flette durante il plank: il bacino scende. Spingi i talloni indietro e tieni i fianchi sollevati.",
-                injuryRisk: false,
+                severity: "ERROR",
+                feedback: "Il corpo perde l'allineamento: il bacino scende o si alza. Attiva addome e glutei e spingi i talloni indietro.",
+                injuryRisk: true,
               },
             ],
           },
@@ -1172,12 +1146,8 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
                 feedback: "Estensione dell'anca incompleta in cima. Spingi i fianchi verso il soffitto e contrai i glutei al massimo.",
                 injuryRisk: false,
               },
-              {
-                condition: "ABOVE_MAX",
-                severity: "CRITICAL",
-                feedback: "Iperestensione del bacino: il rachide lombare si inarca eccessivamente. Ferma il movimento prima di superare la linea neutra.",
-                injuryRisk: true,
-              },
+              // RIMOSSO il trigger ABOVE_MAX (>180°): l'angolo 2D è limitato a 180°,
+              // l'iperestensione lombare non è distinguibile con questa misura.
             ],
           },
           {
@@ -1195,25 +1165,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           },
         ],
       },
-      {
-        joint: "spine",
-        movementType: "neutrale",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 15,
-            triggers: [
-              {
-                condition: "ABOVE_MAX",
-                severity: "ERROR",
-                feedback: "Il bacino ruota eccessivamente: compensazione che riduce l'attivazione del gluteo. Mantieni il core attivo e la pelvi in posizione neutra.",
-                injuryRisk: true,
-              },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spine 0-15°: con le spalle sulla panca la linea
+      // spalla-anca varia per geometria tra ~50° e ~90° durante il movimento,
+      // il trigger scattava su ogni frame.
       {
         joint: "left_knee",
         movementType: "flessione",
@@ -1239,35 +1193,38 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
   "crunch": {
     movements: [
       {
+        // Sdraiato supino l'inclinazione spalla-anca parte da ~90° (orizzontale)
+        // e DIMINUISCE alzando le spalle. TOP (contratto, con invert) = angolo
+        // minimo; BOTTOM (disteso) = angolo massimo. Range corretti di conseguenza.
         joint: "spine",
         movementType: "flessione",
         phases: [
           {
             phase: "TOP",
-            minAngle: 30,
-            maxAngle: 80,
+            minAngle: 45,
+            maxAngle: 78,
             triggers: [
               {
-                condition: "BELOW_MIN",
+                condition: "ABOVE_MAX",
                 severity: "ERROR",
                 feedback: "Flessione troppo ridotta: il crunch è parziale. Contrai l'addome e porta le spalle a staccarsi completamente dal pavimento.",
                 injuryRisk: false,
               },
               {
-                condition: "ABOVE_MAX",
+                condition: "BELOW_MIN",
                 severity: "WARNING",
-                feedback: "Ci alzi troppo in su: non è più un crunch ma un sit-up. Ferma il movimento dove senti la massima contrazione addominale.",
+                feedback: "Ti alzi troppo in su: non è più un crunch ma un sit-up. Ferma il movimento dove senti la massima contrazione addominale.",
                 injuryRisk: false,
               },
             ],
           },
           {
             phase: "BOTTOM",
-            minAngle: 0,
-            maxAngle: 10,
+            minAngle: 82,
+            maxAngle: 95,
             triggers: [
               {
-                condition: "ABOVE_MAX",
+                condition: "BELOW_MIN",
                 severity: "WARNING",
                 feedback: "Non torni abbastanza alla posizione di partenza. Abbassa le spalle quasi a terra tra una ripetizione e l'altra.",
                 injuryRisk: false,
@@ -1455,25 +1412,8 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
 
   "plank-laterale": {
     movements: [
-      {
-        joint: "spine",
-        movementType: "neutrale",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 15,
-            triggers: [
-              {
-                condition: "ABOVE_MAX",
-                severity: "ERROR",
-                feedback: "Il fianco cede verso il basso durante il plank laterale. Attiva l'obliquo e spingi il bacino verso l'alto per allineare il corpo.",
-                injuryRisk: true,
-              },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spine 0-15°: corpo orizzontale → inclinazione ~80-90°
+      // su ogni frame, trigger sempre attivo. La linea del corpo è misurata dall'anca.
       {
         joint: "left_hip",
         movementType: "abduzione",
@@ -1485,9 +1425,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
             triggers: [
               {
                 condition: "BELOW_MIN",
-                severity: "WARNING",
-                feedback: "Il bacino non è allineato con le spalle e le caviglie. Solleva i fianchi per creare una linea retta dal capo ai piedi.",
-                injuryRisk: false,
+                severity: "ERROR",
+                feedback: "Il fianco cede verso il basso: bacino non allineato con spalle e caviglie. Attiva l'obliquo e solleva i fianchi per creare una linea retta.",
+                injuryRisk: true,
               },
             ],
           },
@@ -1847,20 +1787,10 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           },
         ],
       },
-      {
-        joint: "spine",
-        movementType: "iperestensione",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 15,
-            triggers: [
-              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "Il bacino si stacca e la schiena si inarca per aiutare il movimento. Tieni i fianchi premuti sul cuscino.", injuryRisk: true },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spine 0-15°: da prono sulla macchina la linea
+      // spalla-anca è ~80-90° dalla verticale su ogni frame, il trigger
+      // scattava sempre. Il sollevamento del bacino non è misurabile in 2D
+      // con la baseline attuale.
     ],
   },
 
@@ -1933,7 +1863,8 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
         movementType: "abduzione",
         phases: [
           {
-            phase: "THROUGHOUT",
+            // Solo in fase bassa: al lockout il braccio è ~90° dal busto per geometria.
+            phase: "BOTTOM",
             minAngle: 40,
             maxAngle: 75,
             triggers: [
@@ -1967,7 +1898,8 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
         movementType: "abduzione",
         phases: [
           {
-            phase: "THROUGHOUT",
+            // Solo in fase bassa: al lockout il braccio è ~90° dal busto per geometria.
+            phase: "BOTTOM",
             minAngle: 40,
             maxAngle: 75,
             triggers: [
@@ -1982,23 +1914,19 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
   "chest-fly": {
     movements: [
       {
+        // Da supino il braccio chiuso sopra il petto è ~90° dal busto; l'apertura
+        // sotto il piano della panca porta l'angolo oltre ~105°. Un solo controllo
+        // di sicurezza THROUGHOUT: la "chiusura completa" (~90° anch'essa) non è
+        // distinguibile in 2D ed è stata rimossa.
         joint: "left_shoulder",
         movementType: "adduzione",
         phases: [
           {
-            phase: "BOTTOM",
-            minAngle: 75,
-            maxAngle: 100,
+            phase: "THROUGHOUT",
+            minAngle: 0,
+            maxAngle: 105,
             triggers: [
               { condition: "ABOVE_MAX", severity: "CRITICAL", feedback: "Apertura eccessiva delle braccia: iperestensione della spalla sotto carico. Limita l'apertura quando senti tensione al petto.", injuryRisk: true },
-            ],
-          },
-          {
-            phase: "TOP",
-            minAngle: 150,
-            maxAngle: 175,
-            triggers: [
-              { condition: "BELOW_MIN", severity: "WARNING", feedback: "Non chiudi del tutto le braccia: contrai il petto avvicinando i manubri in cima.", injuryRisk: false },
             ],
           },
         ],
@@ -2100,20 +2028,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           },
         ],
       },
-      {
-        joint: "left_shoulder",
-        movementType: "abduzione",
-        phases: [
-          {
-            phase: "TOP",
-            minAngle: 0,
-            maxAngle: 40,
-            triggers: [
-              { condition: "ABOVE_MAX", severity: "WARNING", feedback: "Le spalle salgono verso le orecchie: deprimi le scapole prima di tirare.", injuryRisk: false },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spalla TOP 0-40°: a braccia overhead l'angolo
+      // gomito-spalla-anca è ~160-180° per geometria e il trigger scattava
+      // su ogni frame. L'elevazione scapolare non è misurabile in 2D.
     ],
   },
 
@@ -2143,7 +2060,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
             maxAngle: 25,
             triggers: [
               { condition: "ABOVE_MAX", severity: "ERROR", feedback: "Ti sdrai all'indietro per tirare il cavo: usi la schiena come leva. Mantieni il busto quasi verticale.", injuryRisk: true },
-              { condition: "BELOW_MIN", severity: "WARNING", feedback: "Schiena arrotondata in avanti nell'allungamento: mantieni la colonna neutra anche a braccia estese.", injuryRisk: true },
+              // RIMOSSO il trigger BELOW_MIN: con minAngle 0 non può scattare
+              // (l'inclinazione misurata non è mai negativa) e l'arrotondamento
+              // in avanti non è distinguibile dall'inclinazione 2D.
             ],
           },
         ],
@@ -2163,7 +2082,7 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
             maxAngle: 55,
             triggers: [
               { condition: "BELOW_MIN", severity: "WARNING", feedback: "Busto troppo verticale: inclina di più per coinvolgere i dorsali.", injuryRisk: false },
-              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "Schiena che si arrotonda con il manubrio: mantieni la colonna neutra appoggiandoti alla panca.", injuryRisk: true },
+              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "Il busto crolla verso l'orizzontale: probabile perdita di neutralità della colonna. Mantieni l'inclinazione costante appoggiandoti alla panca.", injuryRisk: true },
             ],
           },
         ],
@@ -2201,20 +2120,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           },
         ],
       },
-      {
-        joint: "left_shoulder",
-        movementType: "rotazione",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 90,
-            triggers: [
-              { condition: "ABOVE_MAX", severity: "WARNING", feedback: "Rotazione eccessiva della spalla con carico: controlla l'ampiezza della rotazione per proteggere la cuffia.", injuryRisk: true },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo "rotazione" spalla 0-90°: la rotazione interna/esterna
+      // non è misurabile con i keypoint 2D (l'angolo gomito-spalla-anca misura solo
+      // l'elevazione del braccio e supera 90° in ogni spinta overhead).
       {
         joint: "spine",
         movementType: "iperestensione",
@@ -2351,16 +2259,19 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
   "russian-twist": {
     movements: [
       {
+        // La rotazione del busto NON è misurabile in 2D: questo controllo verifica
+        // la POSIZIONE del busto (reclinato ~20-50° indietro), che è il prerequisito
+        // di sicurezza dell'esercizio. Feedback riscritti di conseguenza.
         joint: "spine",
-        movementType: "rotazione",
+        movementType: "inclinazione",
         phases: [
           {
             phase: "THROUGHOUT",
             minAngle: 20,
             maxAngle: 50,
             triggers: [
-              { condition: "BELOW_MIN", severity: "WARNING", feedback: "Rotazione insufficiente: ruota il busto da un lato all'altro per attivare gli obliqui.", injuryRisk: false },
-              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "Rotazione eccessiva e di slancio con la zona lombare: rischio per la colonna. Ruota in modo controllato dal torace.", injuryRisk: true },
+              { condition: "BELOW_MIN", severity: "WARNING", feedback: "Busto troppo verticale: reclina il tronco a circa 45° per attivare gli obliqui.", injuryRisk: false },
+              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "Busto troppo reclinato all'indietro: la zona lombare va sotto stress. Risali verso i 45° e ruota in modo controllato dal torace.", injuryRisk: true },
             ],
           },
         ],
@@ -2399,15 +2310,18 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
         ],
       },
       {
+        // In posizione di plank alto la linea spalla-anca è ~60-85° dalla verticale:
+        // range ricalibrato sulla posizione reale (OUT_OF_RANGE = bacino che sale
+        // verso la verticale o che crolla oltre l'orizzontale).
         joint: "spine",
         movementType: "neutrale",
         phases: [
           {
             phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 18,
+            minAngle: 50,
+            maxAngle: 95,
             triggers: [
-              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "I fianchi salgono o crollano: perdi l'allineamento del plank. Mantieni il bacino stabile e il core attivo.", injuryRisk: true },
+              { condition: "OUT_OF_RANGE", severity: "ERROR", feedback: "I fianchi salgono o crollano: perdi l'allineamento del plank. Mantieni il bacino stabile e il core attivo.", injuryRisk: true },
             ],
           },
         ],
@@ -2431,20 +2345,9 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           },
         ],
       },
-      {
-        joint: "spine",
-        movementType: "inclinazione",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 35,
-            triggers: [
-              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "Schiena che si arrotonda nella fase di plank/discesa per stanchezza: mantieni la colonna neutra anche a fine serie.", injuryRisk: true },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spine 0-35°: il burpee alterna posizione eretta
+      // (~0-20°) e plank (~60-90°), nessun range fisso di inclinazione è valido
+      // per tutto il movimento — il trigger scattava in ogni fase di plank.
       {
         joint: "left_elbow",
         movementType: "flessione",
@@ -2545,9 +2448,20 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           {
             phase: "BOTTOM",
             minAngle: 30,
-            maxAngle: 55,
+            maxAngle: 65,
             triggers: [
-              { condition: "ABOVE_MAX", severity: "CRITICAL", feedback: "Schiena arrotondata nella cerniera dello swing: rischio lombare elevato sotto slancio. Mantieni la colonna neutra e fai cerniera dall'anca.", injuryRisk: true },
+              { condition: "ABOVE_MAX", severity: "CRITICAL", feedback: "Busto oltre il range della cerniera: probabile schiena arrotondata sotto slancio, rischio lombare elevato. Mantieni la colonna neutra e fai cerniera dall'anca.", injuryRisk: true },
+            ],
+          },
+          {
+            // L'iperestensione lombare in cima si manifesta come busto che si
+            // reclina oltre la verticale (>15° di inclinazione a swing chiuso).
+            // Spostata qui dal trigger ABOVE_MAX >180° dell'anca, irraggiungibile in 2D.
+            phase: "TOP",
+            minAngle: 0,
+            maxAngle: 15,
+            triggers: [
+              { condition: "ABOVE_MAX", severity: "CRITICAL", feedback: "Iperestensione lombare alla fine dello swing: non inarcare la schiena, ferma l'estensione in posizione neutra.", injuryRisk: true },
             ],
           },
         ],
@@ -2562,7 +2476,6 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
             maxAngle: 180,
             triggers: [
               { condition: "BELOW_MIN", severity: "ERROR", feedback: "Estensione dell'anca incompleta in cima: lo swing è guidato dall'anca, non dalle braccia. Spingi i fianchi avanti e contrai i glutei.", injuryRisk: false },
-              { condition: "ABOVE_MAX", severity: "CRITICAL", feedback: "Iperestensione lombare alla fine dello swing: non inarcare la schiena, ferma l'estensione in posizione neutra.", injuryRisk: true },
             ],
           },
         ],
@@ -2630,25 +2543,14 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
             maxAngle: 180,
             triggers: [
               { condition: "BELOW_MIN", severity: "ERROR", feedback: "Estensione dell'anca incompleta: spingi i fianchi in alto contraendo i glutei.", injuryRisk: false },
-              { condition: "ABOVE_MAX", severity: "WARNING", feedback: "Iperestensione lombare in cima: non inarcare la schiena, l'estensione viene dai glutei.", injuryRisk: true },
+              // RIMOSSO il trigger ABOVE_MAX (>180°): l'angolo 2D è limitato a 180°,
+              // l'iperestensione lombare non è misurabile qui.
             ],
           },
         ],
       },
-      {
-        joint: "spine",
-        movementType: "neutrale",
-        phases: [
-          {
-            phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 15,
-            triggers: [
-              { condition: "ABOVE_MAX", severity: "WARNING", feedback: "Il bacino ruota o la schiena si inarca: mantieni la pelvi neutra spingendo dai talloni.", injuryRisk: false },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spine 0-15°: da supino la linea spalla-anca è
+      // ~60-90° dalla verticale su ogni frame, il trigger scattava sempre.
     ],
   },
 
@@ -2659,11 +2561,14 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
         movementType: "inclinazione",
         phases: [
           {
+            // Nel good morning il busto a fine cerniera è normalmente a 50-80°
+            // dalla verticale: il vecchio max 45° segnalava come CRITICAL anche
+            // le ripetizioni corrette. Oltre 80° = busto oltre il parallelo.
             phase: "BOTTOM",
-            minAngle: 0,
-            maxAngle: 45,
+            minAngle: 30,
+            maxAngle: 80,
             triggers: [
-              { condition: "ABOVE_MAX", severity: "CRITICAL", feedback: "Schiena arrotondata o busto oltre il parallelo con bilanciere sulle spalle: rischio lombare molto elevato. Mantieni colonna neutra e fermati prima dell'orizzontale.", injuryRisk: true },
+              { condition: "ABOVE_MAX", severity: "CRITICAL", feedback: "Busto oltre il parallelo con bilanciere sulle spalle: rischio lombare molto elevato. Mantieni la colonna neutra e fermati prima dell'orizzontale.", injuryRisk: true },
             ],
           },
         ],
@@ -2785,15 +2690,18 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
   "bird-dog": {
     movements: [
       {
+        // In quadrupedia la linea spalla-anca è ~75-100° dalla verticale: range
+        // ricalibrato sulla posizione reale (OUT_OF_RANGE = busto che si solleva
+        // o bacino che crolla durante l'estensione).
         joint: "spine",
         movementType: "neutrale",
         phases: [
           {
             phase: "THROUGHOUT",
-            minAngle: 0,
-            maxAngle: 12,
+            minAngle: 70,
+            maxAngle: 105,
             triggers: [
-              { condition: "ABOVE_MAX", severity: "ERROR", feedback: "La schiena si inarca o il bacino ruota mentre estendi braccio e gamba: mantieni la colonna neutra e il bacino stabile (anti-rotazione).", injuryRisk: true },
+              { condition: "OUT_OF_RANGE", severity: "ERROR", feedback: "La schiena si inarca o il bacino ruota mentre estendi braccio e gamba: mantieni la colonna neutra e il bacino stabile (anti-rotazione).", injuryRisk: true },
             ],
           },
         ],
@@ -2857,7 +2765,7 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           {
             phase: "ISOMETRIC",
             minAngle: 160,
-            maxAngle: 185,
+            maxAngle: 180,
             triggers: [
               { condition: "BELOW_MIN", severity: "WARNING", feedback: "Allungamento insufficiente del flessore dell'anca: spingi delicatamente il bacino in avanti mantenendo il busto eretto.", injuryRisk: false },
             ],
@@ -2897,20 +2805,10 @@ export const BIOMECHANICAL_SPECS: Record<string, BiomechanicalSpecData> = {
           },
         ],
       },
-      {
-        joint: "spine",
-        movementType: "inclinazione",
-        phases: [
-          {
-            phase: "ISOMETRIC",
-            minAngle: 0,
-            maxAngle: 40,
-            triggers: [
-              { condition: "ABOVE_MAX", severity: "WARNING", feedback: "Schiena molto arrotondata per arrivare ai piedi: piega dall'anca mantenendo la colonna il più neutra possibile.", injuryRisk: false },
-            ],
-          },
-        ],
-      },
+      // RIMOSSO il controllo spine 0-40°: in una flessione in avanti profonda
+      // l'inclinazione del busto è 50-90° anche con colonna perfettamente neutra —
+      // il trigger penalizzava proprio gli allungamenti eseguiti bene.
+      // L'arrotondamento della schiena non è distinguibile dall'inclinazione 2D.
     ],
   },
 
