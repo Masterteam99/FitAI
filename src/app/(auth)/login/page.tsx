@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Mail, Lock, AlertCircle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OrganicLogo } from "@/components/marketing/OrganicLogo";
@@ -19,16 +19,37 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
-export default function LoginPage() {
+// NextAuth redirige qui con ?error=<codice> quando l'OAuth fallisce
+// (pages.error in src/lib/auth.ts): mappiamo i codici a messaggi leggibili.
+const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  OAuthSignin: copy.login.errors.OAuthSignin,
+  OAuthCallback: copy.login.errors.OAuthCallback,
+  AccessDenied: copy.login.errors.AccessDenied,
+  Configuration: copy.login.errors.Configuration,
+  OAuthAccountNotLinked: copy.login.errors.OAuthAccountNotLinked,
+};
+
+function LoginContent() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const oauthErrorCode = searchParams.get("error");
+  const [error, setError] = useState<string | null>(
+    oauthErrorCode ? (OAUTH_ERROR_MESSAGES[oauthErrorCode] ?? copy.login.errors.oauthGeneric) : null,
+  );
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   async function onSubmit(data: FormData) {
     setError(null);
     const result = await signIn("credentials", { ...data, redirect: false });
     if (result?.error) {
-      setError(copy.login.errors.invalidCredentials);
+      // L'account potrebbe esistere ma essere stato creato con Google
+      // (senza password): in quel caso il messaggio generico è fuorviante.
+      const hint = await fetch("/api/auth/login-hint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      }).then((r) => r.json()).catch(() => ({ oauthOnly: false }));
+      setError(hint.oauthOnly ? copy.login.errors.oauthOnlyAccount : copy.login.errors.invalidCredentials);
     } else {
       router.push("/dashboard");
     }
@@ -95,5 +116,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

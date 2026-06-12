@@ -325,6 +325,15 @@ export const copy = {
     signupLink: "Registrati gratis",
     errors: {
       invalidCredentials: "Email o password non corretti.",
+      oauthOnlyAccount:
+        "Questo account è stato creato con Google e non ha una password. Usa \"Continua con Google\", oppure imposta una password da \"Password dimenticata?\".",
+      // Codici errore NextAuth (?error= sul redirect)
+      OAuthSignin: "Impossibile avviare l'accesso con Google. Riprova tra qualche istante.",
+      OAuthCallback: "Google non ha completato l'accesso (risposta non valida). Riprova.",
+      AccessDenied: "Accesso negato da Google: l'account non è autorizzato o hai annullato la richiesta.",
+      Configuration: "Configurazione dell'accesso non valida lato server. Contatta l'assistenza.",
+      OAuthAccountNotLinked: "Questa email è già registrata con un altro metodo di accesso. Usa il metodo originale.",
+      oauthGeneric: "Accesso non riuscito. Riprova o usa un altro metodo.",
     },
     validation: {
       emailInvalid: "Email non valida",
