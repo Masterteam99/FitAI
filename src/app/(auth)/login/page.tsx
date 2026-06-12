@@ -7,9 +7,10 @@ import { z } from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Zap, Mail, Lock, AlertCircle } from "lucide-react";
+import { Mail, Lock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { OrganicLogo } from "@/components/marketing/OrganicLogo";
 import { copy } from "@/content/copy";
 
 const schema = z.object({
@@ -37,10 +38,10 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/15 mb-4">
-            <Zap className="w-8 h-8 text-primary" />
+          <div className="inline-flex justify-center mb-4">
+            <OrganicLogo />
           </div>
-          <h1 className="text-3xl font-bold">{copy.login.title}</h1>
+          <h1 className="font-display text-3xl">{copy.login.title}</h1>
           <p className="text-muted-foreground mt-2">{copy.login.subtitle}</p>
         </div>
 

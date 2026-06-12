@@ -38,7 +38,7 @@ function renderBlock(block: Block, i: number) {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-background p-4 py-10">
+    <div className="theme-organic min-h-screen bg-background text-foreground p-4 py-10">
       <article className="max-w-3xl mx-auto space-y-6">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" /> {copy.terms.backHome}
