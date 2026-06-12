@@ -109,15 +109,24 @@ export async function POST(req: NextRequest) {
   });
   console.log("[generate-plan] anthropic stream opened");
 
+  // Attende il PRIMO chunk prima di aprire la risposta: gli errori del provider
+  // (credito esaurito, chiave non valida...) arrivano qui e vengono restituiti
+  // come JSON pulito dal catch sottostante, invece di troncare lo stream HTTP.
+  const iterator = stream[Symbol.asyncIterator]();
+  const firstChunk = await iterator.next();
+
   return new Response(
     new ReadableStream({
       async start(controller) {
         let streamOk = false;
         try {
-          for await (const chunk of stream) {
+          let item = firstChunk;
+          while (!item.done) {
+            const chunk = item.value;
             if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
               controller.enqueue(new TextEncoder().encode(chunk.delta.text));
             }
+            item = await iterator.next();
           }
           streamOk = true;
           controller.close();
@@ -138,9 +147,12 @@ export async function POST(req: NextRequest) {
   );
   } catch (err) {
     const durationMs = Date.now() - startTs;
-    const msg = err instanceof Error ? err.message : String(err);
+    const rawMsg = err instanceof Error ? err.message : String(err);
     const status = (err as { status?: number })?.status ?? 500;
-    console.error("[generate-plan] handler error", { durationMs, status, err: msg });
+    console.error("[generate-plan] handler error", { durationMs, status, err: rawMsg });
+    const msg = rawMsg.includes("credit balance")
+      ? "Il credito API del provider AI è esaurito: il gestore deve ricaricarlo dalla console Anthropic (Plans & Billing)."
+      : rawMsg;
     return NextResponse.json({ error: msg, code: "AI_PROVIDER_ERROR" }, { status: status >= 400 && status < 600 ? status : 500 });
   }
 }

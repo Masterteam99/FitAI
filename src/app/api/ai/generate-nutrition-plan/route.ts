@@ -124,9 +124,12 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ plan, targetMacros });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const rawMsg = err instanceof Error ? err.message : String(err);
     const status = (err as { status?: number })?.status ?? 500;
-    console.error("[generate-nutrition-plan] handler error", { status, err: msg });
+    console.error("[generate-nutrition-plan] handler error", { status, err: rawMsg });
+    const msg = rawMsg.includes("credit balance")
+      ? "Il credito API del provider AI è esaurito: il gestore deve ricaricarlo dalla console Anthropic (Plans & Billing)."
+      : rawMsg;
     return NextResponse.json({ error: msg, code: "AI_PROVIDER_ERROR" }, { status: status >= 400 && status < 600 ? status : 500 });
   }
 }
