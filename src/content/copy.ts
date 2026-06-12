@@ -912,6 +912,7 @@ export const copy = {
     searchPlaceholder: "Cerca esercizio...",
     allFilter: "Tutti",
     noResults: "Nessun esercizio trovato per i filtri selezionati.",
+    videoBadge: "Video",
   },
 
   // ── /esercizi/[slug] → src/app/(app)/esercizi/[slug]/page.tsx ──

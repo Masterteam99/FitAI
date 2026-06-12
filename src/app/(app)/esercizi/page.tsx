@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Dumbbell, Search } from "lucide-react";
+import { ExerciseCardMedia } from "@/components/esercizi/ExerciseCardMedia";
 import type { Metadata } from "next";
 import { copy } from "@/content/copy";
 
@@ -84,14 +85,7 @@ export default async function EserciziPage({ searchParams }: Props) {
             <Link key={ex.id} href={`/esercizi/${ex.slug}`}>
               <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
                 <CardContent className="p-4 space-y-3">
-                  {/* Thumbnail placeholder */}
-                  <div className="aspect-video rounded-lg bg-secondary/50 flex items-center justify-center overflow-hidden">
-                    {ex.thumbnailUrl ? (
-                      <img src={ex.thumbnailUrl} alt={ex.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <Dumbbell className="w-8 h-8 text-muted-foreground" />
-                    )}
-                  </div>
+                  <ExerciseCardMedia videoUrl={ex.videoUrl} thumbnailUrl={ex.thumbnailUrl} name={ex.name} />
 
                   <div className="space-y-2">
                     <h3 className="font-semibold text-sm leading-tight">{ex.name}</h3>
