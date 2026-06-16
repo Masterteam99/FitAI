@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
 const fadeUpVariants: Variants = {
   hidden: { opacity: 0, y: 8 },
@@ -333,17 +333,19 @@ export function DrawPath({
   );
 }
 
-export function useScrollStep(steps: number): number {
-  const ref = useRef<HTMLDivElement>(null);
+export function useScrollStep<T extends HTMLElement = HTMLDivElement>(
+  steps: number,
+): { ref: RefObject<T | null>; active: number } {
+  const ref = useRef<T>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start center", "end center"],
+    offset: ["start start", "end end"],
   });
   const [active, setActive] = useState(0);
   useEffect(() => {
     return scrollYProgress.on("change", (p) => {
-      setActive(Math.min(steps - 1, Math.floor(p * steps)));
+      setActive(Math.min(steps - 1, Math.max(0, Math.floor(p * steps))));
     });
   }, [scrollYProgress, steps]);
-  return active;
+  return { ref, active };
 }
