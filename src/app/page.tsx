@@ -4,12 +4,12 @@ import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
 import { OrganicHeroVisual } from "@/components/marketing/OrganicHeroVisual";
-import { FadeIn, SlideUp, Stagger, StaggerItem, CountUp } from "@/components/motion/MotionPrimitives";
+import { FadeIn, SlideUp, ScrollReveal, ScrollStagger, StaggerItem, CountUp } from "@/components/motion/MotionPrimitives";
 import { copy } from "@/content/copy";
 
 const PILLAR_ICONS = [Brain, Camera, Heart];
 const PILLAR_TONES = [
-  { bg: "rgba(198,106,74,.13)", color: "var(--organic-terracotta)" },
+  { bg: "rgba(63,174,90,.13)", color: "var(--organic-terracotta)" },
   { bg: "rgba(138,154,123,.18)", color: "var(--organic-sage-deep)" },
   { bg: "rgba(51,39,31,.08)", color: "var(--organic-espresso)" },
 ];
@@ -18,9 +18,9 @@ function Eyebrow({ children, center, light }: { children: React.ReactNode; cente
   return (
     <span
       className={`inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] font-semibold mb-5 ${center ? "justify-center w-full" : ""}`}
-      style={{ color: light ? "var(--organic-terracotta-soft)" : "var(--organic-sage-deep)" }}
+      style={{ color: light ? "var(--organic-terracotta-soft)" : "var(--organic-green-deep)" }}
     >
-      <span className="organic-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--organic-terracotta)" }} />
+      <span className="organic-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--organic-green)" }} />
       {children}
     </span>
   );
@@ -46,7 +46,7 @@ export default function LandingPage() {
             <SlideUp delay={0.05}>
               <h1 className="text-display-lg !text-[clamp(2.9rem,5.6vw,4.5rem)] mb-6">
                 {c.heroTitle.pre}
-                <em style={{ color: "var(--organic-terracotta)" }}>{c.heroTitle.highlight}</em>
+                <em style={{ color: "var(--organic-green)" }}>{c.heroTitle.highlight}</em>
                 {c.heroTitle.post}
               </h1>
             </SlideUp>
@@ -57,7 +57,7 @@ export default function LandingPage() {
               <div className="flex gap-4 items-center flex-wrap">
                 <Link
                   href="/registrati"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(198,106,74,.5)]"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(63,174,90,.5)]"
                   style={{ background: "var(--organic-espresso)", color: "var(--organic-cream)" }}
                 >
                   {c.ctaPrimary} <ChevronRight className="w-4 h-4" />
@@ -94,12 +94,12 @@ export default function LandingPage() {
             <Eyebrow>{c.pillarsEyebrow}</Eyebrow>
             <h2 className="text-display-lg !text-[clamp(2.1rem,3.8vw,3.1rem)] mb-4">
               {c.pillarsTitle.pre}
-              <em style={{ color: "var(--organic-terracotta)" }}>{c.pillarsTitle.highlight}</em>
+              <em style={{ color: "var(--organic-green)" }}>{c.pillarsTitle.highlight}</em>
               {c.pillarsTitle.post}
             </h2>
             <p className="text-muted-foreground text-lg">{c.pillarsSubtitle}</p>
           </div>
-          <Stagger className="grid md:grid-cols-3 gap-6">
+          <ScrollStagger className="grid md:grid-cols-3 gap-6">
             {c.pillars.map((p, i) => {
               const Icon = PILLAR_ICONS[i];
               const tone = PILLAR_TONES[i];
@@ -118,7 +118,7 @@ export default function LandingPage() {
                 </StaggerItem>
               );
             })}
-          </Stagger>
+          </ScrollStagger>
         </div>
       </section>
 
@@ -129,11 +129,11 @@ export default function LandingPage() {
             <Eyebrow>{c.stepsEyebrow}</Eyebrow>
             <h2 className="text-display-lg !text-[clamp(2.1rem,3.8vw,3.1rem)]">
               {c.stepsTitle.pre}
-              <em style={{ color: "var(--organic-terracotta)" }}>{c.stepsTitle.highlight}</em>
+              <em style={{ color: "var(--organic-green)" }}>{c.stepsTitle.highlight}</em>
               {c.stepsTitle.post}
             </h2>
           </div>
-          <Stagger className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <ScrollStagger className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {c.steps.map((s, i) => {
               const dark = i % 2 === 1;
               return (
@@ -146,19 +146,19 @@ export default function LandingPage() {
                       {s.num}
                     </div>
                     <h3 className="font-display text-xl mb-2">{s.title}</h3>
-                    <p className="text-sm" style={{ color: dark ? "rgba(246,240,231,.72)" : "var(--muted-foreground)" }}>{s.desc}</p>
+                    <p className="text-sm" style={{ color: dark ? "rgba(232,241,226,.72)" : "var(--muted-foreground)" }}>{s.desc}</p>
                   </div>
                 </StaggerItem>
               );
             })}
-          </Stagger>
+          </ScrollStagger>
         </div>
       </section>
 
       {/* Showcase dati */}
       <section className="relative z-[2] pb-24">
         <div className="max-w-[1180px] mx-auto px-7">
-          <FadeIn>
+          <ScrollReveal>
             <div className="relative overflow-hidden rounded-[36px] p-10 md:p-16" style={{ background: "var(--organic-forest)", color: "var(--organic-sand)" }}>
               <div className="organic-blob w-[420px] h-[420px] -top-40 -right-32 opacity-[.34]" style={{ background: "var(--organic-terracotta)" }} />
               <div className="relative z-[2] grid lg:grid-cols-2 gap-12 items-center">
@@ -166,40 +166,40 @@ export default function LandingPage() {
                   <Eyebrow light>{c.showcaseEyebrow}</Eyebrow>
                   <h2 className="font-display text-[clamp(2rem,3.4vw,2.8rem)] leading-tight mb-4" style={{ color: "var(--organic-sand)" }}>
                     {c.showcaseTitle.pre}
-                    <em style={{ color: "var(--organic-terracotta-soft)" }}>{c.showcaseTitle.highlight}</em>
+                    <em style={{ color: "var(--organic-green-soft)" }}>{c.showcaseTitle.highlight}</em>
                     {c.showcaseTitle.post}
                   </h2>
-                  <p className="mb-7 text-[1.05rem]" style={{ color: "rgba(246,240,231,.74)" }}>{c.showcaseText}</p>
+                  <p className="mb-7 text-[1.05rem]" style={{ color: "rgba(232,241,226,.74)" }}>{c.showcaseText}</p>
                   <div className="flex gap-3.5">
                     {c.showcaseStats.map((s) => (
-                      <div key={s.label} className="flex-1 rounded-2xl p-4" style={{ background: "rgba(246,240,231,.06)" }}>
+                      <div key={s.label} className="flex-1 rounded-2xl p-4" style={{ background: "rgba(232,241,226,.06)" }}>
                         <b className="font-display text-3xl block" style={{ color: "var(--organic-terracotta-soft)" }}>
                           <CountUp value={s.value} />
                         </b>
-                        <span className="text-xs" style={{ color: "rgba(246,240,231,.65)" }}>{s.label}</span>
+                        <span className="text-xs" style={{ color: "rgba(232,241,226,.65)" }}>{s.label}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="rounded-3xl p-7" style={{ background: "rgba(246,240,231,.06)", border: "1px solid rgba(246,240,231,.14)" }}>
-                  <div className="flex justify-between text-sm mb-3.5" style={{ color: "rgba(246,240,231,.7)" }}>
+                <div className="rounded-3xl p-7" style={{ background: "rgba(232,241,226,.06)", border: "1px solid rgba(232,241,226,.14)" }}>
+                  <div className="flex justify-between text-sm mb-3.5" style={{ color: "rgba(232,241,226,.7)" }}>
                     <span>{c.showcaseChartLabel}</span>
                     <span style={{ color: "var(--organic-terracotta-soft)" }}>{c.showcaseChartDelta}</span>
                   </div>
                   <svg className="w-full h-[150px] block" viewBox="0 0 300 150" preserveAspectRatio="none" aria-hidden="true">
                     <defs>
                       <linearGradient id="organic-area" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stopColor="#e4a07e" stopOpacity=".55" />
-                        <stop offset="1" stopColor="#e4a07e" stopOpacity="0" />
+                        <stop offset="0" stopColor="#7fd194" stopOpacity=".55" />
+                        <stop offset="1" stopColor="#7fd194" stopOpacity="0" />
                       </linearGradient>
                     </defs>
                     <path d="M0,110 C40,100 60,70 90,72 C120,74 140,40 175,46 C210,52 235,24 300,18 L300,150 L0,150 Z" fill="url(#organic-area)" />
-                    <path d="M0,110 C40,100 60,70 90,72 C120,74 140,40 175,46 C210,52 235,24 300,18" fill="none" stroke="#e4a07e" strokeWidth="2.5" strokeLinecap="round" />
+                    <path d="M0,110 C40,100 60,70 90,72 C120,74 140,40 175,46 C210,52 235,24 300,18" fill="none" stroke="#7fd194" strokeWidth="2.5" strokeLinecap="round" />
                   </svg>
                 </div>
               </div>
             </div>
-          </FadeIn>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -210,12 +210,12 @@ export default function LandingPage() {
             <Eyebrow center>{c.pricingEyebrow}</Eyebrow>
             <h2 className="text-display-lg !text-[clamp(2.1rem,3.8vw,3.1rem)]">
               {c.pricingTitle.pre}
-              <em style={{ color: "var(--organic-terracotta)" }}>{c.pricingTitle.highlight}</em>
+              <em style={{ color: "var(--organic-green)" }}>{c.pricingTitle.highlight}</em>
               {c.pricingTitle.post}
             </h2>
           </div>
           <div className="grid md:grid-cols-2 gap-6 max-w-[840px] mx-auto">
-            <FadeIn>
+            <ScrollReveal>
               <div className="bg-card border border-border rounded-[22px] p-10 h-full">
                 <div className="text-xs uppercase tracking-[0.18em] font-bold mb-3.5" style={{ color: "var(--organic-sage-deep)" }}>{c.priceFree.name}</div>
                 <div className="font-display text-5xl leading-none mb-1.5">
@@ -235,8 +235,8 @@ export default function LandingPage() {
                   {c.priceFree.cta}
                 </Link>
               </div>
-            </FadeIn>
-            <FadeIn delay={0.08}>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08}>
               <div className="relative rounded-[22px] p-10 h-full" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
                 <span className="absolute top-6 right-6 text-[10px] uppercase tracking-[0.12em] px-3 py-1.5 rounded-full font-bold text-white" style={{ background: "var(--organic-terracotta)" }}>
                   {c.pricePro.badge}
@@ -244,9 +244,9 @@ export default function LandingPage() {
                 <div className="text-xs uppercase tracking-[0.18em] font-bold mb-3.5" style={{ color: "var(--organic-terracotta-soft)" }}>{c.pricePro.name}</div>
                 <div className="font-display text-5xl leading-none mb-1.5">
                   {c.pricePro.amount}
-                  <small className="text-base font-sans" style={{ color: "rgba(246,240,231,.6)" }}>{c.pricePro.period}</small>
+                  <small className="text-base font-sans" style={{ color: "rgba(232,241,226,.6)" }}>{c.pricePro.period}</small>
                 </div>
-                <p className="text-sm mb-6" style={{ color: "rgba(246,240,231,.7)" }}>{c.pricePro.desc}</p>
+                <p className="text-sm mb-6" style={{ color: "rgba(232,241,226,.7)" }}>{c.pricePro.desc}</p>
                 <ul className="mb-4">
                   {c.pricePro.features.map((f) => (
                     <li key={f} className="flex gap-2.5 items-start py-2 text-sm">
@@ -255,16 +255,16 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <p className="text-xs mb-5" style={{ color: "rgba(246,240,231,.55)" }}>{c.pricePro.yearlyNote}</p>
+                <p className="text-xs mb-5" style={{ color: "rgba(232,241,226,.55)" }}>{c.pricePro.yearlyNote}</p>
                 <Link
                   href="/registrati"
-                  className="flex items-center justify-center w-full px-6 py-3 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(198,106,74,.5)]"
+                  className="flex items-center justify-center w-full px-6 py-3 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(63,174,90,.5)]"
                   style={{ background: "var(--organic-terracotta)" }}
                 >
                   {c.pricePro.cta}
                 </Link>
               </div>
-            </FadeIn>
+            </ScrollReveal>
           </div>
         </div>
       </section>

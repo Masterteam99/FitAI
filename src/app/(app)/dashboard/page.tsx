@@ -69,7 +69,7 @@ export default async function DashboardPage() {
           <div className="relative overflow-hidden rounded-[28px] p-1.5" style={{ background: "var(--organic-espresso, #1a1a1a)" }}>
             <div
               className="pointer-events-none absolute w-80 h-80 rounded-full blur-[70px] -top-36 -right-14 opacity-20"
-              style={{ background: "var(--organic-terracotta, #c66a4a)" }}
+              style={{ background: "var(--organic-terracotta, #3fae5a)" }}
             />
             <div className="relative z-[2] grid sm:grid-cols-3">
               {[
@@ -82,7 +82,7 @@ export default async function DashboardPage() {
                   <div
                     key={s.label}
                     className={`relative p-7 ${i < 2 ? "sm:border-r" : ""} ${i > 0 ? "max-sm:border-t" : ""}`}
-                    style={{ borderColor: "rgba(246,240,231,.12)" }}
+                    style={{ borderColor: "rgba(232,241,226,.12)" }}
                   >
                     {s.delta && (
                       <span className="absolute top-7 right-7 text-[11px] font-bold tracking-wide" style={{ color: "#cdd9bf" }}>
@@ -91,19 +91,19 @@ export default async function DashboardPage() {
                     )}
                     <div
                       className="w-10 h-10 rounded-xl grid place-items-center mb-5"
-                      style={{ background: "rgba(246,240,231,.08)", color: "var(--organic-terracotta-soft, #e4a07e)" }}
+                      style={{ background: "rgba(232,241,226,.08)", color: "var(--organic-terracotta-soft, #7fd194)" }}
                     >
                       <Icon className="w-5 h-5" />
                     </div>
-                    <div className="font-display text-6xl leading-[.85] tracking-tight flex items-baseline gap-1.5" style={{ color: "var(--organic-cream, #fbf7f0)" }}>
+                    <div className="font-display text-6xl leading-[.85] tracking-tight flex items-baseline gap-1.5" style={{ color: "var(--organic-cream, #f1f6ed)" }}>
                       <CountUp value={s.value} />
                       {s.unit && (
-                        <span className="text-base font-bold tracking-wide font-sans" style={{ color: "var(--organic-terracotta-soft, #e4a07e)" }}>
+                        <span className="text-base font-bold tracking-wide font-sans" style={{ color: "var(--organic-terracotta-soft, #7fd194)" }}>
                           {s.unit}
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] uppercase tracking-[0.14em] mt-3.5" style={{ color: "rgba(246,240,231,.62)" }}>
+                    <div className="text-[11px] uppercase tracking-[0.14em] mt-3.5" style={{ color: "rgba(232,241,226,.62)" }}>
                       {s.label}
                     </div>
                   </div>

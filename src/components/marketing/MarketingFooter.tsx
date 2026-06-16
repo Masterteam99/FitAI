@@ -6,12 +6,12 @@ const COLUMNS = copy.marketingFooter.columns;
 
 export function MarketingFooter() {
   return (
-    <footer className="relative" style={{ background: "var(--organic-espresso)", color: "rgba(246,240,231,.7)" }}>
+    <footer className="relative" style={{ background: "var(--organic-espresso)", color: "rgba(232,241,226,.7)" }}>
       <div className="max-w-[1180px] mx-auto px-7 pt-16 pb-9">
         <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr_1fr] mb-12">
           <div className="space-y-4" style={{ color: "var(--organic-sand)" }}>
             <OrganicLogo dark />
-            <p className="text-sm max-w-xs" style={{ color: "rgba(246,240,231,.7)" }}>
+            <p className="text-sm max-w-xs" style={{ color: "rgba(232,241,226,.7)" }}>
               {copy.marketingFooter.description}
             </p>
           </div>
@@ -34,7 +34,7 @@ export function MarketingFooter() {
           ))}
         </div>
 
-        <div className="pt-6 text-sm flex flex-wrap justify-between gap-3" style={{ borderTop: "1px solid rgba(246,240,231,.12)" }}>
+        <div className="pt-6 text-sm flex flex-wrap justify-between gap-3" style={{ borderTop: "1px solid rgba(232,241,226,.12)" }}>
           <span>{copy.marketingFooter.copyright}</span>
           <span>{copy.marketingFooter.tagline}</span>
         </div>

@@ -40,7 +40,7 @@ export function OrganicHeroVisual() {
               <defs>
                 <linearGradient id="organic-ring-gradient" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0" stopColor="#8a9a7b" />
-                  <stop offset="1" stopColor="#c66a4a" />
+                  <stop offset="1" stopColor="#3fae5a" />
                 </linearGradient>
               </defs>
             </svg>
