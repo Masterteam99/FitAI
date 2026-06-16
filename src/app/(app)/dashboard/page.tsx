@@ -11,7 +11,7 @@ import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DailyMissionCard } from "@/components/dashboard/DailyMissionCard";
 import { getDailyMission } from "@/lib/dailyMission";
 import { computeImbalances, muscleLabel } from "@/lib/body-map";
-import { BodyMap } from "@/components/visualizations/BodyMap/BodyMap";
+import { AdaptiveBodyMap } from "@/components/wow";
 import { StreakHeatmap } from "@/components/visualizations/StreakHeatmap";
 import { FadeIn, Stagger, StaggerItem, CardHover, CountUp, PageTransition } from "@/components/motion/MotionPrimitives";
 import { copy } from "@/content/copy";
@@ -224,12 +224,11 @@ export default async function DashboardPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="max-w-[180px] mx-auto">
-                    <BodyMap
+                    <AdaptiveBodyMap
                       mode="balance"
-                      data={imbalances.map((i) => ({ muscle: i.muscle, deficitPct: i.deficitPct, message: i.message }))}
+                      data={imbalances.map((i) => ({ muscle: i.muscle, deficitPct: i.deficitPct }))}
                       view="front"
                       showToggle={false}
-                      showLegend={false}
                     />
                   </div>
                   {topImbalances.length === 0 ? (
