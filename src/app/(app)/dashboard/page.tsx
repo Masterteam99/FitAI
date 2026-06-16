@@ -11,7 +11,7 @@ import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DailyMissionCard } from "@/components/dashboard/DailyMissionCard";
 import { getDailyMission } from "@/lib/dailyMission";
 import { computeImbalances, muscleLabel } from "@/lib/body-map";
-import { AdaptiveBodyMap } from "@/components/wow";
+import { AdaptiveBodyMap, RadialGauge } from "@/components/wow";
 import { StreakHeatmap } from "@/components/visualizations/StreakHeatmap";
 import { FadeIn, Stagger, StaggerItem, CardHover, CountUp, PageTransition } from "@/components/motion/MotionPrimitives";
 import { copy } from "@/content/copy";
@@ -25,7 +25,7 @@ export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user!.id as string;
 
-  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions, totalSessions] = await Promise.all([
+  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions, totalSessions, weeklySessions] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, currentStreak: true, totalPoints: true, longestStreak: true } }),
     prisma.workoutPlan.findFirst({ where: { userId, isActive: true }, include: { days: { include: { exercises: { include: { exercise: true } } } } } }),
     prisma.workoutSession.findMany({ where: { userId, status: "COMPLETED" }, orderBy: { completedAt: "desc" }, take: 5, include: { planDay: true } }),
@@ -37,6 +37,7 @@ export default async function DashboardPage() {
       select: { completedAt: true },
     }),
     prisma.workoutSession.count({ where: { userId, status: "COMPLETED" } }),
+    prisma.workoutSession.count({ where: { userId, status: "COMPLETED", completedAt: { gte: new Date(Date.now() - 7 * DAY_MS) } } }),
   ]);
 
   // Aggrega streak ultimi 90 giorni
@@ -49,6 +50,8 @@ export default async function DashboardPage() {
   const streakData = Array.from(streakMap.entries()).map(([date, count]) => ({ date, count }));
 
   const topImbalances = imbalances.slice(0, 3);
+  const weeklyTarget = activePlan?.workoutsPerWeek ?? 3;
+  const weeklyRemaining = Math.max(0, weeklyTarget - weeklySessions);
 
   return (
     <PageTransition>
@@ -209,6 +212,22 @@ export default async function DashboardPage() {
           </div>
 
           <div className="space-y-4">
+            <FadeIn delay={0.08}>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Questa settimana</CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center gap-5">
+                  <RadialGauge value={weeklySessions} max={weeklyTarget} size={104} color="#3fae5a" label={`su ${weeklyTarget}`} />
+                  <p className="text-sm text-muted-foreground">
+                    {weeklyRemaining === 0
+                      ? "Obiettivo settimanale raggiunto. Ottimo ritmo."
+                      : `Ti manca${weeklyRemaining === 1 ? "" : "no"} ${weeklyRemaining} allenament${weeklyRemaining === 1 ? "o" : "i"} per l'obiettivo di questa settimana.`}
+                  </p>
+                </CardContent>
+              </Card>
+            </FadeIn>
+
             <FadeIn delay={0.1}>
               <Card>
                 <CardHeader className="pb-2">
