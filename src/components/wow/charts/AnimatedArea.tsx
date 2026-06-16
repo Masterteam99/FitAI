@@ -51,7 +51,7 @@ export function AnimatedArea({
         initial={reduced ? false : { opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.4 }}
-        transition={{ duration: reduced ? 0 : 0.8, delay: 0.3 }}
+        transition={{ duration: reduced ? 0 : 0.8, delay: reduced ? 0 : 0.3 }}
       />
       <motion.path
         d={line}

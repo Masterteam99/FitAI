@@ -39,7 +39,8 @@ export function RadialGauge({
   const end = 135;
   const pct = clamp(value / max, 0, 1);
   const valueEnd = start + (end - start) * pct;
-  const len = Math.PI * r * 1.5;
+  const trackLen = Math.PI * r * 1.5; // 270° dell'arco completo
+  const drawLen = trackLen * pct; // lunghezza effettiva dell'arco del valore
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -51,8 +52,8 @@ export function RadialGauge({
           stroke={color}
           strokeWidth="9"
           strokeLinecap="round"
-          strokeDasharray={len}
-          initial={{ strokeDashoffset: reduced ? 0 : len }}
+          strokeDasharray={drawLen}
+          initial={{ strokeDashoffset: reduced ? 0 : drawLen }}
           whileInView={{ strokeDashoffset: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: reduced ? 0 : 1.2, ease: [0.2, 0.8, 0.2, 1] }}
