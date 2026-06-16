@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { useEffect, useState, type ReactNode } from "react";
+import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const fadeUpVariants: Variants = {
   hidden: { opacity: 0, y: 8 },
@@ -104,6 +104,51 @@ export function PageTransition({
       initial={reduced ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function ScrollReveal({
+  children,
+  delay = 0,
+  y = 36,
+  className,
+}: {
+  children: ReactNode;
+  delay?: number;
+  y?: number;
+  className?: string;
+}) {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div
+      className={className}
+      initial={reduced ? false : { opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: reduced ? 0 : 0.7, ease: [0.22, 1, 0.36, 1], delay: reduced ? 0 : delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function ScrollStagger({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={staggerVariants}
     >
       {children}
     </motion.div>
@@ -230,4 +275,75 @@ export function CountUp({
   }, [value, duration, reduced]);
 
   return <span className={className}>{format ? format(displayed) : displayed.toLocaleString("it-IT")}</span>;
+}
+
+export function ParallaxLayer({
+  children,
+  speed = 0.2,
+  className,
+}: {
+  children: ReactNode;
+  speed?: number;
+  className?: string;
+}) {
+  const reduced = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [speed * 100, speed * -100]);
+  if (reduced) return <div className={className}>{children}</div>;
+  return (
+    <motion.div ref={ref} className={className} style={{ y }}>
+      {children}
+    </motion.div>
+  );
+}
+
+export function DrawPath({
+  d,
+  stroke = "currentColor",
+  strokeWidth = 2,
+  duration = 1.4,
+  delay = 0,
+  className,
+}: {
+  d: string;
+  stroke?: string;
+  strokeWidth?: number;
+  duration?: number;
+  delay?: number;
+  className?: string;
+}) {
+  const reduced = useReducedMotion();
+  return (
+    <motion.path
+      className={className}
+      d={d}
+      fill="none"
+      stroke={stroke}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      initial={reduced ? false : { pathLength: 0, opacity: 0 }}
+      whileInView={{ pathLength: 1, opacity: 1 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: reduced ? 0 : duration, ease: [0.22, 1, 0.36, 1], delay: reduced ? 0 : delay }}
+    />
+  );
+}
+
+export function useScrollStep(steps: number): number {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start center", "end center"],
+  });
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    return scrollYProgress.on("change", (p) => {
+      setActive(Math.min(steps - 1, Math.floor(p * steps)));
+    });
+  }, [scrollYProgress, steps]);
+  return active;
 }
