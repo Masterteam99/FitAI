@@ -6,7 +6,7 @@ export const MUSCLE_KEYS = [
 export type MuscleKey = (typeof MUSCLE_KEYS)[number];
 
 export type VolumeData = Record<string, number>; // 0..1 normalizzato
-export type RecoveryData = Record<string, { recoveryPct: number }>;
+export type RecoveryData = Record<string, { recoveryPct: number; hoursSinceLast?: number | null }>;
 export type ImbalanceData = Array<{ muscle: string; deficitPct: number }>;
 
 export function volumeEnergyClass(value: number): string {
