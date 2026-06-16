@@ -5,7 +5,7 @@ import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
 import { OrganicHeroVisual } from "@/components/marketing/OrganicHeroVisual";
 import { FadeIn, SlideUp, ScrollReveal, ScrollStagger, StaggerItem, CountUp } from "@/components/motion/MotionPrimitives";
-import { AnimatedArea, ExerciseFormPlayer, AdaptiveBodyMap } from "@/components/wow";
+import { AnimatedArea, AnimatedRing, ExerciseFormPlayer, AdaptiveBodyMap, ScrollExplainer } from "@/components/wow";
 import { copy } from "@/content/copy";
 
 const PILLAR_ICONS = [Brain, Camera, Heart];
@@ -106,7 +106,7 @@ export default function LandingPage() {
               const tone = PILLAR_TONES[i];
               return (
                 <StaggerItem key={p.title}>
-                  <div className="group bg-card border border-border rounded-[22px] p-9 h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_28px_56px_-28px_rgba(51,39,31,.28)] hover:border-[var(--organic-terracotta-soft)]">
+                  <div className={`group bg-card border border-border rounded-[22px] p-9 h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_28px_56px_-28px_rgba(51,39,31,.28)] hover:border-[var(--organic-terracotta-soft)] ${i === 1 ? "lg:mt-12" : i === 2 ? "lg:mt-6" : ""}`}>
                     <div className="w-14 h-14 rounded-2xl grid place-items-center mb-6" style={{ background: tone.bg, color: tone.color }}>
                       <Icon className="w-7 h-7" />
                     </div>
@@ -134,25 +134,24 @@ export default function LandingPage() {
               {c.stepsTitle.post}
             </h2>
           </div>
-          <ScrollStagger className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {c.steps.map((s, i) => {
-              const dark = i % 2 === 1;
-              return (
-                <StaggerItem key={s.num}>
-                  <div
-                    className={`rounded-[22px] p-7 h-full ${dark ? "" : "bg-card border border-border"}`}
-                    style={dark ? { background: "var(--organic-forest)", color: "var(--organic-sand)" } : undefined}
-                  >
-                    <div className="font-display text-4xl leading-none mb-4" style={{ opacity: dark ? 0.8 : 0.32, color: dark ? "var(--organic-terracotta-soft)" : undefined }}>
-                      {s.num}
-                    </div>
-                    <h3 className="font-display text-xl mb-2">{s.title}</h3>
-                    <p className="text-sm" style={{ color: dark ? "rgba(232,241,226,.72)" : "var(--muted-foreground)" }}>{s.desc}</p>
-                  </div>
-                </StaggerItem>
-              );
-            })}
-          </ScrollStagger>
+          <ScrollExplainer
+            steps={c.steps.map((s) => ({ title: s.title, desc: s.desc }))}
+            stepVh={62}
+            visuals={[
+              <div key="v0" className="bg-card border border-border rounded-[28px] p-8 grid place-items-center">
+                <ExerciseFormPlayer archetype="squat" errorNote="ginocchia in avanti" size={200} />
+              </div>,
+              <div key="v1" className="bg-card border border-border rounded-[28px] p-8 w-[280px] mx-auto">
+                <AdaptiveBodyMap mode="balance" showToggle={false} data={[{ muscle: "QUADRICEPS", deficitPct: 66 }, { muscle: "CALVES", deficitPct: 58 }]} />
+              </div>,
+              <div key="v2" className="bg-card border border-border rounded-[28px] p-10 grid place-items-center">
+                <AnimatedRing value={84} label="form score" />
+              </div>,
+              <div key="v3" className="bg-card border border-border rounded-[28px] p-8 w-[360px]">
+                <AnimatedArea values={[20, 26, 24, 33, 31, 42, 49, 58]} color="#3fae5a" className="w-full h-[150px] block" />
+              </div>,
+            ]}
+          />
         </div>
       </section>
 
@@ -282,7 +281,7 @@ export default function LandingPage() {
               </div>
             </ScrollReveal>
             <ScrollReveal delay={0.08}>
-              <div className="relative rounded-[22px] p-10 h-full" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
+              <div className="relative rounded-[22px] p-10 h-full lg:-translate-y-3 transition-transform" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)", boxShadow: "0 34px 80px -36px rgba(24,36,26,.6), 0 0 0 1.5px rgba(63,174,90,.45)" }}>
                 <span className="absolute top-6 right-6 text-[10px] uppercase tracking-[0.12em] px-3 py-1.5 rounded-full font-bold text-white" style={{ background: "var(--organic-terracotta)" }}>
                   {c.pricePro.badge}
                 </span>

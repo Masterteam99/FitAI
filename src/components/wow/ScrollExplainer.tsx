@@ -12,16 +12,21 @@ export interface ExplainerStep {
 export function ScrollExplainer({
   steps,
   className,
-  visual,
+  visuals,
+  stepVh = 80,
 }: {
   steps: ExplainerStep[];
   className?: string;
-  visual?: (activeIndex: number) => ReactNode;
+  /** Un elemento per step, indicizzato dallo step attivo. Passato come array
+   *  (non funzione) per attraversare il confine server→client component. */
+  visuals?: ReactNode[];
+  /** Altezza di scroll per step, in vh. Default 80. */
+  stepVh?: number;
 }) {
   const { ref, active } = useScrollStep<HTMLDivElement>(steps.length);
 
   return (
-    <div ref={ref} className={cn("relative", className)} style={{ minHeight: `${steps.length * 80}vh` }}>
+    <div ref={ref} className={cn("relative", className)} style={{ minHeight: `${steps.length * stepVh}vh` }}>
       <div className="sticky top-0 grid lg:grid-cols-2 gap-10 items-center min-h-[100dvh] py-16">
         <div className="space-y-5">
           {steps.map((s, i) => {
@@ -50,7 +55,7 @@ export function ScrollExplainer({
           })}
         </div>
         <div className="hidden lg:flex items-center justify-center min-h-[320px]">
-          {visual ? visual(active) : null}
+          {visuals?.[active] ?? null}
         </div>
       </div>
     </div>
