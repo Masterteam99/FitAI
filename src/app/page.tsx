@@ -5,6 +5,7 @@ import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
 import { OrganicHeroVisual } from "@/components/marketing/OrganicHeroVisual";
 import { FadeIn, SlideUp, ScrollReveal, ScrollStagger, StaggerItem, CountUp } from "@/components/motion/MotionPrimitives";
+import { AnimatedArea, ExerciseFormPlayer, AdaptiveBodyMap } from "@/components/wow";
 import { copy } from "@/content/copy";
 
 const PILLAR_ICONS = [Brain, Camera, Heart];
@@ -155,6 +156,55 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Analisi biomeccanica — esecuzione + heatmap */}
+      <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
+        <div className="max-w-[1180px] mx-auto px-7">
+          <div className="max-w-[640px] mb-14">
+            <Eyebrow>Analisi biomeccanica</Eyebrow>
+            <h2 className="text-display-lg !text-[clamp(2.1rem,3.8vw,3.1rem)] mb-4">
+              Vedi <em style={{ color: "var(--organic-green)" }}>dove sbagli</em>, muscolo per muscolo
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              L&apos;AI ricostruisce ogni ripetizione e accende i gruppi muscolari che alleni troppo poco. Niente sensori: basta un video.
+            </p>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-6">
+            <ScrollReveal>
+              <div className="bg-card border border-border rounded-[28px] p-8 h-full flex flex-col items-center">
+                <span className="text-xs uppercase tracking-[0.18em] font-bold mb-6 self-start" style={{ color: "var(--organic-sage-deep)" }}>
+                  Tecnica · squat
+                </span>
+                <ExerciseFormPlayer archetype="squat" errorNote="ginocchia in avanti" size={200} />
+                <p className="text-sm text-muted-foreground mt-6 text-center max-w-[34ch]">
+                  La figura ripete il movimento e segnala il punto critico fotogramma per fotogramma.
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08}>
+              <div className="bg-card border border-border rounded-[28px] p-8 h-full">
+                <span className="text-xs uppercase tracking-[0.18em] font-bold mb-6 block" style={{ color: "var(--organic-sage-deep)" }}>
+                  Equilibrio muscolare
+                </span>
+                <div className="max-w-[280px] mx-auto">
+                  <AdaptiveBodyMap
+                    mode="balance"
+                    showToggle={false}
+                    data={[
+                      { muscle: "QUADRICEPS", deficitPct: 68 },
+                      { muscle: "CALVES", deficitPct: 61 },
+                      { muscle: "SHOULDERS", deficitPct: 55 },
+                    ]}
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground mt-4 text-center max-w-[40ch] mx-auto">
+                  In rosso i muscoli sotto-allenati: il piano successivo li riequilibra in automatico.
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
       {/* Showcase dati */}
       <section className="relative z-[2] pb-24">
         <div className="max-w-[1180px] mx-auto px-7">
@@ -186,16 +236,11 @@ export default function LandingPage() {
                     <span>{c.showcaseChartLabel}</span>
                     <span style={{ color: "var(--organic-terracotta-soft)" }}>{c.showcaseChartDelta}</span>
                   </div>
-                  <svg className="w-full h-[150px] block" viewBox="0 0 300 150" preserveAspectRatio="none" aria-hidden="true">
-                    <defs>
-                      <linearGradient id="organic-area" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stopColor="#7fd194" stopOpacity=".55" />
-                        <stop offset="1" stopColor="#7fd194" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M0,110 C40,100 60,70 90,72 C120,74 140,40 175,46 C210,52 235,24 300,18 L300,150 L0,150 Z" fill="url(#organic-area)" />
-                    <path d="M0,110 C40,100 60,70 90,72 C120,74 140,40 175,46 C210,52 235,24 300,18" fill="none" stroke="#7fd194" strokeWidth="2.5" strokeLinecap="round" />
-                  </svg>
+                  <AnimatedArea
+                    values={[18, 24, 22, 31, 29, 38, 44, 52]}
+                    color="#7fd194"
+                    className="w-full h-[150px] block"
+                  />
                 </div>
               </div>
             </div>
