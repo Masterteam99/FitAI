@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useScrollStep } from "@/components/motion/MotionPrimitives";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +16,7 @@ export function ScrollExplainer({
 }: {
   steps: ExplainerStep[];
   className?: string;
-  visual?: (activeIndex: number) => React.ReactNode;
+  visual?: (activeIndex: number) => ReactNode;
 }) {
   const { ref, active } = useScrollStep<HTMLDivElement>(steps.length);
 
@@ -27,7 +28,7 @@ export function ScrollExplainer({
             const isActive = i === active;
             return (
               <div
-                key={s.title}
+                key={i}
                 className="flex gap-4 transition-all duration-500"
                 style={{ opacity: isActive ? 1 : 0.35, transform: isActive ? "translateX(0)" : "translateX(-6px)" }}
               >

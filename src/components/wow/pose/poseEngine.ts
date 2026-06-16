@@ -86,8 +86,12 @@ export function lerpPose(a: Pose, b: Pose, t: number): Pose {
 export function errorJoint(key: ErrorKey, pose: Pose): Point {
   if (key === "knee") return pose.knee;
   if (key === "hip") return pose.hip;
-  return [
-    (pose.shoulder[0] + pose.hip[0]) / 2,
-    (pose.shoulder[1] + pose.hip[1]) / 2,
-  ];
+  if (key === "back") {
+    return [
+      (pose.shoulder[0] + pose.hip[0]) / 2,
+      (pose.shoulder[1] + pose.hip[1]) / 2,
+    ];
+  }
+  const _exhaustive: never = key;
+  return _exhaustive;
 }
