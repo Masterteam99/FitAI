@@ -35,22 +35,22 @@
   --foreground: oklch(0.96 0 0);
   --card: oklch(0.12 0.01 260);
   --card-foreground: oklch(0.96 0 0);
-  --primary: oklch(0.65 0.2 145);
+  --primary: oklch(0.71 0.165 150);
   --primary-foreground: oklch(0.08 0 0);
   --secondary: oklch(0.18 0.01 260);
   --secondary-foreground: oklch(0.96 0 0);
   --muted: oklch(0.18 0.01 260);
   --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.65 0.2 145);
+  --accent: oklch(0.71 0.165 150);
   --accent-foreground: oklch(0.08 0 0);
   --destructive: oklch(0.65 0.22 25);
   --border: oklch(0.22 0.01 260);
   --input: oklch(0.18 0.01 260);
-  --ring: oklch(0.65 0.2 145);
+  --ring: oklch(0.71 0.165 150);
 
   /* Energy scale per heatmap muscolare, intensità workout, streak */
   --energy-cold: oklch(0.55 0.15 230);   /* blu/ciano: muscolo non lavorato */
-  --energy-cool: oklch(0.65 0.20 145);   /* verde: lavorato base (= primary) */
+  --energy-cool: oklch(0.71 0.165 150);  /* verde firma: lavorato base (= primary) */
   --energy-warm: oklch(0.75 0.18 70);    /* arancio: lavorato bene */
   --energy-hot:  oklch(0.62 0.24 25);    /* rosso: intensità alta */
 }
@@ -59,36 +59,42 @@
    Rimappa i token Tailwind nel sottoalbero: crema/terracotta/salvia con serif
    Fraunces come display. Direzione design dir3-organic (design-mockups/). */
 .theme-organic {
-  --background: #fbf7f0;          /* cream */
-  --foreground: #2a231d;          /* ink */
-  --card: #fffdf9;                /* paper */
-  --card-foreground: #2a231d;
-  --primary: #c66a4a;             /* terracotta */
-  --primary-foreground: #fbf7f0;
-  --secondary: #f6f0e7;           /* sand */
-  --secondary-foreground: #2a231d;
-  --muted: #f6f0e7;
-  --muted-foreground: #6b5f54;    /* ink-soft */
-  --accent: #8a9a7b;              /* sage */
+  --background: #f1f6ed;          /* verde-crema */
+  --foreground: #1f2a1e;          /* verde-ink */
+  --card: #f9fcf6;                /* verde-paper */
+  --card-foreground: #1f2a1e;
+  --primary: #3fae5a;             /* verde firma (era terracotta) */
+  --primary-foreground: #f1f6ed;
+  --secondary: #e8f1e2;           /* verde-sabbia */
+  --secondary-foreground: #1f2a1e;
+  --muted: #e8f1e2;
+  --muted-foreground: #5c6857;    /* verde-grigio */
+  --accent: #3fae5a;              /* verde firma */
   --accent-foreground: #2e3a2c;
-  --border: #e7ddcd;              /* line */
-  --input: #fffdf9;
-  --ring: #c66a4a;
+  --border: #d6e3cd;              /* verde-linea */
+  --input: #f9fcf6;
+  --ring: #3fae5a;
   --font-display: var(--font-fraunces);
 
   /* palette nominata, per gli accenti che non passano dai token */
-  --organic-terracotta: #c66a4a;
-  --organic-terracotta-soft: #e4a07e;
-  --organic-terracotta-deep: #a8492c;
+  /* "terracotta" rimappato sul verde firma: switch colore brand (verde dominante) */
+  --organic-terracotta: #3fae5a;
+  --organic-terracotta-soft: #7fd194;
+  --organic-terracotta-deep: #2f8f47;
   --organic-sage: #8a9a7b;
   --organic-sage-deep: #5f6f54;
   --organic-sage-pale: #bcc8ad;
   --organic-forest: #2e3a2c;
-  --organic-espresso: #33271f;
-  --organic-sand: #f6f0e7;
-  --organic-cream: #fbf7f0;
-  --organic-paper: #fffdf9;
-  --organic-line: #e7ddcd;
+  --organic-espresso: #18241a;   /* deep green-black (era espresso bruno) */
+  --organic-sand: #e8f1e2;
+  --organic-cream: #f1f6ed;
+  --organic-paper: #f9fcf6;
+  --organic-line: #d6e3cd;
+
+  /* Verde firma del brand (scelta: verde fresco) — identità + dataviz */
+  --organic-green: #3fae5a;
+  --organic-green-deep: #2f8f47;
+  --organic-green-soft: #7fd194;
 
   font-family: var(--font-manrope), system-ui, sans-serif;
   background: var(--background);
@@ -114,10 +120,10 @@
   color: transparent;
 }
 .theme-organic .glow-energy {
-  box-shadow: 0 14px 30px -10px rgba(198, 106, 74, 0.5);
+  box-shadow: 0 14px 30px -10px rgba(63, 174, 90, 0.5);
 }
 .theme-organic .glow-primary {
-  box-shadow: 0 10px 24px -8px rgba(198, 106, 74, 0.45);
+  box-shadow: 0 10px 24px -8px rgba(63, 174, 90, 0.45);
 }
 
 /* ─── Energy utilities ─────────────────────────────────────────────────── */
@@ -219,7 +225,7 @@
     pointer-events: none;
   }
   .organic-glass {
-    background: rgba(255, 253, 249, 0.7);
+    background: rgba(249, 252, 246, 0.7);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.7);
     box-shadow: 0 30px 70px -30px rgba(51, 39, 31, 0.32);
@@ -240,6 +246,15 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .organic-dot, .organic-floaty { animation: none !important; }
+  }
+
+  @keyframes wow-muscle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+  .wow-pulse { animation: wow-muscle-pulse 1.8s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .wow-pulse { animation: none !important; }
   }
 
   /* Shimmer per Skeleton component */

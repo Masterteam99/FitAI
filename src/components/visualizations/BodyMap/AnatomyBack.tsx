@@ -14,7 +14,7 @@ export function AnatomyBack({
   muscleClasses,
 }: {
   className?: string;
-  muscleClasses?: MuscleClassMap;
+  muscleClasses?: MuscleClassMap | Record<string, string>;
 }) {
   const m = (key: keyof MuscleClassMap) => cn(DEFAULT_FILL, muscleClasses?.[key]);
 
