@@ -8,6 +8,12 @@ const createSchema = z.object({
   planDayId: z.string().optional(),
 });
 
+const setLogSchema = z.object({
+  set: z.number().int().min(1),
+  reps: z.number().int().min(0).max(200).optional(),
+  weightKg: z.number().min(0).max(1000).optional(),
+});
+
 const updateSchema = z.object({
   sessionId: z.string().optional(),
   id: z.string().optional(),
@@ -18,7 +24,8 @@ const updateSchema = z.object({
   caloriesBurned: z.number().optional(),
   overallFeeling: z.number().min(1).max(5).optional(),
   notes: z.string().optional(),
-  completedSets: z.record(z.string(), z.array(z.unknown())).optional(),
+  // Log per-serie keyed per exerciseId: materializzato in WorkoutSessionExercise
+  completedSets: z.record(z.string(), z.array(setLogSchema)).optional(),
 }).refine((d) => !!(d.sessionId ?? d.id), "sessionId or id required");
 
 export async function POST(req: NextRequest) {
@@ -46,19 +53,43 @@ export async function PATCH(req: NextRequest) {
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Dati non validi" }, { status: 400 });
 
-  const { sessionId, id: sessionId2, totalDuration, ...data } = parsed.data;
+  const { sessionId, id: sessionId2, totalDuration, completedSets, ...data } = parsed.data;
   const resolvedId = sessionId ?? sessionId2!;
+
+  // Volume totale calcolato server-side dai log per-serie (Σ reps × kg)
+  const computedVolume = completedSets
+    ? Object.values(completedSets).flat().reduce((sum, s) => sum + (s.reps ?? 0) * (s.weightKg ?? 0), 0)
+    : undefined;
 
   const workoutSession = await prisma.workoutSession.updateMany({
     where: { id: resolvedId, userId },
     data: {
       ...data,
-      ...(totalDuration !== undefined && { totalDuration }),
+      // Il client storico invia totalDuration in MINUTI; il modello ha solo
+      // totalSeconds. Senza questa mappatura l'update lanciava un errore
+      // Prisma e il completamento da UI falliva (niente streak/achievement).
+      ...(totalDuration !== undefined && data.totalSeconds === undefined && { totalSeconds: Math.round(totalDuration * 60) }),
+      ...(computedVolume !== undefined && computedVolume > 0 && { totalVolumeKg: computedVolume }),
       ...(data.status === "COMPLETED" && { completedAt: new Date() }),
     },
   });
 
   if (workoutSession.count === 0) return NextResponse.json({ error: "Sessione non trovata" }, { status: 404 });
+
+  // Materializza i log per-serie in WorkoutSessionExercise (replace idempotente)
+  if (completedSets && Object.keys(completedSets).length > 0) {
+    await prisma.$transaction([
+      prisma.workoutSessionExercise.deleteMany({ where: { sessionId: resolvedId } }),
+      prisma.workoutSessionExercise.createMany({
+        data: Object.entries(completedSets).map(([exerciseId, sets], idx) => ({
+          sessionId: resolvedId,
+          exerciseId,
+          orderIndex: idx,
+          completedSets: sets,
+        })),
+      }),
+    ]);
+  }
 
   // Aggiorna streak e punti utente se completato
   if (data.status === "COMPLETED") {

@@ -741,6 +741,9 @@ export const copy = {
     progressAria: "Avanzamento sessione",
     setDotAria: (n: number, done: boolean) => (done ? `Serie ${n} completata` : `Serie ${n} da fare`),
     restCountdownAria: "Secondi di recupero rimanenti",
+    weightLabel: "Carico (kg)",
+    repsLabel: "Ripetizioni",
+    lastLoadHint: (kg: number, reps: number | null) => `Ultimo: ${kg} kg${reps != null ? ` × ${reps}` : ""}`,
   },
 
   // ── /allenamento/nuovo → src/app/(app)/allenamento/nuovo/page.tsx ──
@@ -929,6 +932,9 @@ export const copy = {
     biomechanicalTitle: "Parametri Biomeccanici AI",
     biomechanicalIntro: "Il sistema AI monitora questi parametri durante l'analisi in tempo reale:",
     professionalNotesTitle: "Note del Professionista",
+    loadHistoryTitle: "I tuoi carichi",
+    loadHistoryBest: (kg: number, reps: number | null, sets: number) =>
+      `${kg} kg${reps != null ? ` × ${reps}` : ""} · ${sets} serie`,
   },
 
   // ── /abbonamento → src/app/(app)/abbonamento/page.tsx ──

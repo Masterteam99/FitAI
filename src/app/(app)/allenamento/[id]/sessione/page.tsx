@@ -35,6 +35,7 @@ function WorkoutSessionContent() {
     completeSet,
     skipRest,
     startTimeRef,
+    lastLoads,
   } = useWorkoutSession(planId, dayId);
 
   if (loading) {
@@ -95,6 +96,7 @@ function WorkoutSessionContent() {
               currentExIndex={currentExIndex}
               currentSet={currentSet}
               completedSets={completedSets}
+              lastLoad={lastLoads[exercises[currentExIndex]?.id ?? ""]}
               onCompleteSet={completeSet}
             />
           )}

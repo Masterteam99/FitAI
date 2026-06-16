@@ -1,23 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ChevronRight, Flame } from "lucide-react";
+import { CheckCircle, ChevronRight, Flame, History } from "lucide-react";
 import { NumberPunch } from "@/components/motion/NumberPunch";
 import { cn } from "@/lib/utils";
 import { copy } from "@/content/copy";
-import type { Exercise } from "./useWorkoutSession";
+import type { Exercise, LastLoad } from "./useWorkoutSession";
 
-export function ExerciseView({ exercises, currentExIndex, currentSet, completedSets, onCompleteSet }: {
+export function ExerciseView({ exercises, currentExIndex, currentSet, completedSets, lastLoad, onCompleteSet }: {
   exercises: Exercise[];
   currentExIndex: number;
   currentSet: number;
   completedSets: Record<string, number>;
-  onCompleteSet: () => void;
+  lastLoad?: LastLoad;
+  onCompleteSet: (log?: { weightKg?: number; reps?: number }) => void;
 }) {
   const reduced = useReducedMotion();
   const currentEx = exercises[currentExIndex];
+  // Prefill: ultimo carico registrato per questo esercizio (storico cross-sessione)
+  const [weightInput, setWeightInput] = useState<string>(lastLoad?.weightKg != null ? String(lastLoad.weightKg) : "");
+  const [repsInput, setRepsInput] = useState<string>(currentEx?.reps != null ? String(currentEx.reps) : "");
   if (!currentEx) return null;
+
+  function handleComplete() {
+    const weightKg = weightInput.trim() === "" ? undefined : Number(weightInput.replace(",", "."));
+    const reps = repsInput.trim() === "" ? undefined : Number(repsInput);
+    onCompleteSet({
+      weightKg: Number.isFinite(weightKg) ? weightKg : undefined,
+      reps: Number.isFinite(reps) ? reps : undefined,
+    });
+  }
 
   return (
     <motion.div
@@ -88,17 +102,59 @@ export function ExerciseView({ exercises, currentExIndex, currentSet, completedS
       </div>
 
       {/* Serie attuale label */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-4">
         <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {copy.allenamentoSessione.seriesLabel(currentSet, currentEx.sets)}
         </span>
+      </div>
+
+      {/* Carico e ripetizioni della serie (opzionali) */}
+      <div className="flex items-end justify-center gap-3 mb-6 flex-wrap">
+        <div className="space-y-1">
+          <label htmlFor="session-weight" className="block text-[10px] uppercase tracking-wider text-muted-foreground text-center">
+            {copy.allenamentoSessione.weightLabel}
+          </label>
+          <input
+            id="session-weight"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={0.5}
+            value={weightInput}
+            onChange={(e) => setWeightInput(e.target.value)}
+            placeholder="—"
+            className="w-24 h-12 text-center text-lg font-semibold rounded-xl border border-border bg-card/60 backdrop-blur focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="session-reps" className="block text-[10px] uppercase tracking-wider text-muted-foreground text-center">
+            {copy.allenamentoSessione.repsLabel}
+          </label>
+          <input
+            id="session-reps"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={1}
+            value={repsInput}
+            onChange={(e) => setRepsInput(e.target.value)}
+            placeholder="—"
+            className="w-20 h-12 text-center text-lg font-semibold rounded-xl border border-border bg-card/60 backdrop-blur focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        {lastLoad && lastLoad.weightKg != null && (
+          <span className="inline-flex items-center gap-1.5 pb-3 text-xs text-muted-foreground">
+            <History className="w-3.5 h-3.5" />
+            {copy.allenamentoSessione.lastLoadHint(lastLoad.weightKg, lastLoad.reps)}
+          </span>
+        )}
       </div>
 
       {/* CTA principale */}
       <motion.div whileTap={reduced ? undefined : { scale: 0.97 }} whileHover={reduced ? undefined : { y: -2 }}>
         <Button
           size="lg"
-          onClick={onCompleteSet}
+          onClick={handleComplete}
           className="w-full h-16 text-base gap-3 gradient-energy text-background hover:opacity-90 font-display tracking-wide"
         >
           <CheckCircle className="w-6 h-6" />

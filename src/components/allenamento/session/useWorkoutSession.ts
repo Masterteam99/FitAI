@@ -16,6 +16,18 @@ export interface Exercise {
   notes: string | null;
 }
 
+export interface SetLog {
+  set: number;
+  reps?: number;
+  weightKg?: number;
+}
+
+export interface LastLoad {
+  weightKg: number | null;
+  reps: number | null;
+  date: string | null;
+}
+
 export type SessionPhase = "exercise" | "rest" | "completed";
 
 const MOTIVATIONAL_QUOTES = copy.allenamentoSessione.motivationalQuotes;
@@ -32,9 +44,12 @@ export function useWorkoutSession(planId: string, dayId: string | null) {
   const [restSecondsLeft, setRestSecondsLeft] = useState(0);
   const [restTotal, setRestTotal] = useState(60);
   const [isPaused, setIsPaused] = useState(false);
+  const [lastLoads, setLastLoads] = useState<Record<string, LastLoad>>({});
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<Date>(new Date());
   const completionFiredRef = useRef(false);
+  // Log per-serie (exerciseId → serie registrate), inviato col PATCH finale
+  const setLogsRef = useRef<Record<string, SetLog[]>>({});
 
   // Quote shuffled once per rest
   const currentQuote = useMemo(() => {
@@ -64,6 +79,12 @@ export function useWorkoutSession(planId: string, dayId: string | null) {
           notes: e.notes,
         }));
         setExercises(exs);
+        // Ultimi carichi registrati per il prefill degli input (best-effort)
+        const ids = exs.map((e) => e.id).join(",");
+        fetch(`/api/me/last-loads?exerciseIds=${ids}`)
+          .then((r) => (r.ok ? r.json() : {}))
+          .then(setLastLoads)
+          .catch(() => {});
         return fetch("/api/workout-sessions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -97,12 +118,19 @@ export function useWorkoutSession(planId: string, dayId: string | null) {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase, isPaused]);
 
-  const completeSet = useCallback(() => {
+  const completeSet = useCallback((log?: { weightKg?: number; reps?: number }) => {
     const ex = exercises[currentExIndex];
     if (!ex) return;
 
     const key = `${currentExIndex}-${currentSet}`;
     setCompletedSets((prev) => ({ ...prev, [key]: 1 }));
+
+    // Registra la serie (carico/reps opzionali; le reps di default sono quelle del piano)
+    const logs = setLogsRef.current;
+    logs[ex.id] = [
+      ...(logs[ex.id] ?? []),
+      { set: currentSet, reps: log?.reps ?? ex.reps ?? undefined, weightKg: log?.weightKg },
+    ];
 
     const isLastSet = currentSet >= ex.sets;
     const isLastExercise = currentExIndex >= exercises.length - 1;
@@ -110,11 +138,11 @@ export function useWorkoutSession(planId: string, dayId: string | null) {
     if (isLastSet && isLastExercise) {
       setPhase("completed");
       if (sessionId) {
-        const durationMinutes = Math.round((Date.now() - startTimeRef.current.getTime()) / 60000);
+        const totalSeconds = Math.round((Date.now() - startTimeRef.current.getTime()) / 1000);
         fetch(`/api/workout-sessions`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: sessionId, status: "COMPLETED", totalDuration: durationMinutes }),
+          body: JSON.stringify({ id: sessionId, status: "COMPLETED", totalSeconds, completedSets: setLogsRef.current }),
         });
       }
     } else if (isLastSet) {
@@ -164,5 +192,6 @@ export function useWorkoutSession(planId: string, dayId: string | null) {
     completeSet,
     skipRest,
     startTimeRef,
+    lastLoads,
   };
 }

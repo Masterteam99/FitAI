@@ -1,12 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { MUSCLE_GROUP_LABELS, DIFFICULTY_LABELS, EQUIPMENT_LABELS, CATEGORY_LABELS } from "@/types/exercise";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Brain, CheckCircle, AlertTriangle, PlayCircle, Target } from "lucide-react";
+import { ArrowLeft, Brain, CheckCircle, AlertTriangle, PlayCircle, Target, History } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import { copy } from "@/content/copy";
+
+interface SetLog { set: number; reps?: number; weightKg?: number }
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -27,6 +31,25 @@ export default async function EsercizioPage({ params }: Props) {
     },
   });
   if (!exercise) notFound();
+
+  // Storico carichi dell'utente per questo esercizio (ultime 5 sessioni con log)
+  const session = await auth();
+  const loadHistory = session?.user?.id
+    ? (await prisma.workoutSessionExercise.findMany({
+        where: { exerciseId: exercise.id, session: { userId: session.user.id as string, status: "COMPLETED" } },
+        orderBy: { session: { completedAt: "desc" } },
+        take: 5,
+        select: { id: true, completedSets: true, session: { select: { completedAt: true } } },
+      }))
+        .map((row) => {
+          const sets = (row.completedSets as unknown as SetLog[]) ?? [];
+          const logged = sets.filter((s) => s.weightKg !== undefined);
+          if (logged.length === 0) return null;
+          const best = logged.reduce((a, b) => ((b.weightKg ?? 0) > (a.weightKg ?? 0) ? b : a));
+          return { id: row.id, date: row.session.completedAt, best, totalSets: sets.length };
+        })
+        .filter((r): r is NonNullable<typeof r> => r !== null)
+    : [];
 
   const biomechanicalRules = exercise.biomechanicalSpec?.movements.flatMap((m) =>
     m.phases.flatMap((p) =>
@@ -130,6 +153,28 @@ export default async function EsercizioPage({ params }: Props) {
           ))}
         </CardContent>
       </Card>
+
+      {/* Storico carichi utente */}
+      {loadHistory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <History className="w-4 h-4 text-primary" />
+              {copy.esercizioDettaglio.loadHistoryTitle}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {loadHistory.map((h) => (
+              <div key={h.id} className="flex items-center justify-between text-sm p-2.5 rounded-lg bg-secondary/30">
+                <span className="text-muted-foreground">{h.date ? formatDate(h.date) : "—"}</span>
+                <span className="font-semibold">
+                  {copy.esercizioDettaglio.loadHistoryBest(h.best.weightKg ?? 0, h.best.reps ?? null, h.totalSets)}
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Regole biomeccaniche */}
       {biomechanicalRules.length > 0 && (
