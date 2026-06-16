@@ -7,6 +7,7 @@ import { TrendingUp, Dumbbell, Flame, Trophy, Star, Loader2, Calendar } from "lu
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 import { format, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
+import { CountUp } from "@/components/motion/MotionPrimitives";
 import { copy } from "@/content/copy";
 
 interface StatsData {
@@ -79,17 +80,17 @@ export default function ProgressiPage() {
       {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { icon: Dumbbell, label: copy.progressi.stats.totalSessions, value: stats.totalSessions, color: "text-primary" },
-          { icon: Calendar, label: copy.progressi.stats.totalMinutes, value: stats.totalMinutes, color: "text-blue-400" },
-          { icon: Flame, label: copy.progressi.stats.currentStreak, value: `${stats.currentStreak}🔥`, color: "text-orange-400" },
-          { icon: Trophy, label: copy.progressi.stats.totalPoints, value: stats.totalPoints, color: "text-yellow-400" },
+          { icon: Dumbbell, label: copy.progressi.stats.totalSessions, value: stats.totalSessions, suffix: "", color: "text-primary" },
+          { icon: Calendar, label: copy.progressi.stats.totalMinutes, value: stats.totalMinutes, suffix: "", color: "text-blue-400" },
+          { icon: Flame, label: copy.progressi.stats.currentStreak, value: stats.currentStreak, suffix: "🔥", color: "text-orange-400" },
+          { icon: Trophy, label: copy.progressi.stats.totalPoints, value: stats.totalPoints, suffix: "", color: "text-yellow-400" },
         ].map((s) => {
           const Icon = s.icon;
           return (
             <Card key={s.label}>
               <CardContent className="p-4 text-center">
                 <Icon className={`w-6 h-6 mx-auto mb-2 ${s.color}`} />
-                <div className="text-2xl font-bold">{s.value}</div>
+                <div className="text-2xl font-bold"><CountUp value={s.value} />{s.suffix}</div>
                 <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
               </CardContent>
             </Card>
