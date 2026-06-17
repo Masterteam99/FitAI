@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Dumbbell } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
+import { OnboardingProgress } from "../OnboardingProgress";
 import { copy } from "@/content/copy";
 
 const EQUIPMENT_OPTIONS = copy.onboardingStep2.equipment;
@@ -37,6 +38,7 @@ export default function OnboardingStep2() {
   return (
     <div className="min-h-screen bg-background p-4 py-10">
       <div className="max-w-2xl mx-auto space-y-6">
+        <OnboardingProgress current={2} />
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <Dumbbell className="w-6 h-6 text-primary" />

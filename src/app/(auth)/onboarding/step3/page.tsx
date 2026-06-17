@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
 import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
+import { OnboardingProgress } from "../OnboardingProgress";
 import { copy } from "@/content/copy";
 
 const GENDERS = copy.onboardingStep3.genders;
@@ -84,6 +85,7 @@ export default function OnboardingStep3() {
   return (
     <div className="min-h-screen bg-background p-4 py-10">
       <div className="max-w-2xl mx-auto space-y-6">
+        <OnboardingProgress current={3} />
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <User className="w-6 h-6 text-primary" />
