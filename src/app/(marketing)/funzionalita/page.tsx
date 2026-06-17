@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Brain, Camera, Target, BarChart, Trophy, Zap, Apple, Dumbbell, ChevronRight } from "lucide-react";
 import { FadeIn, SlideUp, Stagger, StaggerItem, CardHover } from "@/components/motion/MotionPrimitives";
+import { ExerciseFormPlayer, AdaptiveBodyMap, AnimatedArea } from "@/components/wow";
 import { copy } from "@/content/copy";
 
 export const metadata: Metadata = {
@@ -39,6 +40,32 @@ export default function FunzionalitaPage() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             {copy.funzionalita.heroSubtitle}
           </p>
+        </FadeIn>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 pb-12">
+        <FadeIn>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-card border border-border rounded-[28px] p-7 flex flex-col items-center text-center">
+              <ExerciseFormPlayer archetype="squat" errorNote="ginocchia in avanti" size={170} />
+              <h3 className="font-display text-lg mt-5">Analisi della tecnica</h3>
+              <p className="text-sm text-muted-foreground mt-1">Ricostruisce il movimento e segnala dove correggere.</p>
+            </div>
+            <div className="bg-card border border-border rounded-[28px] p-7 flex flex-col items-center text-center">
+              <div className="w-[210px]">
+                <AdaptiveBodyMap mode="balance" showToggle={false} data={[{ muscle: "QUADRICEPS", deficitPct: 64 }, { muscle: "CALVES", deficitPct: 55 }]} />
+              </div>
+              <h3 className="font-display text-lg mt-5">Equilibrio muscolare</h3>
+              <p className="text-sm text-muted-foreground mt-1">Mostra i gruppi che alleni troppo poco.</p>
+            </div>
+            <div className="bg-card border border-border rounded-[28px] p-7 flex flex-col items-center text-center">
+              <div className="w-full">
+                <AnimatedArea values={[16, 22, 20, 30, 28, 39, 46, 55]} color="#3fae5a" className="w-full h-[140px] block" />
+              </div>
+              <h3 className="font-display text-lg mt-5">Progressi reali</h3>
+              <p className="text-sm text-muted-foreground mt-1">L&apos;andamento del tuo carico nel tempo.</p>
+            </div>
+          </div>
         </FadeIn>
       </section>
 
