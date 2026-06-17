@@ -7,7 +7,7 @@ import { TrendingUp, Dumbbell, Flame, Trophy, Star, Loader2, Calendar } from "lu
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 import { format, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
-import { CountUp } from "@/components/motion/MotionPrimitives";
+import { CountUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
 import { copy } from "@/content/copy";
 
 interface StatsData {
@@ -213,18 +213,33 @@ export default function ProgressiPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {stats.achievements.map((ua) => (
-                <div key={ua.achievement.name} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/50">
-                  <span className="text-2xl">{ua.achievement.icon}</span>
-                  <div className="min-w-0">
-                    <p className={`text-sm font-medium ${RARITY_COLORS[ua.achievement.rarity] ?? ""}`}>{ua.achievement.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {format(parseISO(ua.unlockedAt), "d MMM yyyy", { locale: it })}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="relative pl-6">
+              <span
+                className="absolute left-[7px] top-2 bottom-2 w-px"
+                style={{ background: "var(--organic-line, hsl(var(--border)))" }}
+                aria-hidden="true"
+              />
+              <Stagger className="space-y-5">
+                {stats.achievements.map((ua) => (
+                  <StaggerItem key={ua.achievement.name}>
+                    <div className="relative">
+                      <span
+                        className="absolute -left-[22px] top-1.5 w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-background"
+                        aria-hidden="true"
+                      />
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{ua.achievement.icon}</span>
+                        <div className="min-w-0">
+                          <p className={`text-sm font-medium ${RARITY_COLORS[ua.achievement.rarity] ?? ""}`}>{ua.achievement.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {format(parseISO(ua.unlockedAt), "d MMM yyyy", { locale: it })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
             </div>
           </CardContent>
         </Card>
