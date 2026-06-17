@@ -9,6 +9,7 @@ import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
 import { AiNutritionPlan } from "./AiNutritionPlan";
+import { RadialGauge } from "@/components/wow";
 import { copy } from "@/content/copy";
 
 interface NutritionLog {
@@ -128,6 +129,21 @@ export default function NutrizionePage() {
           <ChevronRight className="w-5 h-5" />
         </Button>
       </div>
+
+      {/* Calorie del giorno — gauge */}
+      <Card>
+        <CardContent className="p-5 flex items-center gap-5">
+          <RadialGauge value={totals.calories} max={TARGETS.calories} size={116} color="#3fae5a" label="kcal" />
+          <div className="text-sm">
+            <p className="font-medium">{copy.nutrizione.macros.calories}</p>
+            <p className="text-muted-foreground mt-0.5">
+              {totals.calories >= TARGETS.calories
+                ? "Obiettivo calorico giornaliero raggiunto."
+                : `Mancano ${TARGETS.calories - totals.calories} kcal all'obiettivo di oggi.`}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Macro totals */}
       <div className="grid grid-cols-4 gap-2">
