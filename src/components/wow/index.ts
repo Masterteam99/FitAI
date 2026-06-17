@@ -7,3 +7,4 @@ export { ExerciseFormPlayer } from "./ExerciseFormPlayer";
 export { ScrollExplainer } from "./ScrollExplainer";
 export * from "./heat/heatScale";
 export * from "./pose/poseEngine";
+export * from "./pose/exerciseMapping";

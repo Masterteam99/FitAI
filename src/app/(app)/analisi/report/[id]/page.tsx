@@ -12,6 +12,7 @@ import ReportError from "@/components/analisi/ReportError";
 import AnalysisProgress from "@/components/analisi/AnalysisProgress";
 import AnalysisDetails from "@/components/analisi/AnalysisDetails";
 import VideoSyncPlayer from "@/components/analisi/VideoSyncPlayer";
+import { ExerciseFormPlayer, exerciseToArchetype, inferErrorMarker, JOINT_LABEL } from "@/components/wow";
 import { copy } from "@/content/copy";
 
 export const metadata: Metadata = { title: copy.analisiReport.meta.title };
@@ -76,6 +77,15 @@ export default async function ReportPage({ params }: Props) {
   const injuryAlert = finalReport?.injuryRiskAlert;
   const showInjuryAlert = injuryAlert && injuryAlert.level !== "BASSO";
 
+  // Ricostruzione stilizzata del movimento: archetipo dall'esercizio + giunto
+  // critico inferito dal feedback reale (niente demo se non mappabile).
+  const archetype = exerciseToArchetype({ slug: report.exercise.slug, name: report.exercise.name });
+  const formMarker = inferErrorMarker([
+    ...improvementAreas,
+    ...bioFeedback,
+    ...(injuryAlert?.affectedAreas ?? []),
+  ]);
+
   // SVG ring math: cerchio r=45, circumference = 2π·45 ≈ 282.74
   const ringCircumference = 282.74;
   const ringDashOffset = ringCircumference * (1 - combined / 100);
@@ -134,6 +144,32 @@ export default async function ReportPage({ params }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Tecnica ricostruita — figura stilizzata + errore reale */}
+      {archetype && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Target className="w-5 h-5 text-primary" />
+              Tecnica ricostruita
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row items-center gap-6">
+            <ExerciseFormPlayer
+              archetype={archetype}
+              error={formMarker?.key}
+              showError={!!formMarker}
+              errorNote={formMarker ? JOINT_LABEL[formMarker.key] : undefined}
+              size={180}
+            />
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {formMarker
+                ? `Punto critico rilevato sul ${JOINT_LABEL[formMarker.key]}: ${formMarker.note}`
+                : "Esecuzione ricostruita dal tuo video. Nessun errore maggiore evidenziato sul movimento."}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Alert sicurezza */}
       {showInjuryAlert && injuryAlert && (
