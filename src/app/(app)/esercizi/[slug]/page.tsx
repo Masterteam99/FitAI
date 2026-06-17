@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Brain, CheckCircle, AlertTriangle, PlayCircle, Target, History } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { AnimatedArea } from "@/components/wow";
 import { copy } from "@/content/copy";
 
 interface SetLog { set: number; reps?: number; weightKg?: number }
@@ -46,10 +47,15 @@ export default async function EsercizioPage({ params }: Props) {
           const logged = sets.filter((s) => s.weightKg !== undefined);
           if (logged.length === 0) return null;
           const best = logged.reduce((a, b) => ((b.weightKg ?? 0) > (a.weightKg ?? 0) ? b : a));
-          return { id: row.id, date: row.session.completedAt, best, totalSets: sets.length };
+          const e1rm = Math.round(Math.max(...logged.map((s) => (s.weightKg ?? 0) * (1 + (s.reps ?? 0) / 30))));
+          return { id: row.id, date: row.session.completedAt, best, e1rm, totalSets: sets.length };
         })
         .filter((r): r is NonNullable<typeof r> => r !== null)
     : [];
+
+  // Curva 1RM stimato (Epley) in ordine cronologico crescente + record
+  const e1rmSeries = [...loadHistory].reverse().map((h) => h.e1rm);
+  const e1rmPr = e1rmSeries.length > 0 ? Math.max(...e1rmSeries) : 0;
 
   const biomechanicalRules = exercise.biomechanicalSpec?.movements.flatMap((m) =>
     m.phases.flatMap((p) =>
@@ -153,6 +159,25 @@ export default async function EsercizioPage({ params }: Props) {
           ))}
         </CardContent>
       </Card>
+
+      {/* Curva 1RM stimato nel tempo */}
+      {e1rmSeries.length >= 2 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <History className="w-4 h-4 text-primary" />
+              Stima 1RM nel tempo
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="font-display text-3xl" style={{ color: "var(--organic-espresso)" }}>{e1rmPr}</span>
+              <span className="text-sm text-muted-foreground">kg · record stimato (Epley)</span>
+            </div>
+            <AnimatedArea values={e1rmSeries} color="#3fae5a" className="w-full h-[140px] block" />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Storico carichi utente */}
       {loadHistory.length > 0 && (
