@@ -30,7 +30,7 @@ function Eyebrow({ children, center, light }: { children: React.ReactNode; cente
 export default function LandingPage() {
   const c = copy.landing;
   return (
-    <div className="theme-organic relative min-h-screen overflow-hidden bg-background text-foreground">
+    <div className="theme-organic relative min-h-screen overflow-x-clip bg-background text-foreground">
       <OrganizationJsonLd />
       <div className="organic-grain" />
       <MarketingHeader />

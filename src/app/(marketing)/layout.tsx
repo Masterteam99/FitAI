@@ -4,7 +4,7 @@ import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="theme-organic relative min-h-screen overflow-hidden bg-background text-foreground">
+    <div className="theme-organic relative min-h-screen overflow-x-clip bg-background text-foreground">
       <OrganizationJsonLd />
       <div className="organic-grain" />
       <div className="organic-blob w-[480px] h-[480px] -top-40 -right-40 opacity-40" style={{ background: "var(--organic-terracotta-soft)" }} />
