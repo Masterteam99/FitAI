@@ -52,7 +52,7 @@ export default function PrezziPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/60 backdrop-blur-sm border-primary/40 relative">
+        <Card className="bg-card/60 backdrop-blur-sm border-primary/40 relative lg:-translate-y-3 transition-transform shadow-[0_30px_70px_-30px_rgba(24,36,26,.5)]">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full glow-primary">
             {copy.prezzi.premium.badge}
           </div>
