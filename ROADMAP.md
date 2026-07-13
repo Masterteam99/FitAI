@@ -1,8 +1,10 @@
 # FitAI — Roadmap Esecutiva (Analisi v2 + Estensioni)
 
-*Versione 2.0 — 22 maggio 2026 (sessione 11 — M0–M8 tutte chiuse, suite E2E 50/50 verdi su origin/main)*
+*Versione 3.0 — 13 luglio 2026 (M0–M12 chiuse + redesign "wow" confluito su origin/main; typecheck 0 errori, 54/54 unit test verdi)*
 
-> **🎉 STATO ATTUALE**: Tutte le fasi 1–5 sono chiuse e funzionanti. Setup DB completato. M0–M8 tutte chiuse e pushate su `Masterteam99/FitAI`. Suite E2E 50/50 verdi in 2.6 min. Documentazione sviluppatori in `DOCUMENTAZIONE_FLUSSI.md`. **Sessione 8 (15 maggio)**: avviato master plan M0–M5 verso produzione full (`~/.claude/plans/cosa-manca-da-fare-swirling-puzzle.md`). **M0 done** (error boundaries, PWA icons, CORS doc, roadmap update). **M1 done**: Playwright suite con 19 test verdi (1.2 min). Fixato bug pre-esistente: profilo PATCH usava `weight`/`height` invece di `weightKg`/`heightCm` (impossibile aggiornare peso/altezza). Aggiunto `aria-label` al bottone Send AI Coach. **Sessione 11 (22 maggio)**: M8 Daily Mission chiusa + verifica end-to-end della suite (vedi sotto).
+> **🎉 STATO ATTUALE (13 lug 2026)**: Fasi 1–5 chiuse e funzionanti, DB setup completato, **M0–M12 tutte chiuse** su `Masterteam99/FitAI` (`origin/main`) + intero **redesign visivo "wow"**. Vedi `STATO_PROGETTO.md` per la sintesi dettagliata per milestone (M9 admin video PT, M10 admin hub, M11 visual layer, M12 production confidence, redesign wow). Verificato: `npx tsc --noEmit` 0 errori, `npx vitest run` 54/54 verdi; suite E2E 16 file spec. **Nota branch**: `main` è il canonico; `redesign-wow` (già in main) e `m10-admin-hub` (versione parallela superata dal commit squashato `a7fb614`) sono obsoleti e candidati alla cancellazione.
+>
+> **[Storico ≤ 22 maggio]** Tutte le fasi 1–5 chiuse. **Sessione 8 (15 maggio)**: avviato master plan M0–M5 (`~/.claude/plans/cosa-manca-da-fare-swirling-puzzle.md`). **M0 done** (error boundaries, PWA icons, CORS doc). **M1 done**: Playwright 19 test verdi; fixato bug profilo PATCH (`weight`/`height` → `weightKg`/`heightCm`) + `aria-label` Send AI Coach. **Sessione 11 (22 maggio)**: M8 Daily Mission chiusa + verifica E2E.
 
 > Questo documento è il tracking esecutivo delle task per la rifondazione dell'Analisi v2 e le estensioni correlate. È pensato per essere usato da **agent multipli** (Claude Code per i refactor architetturali, Antigravity AI per le task ripetitive/dataset). Aggiornare lo stato di ogni task quando completata.
 

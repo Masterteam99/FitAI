@@ -1,5 +1,5 @@
 # FitAI — Stato del Progetto
-*Aggiornato: 22 maggio 2026 (sessione 11 — M8 Daily Mission chiusa, suite E2E 50/50 verde, codice pushato)*
+*Aggiornato: 13 luglio 2026 (allineamento doc — M9→M12 + redesign wow confluiti su `main`, typecheck 0 errori, 54/54 unit test verdi)*
 
 > **⚠️ IMPORTANTE**: l'Analisi v2 è **implementata e funzionante** (Fasi 1–5 chiuse). La spec autoritativa resta in `ANALYSIS_SPEC.md` (root). Per una vista panoramica di TUTTI i flussi dell'app (auth, onboarding, allenamento, analisi, nutrizione, progressi, infrastruttura, daily mission) fare riferimento a **`DOCUMENTAZIONE_FLUSSI.md`** (root), che è il documento di onboarding sviluppatori.
 
@@ -7,7 +7,49 @@
 
 ## 📌 Stato attuale in una riga
 
-**APP PRODUCTION-READY su `http://localhost:3000` + repo `Masterteam99/FitAI`.** Build clean (52 pagine), typecheck a zero errori, DB Supabase migrato e seedato, tutte le fasi 1–5 della rifondazione Analisi v2 completate, milestone M0–M8 chiuse, suite E2E 50/50 verde in 2.6 min, codice pushato su `origin/main`. Resta solo l'azione utente di deploy su Vercel (CHECKLIST_DEPLOY.md sezione M5).
+**APP PRODUCTION-READY + repo `Masterteam99/FitAI` (`origin/main`).** Typecheck a zero errori, **54/54 unit test (Vitest) verdi**, DB Supabase migrato e seedato, Analisi v2 (Fasi 1–5) completa, **milestone M0–M12 chiuse** più l'intero **redesign visivo "wow"** (tema organico + libreria `src/components/wow`). CI GitHub Actions (typecheck+lint+unit+E2E su Postgres) attiva, Sentry reale integrato. Resta l'azione utente di deploy su Vercel (CHECKLIST_DEPLOY.md).
+
+> **⚠️ Nota branch (13 lug 2026)**: `main` è il branch canonico e più avanzato. `redesign-wow` è **interamente confluito in main** (0 commit avanti) → obsoleto. `m10-admin-hub` è una **versione parallela più vecchia** dell'admin hub: quel lavoro è già su main in forma squashata (commit `a7fb614`), ma il branch è ormai divergente e indietro di 100+ commit → obsoleto. Entrambi i branch sono candidati alla cancellazione; nessun lavoro unico da recuperare.
+
+---
+
+## ✅ COMPLETATO DOPO M8 (sessioni 12+, mag→lug 2026) — non documentato prima
+
+> 105 commit su `main` dopo la chiusura di M8 (`ea86037`). Sintesi per milestone.
+
+### M9 — Admin: upload video PT
+- `User.isAdmin` + helper admin con bootstrap da env (`9bc3e99`).
+- API admin upload/delete video PT per esercizio (`adc5b4f`), pagina `/admin/exercises` con dialog upload + E2E (`b3a8d32`).
+- Script bulk upload video PT (18 video caricati) + script cleanup utenti con keep-list.
+
+### M10 — Admin hub completo
+- Design + piano (17 task) poi implementazione: hub `/admin` con tab **Utenti** (tabella filtrata + drawer dettaglio + grant premium / reset quota), **Abbonamenti** (MRR/churn), **Statistiche** (MAU/DAU/charts/top esercizi), **Gestione admin** (promote/revoke con lockout), **Uso AI** (costo stimato + breakdown), **Audit log** (`/admin/activity`). Modello `AdminActionLog` + `logAdminAction` helper.
+- Consegnato su `main` come commit squashato `a7fb614`. **NB**: esiste un branch parallelo `m10-admin-hub` con la storia granulare (18 commit) ora divergente/obsoleto.
+- Refactor trasversale: `src/content/copy.ts` come single source of truth per tutte le stringhe (marketing, auth, app, admin, legali).
+
+### M11 — Visual layer (PR #1 `m11-visual-layer`)
+- Token OKLCH "energy" (cool/warm/hot/cold) + utility gradient, font display Bowlby One SC.
+- `framer-motion` + primitive motion (NumberPunch, SlideUp, RevealMask, MagneticHover).
+- **StreakHeatmap** (GitHub-style 52w) + API `/api/me/streak-history`, **BodyMap** 3 modalità (volume/recovery/balance) + API `/api/me/body-map` + helper `src/lib/body-map.ts`, **GradientMesh** animato CSS.
+- Sessione workout immersiva fullscreen phase-reactive, **AchievementUnlock** provider con confetti.
+
+### M12 — Production confidence
+- **Vitest** + config + smoke test; copertura unit su biomeccanica (angoli/fasi/spec evaluator), analysis weights, vision/final-report orchestration → **54 test**.
+- **Sentry reale** (Next 16), attivo solo con DSN.
+- **CI GitHub Actions**: typecheck + lint + unit + E2E con Postgres; E2E contro build di produzione (`next start`), migrazione baseline, route resilienti a servizi esterni assenti.
+- Pesi analisi 50/30/20 via `computeCombinedScore` puro; gate persistenza trigger biomeccanici su run consecutiva in ms.
+
+### Redesign "wow" (Track A + libreria wow, giu→lug 2026)
+- **Tema organico** applicato a landing/marketing, area app loggata (mix organico+atletico), auth/onboarding/legali.
+- **Libreria `src/components/wow`**: logica heat condivisa testata, primitive AnimatedRing/RadialGauge/AnimatedArea/AnimatedBars, `AdaptiveBodyMap` (pulse muscoli carenti), **ExerciseFormPlayer** (motore di pose testato squat/hinge, evidenziazione errore reale), **ScrollExplainer** scroll-driven; primitive motion `ParallaxLayer`/`DrawPath`/`useScrollStep`.
+- **Applicazioni con dato reale**: dashboard (heatmap squilibri + obiettivo settimanale con RadialGauge 7gg), esercizi (curva 1RM Epley con AnimatedArea + preview video card), nutrizione (gauge calorie giornaliere), progressi (timeline record personali + contatori CountUp), analisi report ("tecnica ricostruita" con ExerciseFormPlayer su errore reale), onboarding (indicatore progresso animato 4 step), prezzi (card Premium sollevata).
+- Marketing pre-login: pagine funzionalità, come-funziona (scroll-driven), prezzi, chi-siamo, FAQ; SEO (robots, sitemap, JSON-LD, metadataBase); a11y aria su widget custom; skeleton di caricamento.
+- Hardening billing (dispute Stripe nel webhook, premium manuale separato da stato Stripe), 32 nuovi esercizi con tag + spec biomeccaniche, generazione piani tag-driven.
+
+### Stato verificato (13 lug 2026)
+- `npx tsc --noEmit` → **0 errori**.
+- `npx vitest run` → **54/54 verdi** (9 file, ~0.8s).
+- Suite E2E: 16 file spec presenti (non rieseguita in questa sessione di allineamento; richiede DB + dev server).
 
 ---
 
@@ -241,11 +283,18 @@ step4: POST /api/onboarding (save profile + onboardingCompleted=true)
 | Stripe billing (free/premium + gating + checkout/portal/webhook) | ✅ |
 | Welcome tour + Insights dashboard | ✅ |
 | **Daily Mission dashboard hero (workout/nutrition/check-in)** | ✅ |
-| Test E2E (50/50 verdi) | ✅ |
-| Deploy prod (Vercel) | ⏸ azione utente (CHECKLIST_DEPLOY.md M5) |
+| **M9 — Admin: upload video PT per esercizio** | ✅ |
+| **M10 — Admin hub (utenti/abbonamenti/statistiche/admin/uso AI/audit log)** | ✅ |
+| **M11 — Visual layer (StreakHeatmap, BodyMap 3 modi, GradientMesh, motion)** | ✅ |
+| **M12 — Production confidence (Vitest 54 test, Sentry reale, CI Actions)** | ✅ |
+| **Redesign "wow" (tema organico + libreria wow con dato reale)** | ✅ |
+| **Copy centralizzato in `src/content/copy.ts`** | ✅ |
+| **SEO (robots/sitemap/JSON-LD) + marketing pre-login** | ✅ |
+| Test unit (Vitest 54/54) + E2E (16 file spec) | ✅ |
+| Deploy prod (Vercel) | ⏸ azione utente (CHECKLIST_DEPLOY.md) |
 
-**Copertura complessiva**: **100% v1 + 100% v2 analisi + 100% M0–M8 production features**. Resta solo l'azione utente di deploy Vercel.
+**Copertura complessiva**: **100% v1 + 100% v2 analisi + M0–M12 chiuse + redesign wow completo**. Resta solo l'azione utente di deploy Vercel.
 
 ---
 
-*Tutti i bug bloccanti sono chiusi. La rifondazione Analisi v2 è completa e l'app è funzionante in dev. Prossimo step: test E2E (Fase 6.1) e polishing.*
+*Tutti i bug bloccanti sono chiusi. Analisi v2 completa, M0–M12 chiuse, redesign "wow" confluito su main. Typecheck 0 errori, 54/54 unit test verdi. Prossimo step: (opzionale) rieseguire suite E2E completa con DB, poi deploy Vercel.*
