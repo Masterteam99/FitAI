@@ -49,3 +49,7 @@ VIDEO PT PER APP/
 next-env.d.ts
 
 /src/generated/prisma
+
+# Claude Code local/per-machine config
+.claude/settings.local.json
+.claude/launch.json
