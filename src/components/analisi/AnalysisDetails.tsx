@@ -139,13 +139,18 @@ function L3Section({ l3 }: { l3: L3Result }) {
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold">{Math.round(l3.score)}</span>
         <span className="text-xs text-muted-foreground">score confronto PT</span>
+        {typeof l3.numericScore === "number" && (
+          <span className="ml-auto text-xs text-muted-foreground">
+            aderenza biomeccanica al PT: <span className="font-semibold text-foreground">{l3.numericScore}%</span>
+          </span>
+        )}
       </div>
       {l3.comparisonFeedback && <p className="leading-relaxed">{l3.comparisonFeedback}</p>}
       {l3.keyDifferences.length > 0 && (
         <div className="space-y-1.5">
           <p className="text-xs text-muted-foreground">Differenze chiave:</p>
           {l3.keyDifferences.map((d, i) => (
-            <div key={i} className="grid grid-cols-[80px_1fr_1fr] gap-2 text-xs p-2 rounded bg-muted/40">
+            <div key={i} className="grid grid-cols-[minmax(110px,auto)_1fr_1fr] gap-2 text-xs p-2 rounded bg-muted/40">
               <span className="font-medium">{d.aspect}</span>
               <span><span className="text-muted-foreground">tu:</span> {d.user}</span>
               <span><span className="text-muted-foreground">PT:</span> {d.pro}</span>
