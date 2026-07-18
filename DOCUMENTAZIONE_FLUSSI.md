@@ -1,8 +1,10 @@
 # FitAI — Documentazione Flussi e Architettura
 
-*Versione 1.0 — 14 maggio 2026 (sessione 7)*
+*Versione 2.0 — 14 luglio 2026 (aggiornamento M9→M12 + redesign "wow"). v1.0 era 14 maggio 2026 (sessione 7).*
 
 Documento di riferimento per sviluppatori e nuovi agenti che entrano nel progetto. Mappa ogni sezione dell'app, le sue funzionalità e i flussi end-to-end. Per ogni claim sono indicati i path dei sorgenti.
+
+> **Copertura**: questo documento copre l'app fino a **M0–M12 chiuse + intero redesign visivo "wow"** (branch `main`, `origin/main`). Rispetto alla v1.0 sono state aggiunte le sezioni **15 (Marketing pre-login)**, **16 (Admin: video PT + hub)**, **17 (Visual layer & libreria "wow")**, **18 (Testing, CI & Observability)**; le sezioni esistenti 1–14 sono state riviste e annotate con i cambiamenti del redesign dove rilevante. Stato verificato al 14 lug 2026: `tsc --noEmit` 0 errori, `vitest run` 54/54 verdi.
 
 ---
 
@@ -22,8 +24,12 @@ Documento di riferimento per sviluppatori e nuovi agenti che entrano nel progett
 12. [Community](#12-community)
 13. [Profilo](#13-profilo)
 14. [Infrastruttura supportiva](#14-infrastruttura-supportiva)
-15. [Riepilogo modelli AI per endpoint](#15-riepilogo-modelli-ai-per-endpoint)
-16. [Errori noti, limitazioni, TODO](#16-errori-noti-limitazioni-todo)
+15. [Area Marketing (pagine pre-login)](#15-area-marketing-pagine-pre-login) 🆕
+16. [Area Admin (M9 video PT + M10 hub)](#16-area-admin-m9-video-pt--m10-hub) 🆕
+17. [Visual layer & libreria "wow" (M11 + redesign)](#17-visual-layer--libreria-wow-m11--redesign) 🆕
+18. [Testing, CI & Observability (M12)](#18-testing-ci--observability-m12) 🆕
+19. [Riepilogo modelli AI per endpoint](#19-riepilogo-modelli-ai-per-endpoint)
+20. [Errori noti, limitazioni, TODO](#20-errori-noti-limitazioni-todo)
 
 ---
 
@@ -1076,7 +1082,119 @@ export const MODELS = {
 
 ---
 
-## 15. Riepilogo modelli AI per endpoint
+## 15. Area Marketing (pagine pre-login)
+
+Superficie pubblica non autenticata, sotto il route group **`src/app/(marketing)/`** (layout + `template.tsx` con transizioni), più la landing root `src/app/page.tsx` e le pagine legali `src/app/privacy` / `src/app/terms`. Tutte le stringhe passano da `src/content/copy.ts` (vedi §17). Tema "organico" del redesign; SEO gestito centralmente (robots, sitemap, JSON-LD, `metadataBase`).
+
+| Rotta | File | Cosa mostra | Componenti "wow" usati |
+|---|---|---|---|
+| `/` (landing) | `src/app/page.tsx` | Hero, "Come funziona" scroll-driven, pilastri asimmetrici, sezione analisi biomeccanica, showcase con area animata, enfasi tier Pro | `ScrollExplainer`, `AnimatedArea`, `AdaptiveBodyMap`, `GradientMesh` |
+| `/funzionalita` | `(marketing)/funzionalita/page.tsx` | Vetrina funzionalità con banda "player tecnica + heatmap + progressi" | `ExerciseFormPlayer`, `AdaptiveBodyMap`, `AnimatedArea` |
+| `/come-funziona` | `(marketing)/come-funziona/page.tsx` | Spiegazione step-by-step scroll-driven, un visual per step | `ScrollExplainer`, `AdaptiveBodyMap`, `ExerciseFormPlayer`, `AnimatedArea` |
+| `/prezzi` | `(marketing)/prezzi/page.tsx` | Tabella piani Free/Premium; card Premium "sollevata" per coerenza con la landing | — (motion base) |
+| `/chi-siamo` | `(marketing)/chi-siamo/page.tsx` | Manifesto/brand, solo testo | — |
+| `/faq` | `(marketing)/faq/page.tsx` | Domande frequenti | — |
+
+**Quando**: prima del login. Il layout marketing usa `overflow-x-clip` sulla radice (NON `overflow-hidden`: quest'ultimo rompeva lo `sticky` dello `ScrollExplainer` lasciando spazio vuoto — regressione fixata). **Funzione**: acquisizione/marketing; da qui i CTA portano a `/registrati` e `/login`.
+
+---
+
+## 16. Area Admin (M9 video PT + M10 hub)
+
+Backoffice completo sotto **`src/app/(app)/admin/`** (dentro il gruppo `(app)`, quindi protetto anche dall'auth di `proxy.ts`). Non è nella navbar utente normale: è un'area separata con la propria sub-sidebar.
+
+### 16.1 Controllo accessi — `src/lib/admin.ts`
+- `requireAdmin()`: legge la sessione; se manca → `AdminAccessError(401)`; carica `User.isAdmin`. **Bootstrap da env**: se l'utente non è admin ma la sua email è in `ADMIN_EMAILS` (CSV), viene promosso automaticamente (`isAdmin = true` persistito) al primo accesso. Se non admin → `AdminAccessError(403)`.
+- `admin/layout.tsx` chiama `requireAdmin()` server-side: 401 → redirect `/login`, 403 → redirect `/dashboard`. Rende `AdminSidebar` + contenuto.
+- `AdminSidebar` (`src/components/admin/AdminSidebar.tsx`): tab Utenti, Abbonamenti, Esercizi, Statistiche, Gestione admin, Uso AI + link "Audit log" in fondo. `/admin` (index) fa redirect a `/admin/users`.
+
+### 16.2 Audit log — `src/lib/admin-audit.ts` + modello `AdminActionLog`
+Ogni azione mutativa admin chiama `logAdminAction({ actorId, actorEmail, action, targetType, targetId?, payload? })`, che scrive un record `AdminActionLog`. **Non bloccante**: se la scrittura fallisce logga in console e non interrompe l'azione. Enum `AdminActionType`: `PROMOTE_ADMIN`, `REVOKE_ADMIN`, `GRANT_PREMIUM`, `RESET_USER_QUOTA`, `TOGGLE_EXERCISE_ACTIVE`, `UPLOAD_PT_VIDEO`, `DELETE_PT_VIDEO`.
+
+### 16.3 Tab e relative API (tutte gated da `requireAdmin`; errore → `{error}` con status 401/403/…)
+
+| Tab / pagina | API | Metodo | Cosa fa / responso |
+|---|---|---|---|
+| **Utenti** `/admin/users` | `GET /api/admin/users` | GET | Lista paginata (PAGE_SIZE fisso). Query: `page`, `q` (email/nome, case-insensitive), `filter` = `all\|premium\|free\|admin`. Responso: `{ users[], page, pageSize, totalPages, counters{total,premium,admin} }`; ogni user ha `sessionsCount` e `premiumGrantedUntil` (solo se futuro). |
+| ⤷ dettaglio utente (drawer) | `GET /api/admin/users/[id]` | GET | Dettaglio singolo utente per `UserDetailDrawer`. |
+| ⤷ grant premium | `POST /api/admin/users/[id]/grant-premium` | POST | Concede premium manuale +30 giorni (`premiumGrantedUntil`), **separato** dallo stato Stripe. Responso `{ ok, periodEnd }`. Audit `GRANT_PREMIUM`. |
+| ⤷ reset quota | `DELETE /api/admin/users/[id]/quota` | DELETE | Cancella gli `UsageCounter` del mese corrente. Responso `{ ok, deletedCount }`. Audit `RESET_USER_QUOTA`. |
+| ⤷ promote/revoke admin | `POST` / `DELETE /api/admin/users/[id]/admin` | POST/DELETE | Rende/revoca admin. **Lockout**: non puoi revocare admin a te stesso (400) né revocare l'ultimo admin (400). Idempotente (`alreadyAdmin`/`alreadyNotAdmin`). Audit `PROMOTE_ADMIN`/`REVOKE_ADMIN`. |
+| **Abbonamenti** `/admin/subscriptions` | `GET /api/admin/subscriptions` | GET | Lista filtrata per `status` (`all\|…`) + metriche MRR/churn. Paginata. |
+| **Esercizi** `/admin/exercises` | `PATCH /api/admin/exercises/[id]/active` | PATCH | Toggle `isActive`. Responso `{ ok, isActive }`. Audit `TOGGLE_EXERCISE_ACTIVE`. |
+| ⤷ video PT (M9) | `POST` / `DELETE /api/admin/exercises/[id]/pt-video` | POST/DELETE | Upload/rimozione VIDEO_RIF_1 (`Exercise.videoUrl`) su Supabase. Validazioni: multipart obbligatorio (400), file presente (400/415 tipo, 413 dimensione), errore upload (500). Responso `{ videoUrl, path, adminEmail }`. Audit `UPLOAD_PT_VIDEO`/`DELETE_PT_VIDEO`. |
+| **Statistiche** `/admin/stats` | `GET /api/admin/stats` | GET (`revalidate=60`) | Counters (totalUsers, MAU 30gg, DAU oggi, workouts30, analyses30, checkins30), serie giornaliere nuovi utenti e workout completati (raw SQL `DATE_TRUNC`), top 10 esercizi, distribuzione per `fitnessLevel`. |
+| **Gestione admin** `/admin/admins` | `GET /api/admin/admins` + `POST /api/admin/admins/promote` | GET/POST | Lista admin correnti + email da env (`parseAdminEmails`). Promote per email: se utente non registrato → 404 "deve registrarsi prima". Audit `PROMOTE_ADMIN`. |
+| **Uso AI** `/admin/ai-usage` | `GET /api/admin/ai-usage` | GET | Costo stimato in € (`estimateCostEur` su `FEATURE_TOKEN_ESTIMATES`, `src/lib/billing/ai-pricing.ts`), % free-user al limite, breakdown per feature (mese corrente), per periodo (ultimi 6 mesi), top 10 utenti per chiamate. |
+| **Audit log** `/admin/activity` | `GET /api/admin/activity` | GET | Log azioni paginato, filtri `action` e `actorId`; il viewer (`ActivityLog.tsx`) espande il `payload` JSON. |
+
+**Componenti UI**: `src/components/admin/` — `UsersTable`, `UserDetailDrawer`, `SubscriptionsTable`, `StatsDashboard`, `AdminsManager`, `AiUsagePanel`, `ActivityLog`, `AdminExercisesTable`, `AdminMetricCard`, `ConfirmActionButton`. **Script CLI correlati**: `scripts/` bulk upload video PT (18 video caricati) e cleanup utenti con keep-list.
+
+---
+
+## 17. Visual layer & libreria "wow" (M11 + redesign)
+
+Il redesign "wow" ha introdotto due livelli di componenti visivi, più un design system esteso.
+
+### 17.1 Design system
+- **Token OKLCH "energy"** (cool/warm/hot/cold) + utility gradient in `globals.css`; font display **Bowlby One SC** con utility `.text-hero` / `.text-display*`; keyframe `.wow-pulse`.
+- **`framer-motion`** installato; primitive centralizzate in `src/components/motion/MotionPrimitives.tsx`: `FadeIn`, `Stagger`/`StaggerItem`, `CardHover`, `PageTransition`, `ScrollReveal`, `ScrollStagger`, `SlideUp`, `RevealMask`, `MagneticHover`, **`CountUp`** (numeri animati), `ParallaxLayer`, `DrawPath`, `useScrollStep` (hook scroll-step). Tutte rispettano `prefers-reduced-motion`.
+- **Copy centralizzato**: `src/content/copy.ts` (~1546 righe) è la **single source of truth** per tutte le stringhe UI (marketing, auth, app, admin, legali). Niente più testo hardcoded nei componenti.
+
+### 17.2 Libreria "wow" — `src/components/wow/` (barrel `index.ts`)
+Componenti animati in codice puro (SVG/CSS/motion, niente Lottie/video/3D), alimentati da **dati reali** dove esistono:
+- **`AdaptiveBodyMap`** — heatmap muscolare "viva" con pulse sui muscoli carenti; **compone** il `BodyMap` di §17.3 (non lo duplica).
+- **`ExerciseFormPlayer`** — figura di profilo che esegue l'esercizio con marker sull'errore reale. Motore in `pose/poseEngine.ts` (archetipi testati: squat, hinge; push/pull richiedono nuovi dati pose). Mapping errore→articolazione via `pose/exerciseMapping.ts` (`exerciseToArchetype`, `inferErrorMarker`, `JOINT_LABEL`).
+- **`RadialGauge`** / **`AnimatedRing`** — gauge/anelli con draw-on animato.
+- **`AnimatedArea`** / **`AnimatedBars`** — grafici area/barre animati.
+- **`ScrollExplainer`** — sezione scroll-driven (sticky) che avanza per step.
+- **`heat/heatScale.ts`** — logica colore heat condivisa (con test unit `heatScale.test.ts`).
+
+### 17.3 Componenti visualizations — `src/components/visualizations/`
+- **`StreakHeatmap`** — heatmap GitHub-style (fino a 52 settimane) con tooltip nativo e legenda; alimentata da `GET /api/me/streak-history` (`{ data, totalDays:365 }`).
+- **`BodyMap/`** (`BodyMap.tsx` + `AnatomyFront`/`AnatomyBack`, 12 gruppi muscolari SVG) — 3 modalità **volume / recovery / balance**; alimentata da `GET /api/me/body-map?mode=&days=` (`{ mode, days, data }`; 400 su mode non valido).
+- **`GradientMesh`** — background animato solo-CSS.
+- **`celebration/AchievementUnlock.tsx`** — provider con `canvas-confetti` per lo sblocco achievement.
+
+### 17.4 Dove è applicato (dati reali)
+| Sezione | File | Widget / dato |
+|---|---|---|
+| Dashboard | `(app)/dashboard/page.tsx` | `StreakHeatmap` (90gg), card "Questa settimana" con `RadialGauge` (sessioni reali su target 7gg), `AdaptiveBodyMap` squilibri, `CountUp` sulle statistiche |
+| Esercizi (dettaglio) | `(app)/esercizi/[slug]/page.tsx` | Curva **1RM stimato (Epley)** nel tempo con `AnimatedArea` (record stimato dai carichi loggati) + preview video nelle card libreria |
+| Nutrizione | `(app)/nutrizione/page.tsx` | `RadialGauge` calorie giornaliere (dato reale vs target) |
+| Progressi | `(app)/progressi/page.tsx` | Contatori `CountUp` + timeline record personali animata |
+| Report analisi | `(app)/analisi/report/[id]/page.tsx` | Card "Tecnica ricostruita" con `ExerciseFormPlayer` collegato all'errore reale del report |
+| Onboarding | step 1–4 | `OnboardingProgress`: indicatore di progresso animato a 4 step |
+
+### 17.5 Nuove API di supporto (autenticate, non-admin)
+| Endpoint | Responso |
+|---|---|
+| `GET /api/me/streak-history` | `{ data, totalDays: 365 }` — attività aggregata 365gg per la heatmap |
+| `GET /api/me/body-map?mode=volume\|recovery\|balance&days=N` | `{ mode, days, data }` (helper `src/lib/body-map.ts`); `days` clampato 1–365; 400 se mode non valido |
+| `GET /api/me/last-loads?exerciseIds=a,b,c` | Mappa `exerciseId → ultimo carico`; `{}` se nessun id |
+| `POST /api/daily-checkin` | `{ ok, mood }` (Zod-validato; 400 dati non validi) |
+
+---
+
+## 18. Testing, CI & Observability (M12)
+
+### 18.1 Test
+- **Unit — Vitest** (`vitest.config.ts`, `environment: node`, include solo `src/**/*.test.ts`): **54 test in 9 file**, verdi. Coprono la logica pura: biomeccanica (`angleCalculator`, `phaseDetector`, `specEvaluator`), pesi analisi (`weights`), orchestrazione vision/final-report (`visionAnalyzer`, `finalReportGenerator` con Anthropic mockato), heat scale. Comandi: `npm run test:unit` (+ `:watch`, `:coverage`).
+- **E2E — Playwright** (`playwright.config.ts`): **16 file spec** in `tests/e2e/` (incl. `m10-admin-hub`, `m9-admin-pt-upload`, `smoke`). Girano contro una **build di produzione** (`next start`), non `next dev`. Comandi: `npm run test:e2e` (+ `:ui`, `:headed`, `:debug`).
+
+### 18.2 CI — GitHub Actions (`.github/workflows/ci.yml`)
+Su `push` e `pull_request`, due job:
+1. **quality**: `npm ci` → `prisma generate` → `tsc --noEmit` → `lint` → `test:unit`.
+2. **e2e**: service Postgres 16, `prisma migrate deploy` + `seed` + `build` di produzione, cache browser Playwright, `test:e2e`. Env di test dedicati (secret `ANTHROPIC_API_KEY`). Route rese resilienti a servizi esterni assenti (Upstash/Supabase) per non far cadere gli E2E.
+
+### 18.3 Observability — Sentry (`src/lib/observability.ts`)
+API neutra su Sentry, **attiva solo con DSN** (`SENTRY_DSN` server / `NEXT_PUBLIC_SENTRY_DSN` client): senza DSN le chiamate sono no-op e resta il fallback console.
+- `captureError(err, context?)`, `captureMessage(message, level)`, `setUserContext(user)`.
+- Init in `src/instrumentation.ts` / `src/instrumentation-client.ts` (Next 16). Configurazioni `sentry.*.config.ts`.
+
+---
+
+## 19. Riepilogo modelli AI per endpoint
 
 | Endpoint | Modello | Input | Output | Cache | Rate limit |
 |---|---|---|---|---|---|
@@ -1091,20 +1209,20 @@ export const MODELS = {
 
 ---
 
-## 16. Errori noti, limitazioni, TODO
+## 20. Errori noti, limitazioni, TODO
 
-### 🔴 Bloccante per consegna
+### ✅ Risolti dopo v1.0 (erano TODO/bloccanti, ora fatti)
 
-- **Test E2E (Fase 6.1)** — flusso completo *onboarding → genera piano → workout → analisi → report* mai eseguito end-to-end con DB up.
+- **Test E2E**: suite Playwright presente (16 file spec) e girata in CI contro build di produzione. **Nota**: il singolo giro *manuale* completo *onboarding → piano → workout → analisi → report* con video reale resta la prova consigliata prima del deploy (vedi §8 e "Motion Insight" sotto).
+- **Error boundary globale**: `src/app/(app)/error.tsx` **esiste**.
+- **PWA**: `public/icon-192.png`, `public/icon-512.png`, `public/manifest.json`, `public/sw.js` **presenti**.
+- **Community feed**: API `GET /api/community/feed` presente e la pagina la consuma (MVP read-only).
 
-### 🟡 Polishing v1 non bloccanti
+### 🟡 Ancora aperti / non bloccanti
 
-- **Community feed**: `(app)/community/page.tsx` è placeholder. Schema DB pronto.
-- **Grafici progressi**: `(app)/progressi/page.tsx` ha già BarChart e LineChart con recharts. Eventuali estensioni (peso corporeo trend, foto progressi) sono TODO.
-- **PWA icons**: `public/icon-192.png`, `public/icon-512.png` mancanti.
-- **Error boundary globale**: `src/app/(app)/error.tsx` non esiste. Toaster ok.
-- **Service worker offline**: `public/sw.js` da creare + registrazione in `providers.tsx`.
-- **Deploy Vercel**: bloccato da account utente + env vars.
+- **Grafici progressi**: estensioni (peso corporeo trend, foto progressi) ancora TODO.
+- **Deploy Vercel**: azione utente (account + env vars).
+- **`BodyMap.tsx`** ricalcola la logica colore heat invece di importare `wow/heat/heatScale` (micro-refactor).
 
 ### ⚠️ Limitazioni runtime note
 
