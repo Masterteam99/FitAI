@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminExercisesPage() {
   const [exercises, total, withVideo, activeCount] = await Promise.all([
     prisma.exercise.findMany({
-      select: { id: true, slug: true, name: true, muscleGroupPrimary: true, videoUrl: true, isActive: true },
+      select: { id: true, slug: true, name: true, muscleGroupPrimary: true, videoUrl: true, isActive: true, referenceProfileAt: true },
       orderBy: { name: "asc" },
     }),
     prisma.exercise.count(),
@@ -33,7 +33,17 @@ export default async function AdminExercisesPage() {
         <AdminMetricCard label={copy.adminExercises.metricActive} value={activeCount} tone="info" />
       </div>
 
-      <AdminExercisesTable exercises={exercises} />
+      <AdminExercisesTable
+        exercises={exercises.map((e) => ({
+          id: e.id,
+          slug: e.slug,
+          name: e.name,
+          muscleGroupPrimary: e.muscleGroupPrimary,
+          videoUrl: e.videoUrl,
+          isActive: e.isActive,
+          hasProfile: e.referenceProfileAt != null,
+        }))}
+      />
     </div>
   );
 }

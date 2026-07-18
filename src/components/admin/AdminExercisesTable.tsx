@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toaster";
-import { Check, X, Upload, Trash2, Video } from "lucide-react";
+import { Check, X, Upload, Trash2, Video, Activity } from "lucide-react";
 import { copy } from "@/content/copy";
+import { extractReferenceProfileFromVideo } from "@/lib/analysis/pt-profile-extract";
 
 type AdminExercise = {
   id: string;
@@ -17,6 +18,7 @@ type AdminExercise = {
   muscleGroupPrimary: string;
   videoUrl: string | null;
   isActive: boolean;
+  hasProfile: boolean;
 };
 
 export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] }) {
@@ -25,6 +27,7 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
   const [onlyMissing, setOnlyMissing] = useState(false);
   const [dialogExercise, setDialogExercise] = useState<AdminExercise | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [profilingId, setProfilingId] = useState<string | null>(null);
 
   async function toggleActive(ex: AdminExercise) {
     setTogglingId(ex.id);
@@ -33,6 +36,27 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
       if (res.ok) router.refresh();
     } finally {
       setTogglingId(null);
+    }
+  }
+
+  async function buildProfile(ex: AdminExercise) {
+    if (!ex.videoUrl) return;
+    setProfilingId(ex.id);
+    try {
+      const profile = await extractReferenceProfileFromVideo(ex.videoUrl, ex.slug);
+      const res = await fetch(`/api/admin/exercises/${ex.id}/reference-profile`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profile),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      toast({ title: "Profilo PT salvato", description: `${data.movements} movimenti · ${ex.name}`, variant: "success" });
+      router.refresh();
+    } catch (e) {
+      toast({ title: "Estrazione profilo fallita", description: e instanceof Error ? e.message : "Errore sconosciuto", variant: "destructive" });
+    } finally {
+      setProfilingId(null);
     }
   }
 
@@ -95,12 +119,29 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
                       {copy.adminExercises.table.missingBadge}
                     </Badge>
                   )}
+                  {ex.hasProfile && (
+                    <Badge variant="secondary" className="gap-1">
+                      <Activity className="w-3 h-3" />
+                      Profilo PT
+                    </Badge>
+                  )}
                   <Badge variant={ex.isActive ? "default" : "outline"} className={ex.isActive ? "" : "text-muted-foreground"}>
                     {ex.isActive ? copy.adminExercises.table.active : copy.adminExercises.table.inactive}
                   </Badge>
                   <Button size="sm" onClick={() => setDialogExercise(ex)} className="gap-1.5">
                     <Upload className="w-3.5 h-3.5" />
                     {ex.videoUrl ? copy.adminExercises.table.replace : copy.adminExercises.table.upload}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!ex.videoUrl || profilingId === ex.id}
+                    onClick={() => buildProfile(ex)}
+                    className="gap-1.5"
+                    title={ex.videoUrl ? "Analizza il video PT ed estrai il profilo biomeccanico di riferimento" : "Carica prima un video PT"}
+                  >
+                    <Activity className="w-3.5 h-3.5" />
+                    {profilingId === ex.id ? "Analisi…" : ex.hasProfile ? "Ri-processa" : "Estrai profilo PT"}
                   </Button>
                   <Button
                     size="sm"
