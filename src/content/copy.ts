@@ -103,16 +103,18 @@ export const copy = {
 
   // ── Landing → src/app/page.tsx ──
   landing: {
-    eyebrow: "Personal trainer con intelligenza artificiale",
-    heroTitle: { pre: "Il tuo benessere, guidato con ", highlight: "cura", post: " e precisione." } as HeroTitle,
+    eyebrow: "Il personal trainer AI che vede la tua tecnica",
+    heroTitle: { pre: "L'AI che ", highlight: "vede gli errori", post: " nella tua tecnica prima che ti facciano male." } as HeroTitle,
     heroLead:
-      `${APP_NAME} unisce allenamento intelligente, nutrizione su misura e analisi della forma in tempo reale. Una guida raffinata, calibrata su di te — giorno dopo giorno.`,
-    ctaPrimary: "Inizia il percorso",
-    ctaSecondary: "Scopri come funziona",
+      "Allena con la fotocamera. La nostra AI ti dice esattamente cosa correggere, in tempo reale, in italiano. Piano di allenamento e nutrizione su misura, che si adatta a te ogni giorno.",
+    ctaPrimary: "Calcola il tuo piano gratis",
+    ctaSecondary: "Guarda la demo",
+    ctaMicro: "Gratis. Nessuna carta richiesta. 2 minuti.",
+    privacyBadge: "🔒 Il video è elaborato sul tuo dispositivo. Nessun filmato viene mai salvato o inviato.",
     metrics: [
-      { value: "100%", label: "su misura per te" },
-      { value: "24/7", label: "coach sempre disponibile" },
-      { value: "0–100", label: "punteggio forma oggettivo" },
+      { value: "33", label: "punti del corpo tracciati" },
+      { value: "100%", label: "elaborato sul tuo dispositivo" },
+      { value: "0–100", label: "Form Score oggettivo" },
     ],
     scoreCard: {
       tag: "Analisi biomeccanica",

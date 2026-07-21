@@ -7,7 +7,7 @@ const NAV = copy.marketingHeader.nav;
 
 export function MarketingHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 backdrop-blur-md" style={{ background: "rgba(241,246,237,.82)" }}>
+    <header className="sticky top-0 z-40 border-b border-border/70 backdrop-blur-md" style={{ background: "rgba(244,247,251,.85)" }}>
       <div className="max-w-[1180px] mx-auto px-7 py-5 flex items-center justify-between">
         <OrganicLogo />
 
@@ -32,8 +32,8 @@ export function MarketingHeader() {
           </Link>
           <Link
             href="/registrati"
-            className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(63,174,90,.5)]"
-            style={{ background: "var(--organic-espresso)", color: "var(--organic-cream)" }}
+            className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(233,69,96,.55)]"
+            style={{ background: "var(--organic-terracotta)" }}
           >
             {copy.marketingHeader.signup} <ChevronRight className="w-4 h-4" />
           </Link>

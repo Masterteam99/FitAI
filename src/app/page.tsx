@@ -58,8 +58,8 @@ export default function LandingPage() {
               <div className="flex gap-4 items-center flex-wrap">
                 <Link
                   href="/registrati"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-10px_rgba(63,174,90,.5)]"
-                  style={{ background: "var(--organic-espresso)", color: "var(--organic-cream)" }}
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(233,69,96,.55)]"
+                  style={{ background: "var(--organic-terracotta)" }}
                 >
                   {c.ctaPrimary} <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -70,6 +70,10 @@ export default function LandingPage() {
                   {c.ctaSecondary}
                 </Link>
               </div>
+              <p className="text-xs text-muted-foreground mt-3">{c.ctaMicro}</p>
+              <p className="inline-flex items-center gap-1.5 text-xs mt-4 px-3 py-2 rounded-full" style={{ background: "rgba(15,158,153,.10)", color: "var(--organic-green-deep)" }}>
+                {c.privacyBadge}
+              </p>
             </FadeIn>
             <FadeIn delay={0.25}>
               <div className="flex gap-8 mt-11 pt-7 border-t border-border flex-wrap">
