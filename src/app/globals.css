@@ -55,62 +55,71 @@
   --energy-hot:  oklch(0.62 0.24 25);    /* rosso: intensità alta */
 }
 
-/* ─── Tema organico (landing + superficie marketing) ───────────────────────
-   Rimappa i token Tailwind nel sottoalbero: crema/terracotta/salvia con serif
-   Fraunces come display. Direzione design dir3-organic (design-mockups/). */
+/* ─── Tema Motion Insight (landing + superficie marketing) ─────────────────
+   Palette del brief §5.1: navy #16213E, coral #E94560 (solo azioni),
+   teal #0F9E99, lime #C6F135, neutri chiari. Display geometrico (Sora).
+   I nomi variabile "--organic-*" sono mantenuti per compatibilità con le
+   sezioni esistenti, ma i valori sono rimappati sulla palette Motion Insight. */
 .theme-organic {
-  --background: #f1f6ed;          /* verde-crema */
-  --foreground: #1f2a1e;          /* verde-ink */
-  --card: #f9fcf6;                /* verde-paper */
-  --card-foreground: #1f2a1e;
-  --primary: #3fae5a;             /* verde firma (era terracotta) */
-  --primary-foreground: #f1f6ed;
-  --secondary: #e8f1e2;           /* verde-sabbia */
-  --secondary-foreground: #1f2a1e;
-  --muted: #e8f1e2;
-  --muted-foreground: #5c6857;    /* verde-grigio */
-  --accent: #3fae5a;              /* verde firma */
-  --accent-foreground: #2e3a2c;
-  --border: #d6e3cd;              /* verde-linea */
-  --input: #f9fcf6;
-  --ring: #3fae5a;
-  --font-display: var(--font-fraunces);
+  --background: #f4f7fb;          /* cloud */
+  --foreground: #1b1b1b;          /* ink */
+  --card: #ffffff;
+  --card-foreground: #1b1b1b;
+  --primary: #16213e;            /* navy profondo */
+  --primary-foreground: #ffffff;
+  --secondary: #eaf1f8;
+  --secondary-foreground: #16213e;
+  --muted: #eaf1f8;
+  --muted-foreground: #555555;
+  --accent: #e94560;             /* coral — SOLO azioni/CTA */
+  --accent-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #ffffff;
+  --ring: #e94560;
+  --font-display: var(--font-sora);
 
-  /* palette nominata, per gli accenti che non passano dai token */
-  /* "terracotta" rimappato sul verde firma: switch colore brand (verde dominante) */
-  --organic-terracotta: #3fae5a;
-  --organic-terracotta-soft: #7fd194;
-  --organic-terracotta-deep: #2f8f47;
-  --organic-sage: #8a9a7b;
-  --organic-sage-deep: #5f6f54;
-  --organic-sage-pale: #bcc8ad;
-  --organic-forest: #2e3a2c;
-  --organic-espresso: #18241a;   /* deep green-black (era espresso bruno) */
-  --organic-sand: #e8f1e2;
-  --organic-cream: #f1f6ed;
-  --organic-paper: #f9fcf6;
-  --organic-line: #d6e3cd;
+  /* Palette Motion Insight rimappata sui nomi "organic" preesistenti */
+  --organic-terracotta: #e94560;       /* coral: azioni/CTA */
+  --organic-terracotta-soft: #f2778b;
+  --organic-terracotta-deep: #c9324b;
+  --organic-sage: #7c89a6;             /* navy-grigio di supporto */
+  --organic-sage-deep: #0f9e99;        /* teal: link/etichette di supporto */
+  --organic-sage-pale: #c3cedf;
+  --organic-forest: #16213e;           /* navy: blocchi scuri */
+  --organic-espresso: #16213e;         /* navy: blocchi/price card scuri */
+  --organic-sand: #eaf1f8;             /* sezioni alternate */
+  --organic-cream: #f4f7fb;
+  --organic-paper: #ffffff;
+  --organic-line: #e2e8f0;
 
-  /* Verde firma del brand (scelta: verde fresco) — identità + dataviz */
-  --organic-green: #3fae5a;
-  --organic-green-deep: #2f8f47;
-  --organic-green-soft: #7fd194;
+  /* Accenti brand: teal per evidenze/link, lime per stati positivi/energia */
+  --organic-green: #0f9e99;            /* teal: highlight titoli, link */
+  --organic-green-deep: #0b7e7a;
+  --organic-green-soft: #c6f135;       /* lime: stati positivi, Form Score alto */
 
   font-family: var(--font-manrope), system-ui, sans-serif;
   background: var(--background);
   color: var(--foreground);
 }
 
-/* Le utility display nel tema organico usano la serif con pesi/spaziature dolci */
+/* Display Motion Insight: sans geometrico (Sora), sportivo/tech, bold e tight */
 .theme-organic .text-hero,
 .theme-organic .text-display-lg,
 .theme-organic .text-display-md,
 .theme-organic .font-display {
-  font-family: var(--font-fraunces), Georgia, serif;
-  letter-spacing: -0.01em;
-  font-weight: 400;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  font-weight: 700;
 }
-.theme-organic .text-display-lg { line-height: 1.05; }
+.theme-organic .text-hero { letter-spacing: -0.045em; }
+.theme-organic .text-display-lg { line-height: 1.03; }
+/* Nelle evidenze <em> dei titoli: niente corsivo, solo colore accento */
+.theme-organic .text-hero em,
+.theme-organic .text-display-lg em,
+.theme-organic .text-display-md em,
+.theme-organic .font-display em {
+  font-style: normal;
+}
 
 /* Gradienti/glow energy riarmonizzati su terracotta/salvia nel tema organico */
 .theme-organic .text-gradient-energy {

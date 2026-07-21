@@ -20,7 +20,7 @@
  */
 
 // ─── Identità del prodotto ───────────────────────────────────────────────────
-export const APP_NAME = "FitAI";
+export const APP_NAME = "Motion Insight";
 export const APP_TAGLINE = "Allenati più intelligente";
 export const APP_DESCRIPTION = "Il tuo personal trainer AI con analisi video in tempo reale";
 /** Descrizione estesa usata nel footer marketing */
@@ -206,7 +206,7 @@ export const copy = {
   comeFunziona: {
     meta: {
       title: `Come funziona — ${APP_NAME}`,
-      description: "Dal profilo al piano AI all'analisi della tecnica: scopri come FitAI ti accompagna in cinque passi.",
+      description: "Dal profilo al piano AI all'analisi della tecnica: scopri come Motion Insight ti accompagna in cinque passi.",
     },
     heroTitle: { pre: "Come ", highlight: "funziona" } as HeroTitle,
     heroSubtitle: "Dal primo accesso al miglioramento misurabile: cinque passi semplici, guidati dall'intelligenza artificiale.",
