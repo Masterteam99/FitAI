@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Brain, Camera, ChevronRight, Check, Heart } from "lucide-react";
+import { Brain, Camera, ChevronRight, Check, Heart, ShieldAlert, TrendingDown, Wallet } from "lucide-react";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
@@ -8,7 +8,8 @@ import { FadeIn, SlideUp, ScrollReveal, ScrollStagger, StaggerItem, CountUp } fr
 import { AnimatedArea, AnimatedRing, ExerciseFormPlayer, AdaptiveBodyMap, ScrollExplainer } from "@/components/wow";
 import { copy } from "@/content/copy";
 
-const PILLAR_ICONS = [Brain, Camera, Heart];
+const PILLAR_ICONS = [Camera, Brain, Heart];
+const PROBLEM_ICONS = [ShieldAlert, TrendingDown, Wallet];
 const PILLAR_TONES = [
   { bg: "rgba(63,174,90,.13)", color: "var(--organic-terracotta)" },
   { bg: "rgba(138,154,123,.18)", color: "var(--organic-sage-deep)" },
@@ -89,6 +90,35 @@ export default function LandingPage() {
           <FadeIn delay={0.2}>
             <OrganicHeroVisual />
           </FadeIn>
+        </div>
+      </section>
+
+      {/* Blocco 3 — Il problema (empatia) */}
+      <section className="relative z-[2] py-24">
+        <div className="max-w-[1180px] mx-auto px-7">
+          <div className="max-w-[700px] mb-12">
+            <Eyebrow>{c.problemEyebrow}</Eyebrow>
+            <h2 className="text-display-lg !text-[clamp(2.1rem,3.8vw,3.1rem)]">
+              {c.problemTitle.pre}<em style={{ color: "var(--organic-green)" }}>{c.problemTitle.highlight}</em>{c.problemTitle.post}
+            </h2>
+          </div>
+          <ScrollStagger className="grid md:grid-cols-3 gap-6">
+            {c.problems.map((p, i) => {
+              const Icon = PROBLEM_ICONS[i];
+              return (
+                <StaggerItem key={p.title}>
+                  <div className="bg-card border border-border rounded-[22px] p-8 h-full">
+                    <div className="w-12 h-12 rounded-xl grid place-items-center mb-5" style={{ background: "rgba(233,69,96,.10)", color: "var(--organic-terracotta)" }}>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-display text-xl mb-2">{p.title}</h3>
+                    <p className="text-muted-foreground text-[0.95rem]">{p.desc}</p>
+                  </div>
+                </StaggerItem>
+              );
+            })}
+          </ScrollStagger>
+          <p className="font-display text-2xl mt-12 text-center" style={{ color: "var(--organic-espresso)" }}>{c.problemClose}</p>
         </div>
       </section>
 
@@ -313,6 +343,41 @@ export default function LandingPage() {
                 </Link>
               </div>
             </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Blocco 8 — CTA finale + FAQ rapida */}
+      <section className="relative z-[2] py-24">
+        <div className="max-w-[1180px] mx-auto px-7">
+          <div className="relative overflow-hidden rounded-[36px] p-10 md:p-16 text-center" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
+            <div className="organic-blob w-[420px] h-[420px] -top-40 -right-32 opacity-[.30]" style={{ background: "var(--organic-terracotta)" }} />
+            <div className="relative z-[2] max-w-[640px] mx-auto">
+              <h2 className="font-display text-[clamp(2rem,3.4vw,2.8rem)] leading-tight mb-4" style={{ color: "var(--organic-sand)" }}>
+                {c.finalTitle.pre}<em style={{ color: "var(--organic-green-soft)" }}>{c.finalTitle.highlight}</em>{c.finalTitle.post}
+              </h2>
+              <p className="mb-8 text-[1.05rem]" style={{ color: "rgba(232,241,226,.74)" }}>{c.finalSubtitle}</p>
+              <Link
+                href="/registrati"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(233,69,96,.55)]"
+                style={{ background: "var(--organic-terracotta)" }}
+              >
+                {c.finalCta} <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 mt-10">
+            {c.faqQuick.map((f) => (
+              <div key={f.q} className="bg-card border border-border rounded-[20px] p-6 h-full">
+                <h3 className="font-semibold mb-2 text-[0.98rem]">{f.q}</h3>
+                <p className="text-muted-foreground text-sm">{f.a}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/faq" className="inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: "var(--organic-green-deep)" }}>
+              Vedi tutte le domande <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
