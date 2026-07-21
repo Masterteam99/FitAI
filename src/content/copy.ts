@@ -46,6 +46,8 @@ export const copy = {
       { href: "/funzionalita", label: "Funzionalità" },
       { href: "/per-chi", label: "Per chi" },
       { href: "/prezzi", label: "Prezzi" },
+      { href: "/storie", label: "Storie" },
+      { href: "/risorse", label: "Risorse" },
       { href: "/chi-siamo", label: "Chi siamo" },
       { href: "/faq", label: "FAQ" },
     ],
@@ -324,6 +326,39 @@ export const copy = {
     ],
     ctaTitle: "Unisciti a noi",
     ctaSubtitle: `Inizia il tuo percorso con ${APP_NAME}, gratis.`,
+    ctaButton: "Calcola il tuo piano gratis",
+  },
+
+  // ── /storie → src/app/(marketing)/storie/page.tsx ──
+  storie: {
+    meta: {
+      title: `Storie`,
+      description: "Le storie di chi si allena con Motion Insight: risultati reali, tecnica corretta, infortuni evitati. In arrivo.",
+    },
+    heroTitle: { pre: "Storie ", highlight: "vere" } as HeroTitle,
+    heroSubtitle: "Stiamo raccogliendo le prime testimonianze dai nostri beta tester: persone reali, risultati concreti sul Form Score e sulla tecnica.",
+    comingSoonTag: "In arrivo",
+    comingSoonTitle: "Le prime storie stanno arrivando",
+    comingSoonText: "Preferiamo mostrarti testimonianze autentiche piuttosto che frasi inventate. Le stiamo raccogliendo ora — con nome, città e risultato reale, e con il consenso di chi le condivide.",
+    ctaTitle: "Vuoi essere tra i primi?",
+    ctaSubtitle: "Prova Motion Insight e raccontaci com'è andata: le storie migliori finiranno qui.",
+    ctaButton: "Inizia gratis",
+  },
+
+  // ── /risorse → src/app/(marketing)/risorse/page.tsx ──
+  risorse: {
+    meta: {
+      title: `Risorse`,
+      description: "Guide pratiche su tecnica, allenamento, nutrizione e prevenzione infortuni. Impara a muoverti meglio con Motion Insight.",
+    },
+    heroTitle: { pre: "Guide per ", highlight: "muoverti meglio" } as HeroTitle,
+    heroSubtitle: "Tecnica, allenamento, nutrizione e prevenzione: articoli pratici per allenarti in sicurezza e con risultati.",
+    allLabel: "Tutti",
+    readingSuffix: "min di lettura",
+    emptyCategory: "Presto altri articoli in questa categoria.",
+    backToList: "Tutte le risorse",
+    ctaTitle: "Metti in pratica quello che hai letto",
+    ctaSubtitle: "Motion Insight ti corregge mentre ti alleni. Provalo gratis.",
     ctaButton: "Calcola il tuo piano gratis",
   },
 
