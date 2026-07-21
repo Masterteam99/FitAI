@@ -42,14 +42,15 @@ export const copy = {
   // ── Header marketing → src/components/marketing/MarketingHeader.tsx ──
   marketingHeader: {
     nav: [
-      { href: "/funzionalita", label: "Funzionalità" },
       { href: "/come-funziona", label: "Come funziona" },
+      { href: "/funzionalita", label: "Funzionalità" },
+      { href: "/per-chi", label: "Per chi" },
       { href: "/prezzi", label: "Prezzi" },
       { href: "/chi-siamo", label: "Chi siamo" },
       { href: "/faq", label: "FAQ" },
     ],
     login: "Accedi",
-    signup: "Inizia gratis",
+    signup: "Prova Gratis",
   },
 
   // ── Footer marketing → src/components/marketing/MarketingFooter.tsx ──
@@ -194,6 +195,28 @@ export const copy = {
       { q: "I miei video vengono salvati?", a: "No. L'elaborazione avviene sul tuo dispositivo: nessun filmato viene salvato o inviato." },
       { q: "Funziona senza attrezzi, a casa?", a: "Sì. Bastano la fotocamera e lo spazio per muoverti: molti esercizi sono a corpo libero." },
     ],
+  },
+
+  // ── /per-chi → src/app/(marketing)/per-chi/page.tsx ──
+  perChi: {
+    meta: {
+      title: "Per chi è",
+      description: "Runner, allenamento a casa, palestra, post-parto, over 50, rientro da infortunio: trova il tuo percorso con la correzione della forma AI.",
+    },
+    badge: "Per chi è",
+    heroTitle: { pre: "Un percorso per ", highlight: "ogni corpo" } as HeroTitle,
+    heroSubtitle: "Qualunque sia il tuo punto di partenza, Motion Insight guarda come ti muovi e adatta allenamento, tecnica e nutrizione a te.",
+    segments: [
+      { title: "Runner ed endurance", desc: "Previeni gli infortuni da corsa e migliora l'efficienza del gesto: l'AI vede appoggio, postura e simmetria." },
+      { title: "Ti alleni a casa", desc: "Nessun attrezzo necessario: la palestra è il tuo salotto. Correzione della forma anche a corpo libero." },
+      { title: "Vai in palestra", desc: "Perfeziona la tecnica sui pesi e progredisci in sicurezza, con il carico giusto proposto serie dopo serie." },
+      { title: "Neo-mamme (post-parto)", desc: "Rientro graduale e sicuro, con focus su core e pavimento pelvico, ai tuoi ritmi." },
+      { title: "Over 50", desc: "Forza, equilibrio e prevenzione con progressioni su misura e movimenti controllati." },
+      { title: "Rientro da infortunio", desc: "Movimenti progressivi e controllati: l'AI tiene d'occhio i compensi e ti protegge." },
+    ],
+    ctaTitle: "Non sai da dove partire?",
+    ctaSubtitle: "Il quiz di 2 minuti costruisce il percorso giusto per te.",
+    cta: "Calcola il tuo piano gratis",
   },
 
   // ── /funzionalita → src/app/(marketing)/funzionalita/page.tsx ──
