@@ -46,7 +46,7 @@ export async function GET() {
     status: 200,
     headers: {
       "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="fitai-data-${user.email}-${new Date().toISOString().slice(0, 10)}.json"`,
+      "Content-Disposition": `attachment; filename="motion-insight-data-${user.email}-${new Date().toISOString().slice(0, 10)}.json"`,
     },
   });
 }

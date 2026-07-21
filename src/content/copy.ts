@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  FONTE UNICA DEI COPY — FitAI
+ *  FONTE UNICA DEI COPY — Motion Insight
  * ============================================================================
  *
  * Questo file è l'UNICA fonte di verità per tutti i testi dell'app (titoli,
@@ -1406,7 +1406,7 @@ export const copy = {
     backHome: "Home",
     title: "Privacy Policy",
     lastUpdated: "Ultimo aggiornamento: 15 maggio 2026",
-    contactEmail: "privacy@fitai.local",
+    contactEmail: "privacy@motioninsight.local",
     sections: [
       {
         title: "1. Titolare del trattamento",
@@ -1494,7 +1494,7 @@ export const copy = {
       {
         title: "10. Contatti",
         blocks: [
-          { type: "p", text: "Per qualsiasi richiesta relativa alla privacy: ", emailMono: "privacy@fitai.local" },
+          { type: "p", text: "Per qualsiasi richiesta relativa alla privacy: ", emailMono: "privacy@motioninsight.local" },
         ],
       },
     ],
@@ -1506,7 +1506,7 @@ export const copy = {
     backHome: "Home",
     title: "Termini di Servizio",
     lastUpdated: "Ultimo aggiornamento: 15 maggio 2026",
-    contactEmail: "legal@fitai.local",
+    contactEmail: "legal@motioninsight.local",
     sections: [
       {
         title: "1. Accettazione",
@@ -1579,7 +1579,7 @@ export const copy = {
       {
         title: "11. Contatti",
         blocks: [
-          { type: "p", text: "Per domande sui termini: ", emailMono: "legal@fitai.local" },
+          { type: "p", text: "Per domande sui termini: ", emailMono: "legal@motioninsight.local" },
         ],
       },
     ],

@@ -29,7 +29,7 @@ export default function GlobalError({
           padding: "2rem",
         }}
       >
-        <title>Errore critico — FitAI</title>
+        <title>Errore critico — Motion Insight</title>
         <div style={{ maxWidth: 480, textAlign: "center" }}>
           <div
             style={{
