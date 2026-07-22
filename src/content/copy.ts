@@ -91,17 +91,14 @@ export const copy = {
     items: [
       { href: "/dashboard", label: "Dashboard" },
       { href: "/esercizi", label: "Esercizi" },
-      { href: "/allenamento", label: "Allenamento" },
-      { href: "/analisi", label: "Analisi AI" },
-      { href: "/ai-coach", label: "AI Coach" },
-      { href: "/nutrizione", label: "Nutrizione" },
-      { href: "/community", label: "Community" },
+      { href: "/analisi", label: "Analisi forma" },
       { href: "/progressi", label: "Progressi" },
-      { href: "/abbonamento", label: "Abbonamento" },
+      { href: "/nutrizione", label: "Nutrizione" },
     ],
     admin: { href: "/admin/exercises", label: "Admin" },
     profileFallback: "Profilo",
     logout: "Esci",
+    premium: { title: "Premium", desc: "Analisi illimitata e AI Coach 24/7.", cta: "Passa a Premium" },
   },
 
   // ── Landing → src/app/page.tsx ──

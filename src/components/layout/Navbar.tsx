@@ -25,7 +25,7 @@ const ICONS: Record<string, typeof LayoutDashboard> = {
 
 const NAV_ITEMS = copy.navbar.items.map((i) => ({ ...i, icon: ICONS[i.href] }));
 
-export function Navbar({ isAdmin }: { isAdmin: boolean }) {
+export function Navbar({ isAdmin, isPremium = false }: { isAdmin: boolean; isPremium?: boolean }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -70,6 +70,21 @@ export function Navbar({ isAdmin }: { isAdmin: boolean }) {
         </nav>
 
         <div className="p-4 border-t border-border">
+          {!isPremium && (
+            <Link
+              href="/abbonamento"
+              className="block rounded-xl p-4 mb-3 text-white transition-transform hover:-translate-y-0.5"
+              style={{ background: "var(--organic-espresso)" }}
+            >
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide mb-1" style={{ color: "var(--organic-terracotta-soft)" }}>
+                <Sparkles className="w-3.5 h-3.5" /> {copy.navbar.premium.title}
+              </div>
+              <p className="text-xs mb-3" style={{ color: "rgba(234,241,248,.78)" }}>{copy.navbar.premium.desc}</p>
+              <span className="inline-flex items-center justify-center w-full py-2 rounded-lg text-xs font-semibold" style={{ background: "var(--organic-terracotta)" }}>
+                {copy.navbar.premium.cta}
+              </span>
+            </Link>
+          )}
           <Link href="/profilo" className={cn("flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", pathname.startsWith("/profilo") ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary")}>
             <User className="w-5 h-5 shrink-0" />
             {session?.user?.name ?? "Profilo"}
