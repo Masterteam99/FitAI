@@ -43,13 +43,10 @@ export const copy = {
   marketingHeader: {
     nav: [
       { href: "/come-funziona", label: "Come funziona" },
-      { href: "/funzionalita", label: "Funzionalità" },
       { href: "/per-chi", label: "Per chi" },
       { href: "/prezzi", label: "Prezzi" },
       { href: "/storie", label: "Storie" },
       { href: "/risorse", label: "Risorse" },
-      { href: "/chi-siamo", label: "Chi siamo" },
-      { href: "/faq", label: "FAQ" },
     ],
     login: "Accedi",
     signup: "Prova Gratis",
@@ -65,6 +62,7 @@ export const copy = {
           { href: "/funzionalita", label: "Funzionalità" },
           { href: "/come-funziona", label: "Come funziona" },
           { href: "/prezzi", label: "Prezzi" },
+          { href: "/scarica", label: "Scarica l'app" },
         ],
       },
       {
@@ -83,6 +81,7 @@ export const copy = {
       },
     ],
     copyright: `© 2026 ${APP_NAME} — ${APP_TAGLINE}`,
+    piva: "P.IVA da inserire",
     tagline: "Fatto con cura in Italia",
   },
 
@@ -357,6 +356,26 @@ export const copy = {
     ctaTitle: "Metti in pratica quello che hai letto",
     ctaSubtitle: "Motion Insight ti corregge mentre ti alleni. Provalo gratis.",
     ctaButton: "Calcola il tuo piano gratis",
+  },
+
+  // ── /scarica → src/app/(marketing)/scarica/page.tsx ──
+  scarica: {
+    meta: {
+      title: "Scarica l'app",
+      description: "Installa Motion Insight dal browser in 10 secondi. Niente store, niente attese. Funziona anche offline.",
+    },
+    heroTitle: { pre: "Porta Motion Insight ", highlight: "sempre con te" } as HeroTitle,
+    heroSubtitle: "Installa l'app direttamente dal browser, in 10 secondi. Niente store, niente attese.",
+    note: "Funziona come un'app vera: icona in home, schermo intero, anche offline.",
+    installNow: "Installa ora",
+    ios: {
+      title: "iPhone / iPad (Safari)",
+      steps: ["Tocca Condividi ⬆", "Scegli «Aggiungi a Home»", "Apri Motion Insight dall'icona"],
+    },
+    android: {
+      title: "Android (Chrome)",
+      steps: ["Apri il menu ⋮", "Scegli «Installa app»", "Apri Motion Insight dall'icona"],
+    },
   },
 
   // ── /faq → src/app/(marketing)/faq/page.tsx ──

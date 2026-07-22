@@ -35,7 +35,7 @@ export function MarketingFooter() {
         </div>
 
         <div className="pt-6 flex flex-wrap items-center justify-between gap-3" style={{ borderTop: "1px solid rgba(232,241,226,.12)" }}>
-          <span className="text-sm">{copy.marketingFooter.copyright}</span>
+          <span className="text-sm">{copy.marketingFooter.copyright} · {copy.marketingFooter.piva}</span>
           <span
             className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full"
             style={{ background: "rgba(198,241,53,.12)", color: "var(--organic-green-soft)" }}
