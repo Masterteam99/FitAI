@@ -56,7 +56,7 @@ export default function LandingPage() {
             </FadeIn>
             <FadeIn delay={0.16}>
               <div className="flex gap-4 items-center flex-wrap">
-                <Link href="#per-chi" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(233,69,96,.55)]" style={{ background: "var(--organic-terracotta)" }}>
+                <Link href="/onboarding/step1" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(233,69,96,.55)]" style={{ background: "var(--organic-terracotta)" }}>
                   {c.ctaPrimary} <ChevronRight className="w-4 h-4" />
                 </Link>
                 <Link href="/come-funziona" className="inline-flex items-center px-7 py-3.5 rounded-full font-semibold text-sm border border-border hover:border-foreground transition-colors">
@@ -268,7 +268,7 @@ export default function LandingPage() {
                   {c.finalTitle.pre}<em style={{ color: "var(--organic-green-soft)" }}>{c.finalTitle.highlight}</em>{c.finalTitle.post}
                 </h2>
                 <p className="mb-8 text-[1.05rem]" style={{ color: "rgba(234,241,248,.74)" }}>{c.finalSubtitle}</p>
-                <Link href="#per-chi" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(233,69,96,.55)]" style={{ background: "var(--organic-terracotta)" }}>
+                <Link href="/onboarding/step1" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(233,69,96,.55)]" style={{ background: "var(--organic-terracotta)" }}>
                   {c.finalCta} <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
