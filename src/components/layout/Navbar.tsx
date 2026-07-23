@@ -3,63 +3,51 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import {
-  LayoutDashboard, Dumbbell, PlayCircle, Brain, Apple, Users, TrendingUp, User, LogOut, Zap, Menu, X, Sparkles, ShieldCheck,
-} from "lucide-react";
+import { Home, PlayCircle, Apple, TrendingUp, User, LogOut, Sparkles, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { APP_NAME, copy } from "@/content/copy";
 
-const ICONS: Record<string, typeof LayoutDashboard> = {
-  "/dashboard": LayoutDashboard,
-  "/esercizi": Dumbbell,
+const ICONS: Record<string, typeof Home> = {
+  "/dashboard": Home,
   "/allenamento": PlayCircle,
-  "/analisi": Brain,
-  "/ai-coach": Zap,
   "/nutrizione": Apple,
-  "/community": Users,
   "/progressi": TrendingUp,
-  "/abbonamento": Sparkles,
+  "/profilo": User,
 };
 
-const NAV_ITEMS = copy.navbar.items.map((i) => ({ ...i, icon: ICONS[i.href] }));
+const NAV_ITEMS = copy.navbar.items.map((i) => ({ ...i, icon: ICONS[i.href] ?? Home }));
 
 export function Navbar({ isAdmin, isPremium = false }: { isAdmin: boolean; isPremium?: boolean }) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const items = isAdmin
-    ? [...NAV_ITEMS, { ...copy.navbar.admin, icon: ShieldCheck }]
-    : NAV_ITEMS;
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-card border-r border-border fixed left-0 top-0 z-30">
         <div className="p-6 border-b border-border">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Zap className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold text-foreground">{APP_NAME}</span>
+          <Link href="/dashboard" className="flex items-center gap-2.5 font-display text-xl font-bold tracking-tight">
+            <span className="w-9 h-9 rounded-[10px] grid place-items-center" style={{ background: "var(--primary)" }}>
+              <svg viewBox="0 0 36 36" className="w-6 h-6" fill="none" aria-hidden><path d="M8 23c3.2-10 6-10 7-4.5s3.8 5.5 7-6c1.5-5.4 4-5 6-1" stroke="var(--organic-green-soft)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </span>
+            <span>{APP_NAME}</span>
           </Link>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {items.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
-            const active = pathname.startsWith(item.href);
+            const active = isActive(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  active ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 )}
               >
                 <Icon className="w-5 h-5 shrink-0" />
@@ -67,15 +55,23 @@ export function Navbar({ isAdmin, isPremium = false }: { isAdmin: boolean; isPre
               </Link>
             );
           })}
+          {isAdmin && (
+            <Link
+              href={copy.navbar.admin.href}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                isActive("/admin") ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              )}
+            >
+              <ShieldCheck className="w-5 h-5 shrink-0" />
+              {copy.navbar.admin.label}
+            </Link>
+          )}
         </nav>
 
         <div className="p-4 border-t border-border">
           {!isPremium && (
-            <Link
-              href="/abbonamento"
-              className="block rounded-xl p-4 mb-3 text-white transition-transform hover:-translate-y-0.5"
-              style={{ background: "var(--organic-espresso)" }}
-            >
+            <Link href="/abbonamento" className="block rounded-xl p-4 mb-3 text-white transition-transform hover:-translate-y-0.5" style={{ background: "var(--organic-espresso)" }}>
               <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide mb-1" style={{ color: "var(--organic-terracotta-soft)" }}>
                 <Sparkles className="w-3.5 h-3.5" /> {copy.navbar.premium.title}
               </div>
@@ -85,48 +81,50 @@ export function Navbar({ isAdmin, isPremium = false }: { isAdmin: boolean; isPre
               </span>
             </Link>
           )}
-          <Link href="/profilo" className={cn("flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", pathname.startsWith("/profilo") ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary")}>
-            <User className="w-5 h-5 shrink-0" />
-            {session?.user?.name ?? "Profilo"}
-          </Link>
-          <Button variant="ghost" size="sm" className="w-full justify-start gap-3 text-muted-foreground mt-1" onClick={() => signOut({ callbackUrl: "/" })}>
-            <LogOut className="w-5 h-5" />
-            Esci
-          </Button>
+          <div className="flex items-center gap-2 px-1">
+            <div className="w-8 h-8 rounded-full grid place-items-center text-xs font-bold shrink-0" style={{ background: "var(--secondary)", color: "var(--primary)" }}>
+              {(session?.user?.name ?? "U").charAt(0).toUpperCase()}
+            </div>
+            <span className="text-sm truncate flex-1">{session?.user?.name ?? copy.navbar.profileFallback}</span>
+            <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => signOut({ callbackUrl: "/" })} aria-label={copy.navbar.logout}>
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </aside>
 
-      {/* Mobile header */}
+      {/* Mobile top header (solo logo) */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-card border-b border-border px-4 h-14 flex items-center justify-between">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-            <Zap className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-bold">{APP_NAME}</span>
+        <Link href="/dashboard" className="flex items-center gap-2 font-display text-lg font-bold">
+          <span className="w-7 h-7 rounded-lg grid place-items-center" style={{ background: "var(--primary)" }}>
+            <svg viewBox="0 0 36 36" className="w-5 h-5" fill="none" aria-hidden><path d="M8 23c3.2-10 6-10 7-4.5s3.8 5.5 7-6c1.5-5.4 4-5 6-1" stroke="var(--organic-green-soft)" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
+          {APP_NAME}
         </Link>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2">
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        {isAdmin && (
+          <Link href={copy.navbar.admin.href} aria-label={copy.navbar.admin.label} className="text-muted-foreground p-2">
+            <ShieldCheck className="w-5 h-5" />
+          </Link>
+        )}
       </header>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-20 bg-background/95 pt-14">
-          <nav className="p-4 space-y-1">
-            {items.map((item) => {
-              const Icon = item.icon;
-              const active = pathname.startsWith(item.href);
-              return (
-                <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
-                  className={cn("flex items-center gap-3 px-3 py-3 rounded-lg text-base font-medium transition-colors", active ? "bg-primary/15 text-primary" : "text-muted-foreground")}>
-                  <Icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      )}
+      {/* Mobile bottom tab bar (5 tab) */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-card border-t border-border grid grid-cols-5 pb-[env(safe-area-inset-bottom)]">
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn("flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-semibold transition-colors", active ? "text-primary" : "text-muted-foreground")}
+            >
+              <Icon className={cn("w-5 h-5", active && "scale-110 transition-transform")} />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
     </>
   );
 }

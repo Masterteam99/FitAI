@@ -10,6 +10,7 @@ import { Flame, Dumbbell, Brain, Target, Clock, ChevronRight, Plus, Activity } f
 import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DailyMissionCard } from "@/components/dashboard/DailyMissionCard";
 import { FormScoreHero } from "@/components/dashboard/FormScoreHero";
+import { MoodPrompt } from "@/components/dashboard/MoodPrompt";
 import { getDailyMission } from "@/lib/dailyMission";
 import type { FinalReport, L1Result, L2Result, L3Result } from "@/types/analysis";
 import { computeImbalances, muscleLabel } from "@/lib/body-map";
@@ -96,6 +97,10 @@ export default async function DashboardPage() {
               </span>
             )}
           </div>
+        </FadeIn>
+
+        <FadeIn delay={0.03}>
+          <MoodPrompt />
         </FadeIn>
 
         <FadeIn delay={0.04}>

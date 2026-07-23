@@ -1,4 +1,5 @@
 import { FormScoreHero } from "@/components/dashboard/FormScoreHero";
+import { MoodPrompt } from "@/components/dashboard/MoodPrompt";
 import { AnimatedBars, AdaptiveBodyMap } from "@/components/wow";
 import { StreakHeatmap } from "@/components/visualizations/StreakHeatmap";
 
@@ -26,6 +27,9 @@ export default function AnteprimaDashboard() {
             🔥 14 giorni streak
           </span>
         </div>
+
+        {/* Come ti senti oggi? */}
+        <MoodPrompt />
 
         {/* Hero Form Score */}
         <FormScoreHero

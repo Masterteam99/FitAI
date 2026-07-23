@@ -88,11 +88,11 @@ export const copy = {
   // ── Navbar app loggata → src/components/layout/Navbar.tsx ──
   navbar: {
     items: [
-      { href: "/dashboard", label: "Dashboard" },
-      { href: "/esercizi", label: "Esercizi" },
-      { href: "/analisi", label: "Analisi forma" },
-      { href: "/progressi", label: "Progressi" },
+      { href: "/dashboard", label: "Home" },
+      { href: "/allenamento", label: "Allena" },
       { href: "/nutrizione", label: "Nutrizione" },
+      { href: "/progressi", label: "Progressi" },
+      { href: "/profilo", label: "Profilo" },
     ],
     admin: { href: "/admin/exercises", label: "Admin" },
     profileFallback: "Profilo",
