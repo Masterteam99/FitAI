@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Apple, Smartphone } from "lucide-react";
 import { FadeIn, SlideUp } from "@/components/motion/MotionPrimitives";
+import { InstallPwaButton } from "@/components/marketing/InstallPwaButton";
 import { copy } from "@/content/copy";
 
 export const metadata: Metadata = {
@@ -30,6 +31,9 @@ export default function ScaricaPage() {
           <p className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full" style={{ background: "rgba(15,158,153,.10)", color: "var(--organic-green-deep)" }}>
             {c.note}
           </p>
+        </FadeIn>
+        <FadeIn delay={0.28}>
+          <div className="pt-2"><InstallPwaButton /></div>
         </FadeIn>
       </section>
 
