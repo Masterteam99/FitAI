@@ -102,97 +102,98 @@ export const copy = {
 
   // ── Landing → src/app/page.tsx ──
   landing: {
-    eyebrow: "Il personal trainer AI che vede la tua tecnica",
-    heroTitle: { pre: "L'AI che ", highlight: "vede gli errori", post: " nella tua tecnica prima che ti facciano male." } as HeroTitle,
+    // ── 1. HERO ──
+    heroTitle: { pre: "Alleni da solo? Ora hai un ", highlight: "occhio esperto", post: " che ti guarda." } as HeroTitle,
     heroLead:
-      "Allena con la fotocamera. La nostra AI ti dice esattamente cosa correggere, in tempo reale, in italiano. Piano di allenamento e nutrizione su misura, che si adatta a te ogni giorno.",
-    ctaPrimary: "Calcola il tuo piano gratis",
+      "Motion Insight usa la fotocamera per vedere la tua tecnica e correggerti in tempo reale — così migliori davvero, senza farti male.",
+    ctaPrimary: "Trova il tuo percorso",
     ctaSecondary: "Guarda la demo",
-    ctaMicro: "Gratis. Nessuna carta richiesta. 2 minuti.",
-    privacyBadge: "🔒 Il video è elaborato sul tuo dispositivo. Nessun filmato viene mai salvato o inviato.",
-    metrics: [
-      { value: "33", label: "punti del corpo tracciati" },
-      { value: "100%", label: "elaborato sul tuo dispositivo" },
-      { value: "0–100", label: "Form Score oggettivo" },
+    ctaMicro: "Gratis · nessuna carta · 2 minuti",
+    heroBadge: "🔒 Il video resta sul tuo telefono.",
+    trustBadges: ["Nessun attrezzo", "In tempo reale", "In italiano"],
+
+    // ── 2. PER CHI SEI ──
+    segmentsEyebrow: "Per chi è",
+    segmentsTitle: { pre: "Da dove vuoi ", highlight: "partire", post: "?" } as HeroTitle,
+    segmentsSubtitle: "Ogni corpo e ogni obiettivo hanno il loro percorso. Scegli il tuo.",
+    segments: [
+      { title: "Corro", desc: "Migliora la corsa e previeni gli infortuni tipici del runner." },
+      { title: "Mi alleno a casa", desc: "Nessun attrezzo: bastano fotocamera e spazio per muoverti." },
+      { title: "Vado in palestra", desc: "Perfeziona la tecnica sui pesi e progredisci in sicurezza." },
+      { title: "Riparto dopo un infortunio", desc: "Movimenti controllati e progressivi, senza forzare." },
+      { title: "Ho superato i 50", desc: "Forza, equilibrio e mobilità, con i tuoi tempi." },
+      { title: "Torno in forma dopo la gravidanza", desc: "Rientro graduale, core e pavimento pelvico." },
     ],
+
+    // ── 3. TI RICONOSCI? ──
+    painEyebrow: "Ti riconosci?",
+    painTitle: { pre: "Ti suona ", highlight: "familiare", post: "?" } as HeroTitle,
+    painSubtitle: "Non è colpa tua: nessuno ti ha mai detto cosa stavi sbagliando.",
+    pains: [
+      "Faccio gli esercizi ma non sono sicuro di farli bene.",
+      "Ho un fastidio ricorrente a schiena, ginocchia o spalle.",
+      "Mi alleno da mesi ma i risultati non arrivano.",
+      "Un personal trainer costa troppo per seguirmi sempre.",
+    ],
+
+    // ── 4. COME FUNZIONA (i "33 punti" vivono SOLO qui) ──
+    stepsEyebrow: "Come funziona",
+    stepsTitle: { pre: "Dalla fotocamera al ", highlight: "consiglio", post: ", in un attimo." } as HeroTitle,
+    steps: [
+      { num: "01", title: "Inquadra e muoviti", desc: "Basta la fotocamera." },
+      { num: "02", title: "L'AI legge 33 punti del tuo corpo", desc: "Fino a 30 volte al secondo." },
+      { num: "03", title: "Ricevi la correzione", desc: "Angoli, allineamento, profondità." },
+      { num: "04", title: "Il piano si adatta", desc: "Ai tuoi progressi." },
+    ],
+
+    // ── 5. IL TUO FORM SCORE (il Form Score e "+18%" vivono SOLO qui) ──
+    formEyebrow: "Il tuo Form Score",
+    formTitle: { pre: "La qualità dei tuoi movimenti, finalmente ", highlight: "misurabile", post: "." } as HeroTitle,
+    formText:
+      "Non solo peso e ripetizioni: il Form Score ti dà un punteggio oggettivo (0-100) sulla qualità della tua esecuzione, e ti mostra come cresce settimana dopo settimana.",
+    formChartLabel: "Form Score",
+    formChartDelta: "+18% questo mese",
+
+    // ── 6. SICUREZZA & PRIVACY (on-device vive SOLO qui + FAQ) ──
+    privacyEyebrow: "Sicurezza & Privacy",
+    privacyTitle: { pre: "La tua privacy è ", highlight: "sacra", post: ". La tua sicurezza anche." } as HeroTitle,
+    privacyText:
+      "Il video viene elaborato direttamente sul tuo telefono: nessun filmato viene mai salvato o inviato. E ti proponiamo solo esercizi adatti al tuo livello, con progressione graduale.",
+
+    // ── 7. STORIE ──
+    storieTitle: { pre: "Le prime storie stanno ", highlight: "arrivando", post: "." } as HeroTitle,
+    storieText:
+      "Preferiamo mostrarti testimonianze vere — con nome, città e risultato reale — piuttosto che frasi inventate. Le stiamo raccogliendo ora.",
+    storieLink: "Vai alle storie",
+
+    // ── 8. PREZZI (3 piani) ──
+    pricingEyebrow: "Prezzi",
+    pricingTitle: { pre: "Un piano per ", highlight: "ogni obiettivo", post: "." } as HeroTitle,
+    plans: [
+      { name: "Free", amount: "€0", period: "/ per sempre", desc: "Per iniziare e provare la correzione della forma.", features: ["3 piani AI al mese", "5 analisi video al mese", "Libreria esercizi"], cta: "Crea account", featured: false, badge: null as string | null },
+      { name: "Premium", amount: "€9,90", period: "/ mese", desc: "L'esperienza completa, senza limiti.", features: ["Analisi e correzione illimitate", "Piani AI illimitati", "Nutrizione dinamica", "AI Coach 24/7"], cta: "Prova 7 giorni gratis", featured: true, badge: "Più scelto" as string | null },
+      { name: "Annuale", amount: "€79,90", period: "/ anno", desc: "Il massimo risparmio: due mesi in regalo.", features: ["Tutto Premium", "Due mesi gratis", "Priorità supporto"], cta: "Passa all'annuale", featured: false, badge: "−33%" as string | null },
+    ],
+    pricingGuarantee: "Prova 7 giorni gratis · Disdici quando vuoi · Rimborso entro 30 giorni.",
+
+    // ── 9. CTA FINALE (una sola azione) ──
+    finalTitle: { pre: "Pronto a ", highlight: "migliorare davvero", post: "?" } as HeroTitle,
+    finalSubtitle: "Trova il tuo percorso in 2 minuti. Gratis, nessuna carta.",
+    finalCta: "Trova il tuo percorso",
+
+    // Visual hero (riusato da OrganicHeroVisual — non mostra il Form Score)
     scoreCard: {
-      tag: "Analisi biomeccanica",
-      title: "Squat — sessione di oggi",
-      score: 94,
-      scoreLabel: "punteggio",
+      tag: "Tecnica · squat",
+      title: "Ginocchia in avanti",
+      score: 0,
+      scoreLabel: "",
       rows: [
-        { label: "Allineamento ginocchia", value: "Ottimo", chip: true },
-        { label: "Profondità", value: "92%", chip: false },
-        { label: "Rischio infortuni", value: "Basso", chip: true },
-        { label: "Tempo medio rep", value: "2,4s", chip: false },
+        { label: "Allineamento ginocchia", value: "Correggi", chip: true },
+        { label: "Profondità", value: "Ok", chip: false },
+        { label: "Schiena", value: "Neutra", chip: true },
       ],
     },
-    floatCard: { title: "Streak: 14 giorni", sub: "Costanza eccellente" },
-    pillarsEyebrow: "Cosa fa per te",
-    pillarsTitle: { pre: "La ", highlight: "correzione della forma", post: " che nessuna app ti dà." } as HeroTitle,
-    pillarsSubtitle:
-      "Tre strumenti che lavorano insieme: l'AI vede come ti muovi, adatta il tuo allenamento e cura la tua nutrizione — giorno dopo giorno.",
-    pillars: [
-      { title: "Correzione forma in tempo reale", desc: "La fotocamera legge la tua tecnica e ti dice esattamente cosa correggere, mentre ti alleni. È il cuore di Motion Insight." },
-      { title: "Piano di allenamento adattivo", desc: "Generato su obiettivo, livello e attrezzatura. Si ricalcola in base ai tuoi risultati: niente schede statiche." },
-      { title: "Nutrizione dinamica", desc: "Piano su misura sincronizzato con l'allenamento, con sostituzione ingredienti e ricette da ciò che hai in casa." },
-    ],
-    pillarMore: "Scopri",
-    stepsEyebrow: "Come funziona",
-    stepsTitle: { pre: "Dalla fotocamera al ", highlight: "feedback", post: ", in tempo reale." } as HeroTitle,
-    steps: [
-      { num: "01", title: "Riprendi l'esecuzione", desc: "Basta la fotocamera del telefono. Nessun sensore, nessun attrezzo." },
-      { num: "02", title: "L'AI legge 33 punti del corpo", desc: "Analizza la postura fino a 30 volte al secondo, direttamente sul tuo dispositivo." },
-      { num: "03", title: "Ricevi la correzione", desc: "Feedback immediato su cosa sistemare: angoli, allineamento, profondità." },
-      { num: "04", title: "Il piano si adatta", desc: "In base a come vai, il programma successivo si ricalibra su di te." },
-    ],
-    showcaseEyebrow: "Il tuo Form Score",
-    showcaseTitle: { pre: "La qualità dei tuoi movimenti, ", highlight: "misurata", post: " nel tempo." } as HeroTitle,
-    showcaseText:
-      "Non solo peso e ripetizioni: Motion Insight traccia il Form Score — la qualità reale della tua esecuzione — e ti mostra come migliora settimana dopo settimana.",
-    showcaseStats: [
-      { value: 84, label: "Form Score medio" },
-      { value: 33, label: "punti tracciati" },
-      { value: 100, label: "% on-device" },
-    ],
-    showcaseChartLabel: "Form Score",
-    showcaseChartDelta: "+18% questo mese",
-    pricingEyebrow: "Prezzi trasparenti",
-    pricingTitle: { pre: "Inizia gratis. ", highlight: "Cresci", post: " quando vuoi." } as HeroTitle,
-    priceFree: {
-      name: "Free",
-      amount: "€0",
-      period: " / per sempre",
-      desc: "Tutto il necessario per iniziare e provare la correzione della forma.",
-      features: ["3 piani AI al mese", "5 analisi video al mese", "Libreria esercizi e progressi"],
-      cta: "Crea account",
-    },
-    pricePro: {
-      name: "Premium",
-      badge: "Più scelto",
-      amount: "€9,90",
-      period: " / mese",
-      desc: "L'esperienza completa, senza limiti. Prova 7 giorni gratis.",
-      features: ["Correzione forma e analisi illimitate", "Piani AI illimitati e adattivi", "Nutrizione dinamica + Svuota-Frigo", "AI Coach 24/7 e report PDF"],
-      cta: "Prova 7 giorni gratis",
-      yearlyNote: "oppure €79,90/anno (risparmi il 33%)",
-    },
-    problemEyebrow: "Il problema",
-    problemTitle: { pre: "Ti alleni da solo. Ma chi ti dice se ", highlight: "lo stai facendo bene", post: "?" } as HeroTitle,
-    problems: [
-      { title: "Rischi infortuni", desc: "La tecnica sbagliata, ripetuta, prima o poi si paga: ginocchia, schiena, spalle." },
-      { title: "Non vedi risultati", desc: "Ti impegni ma non capisci perché non arrivano: manca un occhio che ti corregga." },
-      { title: "Un PT costa 200-400€/mese", desc: "Seguirti davvero costa. Motion Insight ti dà quello sguardo, sempre con te." },
-    ],
-    problemClose: "Motion Insight risolve tutti e tre.",
-    finalTitle: { pre: "Pronto a vedere ", highlight: "cosa correggere", post: "?" } as HeroTitle,
-    finalSubtitle: "Calcola il tuo piano gratis in 2 minuti. Nessuna carta richiesta.",
-    finalCta: "Calcola il tuo piano gratis",
-    faqQuick: [
-      { q: "L'AI vede davvero cosa faccio?", a: "Sì: traccia 33 punti del corpo dal video e valuta angoli, allineamento e profondità, fase per fase." },
-      { q: "I miei video vengono salvati?", a: "No. L'elaborazione avviene sul tuo dispositivo: nessun filmato viene salvato o inviato." },
-      { q: "Funziona senza attrezzi, a casa?", a: "Sì. Bastano la fotocamera e lo spazio per muoverti: molti esercizi sono a corpo libero." },
-    ],
+    floatCard: { title: "Correzione in tempo reale", sub: "rep 6 · lato sinistro" },
   },
 
   // ── /per-chi → src/app/(marketing)/per-chi/page.tsx ──
