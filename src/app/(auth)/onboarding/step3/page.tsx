@@ -65,7 +65,7 @@ export default function OnboardingStep3() {
       pastInjuries: pastInjuries.trim() ? pastInjuries.split(",").map(i => i.trim()) : [],
       pastSports,
     });
-    router.push("/onboarding/step4");
+    router.push("/onboarding/piano");
   }
 
   function toggleSport(s: string) {

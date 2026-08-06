@@ -1,27 +1,32 @@
 import Link from "next/link";
 import { APP_NAME } from "@/content/copy";
 
-// Logo del tema organico: foglia terracotta + wordmark serif.
+// Logo Motion Insight: mark navy con "onda di movimento" lime + wordmark
+// (prima parola ink, seconda in teal). Split sullo spazio del brand.
 export function OrganicLogo({ dark = false }: { dark?: boolean }) {
+  const [first, ...rest] = APP_NAME.split(" ");
+  const second = rest.join(" ");
   return (
-    <Link href="/" className="flex items-center gap-2.5 font-display text-2xl tracking-tight">
-      <svg className="w-8 h-8" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+    <Link href="/" className="flex items-center gap-2.5 font-display text-xl font-bold tracking-tight">
+      <svg className="w-9 h-9" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="32" height="32" rx="10" fill="var(--primary, #16213e)" />
         <path
-          d="M17 2C9 2 3 9 5 18c1.6 7.2 8 14 12 14s7.4-3.5 11-9c3-4.6 2-15-4-19-2.4-1.6-5-2-7-2z"
-          fill="var(--organic-terracotta, #3fae5a)"
-        />
-        <path
-          d="M11 19c3-1 6-1 9 0M13 13c2.5-.8 5-.8 7 0"
-          stroke={dark ? "#18241a" : "#f1f6ed"}
-          strokeWidth="1.7"
+          d="M8 23c3.2-10 6-10 7-4.5s3.8 5.5 7-6c1.5-5.4 4-5 6-1"
+          stroke="var(--organic-green-soft, #c6f135)"
+          strokeWidth="2.6"
           strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
         />
       </svg>
-      <span>
-        {APP_NAME.slice(0, 3)}
-        <span style={{ color: dark ? "var(--organic-terracotta-soft, #7fd194)" : "var(--organic-terracotta, #3fae5a)" }}>
-          {APP_NAME.slice(3)}
-        </span>
+      <span style={{ color: dark ? "#ffffff" : "var(--foreground)" }}>
+        {first}
+        {second && (
+          <span style={{ color: dark ? "var(--organic-green-soft, #c6f135)" : "var(--organic-green, #0f9e99)" }}>
+            {" "}
+            {second}
+          </span>
+        )}
       </span>
     </Link>
   );

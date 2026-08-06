@@ -1,11 +1,11 @@
 {
-  "name": "FitAI — Personal Trainer AI",
-  "short_name": "FitAI",
-  "description": "Allenati con piani personalizzati dall'AI e analisi real-time della tecnica",
+  "name": "Motion Insight — Personal Trainer AI",
+  "short_name": "Motion Insight",
+  "description": "L'AI che vede la tua tecnica e ti corregge in tempo reale. Piani su misura e Form Score.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#0d1117",
-  "theme_color": "#22c55e",
+  "background_color": "#16213E",
+  "theme_color": "#16213E",
   "orientation": "portrait",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
@@ -14,8 +14,8 @@
   "categories": ["health", "fitness", "sports"],
   "lang": "it",
   "shortcuts": [
-    { "name": "Dashboard", "url": "/dashboard", "description": "Vai alla dashboard" },
-    { "name": "Analisi AI", "url": "/analisi", "description": "Avvia analisi esercizio" },
-    { "name": "AI Coach", "url": "/ai-coach", "description": "Parla con il coach AI" }
+    { "name": "Home", "url": "/dashboard", "description": "Vai alla Home" },
+    { "name": "Analisi forma", "url": "/analisi", "description": "Avvia l'analisi della forma" },
+    { "name": "Progressi", "url": "/progressi", "description": "Vedi i tuoi progressi" }
   ]
 }

@@ -4,7 +4,7 @@ import { SITE_URL } from "@/lib/site-url";
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "FitAI",
+  name: "Motion Insight",
   url: SITE_URL,
   description: copy.layout.meta.description,
 };

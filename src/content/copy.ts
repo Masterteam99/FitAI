@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  FONTE UNICA DEI COPY — FitAI
+ *  FONTE UNICA DEI COPY — Motion Insight
  * ============================================================================
  *
  * Questo file è l'UNICA fonte di verità per tutti i testi dell'app (titoli,
@@ -20,7 +20,7 @@
  */
 
 // ─── Identità del prodotto ───────────────────────────────────────────────────
-export const APP_NAME = "FitAI";
+export const APP_NAME = "Motion Insight";
 export const APP_TAGLINE = "Allenati più intelligente";
 export const APP_DESCRIPTION = "Il tuo personal trainer AI con analisi video in tempo reale";
 /** Descrizione estesa usata nel footer marketing */
@@ -42,14 +42,14 @@ export const copy = {
   // ── Header marketing → src/components/marketing/MarketingHeader.tsx ──
   marketingHeader: {
     nav: [
-      { href: "/funzionalita", label: "Funzionalità" },
       { href: "/come-funziona", label: "Come funziona" },
+      { href: "/per-chi", label: "Per chi" },
       { href: "/prezzi", label: "Prezzi" },
-      { href: "/chi-siamo", label: "Chi siamo" },
-      { href: "/faq", label: "FAQ" },
+      { href: "/storie", label: "Storie" },
+      { href: "/risorse", label: "Risorse" },
     ],
     login: "Accedi",
-    signup: "Inizia gratis",
+    signup: "Prova Gratis",
   },
 
   // ── Footer marketing → src/components/marketing/MarketingFooter.tsx ──
@@ -62,6 +62,7 @@ export const copy = {
           { href: "/funzionalita", label: "Funzionalità" },
           { href: "/come-funziona", label: "Come funziona" },
           { href: "/prezzi", label: "Prezzi" },
+          { href: "/scarica", label: "Scarica l'app" },
         ],
       },
       {
@@ -80,232 +81,324 @@ export const copy = {
       },
     ],
     copyright: `© 2026 ${APP_NAME} — ${APP_TAGLINE}`,
+    piva: "P.IVA da inserire",
     tagline: "Fatto con cura in Italia",
   },
 
   // ── Navbar app loggata → src/components/layout/Navbar.tsx ──
   navbar: {
     items: [
-      { href: "/dashboard", label: "Dashboard" },
-      { href: "/esercizi", label: "Esercizi" },
-      { href: "/allenamento", label: "Allenamento" },
-      { href: "/analisi", label: "Analisi AI" },
-      { href: "/ai-coach", label: "AI Coach" },
+      { href: "/dashboard", label: "Home" },
+      { href: "/allenamento", label: "Allena" },
       { href: "/nutrizione", label: "Nutrizione" },
-      { href: "/community", label: "Community" },
       { href: "/progressi", label: "Progressi" },
-      { href: "/abbonamento", label: "Abbonamento" },
+      { href: "/profilo", label: "Profilo" },
     ],
     admin: { href: "/admin/exercises", label: "Admin" },
     profileFallback: "Profilo",
     logout: "Esci",
+    premium: { title: "Premium", desc: "Analisi illimitata e AI Coach 24/7.", cta: "Passa a Premium" },
   },
 
   // ── Landing → src/app/page.tsx ──
   landing: {
-    eyebrow: "Personal trainer con intelligenza artificiale",
-    heroTitle: { pre: "Il tuo benessere, guidato con ", highlight: "cura", post: " e precisione." } as HeroTitle,
+    // ── 1. HERO ──
+    heroTitle: { pre: "Alleni da solo? Ora hai un ", highlight: "occhio esperto", post: " che ti guarda." } as HeroTitle,
     heroLead:
-      `${APP_NAME} unisce allenamento intelligente, nutrizione su misura e analisi della forma in tempo reale. Una guida raffinata, calibrata su di te — giorno dopo giorno.`,
-    ctaPrimary: "Inizia il percorso",
-    ctaSecondary: "Scopri come funziona",
-    metrics: [
-      { value: "100%", label: "su misura per te" },
-      { value: "24/7", label: "coach sempre disponibile" },
-      { value: "0–100", label: "punteggio forma oggettivo" },
+      "Motion Insight usa la fotocamera per vedere la tua tecnica e correggerti in tempo reale — così migliori davvero, senza farti male.",
+    ctaPrimary: "Trova il tuo percorso",
+    ctaSecondary: "Guarda la demo",
+    ctaMicro: "Gratis · nessuna carta · 2 minuti",
+    heroBadge: "🔒 Il video resta sul tuo telefono.",
+    trustBadges: ["Nessun attrezzo", "In tempo reale", "In italiano"],
+
+    // ── 2. PER CHI SEI ──
+    segmentsEyebrow: "Per chi è",
+    segmentsTitle: { pre: "Da dove vuoi ", highlight: "partire", post: "?" } as HeroTitle,
+    segmentsSubtitle: "Ogni corpo e ogni obiettivo hanno il loro percorso. Scegli il tuo.",
+    segments: [
+      { title: "Corro", desc: "Migliora la corsa e previeni gli infortuni tipici del runner." },
+      { title: "Mi alleno a casa", desc: "Nessun attrezzo: bastano fotocamera e spazio per muoverti." },
+      { title: "Vado in palestra", desc: "Perfeziona la tecnica sui pesi e progredisci in sicurezza." },
+      { title: "Riparto dopo un infortunio", desc: "Movimenti controllati e progressivi, senza forzare." },
+      { title: "Ho superato i 50", desc: "Forza, equilibrio e mobilità, con i tuoi tempi." },
+      { title: "Torno in forma dopo la gravidanza", desc: "Rientro graduale, core e pavimento pelvico." },
     ],
+
+    // ── 3. TI RICONOSCI? ──
+    painEyebrow: "Ti riconosci?",
+    painTitle: { pre: "Ti suona ", highlight: "familiare", post: "?" } as HeroTitle,
+    painSubtitle: "Non è colpa tua: nessuno ti ha mai detto cosa stavi sbagliando.",
+    pains: [
+      "Faccio gli esercizi ma non sono sicuro di farli bene.",
+      "Ho un fastidio ricorrente a schiena, ginocchia o spalle.",
+      "Mi alleno da mesi ma i risultati non arrivano.",
+      "Un personal trainer costa troppo per seguirmi sempre.",
+    ],
+
+    // ── 4. COME FUNZIONA (i "33 punti" vivono SOLO qui) ──
+    stepsEyebrow: "Come funziona",
+    stepsTitle: { pre: "Dalla fotocamera al ", highlight: "consiglio", post: ", in un attimo." } as HeroTitle,
+    steps: [
+      { num: "01", title: "Inquadra e muoviti", desc: "Basta la fotocamera." },
+      { num: "02", title: "L'AI legge 33 punti del tuo corpo", desc: "Fino a 30 volte al secondo." },
+      { num: "03", title: "Ricevi la correzione", desc: "Angoli, allineamento, profondità." },
+      { num: "04", title: "Il piano si adatta", desc: "Ai tuoi progressi." },
+    ],
+
+    // ── 5. IL TUO FORM SCORE (il Form Score e "+18%" vivono SOLO qui) ──
+    formEyebrow: "Il tuo Form Score",
+    formTitle: { pre: "La qualità dei tuoi movimenti, finalmente ", highlight: "misurabile", post: "." } as HeroTitle,
+    formText:
+      "Non solo peso e ripetizioni: il Form Score ti dà un punteggio oggettivo (0-100) sulla qualità della tua esecuzione, e ti mostra come cresce settimana dopo settimana.",
+    formChartLabel: "Form Score",
+    formChartDelta: "+18% questo mese",
+
+    // ── 6. SICUREZZA & PRIVACY (on-device vive SOLO qui + FAQ) ──
+    privacyEyebrow: "Sicurezza & Privacy",
+    privacyTitle: { pre: "La tua privacy è ", highlight: "sacra", post: ". La tua sicurezza anche." } as HeroTitle,
+    privacyText:
+      "Il video viene elaborato direttamente sul tuo telefono: nessun filmato viene mai salvato o inviato. E ti proponiamo solo esercizi adatti al tuo livello, con progressione graduale.",
+
+    // ── 7. STORIE ──
+    storieTitle: { pre: "Le prime storie stanno ", highlight: "arrivando", post: "." } as HeroTitle,
+    storieText:
+      "Preferiamo mostrarti testimonianze vere — con nome, città e risultato reale — piuttosto che frasi inventate. Le stiamo raccogliendo ora.",
+    storieLink: "Vai alle storie",
+
+    // ── 8. PREZZI (3 piani) ──
+    pricingEyebrow: "Prezzi",
+    pricingTitle: { pre: "Un piano per ", highlight: "ogni obiettivo", post: "." } as HeroTitle,
+    plans: [
+      { name: "Free", amount: "€0", period: "/ per sempre", desc: "Per iniziare e provare la correzione della forma.", features: ["3 piani AI al mese", "5 analisi video al mese", "Libreria esercizi"], cta: "Crea account", featured: false, badge: null as string | null },
+      { name: "Premium", amount: "€9,90", period: "/ mese", desc: "L'esperienza completa, senza limiti.", features: ["Analisi e correzione illimitate", "Piani AI illimitati", "Nutrizione dinamica", "AI Coach 24/7"], cta: "Prova 7 giorni gratis", featured: true, badge: "Più scelto" as string | null },
+      { name: "Annuale", amount: "€79,90", period: "/ anno", desc: "Il massimo risparmio: due mesi in regalo.", features: ["Tutto Premium", "Due mesi gratis", "Priorità supporto"], cta: "Passa all'annuale", featured: false, badge: "−33%" as string | null },
+    ],
+    pricingGuarantee: "Prova 7 giorni gratis · Disdici quando vuoi · Rimborso entro 30 giorni.",
+
+    // ── 9. CTA FINALE (una sola azione) ──
+    finalTitle: { pre: "Pronto a ", highlight: "migliorare davvero", post: "?" } as HeroTitle,
+    finalSubtitle: "Trova il tuo percorso in 2 minuti. Gratis, nessuna carta.",
+    finalCta: "Trova il tuo percorso",
+
+    // Visual hero (riusato da OrganicHeroVisual — non mostra il Form Score)
     scoreCard: {
-      tag: "Analisi biomeccanica",
-      title: "Squat — sessione di oggi",
-      score: 94,
-      scoreLabel: "punteggio",
+      tag: "Tecnica · squat",
+      title: "Ginocchia in avanti",
+      score: 0,
+      scoreLabel: "",
       rows: [
-        { label: "Allineamento ginocchia", value: "Ottimo", chip: true },
-        { label: "Profondità", value: "92%", chip: false },
-        { label: "Rischio infortuni", value: "Basso", chip: true },
-        { label: "Tempo medio rep", value: "2,4s", chip: false },
+        { label: "Allineamento ginocchia", value: "Correggi", chip: true },
+        { label: "Profondità", value: "Ok", chip: false },
+        { label: "Schiena", value: "Neutra", chip: true },
       ],
     },
-    floatCard: { title: "Streak: 14 giorni", sub: "Costanza eccellente" },
-    pillarsEyebrow: "Cosa trovi dentro",
-    pillarsTitle: { pre: "Tre pilastri, ", highlight: "un solo", post: " percorso." } as HeroTitle,
-    pillarsSubtitle:
-      "Ogni elemento è pensato per integrarsi con gli altri: l'allenamento informa la nutrizione, l'analisi della forma protegge il tuo corpo.",
-    pillars: [
-      { title: "Piani di allenamento IA", desc: "Programmi che si adattano ai tuoi progressi, al recupero e agli obiettivi. Niente schede statiche: un percorso che evolve con te." },
-      { title: "Analisi della forma", desc: "La fotocamera valuta ogni ripetizione: punteggio da 0 a 100, allineamento e rischio infortuni. Correzioni delicate, in tempo reale." },
-      { title: "Nutrizione su misura", desc: "Piani alimentari calibrati su fabbisogno, gusti e abitudini. Equilibrio e gusto, calcolati dall'IA e curati per il benessere." },
-    ],
-    pillarMore: "Esplora",
-    stepsEyebrow: "Come funziona",
-    stepsTitle: { pre: "Quattro passi verso ", highlight: "il tuo equilibrio", post: "." } as HeroTitle,
-    steps: [
-      { num: "01", title: "Raccontati", desc: "Obiettivi, livello, abitudini e disponibilità. L'IA ascolta prima di proporre." },
-      { num: "02", title: "Ricevi il piano", desc: "Allenamento e nutrizione costruiti su misura, pronti dal primo giorno." },
-      { num: "03", title: "Allenati guidato", desc: "La fotocamera analizza la forma e ti corregge con delicatezza, rep dopo rep." },
-      { num: "04", title: "Osserva i progressi", desc: "Grafici, heatmap e mappa corporea raccontano la tua evoluzione." },
-    ],
-    showcaseEyebrow: "Dati che ispirano",
-    showcaseTitle: { pre: "Ogni progresso, reso ", highlight: "bellissimo", post: "." } as HeroTitle,
-    showcaseText:
-      "Visualizzazioni eleganti che trasformano i numeri in motivazione. Volume settimanale, punteggio della forma e costanza — sempre a colpo d'occhio.",
-    showcaseStats: [
-      { value: 91, label: "punteggio forma" },
-      { value: 248, label: "min / settimana" },
-      { value: 37, label: "obiettivi raggiunti" },
-    ],
-    showcaseChartLabel: "Volume di allenamento",
-    showcaseChartDelta: "+18% questo mese",
-    pricingEyebrow: "Prezzi trasparenti",
-    pricingTitle: { pre: "Inizia gratis. ", highlight: "Cresci", post: " quando vuoi." } as HeroTitle,
-    priceFree: {
-      name: "Essenziale",
-      amount: "€0",
-      period: " / per sempre",
-      desc: "Tutto il necessario per iniziare il tuo percorso.",
-      features: ["3 piani AI al mese", "5 analisi video al mese", "Libreria esercizi e progressi"],
-      cta: "Crea account",
+    floatCard: { title: "Correzione in tempo reale", sub: "rep 6 · lato sinistro" },
+  },
+
+  // ── /per-chi → src/app/(marketing)/per-chi/page.tsx ──
+  perChi: {
+    meta: {
+      title: "Per chi è",
+      description: "Runner, allenamento a casa, palestra, post-parto, over 50, rientro da infortunio: trova il tuo percorso con la correzione della forma AI.",
     },
-    pricePro: {
-      name: "Premium",
-      badge: "Più scelto",
-      amount: "€9,99",
-      period: " / mese",
-      desc: "L'esperienza completa, senza limiti.",
-      features: ["Piani IA illimitati e adattivi", "Analisi biomeccanica illimitata", "Nutrizione personalizzata", "AI Coach 24/7 e report PDF"],
-      cta: "Passa a Premium",
-      yearlyNote: "oppure €79/anno (risparmi il 34%)",
-    },
+    badge: "Per chi è",
+    heroTitle: { pre: "Un percorso per ", highlight: "ogni corpo" } as HeroTitle,
+    heroSubtitle: "Qualunque sia il tuo punto di partenza, Motion Insight guarda come ti muovi e adatta allenamento, tecnica e nutrizione a te.",
+    segments: [
+      { title: "Runner ed endurance", desc: "Previeni gli infortuni da corsa e migliora l'efficienza del gesto: l'AI vede appoggio, postura e simmetria." },
+      { title: "Ti alleni a casa", desc: "Nessun attrezzo necessario: la palestra è il tuo salotto. Correzione della forma anche a corpo libero." },
+      { title: "Vai in palestra", desc: "Perfeziona la tecnica sui pesi e progredisci in sicurezza, con il carico giusto proposto serie dopo serie." },
+      { title: "Neo-mamme (post-parto)", desc: "Rientro graduale e sicuro, con focus su core e pavimento pelvico, ai tuoi ritmi." },
+      { title: "Over 50", desc: "Forza, equilibrio e prevenzione con progressioni su misura e movimenti controllati." },
+      { title: "Rientro da infortunio", desc: "Movimenti progressivi e controllati: l'AI tiene d'occhio i compensi e ti protegge." },
+    ],
+    ctaTitle: "Non sai da dove partire?",
+    ctaSubtitle: "Il quiz di 2 minuti costruisce il percorso giusto per te.",
+    cta: "Calcola il tuo piano gratis",
   },
 
   // ── /funzionalita → src/app/(marketing)/funzionalita/page.tsx ──
   funzionalita: {
     meta: {
-      title: `Funzionalità — ${APP_NAME}`,
+      title: `Funzionalità`,
       description: "Piani AI personalizzati, analisi video della tecnica, coach 24/7, nutrizione e gamification. Tutto in un'unica app.",
     },
     badge: "Funzionalità",
-    heroTitle: { pre: "Tutto quello che serve, ", highlight: "un solo posto" } as HeroTitle,
-    heroSubtitle: `${APP_NAME} unisce intelligenza artificiale e computer vision per offrirti l'esperienza di un personal trainer privato, sempre disponibile.`,
+    heroTitle: { pre: "Molto più di una scheda: ", highlight: "un occhio sulla tua tecnica" } as HeroTitle,
+    heroSubtitle: `${APP_NAME} unisce intelligenza artificiale e computer vision per darti quello che nessuna app di schede offre: la correzione della forma, in tempo reale.`,
     features: [
-      { title: "Piani allenamento AI", desc: "Claude compone il tuo piano scegliendo gli esercizi più adatti dal database in base a obiettivo, livello, attrezzatura e storico infortuni." },
-      { title: "Analisi video real-time", desc: "La computer vision di MediaPipe traccia i tuoi movimenti dalla fotocamera e misura gli angoli articolari fotogramma per fotogramma." },
-      { title: "Feedback triplice 50/30/20", desc: "Biomeccanica oggettiva, valutazione dell'AI Expert e confronto con i video dei personal trainer: un giudizio completo sulla tua tecnica." },
-      { title: "Piani nutrizionali AI", desc: "Macro e pasti calibrati su peso, altezza, obiettivo e stile alimentare, generati dall'AI e aggiornabili quando vuoi." },
-      { title: "Progressi e misurazioni", desc: "Sessioni, carichi, peso corporeo e circonferenze tracciati nel tempo con grafici interattivi e trend chiari." },
-      { title: "Gamification", desc: "Achievement, streak giornaliere, punti e sfide per trasformare la costanza in qualcosa di divertente." },
-      { title: "AI Coach 24/7", desc: "Dubbi su tecnica, recupero o alimentazione? Il coach digitale risponde in qualsiasi momento, con il contesto del tuo profilo." },
-      { title: "Libreria esercizi", desc: "Schede dettagliate con muscoli coinvolti, attrezzatura e istruzioni: esplorabili anche senza un piano attivo." },
+      { title: "Correzione forma in tempo reale", desc: "Il differenziale. La fotocamera legge i tuoi movimenti, misura gli angoli e ti dice esattamente cosa correggere mentre ti alleni: overlay, feedback vocale e Form Score." },
+      { title: "Piano di allenamento adattivo", desc: "Generato su obiettivo, livello e attrezzatura, si ricalcola in base ai tuoi risultati. Niente schede statiche uguali per tutti." },
+      { title: "«Come ti senti oggi?»", desc: "Energico, stanco o poco tempo: l'AI adatta il workout del giorno a energia, tempo e dolori, all'istante." },
+      { title: "Feedback vocale in cuffia", desc: "Ti guida ritmo, ripetizioni ed errori senza obbligarti a guardare lo schermo mentre esegui." },
+      { title: "Suggerimento carico progressivo", desc: "A fine serie l'AI propone il peso della successiva, per progredire in sicurezza senza indovinare." },
+      { title: "Nutrizione dinamica", desc: "Piano su misura sincronizzato con l'allenamento, con «Svuota-Frigo» e sostituzione ingredienti a parità di macro." },
+      { title: "Registro progressi + Form Score", desc: "Non solo peso e ripetizioni: la qualità reale della tua esecuzione, misurata e tracciata nel tempo." },
+      { title: "AI Coach contestuale", desc: "Risponde con il contesto dei tuoi dati: sostituzioni, dolori, scelte al ristorante. In arrivo." },
     ],
     ctaTitle: "Provalo gratis, oggi",
-    ctaSubtitle: "Crea il tuo profilo e genera il primo piano in pochi minuti.",
-    ctaButton: "Inizia gratis",
+    ctaSubtitle: "Calcola il tuo piano e prova la correzione della forma in pochi minuti.",
+    ctaButton: "Calcola il tuo piano gratis",
   },
 
   // ── /come-funziona → src/app/(marketing)/come-funziona/page.tsx ──
   comeFunziona: {
     meta: {
-      title: `Come funziona — ${APP_NAME}`,
-      description: "Dal profilo al piano AI all'analisi della tecnica: scopri come FitAI ti accompagna in cinque passi.",
+      title: `Come funziona`,
+      description: "Dal profilo al piano AI all'analisi della tecnica: scopri come Motion Insight ti accompagna in cinque passi.",
     },
-    heroTitle: { pre: "Come ", highlight: "funziona" } as HeroTitle,
-    heroSubtitle: "Dal primo accesso al miglioramento misurabile: cinque passi semplici, guidati dall'intelligenza artificiale.",
+    heroTitle: { pre: "Come l'AI ", highlight: "vede la tua tecnica" } as HeroTitle,
+    heroSubtitle: "Nessuna magia e nessun sensore: solo la fotocamera del tuo telefono e un'analisi che avviene sul tuo dispositivo. Ecco cosa succede, passo per passo.",
     stepLabel: "Passo",
     steps: [
-      { title: "Crea il tuo profilo", desc: "Registrati e rispondi a poche domande: obiettivo, livello, attrezzatura disponibile, dati fisici e storico sportivo." },
-      { title: "Imposta le preferenze", desc: "Indica quanti giorni a settimana ti alleni, lo stile alimentare ed eventuali problematiche fisiche da tenere in considerazione." },
-      { title: "L'AI genera il piano", desc: "Claude analizza il tuo profilo e compone allenamento e nutrizione scegliendo gli esercizi più rilevanti dal database, evitando quelli controindicati." },
-      { title: "Allenati e filma la tecnica", desc: "Durante la sessione attivi la fotocamera: la computer vision misura i tuoi movimenti e ti dà feedback su postura ed esecuzione." },
-      { title: "Monitora i progressi", desc: "Sessioni, carichi e misurazioni vengono tracciati nel tempo. Il coach AI adatta i consigli mano a mano che migliori." },
+      { title: "Riprendi la tua esecuzione", desc: "Attivi la fotocamera e ti alleni. Nessun attrezzo, nessun wearable: basta inquadrare il movimento." },
+      { title: "L'AI legge 33 punti del corpo", desc: "La computer vision traccia la tua postura fino a 30 volte al secondo e misura angoli, allineamento, profondità e simmetria." },
+      { title: "Ricevi il feedback immediato", desc: "Ti dice esattamente cosa correggere — «ginocchia in linea», «schiena troppo inclinata» — con un Form Score oggettivo da 0 a 100." },
+      { title: "Il piano si adatta a te", desc: "In base a come vai, come ti senti e quanto tempo hai, il programma successivo si ricalibra automaticamente." },
+      { title: "La tua privacy resta tua", desc: "Il video è elaborato sul tuo dispositivo: nessun filmato viene mai salvato o inviato. Conforme al GDPR." },
     ],
-    ctaTitle: "Pronto a iniziare?",
-    ctaButton: "Crea account gratuito",
+    ctaTitle: "Pronto a vedere cosa correggere?",
+    ctaButton: "Calcola il tuo piano gratis",
   },
 
   // ── /prezzi → src/app/(marketing)/prezzi/page.tsx ──
   prezzi: {
     meta: {
-      title: `Prezzi — ${APP_NAME}`,
-      description: "Inizia gratis con piani AI, analisi video e nutrizione. Passa a Premium per uso illimitato a €9,99 al mese.",
+      title: `Prezzi`,
+      description: "Inizia gratis con piani AI, correzione della forma e nutrizione. Passa a Premium a €9,90 al mese, con prova di 7 giorni gratis.",
     },
     heroTitle: { pre: "Un piano per ", highlight: "ogni obiettivo" } as HeroTitle,
-    heroSubtitle: "Inizia gratis e passa a Premium quando vuoi più potenza. Nessun vincolo, disdici quando vuoi.",
+    heroSubtitle: "Inizia gratis e passa a Premium quando vuoi. Prova 7 giorni gratis, disdici quando vuoi, soddisfatto o rimborsato entro 30 giorni.",
     free: {
       name: "Free",
-      tagline: "Per iniziare ad allenarti con l'AI",
+      tagline: "Per iniziare e provare la correzione della forma",
       price: "€0",
       period: "/ per sempre",
       features: [
         "3 piani di allenamento AI al mese",
         "1 piano nutrizionale AI al mese",
-        "5 analisi video della tecnica al mese",
+        "5 analisi della forma al mese",
         "Libreria esercizi completa",
-        "Tracciamento progressi e gamification",
+        "Tracciamento progressi e Form Score",
       ],
       cta: "Inizia gratis",
     },
     premium: {
       name: "Premium",
-      tagline: "Uso illimitato, risultati senza freni",
-      badge: "Consigliato",
-      price: "€9,99",
+      tagline: "Correzione e adattamento senza limiti",
+      badge: "Più scelto",
+      price: "€9,90",
       period: "/ al mese",
-      yearlyNote: "oppure €79 all'anno (risparmi il 34%)",
+      yearlyNote: "oppure €79,90 all'anno (risparmi il 33%)",
       features: [
-        "Piani di allenamento AI illimitati",
-        "Piani nutrizionali AI illimitati",
-        "Analisi video illimitate",
-        "Coach AI 24/7 senza limiti",
+        "Correzione forma e analisi illimitate",
+        "Piani di allenamento AI illimitati e adattivi",
+        "Nutrizione dinamica + «Svuota-Frigo»",
+        "AI Coach 24/7 con il contesto dei tuoi dati",
         "Storico completo e statistiche avanzate",
         "Supporto prioritario",
       ],
-      cta: "Passa a Premium",
+      cta: "Prova 7 giorni gratis",
     },
-    footnote: "Tutti i limiti del piano Free si azzerano all'inizio di ogni mese. Puoi aggiornare o disdire l'abbonamento in qualsiasi momento dal tuo profilo.",
+    footnote: "Prova Premium 7 giorni gratis. I limiti del piano Free si azzerano ogni mese. Disdici o cambia piano quando vuoi dal profilo; soddisfatto o rimborsato entro 30 giorni.",
   },
 
   // ── /chi-siamo → src/app/(marketing)/chi-siamo/page.tsx ──
   chiSiamo: {
     meta: {
-      title: `Chi siamo — ${APP_NAME}`,
+      title: `Chi siamo`,
       description: "La nostra missione: rendere l'allenamento personalizzato e sicuro accessibile a tutti grazie all'intelligenza artificiale.",
     },
-    heroTitle: { pre: "Allenamento intelligente, ", highlight: "per tutti" } as HeroTitle,
-    heroSubtitle: `${APP_NAME} nasce da un'idea semplice: la guida di un personal trainer esperto non dovrebbe dipendere dal budget o dalla città in cui vivi.`,
+    heroTitle: { pre: "Il personal trainer AI ", highlight: "che vede gli errori" } as HeroTitle,
+    heroSubtitle: `${APP_NAME} nasce da un'idea semplice: chi si allena da solo non dovrebbe farsi male per una tecnica sbagliata solo perché non ha un occhio esperto accanto.`,
     intro: [
-      "Abbiamo unito l'intelligenza artificiale e la computer vision per ricreare l'esperienza di un allenatore privato: un piano costruito su misura, un occhio attento sulla tua tecnica e un coach pronto a rispondere a ogni domanda.",
-      "Non vendiamo programmi preconfezionati uguali per tutti. Ogni piano viene composto a partire dal tuo profilo — obiettivi, livello, attrezzatura e storico — scegliendo gli esercizi più adatti e scartando quelli rischiosi per te.",
+      "Abbiamo unito intelligenza artificiale e computer vision per dare a chiunque quello sguardo: la fotocamera legge come ti muovi e ti dice esattamente cosa correggere, in tempo reale, in italiano — senza sensori e senza mandare via i tuoi video.",
+      "Non vendiamo schede preconfezionate uguali per tutti. Ogni piano parte dal tuo profilo — obiettivi, livello, attrezzatura e storico — e si adatta ai tuoi risultati, giorno dopo giorno.",
     ],
     values: [
-      { title: "Allenamento per tutti", desc: "Un personal trainer privato è un lusso. Vogliamo offrire la stessa qualità di guida a chiunque, ovunque." },
-      { title: "Sicurezza prima di tutto", desc: "I nostri piani considerano infortuni e controindicazioni, e l'analisi della tecnica aiuta a prevenire errori che fanno male." },
-      { title: "Tecnologia trasparente", desc: "Combiniamo l'AI di Claude e la computer vision di MediaPipe, spiegandoti sempre il perché di ogni consiglio." },
+      { title: "Vedere per prevenire", desc: "La tecnica sbagliata, ripetuta, fa male. Il nostro scopo è mostrartela e correggerla prima che diventi un infortunio." },
+      { title: "La tua privacy è sacra", desc: "Il video è elaborato sul tuo dispositivo: nessun filmato viene salvato o inviato. Conforme al GDPR, per scelta." },
+      { title: "Concreto, non tecnicismi", desc: "Niente «rete neurale» o «algoritmo proprietario»: ti diciamo cosa correggere e perché, in un italiano chiaro." },
     ],
     ctaTitle: "Unisciti a noi",
     ctaSubtitle: `Inizia il tuo percorso con ${APP_NAME}, gratis.`,
+    ctaButton: "Calcola il tuo piano gratis",
+  },
+
+  // ── /storie → src/app/(marketing)/storie/page.tsx ──
+  storie: {
+    meta: {
+      title: `Storie`,
+      description: "Le storie di chi si allena con Motion Insight: risultati reali, tecnica corretta, infortuni evitati. In arrivo.",
+    },
+    heroTitle: { pre: "Storie ", highlight: "vere" } as HeroTitle,
+    heroSubtitle: "Stiamo raccogliendo le prime testimonianze dai nostri beta tester: persone reali, risultati concreti sul Form Score e sulla tecnica.",
+    comingSoonTag: "In arrivo",
+    comingSoonTitle: "Le prime storie stanno arrivando",
+    comingSoonText: "Preferiamo mostrarti testimonianze autentiche piuttosto che frasi inventate. Le stiamo raccogliendo ora — con nome, città e risultato reale, e con il consenso di chi le condivide.",
+    ctaTitle: "Vuoi essere tra i primi?",
+    ctaSubtitle: "Prova Motion Insight e raccontaci com'è andata: le storie migliori finiranno qui.",
     ctaButton: "Inizia gratis",
+  },
+
+  // ── /risorse → src/app/(marketing)/risorse/page.tsx ──
+  risorse: {
+    meta: {
+      title: `Risorse`,
+      description: "Guide pratiche su tecnica, allenamento, nutrizione e prevenzione infortuni. Impara a muoverti meglio con Motion Insight.",
+    },
+    heroTitle: { pre: "Guide per ", highlight: "muoverti meglio" } as HeroTitle,
+    heroSubtitle: "Tecnica, allenamento, nutrizione e prevenzione: articoli pratici per allenarti in sicurezza e con risultati.",
+    allLabel: "Tutti",
+    readingSuffix: "min di lettura",
+    emptyCategory: "Presto altri articoli in questa categoria.",
+    backToList: "Tutte le risorse",
+    ctaTitle: "Metti in pratica quello che hai letto",
+    ctaSubtitle: "Motion Insight ti corregge mentre ti alleni. Provalo gratis.",
+    ctaButton: "Calcola il tuo piano gratis",
+  },
+
+  // ── /scarica → src/app/(marketing)/scarica/page.tsx ──
+  scarica: {
+    meta: {
+      title: "Scarica l'app",
+      description: "Installa Motion Insight dal browser in 10 secondi. Niente store, niente attese. Funziona anche offline.",
+    },
+    heroTitle: { pre: "Porta Motion Insight ", highlight: "sempre con te" } as HeroTitle,
+    heroSubtitle: "Installa l'app direttamente dal browser, in 10 secondi. Niente store, niente attese.",
+    note: "Funziona come un'app vera: icona in home, schermo intero, anche offline.",
+    installNow: "Installa ora",
+    ios: {
+      title: "iPhone / iPad (Safari)",
+      steps: ["Tocca Condividi ⬆", "Scegli «Aggiungi a Home»", "Apri Motion Insight dall'icona"],
+    },
+    android: {
+      title: "Android (Chrome)",
+      steps: ["Apri il menu ⋮", "Scegli «Installa app»", "Apri Motion Insight dall'icona"],
+    },
   },
 
   // ── /faq → src/app/(marketing)/faq/page.tsx ──
   faq: {
     meta: {
-      title: `FAQ — ${APP_NAME}`,
+      title: `FAQ`,
       description: "Risposte alle domande più frequenti su piani AI, analisi video, abbonamenti e privacy.",
     },
     heroTitle: { pre: "Domande ", highlight: "frequenti" } as HeroTitle,
-    heroSubtitle: "Tutto quello che c'è da sapere prima di iniziare.",
+    heroSubtitle: "Privacy, fotocamera, funzionamento: tutto quello che c'è da sapere prima di iniziare.",
     faqs: [
-      { q: `${APP_NAME} è davvero gratis?`, a: "Sì. Il piano Free include 3 piani di allenamento AI, 1 piano nutrizionale e 5 analisi video al mese, oltre alla libreria esercizi completa. Passi a Premium solo se ti serve uso illimitato." },
-      { q: "Come vengono creati i piani di allenamento?", a: "L'AI di Claude analizza il tuo profilo — obiettivo, livello, attrezzatura, giorni disponibili e storico infortuni — e compone il piano scegliendo gli esercizi più adatti dal nostro database, escludendo quelli controindicati." },
-      { q: "Cosa serve per l'analisi video?", a: "Solo la fotocamera del tuo dispositivo. La computer vision di MediaPipe elabora i movimenti in tempo reale per misurare gli angoli articolari e darti feedback su postura ed esecuzione." },
-      { q: "Ho bisogno di attrezzatura in palestra?", a: "No. Durante la configurazione indichi cosa hai a disposizione, anche solo il peso corporeo: i piani vengono adattati di conseguenza." },
-      { q: "Posso usare l'app senza generare subito un piano?", a: "Certo. Puoi saltare l'onboarding e la generazione del piano in qualsiasi momento e continuare a esplorare gli esercizi e le altre sezioni dell'app." },
-      { q: "Posso disdire Premium quando voglio?", a: "Sì, l'abbonamento si disdice in qualsiasi momento dal tuo profilo e resta attivo fino alla fine del periodo già pagato." },
-      { q: "I miei dati sono al sicuro?", a: "Trattiamo i tuoi dati con cura e li usiamo solo per personalizzare la tua esperienza di allenamento. L'analisi video avviene per fornirti feedback, non per scopi pubblicitari." },
+      { q: "L'AI vede davvero cosa faccio?", a: "Sì. Dal video la computer vision traccia 33 punti del tuo corpo e misura angoli, allineamento, profondità e simmetria, fase per fase. Poi ti dice esattamente cosa correggere, con un Form Score da 0 a 100." },
+      { q: "I miei video vengono salvati o inviati?", a: "No. L'elaborazione avviene sul tuo dispositivo: nessun filmato viene mai salvato o inviato ai nostri server. È il nostro principio, ed è conforme al GDPR." },
+      { q: "Funziona senza attrezzi, a casa?", a: "Sì. Durante la configurazione indichi cosa hai a disposizione, anche solo il peso corporeo: i piani e l'analisi si adattano di conseguenza." },
+      { q: "Serve un telefono potente?", a: "No. Basta uno smartphone recente con una fotocamera e spazio per muoverti. L'analisi è ottimizzata per girare fluida sul dispositivo." },
+      { q: "Posso usarlo se sono principiante assoluto?", a: "Assolutamente. I piani partono dal tuo livello e la correzione della forma è pensata proprio per chi vuole imparare la tecnica giusta fin dall'inizio." },
+      { q: "Come disdico l'abbonamento?", a: "In qualsiasi momento dal tuo profilo. L'abbonamento resta attivo fino alla fine del periodo già pagato; con la prova di 7 giorni non ti viene addebitato nulla se disdici prima." },
+      { q: "Motion Insight sostituisce un medico o un fisioterapista?", a: "No. È uno strumento di supporto all'allenamento: ti aiuta a migliorare la tecnica e a ridurre gli errori, ma non fornisce diagnosi né terapie. In caso di dolore o patologie, consulta un professionista sanitario." },
     ],
     ctaTitle: "Hai ancora dubbi?",
     ctaSubtitle: `Il modo migliore per capire ${APP_NAME} è provarlo.`,
-    ctaButton: "Inizia gratis",
+    ctaButton: "Calcola il tuo piano gratis",
   },
 
   // ── /login → src/app/(auth)/login/page.tsx ──
@@ -1365,7 +1458,7 @@ export const copy = {
     backHome: "Home",
     title: "Privacy Policy",
     lastUpdated: "Ultimo aggiornamento: 15 maggio 2026",
-    contactEmail: "privacy@fitai.local",
+    contactEmail: "privacy@motioninsight.local",
     sections: [
       {
         title: "1. Titolare del trattamento",
@@ -1453,7 +1546,7 @@ export const copy = {
       {
         title: "10. Contatti",
         blocks: [
-          { type: "p", text: "Per qualsiasi richiesta relativa alla privacy: ", emailMono: "privacy@fitai.local" },
+          { type: "p", text: "Per qualsiasi richiesta relativa alla privacy: ", emailMono: "privacy@motioninsight.local" },
         ],
       },
     ],
@@ -1465,7 +1558,7 @@ export const copy = {
     backHome: "Home",
     title: "Termini di Servizio",
     lastUpdated: "Ultimo aggiornamento: 15 maggio 2026",
-    contactEmail: "legal@fitai.local",
+    contactEmail: "legal@motioninsight.local",
     sections: [
       {
         title: "1. Accettazione",
@@ -1538,7 +1631,7 @@ export const copy = {
       {
         title: "11. Contatti",
         blocks: [
-          { type: "p", text: "Per domande sui termini: ", emailMono: "legal@fitai.local" },
+          { type: "p", text: "Per domande sui termini: ", emailMono: "legal@motioninsight.local" },
         ],
       },
     ],

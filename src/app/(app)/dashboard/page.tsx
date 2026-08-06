@@ -9,7 +9,10 @@ import Link from "next/link";
 import { Flame, Dumbbell, Brain, Target, Clock, ChevronRight, Plus, Activity } from "lucide-react";
 import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DailyMissionCard } from "@/components/dashboard/DailyMissionCard";
+import { FormScoreHero } from "@/components/dashboard/FormScoreHero";
+import { MoodPrompt } from "@/components/dashboard/MoodPrompt";
 import { getDailyMission } from "@/lib/dailyMission";
+import type { FinalReport, L1Result, L2Result, L3Result } from "@/types/analysis";
 import { computeImbalances, muscleLabel } from "@/lib/body-map";
 import { AdaptiveBodyMap, RadialGauge } from "@/components/wow";
 import { StreakHeatmap } from "@/components/visualizations/StreakHeatmap";
@@ -25,7 +28,7 @@ export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user!.id as string;
 
-  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions, totalSessions, weeklySessions] = await Promise.all([
+  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions, totalSessions, weeklySessions, lastAnalysis] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, currentStreak: true, totalPoints: true, longestStreak: true } }),
     prisma.workoutPlan.findFirst({ where: { userId, isActive: true }, include: { days: { include: { exercises: { include: { exercise: true } } } } } }),
     prisma.workoutSession.findMany({ where: { userId, status: "COMPLETED" }, orderBy: { completedAt: "desc" }, take: 5, include: { planDay: true } }),
@@ -38,6 +41,11 @@ export default async function DashboardPage() {
     }),
     prisma.workoutSession.count({ where: { userId, status: "COMPLETED" } }),
     prisma.workoutSession.count({ where: { userId, status: "COMPLETED", completedAt: { gte: new Date(Date.now() - 7 * DAY_MS) } } }),
+    prisma.analysisSession.findFirst({
+      where: { userId, status: "COMPLETED" },
+      orderBy: { completedAt: "desc" },
+      select: { combinedScore: true, completedAt: true, finalReport: true, l1Result: true, l2Result: true, l3Result: true, exercise: { select: { name: true } } },
+    }),
   ]);
 
   // Aggrega streak ultimi 90 giorni
@@ -53,18 +61,59 @@ export default async function DashboardPage() {
   const weeklyTarget = activePlan?.workoutsPerWeek ?? 3;
   const weeklyRemaining = Math.max(0, weeklyTarget - weeklySessions);
 
+  // Form Score hero (dalla struttura dei mockup): protagonista = ultima analisi.
+  const today = new Date().toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+  const fr = (lastAnalysis?.finalReport ?? null) as FinalReport | null;
+  const l1 = (lastAnalysis?.l1Result ?? null) as L1Result | null;
+  const l2 = (lastAnalysis?.l2Result ?? null) as L2Result | null;
+  const l3 = (lastAnalysis?.l3Result ?? null) as L3Result | null;
+  const heroScore = Math.round(lastAnalysis?.combinedScore ?? fr?.combinedScore ?? 0);
+  const scoreVerdict = heroScore >= 85 ? "Ottima esecuzione" : heroScore >= 70 ? "Buona esecuzione" : heroScore >= 50 ? "Da migliorare" : "Attenzione alla tecnica";
+  const heroStats = lastAnalysis
+    ? [
+        { label: "Biomeccanica", value: `${Math.round(l1?.score ?? 0)}` },
+        { label: "Analisi AI", value: `${Math.round(l2?.score ?? 0)}` },
+        { label: "Confronto PT", value: `${Math.round(l3?.score ?? 0)}` },
+        { label: "Rischio infortuni", value: fr?.injuryRiskAlert?.level ?? "—" },
+      ]
+    : [];
+
   return (
     <PageTransition>
       <div className="space-y-6">
         <WelcomeTour />
 
         <FadeIn>
-          <div>
-            <h1 className="font-display text-4xl">
-              {copy.dashboard.greeting(user?.name?.split(" ")[0] ?? copy.dashboard.greetingFallback)} <span className="inline-block animate-wave">👋</span>
-            </h1>
-            <p className="text-muted-foreground mt-1">{copy.dashboard.subtitle}</p>
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{today}</p>
+              <h1 className="font-display text-3xl mt-1">
+                {copy.dashboard.greeting(user?.name?.split(" ")[0] ?? copy.dashboard.greetingFallback)} <span className="inline-block animate-wave">👋</span>
+              </h1>
+            </div>
+            {(user?.currentStreak ?? 0) > 0 && (
+              <span className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full" style={{ background: "rgba(233,69,96,.10)", color: "var(--organic-terracotta)" }}>
+                🔥 {user!.currentStreak} giorni streak
+              </span>
+            )}
           </div>
+        </FadeIn>
+
+        <FadeIn delay={0.03}>
+          <MoodPrompt />
+        </FadeIn>
+
+        <FadeIn delay={0.04}>
+          <FormScoreHero
+            exercise={lastAnalysis?.exercise.name ?? "La tua tecnica"}
+            contextLabel={lastAnalysis?.completedAt ? formatDate(lastAnalysis.completedAt) : undefined}
+            score={heroScore}
+            verdict={scoreVerdict}
+            note={fr?.overallJudgment}
+            correction={fr?.prioritizedImprovements?.[0]}
+            stats={heroStats}
+            emptyLabel={lastAnalysis ? undefined : "Fai la tua prima analisi della forma per vedere qui il tuo Form Score."}
+          />
         </FadeIn>
 
         {/* Statband mix: contatori oversize su fondo espresso (dir-mix-dashboard) */}

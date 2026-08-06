@@ -1,5 +1,7 @@
-# FitAI — Stato del Progetto
-*Aggiornato: 13 luglio 2026 (allineamento doc — M9→M12 + redesign wow confluiti su `main`, typecheck 0 errori, 54/54 unit test verdi)*
+# Motion Insight (ex FitAI) — Stato del Progetto
+*Aggiornato: 21 luglio 2026 (restyling Motion Insight — 6 fasi eseguite sul branch `feat/restyling-motion-insight`, typecheck 0 errori, lint 0 errori)*
+
+> **🎨 RESTYLING IN CORSO**: il brand è ora **Motion Insight** e il sito/app è in fase di restyling completo (palette navy/coral, landing multi-pagina, area utente a 5 tab, PWA). Vedi **`AGGIORNAMENTI.md`** per il changelog dettagliato della sessione. Lo storico qui sotto (M0–M12 + redesign "wow") resta valido come base tecnica.
 
 > **⚠️ IMPORTANTE**: l'Analisi v2 è **implementata e funzionante** (Fasi 1–5 chiuse). La spec autoritativa resta in `ANALYSIS_SPEC.md` (root). Per una vista panoramica di TUTTI i flussi dell'app (auth, onboarding, allenamento, analisi, nutrizione, progressi, infrastruttura, daily mission) fare riferimento a **`DOCUMENTAZIONE_FLUSSI.md`** (root), che è il documento di onboarding sviluppatori.
 
@@ -10,6 +12,25 @@
 **APP PRODUCTION-READY + repo `Masterteam99/FitAI` (`origin/main`).** Typecheck a zero errori, **54/54 unit test (Vitest) verdi**, DB Supabase migrato e seedato, Analisi v2 (Fasi 1–5) completa, **milestone M0–M12 chiuse** più l'intero **redesign visivo "wow"** (tema organico + libreria `src/components/wow`). CI GitHub Actions (typecheck+lint+unit+E2E su Postgres) attiva, Sentry reale integrato. Resta l'azione utente di deploy su Vercel (CHECKLIST_DEPLOY.md).
 
 > **⚠️ Nota branch (13 lug 2026)**: `main` è il branch canonico e più avanzato. `redesign-wow` è **interamente confluito in main** (0 commit avanti) → obsoleto. `m10-admin-hub` è una **versione parallela più vecchia** dell'admin hub: quel lavoro è già su main in forma squashata (commit `a7fb614`), ma il branch è ormai divergente e indietro di 100+ commit → obsoleto. Entrambi i branch sono candidati alla cancellazione; nessun lavoro unico da recuperare.
+
+---
+
+## 🎨 Restyling Motion Insight (branch `feat/restyling-motion-insight` — NON ancora su main)
+
+Restyling completo secondo `DOCUMENTI BUSINESS/ISTRUZIONI_CLAUDE_CODE.md` (6 fasi). Direzione: **navy `#16213E` / coral `#E94560` (solo azioni) / teal / lime**, base chiara, display **Sora** + Inter, brand **Motion Insight**.
+
+| Fase | Stato |
+|---|---|
+| 1 — Bug React #231 | ✅ non presente nel codice (era nel prototipo di design) |
+| 2 — Landing multi-pagina | ✅ header sticky nav 5 voci, `/scarica`, footer + P.IVA (placeholder), barra CTA mobile |
+| 3 — Home 9 sezioni | ✅ nuovo copy (hero "Alleni da solo?…", Per Chi Sei, Ti riconosci?, Form Score, ecc.), de-dup verificata |
+| 4 — Onboarding & Login | 🟡 **parte sicura**: quiz pubblico + `/onboarding/piano` ("Ecco il tuo piano") + CTA→quiz + restyle registrazione (Google+Apple predisposto). Auth-sensibili rimandate |
+| 5 — Area utente | 🟡 nav **5 tab** (Home/Allena/Nutrizione/Progressi/Profilo) + barra tab mobile; Home con prompt "Come ti senti oggi?" + FormScoreHero. Schermate profonde (Allena/Nutrizione) da rifinire loggato |
+| 6 — PWA | ✅ manifest/icone/themeColor rebrandizzati Motion Insight, bottone "Installa ora" su `/scarica` |
+
+**Verifica**: typecheck 0 errori, lint 0 errori. Landing/quiz/scarica verificati via DOM (screenshot non disponibili nell'ambiente). Area utente **da verificare loggati**.
+
+**In sospeso** (richiedono utente): P.IVA reale, testimonianze reali per Storie, Apple OAuth, salvataggio post-registrazione, priming camera + primo Form Score, ricalcolo workout reale, install PWA su produzione, e i **click admin** per estrarre i 18 profili PT (branch separato `feat/pt-reference-biomeccanico`, migrazione già applicata al DB).
 
 ---
 
