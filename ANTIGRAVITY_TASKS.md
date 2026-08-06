@@ -1,5 +1,7 @@
 # FitAI — Istruzioni operative per Antigravity AI
 
+> ⚠️ **DOCUMENTO STORICO (archivio).** Scritto il 30 aprile 2026 per una sessione di lavoro conclusa: le task qui dentro sono state completate o superate e **alcuni dati non riflettono più il codice** (es. i pesi dell'analisi indicati come 34/33/33 sono oggi **50/30/20**). Non usarlo come riferimento sullo stato attuale: leggi `README.md`, `DOCUMENTAZIONE_FLUSSI.md` e `STATO_PROGETTO.md`.
+
 *Versione 1.0 — 30 aprile 2026*
 
 > Questo file contiene **prompt pronti da copia-incolla** per Antigravity. Ogni sezione è un'istruzione completa e self-contained: include contesto, file da leggere prima, formato output atteso, vincoli e criteri di completamento. **Esegui le task in ordine** salvo dipendenze diverse indicate.

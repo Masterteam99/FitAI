@@ -1,7 +1,11 @@
 # FitAI — Specifica Analisi Tripartita
 
-*Versione 2.0 — 30 aprile 2026*
-*Documento autoritativo. Sostituisce qualunque comportamento descritto in codice esistente.*
+*Versione 2.1 — aggiornata 22 luglio 2026 (pesi allineati all'implementazione)*
+
+*Documento autoritativo per il **disegno** dell'analisi (obiettivi, struttura dei dati, pipeline).
+Per i **valori numerici e il comportamento a runtime** la fonte di verità è il codice:
+`src/services/analysis/weights.ts` (pesi), `src/services/biomechanical/` (L1),
+`src/services/ai/` (L2/L3 e report). In caso di divergenza, vince il codice.*
 
 ---
 
@@ -33,12 +37,14 @@
 
 | Logica | Peso | Tempo max |
 |---|---|---|
-| L1 — Biomeccanica deterministica | 34% | <5s |
-| L2 — AI Expert (vision) | 33% | ~30s |
-| L3 — Confronto video utente vs PT pro | 33% | ~60s |
+| L1 — Biomeccanica deterministica | **50%** | <5s |
+| L2 — AI Expert (vision) | **30%** | ~30s |
+| L3 — Confronto video utente vs PT pro | **20%** | ~60s |
 | **Totale dall'upload al feedback** | | **≤120s** |
 
-### Logica 1 — Biomeccanica Deterministica (34%)
+> **Pesi aggiornati (M12).** I pesi originali di questa spec erano 34/33/33; l'implementazione li ha portati a **50/30/20** — L1 (biomeccanica oggettiva) domina, L2 e L3 sono advisory. Fonte di verità unica: `src/services/analysis/weights.ts` (`ANALYSIS_WEIGHTS`). Senza video PT il peso di L3 è ridistribuito su L1/L2 → **62,5% / 37,5%**.
+
+### Logica 1 — Biomeccanica Deterministica (50%)
 
 **Obiettivo:** analisi numerica oggettiva basata su regole.
 
@@ -146,7 +152,7 @@ interface L1Result {
 }
 ```
 
-### Logica 2 — AI Expert Vision (33%)
+### Logica 2 — AI Expert Vision (30%)
 
 **Obiettivo:** valutazione qualitativa di un PT professionista che guarda il video.
 
@@ -174,7 +180,7 @@ interface L2Result {
 }
 ```
 
-### Logica 3 — Confronto Video Utente vs PT Pro (33%)
+### Logica 3 — Confronto Video Utente vs PT Pro (20%)
 
 **Obiettivo:** misurare quanto l'esecuzione si discosta dal modello professionale.
 
@@ -204,7 +210,9 @@ interface L3Result {
 Le 3 logiche girano in parallelo. Quando tutte e 3 sono pronte:
 
 ```typescript
-combinedScore = round(L1.score * 0.34 + L2.score * 0.33 + L3.score * 0.33)
+// Implementazione reale: src/services/analysis/weights.ts
+combinedScore = round(L1.score * 0.50 + L2.score * 0.30 + L3.score * 0.20)   // con video PT
+combinedScore = round(L1.score * 0.625 + L2.score * 0.375)                    // senza video PT
 ```
 
 Un **quarto step Claude** (Haiku 4.5, veloce) riceve i 3 output e produce il **giudizio sintetico finale**:

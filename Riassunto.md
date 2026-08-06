@@ -1,5 +1,12 @@
 # FitAI — Analisi Riassuntiva del Codice
 
+> ⚠️ **DOCUMENTO STORICO (archivio, aprile 2026).** Fotografa il codice **prima** della rifondazione dell'Analisi v2 e delle milestone successive. Contiene informazioni **non più valide**, tra cui:
+> - il modello `BiomechanicalThreshold`, **eliminato** dallo schema (sostituito da `ExerciseBiomechanicalSpec → Movement → Phase → Trigger`);
+> - i pesi dell'analisi `0.33/0.33/0.34`, oggi **50/30/20** (`src/services/analysis/weights.ts`);
+> - "~25 esercizi" nel seed, oggi **53**.
+>
+> Per lo stato attuale: `README.md`, `DOCUMENTAZIONE_FLUSSI.md`, `STATO_PROGETTO.md`.
+
 ## Contesto
 Documento richiesto dall'utente per avere una vista d'insieme del progetto FitAI: cosa è stato costruito, come si compone, quali sono i flussi operativi e in dettaglio come funziona la **funzionalità principale di analisi** (l'analisi triplice di sessioni di allenamento). Non è un piano di implementazione: è un'analisi del codice esistente, utile come riferimento per le prossime sessioni.
 
