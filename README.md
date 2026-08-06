@@ -1,72 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Motion Insight (repo: FitAI)
 
-## Getting Started
+> **Nota sul nome**: il prodotto è stato rinominato **Motion Insight**. Il codice su `main` usa ancora il naming storico *FitAI* in alcune stringhe e nel nome del pacchetto: il rebrand completo vive sul branch `feat/restyling-motion-insight` (vedi [Stato del progetto](#stato-del-progetto)).
 
-First, run the development server:
+App fitness AI-driven: genera piani di allenamento e nutrizione personalizzati con Claude e **analizza l'esecuzione tecnica degli esercizi dal video**, restituendo un punteggio di forma 0–100 con le correzioni.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Cosa fa
+
+**Analisi della tecnica ("Analisi v2")** — l'utente registra ~20s di esercizio con la fotocamera; il punteggio combina tre livelli (pesi in `src/services/analysis/weights.ts`):
+
+| Livello | Cosa fa | Peso |
+|---|---|---|
+| **L1 — biomeccanica** | Locale, senza AI: MediaPipe traccia 33 punti del corpo, si calcolano gli angoli articolari 3D e si confrontano con le soglie per fase del movimento (`ExerciseBiomechanicalSpec → Movement → Phase → Trigger`) | **50%** |
+| **L2 — vision AI** | 8 frame dell'utente valutati da Claude | **30%** |
+| **L3 — confronto col PT** | Frame dell'utente vs frame del video di riferimento del personal trainer | **20%** |
+
+Senza video PT il peso di L3 viene ridistribuito su L1/L2 (62,5% / 37,5%). Un **report finale** generato da Claude sintetizza giudizio, miglioramenti prioritari e alert sul rischio infortuni.
+
+Oltre all'analisi:
+- **Piani AI** di allenamento e nutrizione (streaming, few-shot su template), rigenerabili e adattivi
+- **Tracking**: sessioni, carichi, streak, achievement, progressi, mappa corporea degli squilibri
+- **Admin hub**: utenti, abbonamenti, statistiche, gestione admin, uso/costo AI, audit log, upload dei video PT
+
+## Stack
+
+| Layer | Tecnologia |
+|---|---|
+| Framework | Next.js 16 (App Router; `src/proxy.ts` sostituisce `middleware.ts`) |
+| Auth | NextAuth v5 (JWT) — credenziali + Google |
+| DB / ORM | PostgreSQL (Supabase) + Prisma 7 con driver adapter `@prisma/adapter-pg`; client generato in `src/generated/prisma` |
+| Storage | Supabase Storage (video utente, video PT) |
+| Cache / rate limit | Upstash Redis |
+| AI | Anthropic Claude (Sonnet per piani e vision, Haiku per la sintesi) |
+| Pose detection | `@mediapipe/tasks-vision` (BlazePose, 33 keypoint) — gira nel browser |
+| UI | Tailwind CSS + Radix (shadcn/ui) + Lucide + framer-motion + Recharts |
+| Pagamenti | Stripe (free/premium, checkout, portale, webhook) |
+| Osservabilità | Sentry (attivo solo con DSN) |
+| Test | Vitest (unit) + Playwright (E2E) |
+
+## Struttura
+
+```
+src/app/(marketing)/   pagine pubbliche (come funziona, funzionalità, prezzi, per chi, faq, chi siamo)
+src/app/(auth)/        login, registrazione, recupero password, onboarding a step
+src/app/(app)/         area autenticata: dashboard, allenamento, analisi, nutrizione,
+                       progressi, profilo, esercizi, ai-coach, community, abbonamento, admin
+src/app/api/           49 route REST
+src/components/        ui/, marketing/, dashboard/, analisi/, wow/ (visualizzazioni animate)
+src/services/          biomechanical/ (angoli, fasi, valutazione spec), ai/, analysis/
+src/content/copy.ts    fonte unica di TUTTI i testi dell'interfaccia
+prisma/                schema (33 modelli), migrazioni, seed (53 esercizi con spec biomeccaniche)
+tests/e2e/             16 file di test Playwright
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Prerequisiti: Node 20+, un database PostgreSQL, le chiavi dei servizi (vedi `.env.example`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+cp .env.example .env.local      # compilare le variabili
+npx prisma generate
+npx prisma migrate deploy
+npm run seed
+npm run dev                     # http://localhost:3000
+```
 
-## Learn More
+Variabili minime: `DATABASE_URL`, `DIRECT_URL`, `NEXTAUTH_SECRET`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_SUPABASE_*` + `SUPABASE_SERVICE_ROLE_KEY`. Le altre (Stripe, Upstash, Resend, Sentry) abilitano funzionalità opzionali: le route sono resilienti alla loro assenza.
 
-To learn more about Next.js, take a look at the following resources:
+## Comandi
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run dev              # sviluppo
+npm run build            # build di produzione
+npm run test:unit        # Vitest — 54 test
+npm run test:e2e         # Playwright (gira contro la build di produzione)
+npm run lint             # ESLint
+npm run seed             # popola esercizi, achievement, template
+npm run generate:icons   # rigenera le icone PWA da public/icon.svg
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+CI (GitHub Actions): typecheck + lint + unit a ogni push; E2E con Postgres su build di produzione.
 
-## Deploy on Vercel
+## Stato del progetto
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Su `main`**: 42 pagine, 49 route API, 33 modelli Prisma, **54/54 unit test verdi**, typecheck pulito. Milestone M0–M12 chiuse (admin hub, visual layer, CI, Sentry inclusi) più il redesign visivo interno.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Branch non ancora mergiati:**
+- `feat/restyling-motion-insight` — rebrand **Motion Insight** e restyling completo: palette navy/coral, landing multi-pagina (Home a 9 sezioni, Storie, Risorse/blog, Scarica), quiz pubblico prima della registrazione, area utente a 5 tab, PWA rebrandizzata.
+- `feat/pt-reference-biomeccanico` — profilo biomeccanico di riferimento estratto **una sola volta** dal video del PT e riusato per un confronto numerico deterministico in L3 (migrazione già applicata al DB).
 
-## Documentazione interna (sviluppatori)
+**Non ancora in produzione**: il deploy su Vercel resta un'azione manuale (`CHECKLIST_DEPLOY.md`).
 
-Per capire l'architettura e i flussi del progetto:
+## Documentazione
 
-- **[DOCUMENTAZIONE_FLUSSI.md](./DOCUMENTAZIONE_FLUSSI.md)** — entry point completo: ogni sezione dell'app, ogni flusso, ogni endpoint con riferimenti `path:line`.
-- **[STATO_PROGETTO.md](./STATO_PROGETTO.md)** — overview dello stato attuale e copertura funzionale.
-- **[ROADMAP.md](./ROADMAP.md)** — task tracking esecutivo (cosa è fatto, cosa resta).
-- **[ANALYSIS_SPEC.md](./ANALYSIS_SPEC.md)** — spec autoritativa dell'Analisi v2 (formato I/O dei 3 livelli).
-- **[AGENTS.md](./AGENTS.md)** — note operative per agenti AI che lavorano sul codice.
-- **[PROFESSIONALS_DATA_GUIDE.md](./PROFESSIONALS_DATA_GUIDE.md)** — guida per personal trainer e nutrizionisti che inseriscono contenuti via CSV/Excel (template in `data-templates/`).
-- **[DATA_AUTHORING_GUIDE.md](./DATA_AUTHORING_GUIDE.md)** — guida tecnica per il dev che converte i CSV in TypeScript seed.
+| File | Contenuto |
+|---|---|
+| **[DOCUMENTAZIONE_FLUSSI.md](./DOCUMENTAZIONE_FLUSSI.md)** | **Punto di ingresso**: mappa completa di ogni schermata e flusso, con i path dei sorgenti |
+| [ANALYSIS_SPEC.md](./ANALYSIS_SPEC.md) | Spec autoritativa dell'analisi a tre livelli |
+| [STATO_PROGETTO.md](./STATO_PROGETTO.md) | Stato per milestone e storico delle sessioni |
+| [ROADMAP.md](./ROADMAP.md) | Tracking esecutivo delle task |
+| [CHECKLIST_DEPLOY.md](./CHECKLIST_DEPLOY.md) | Passi per il deploy |
+| [AGENTS.md](./AGENTS.md) | Note operative per agenti AI che lavorano sul codice |
+| [PROFESSIONALS_DATA_GUIDE.md](./PROFESSIONALS_DATA_GUIDE.md) | Guida per PT e nutrizionisti che inseriscono contenuti via CSV/Excel |
+| [DATA_AUTHORING_GUIDE.md](./DATA_AUTHORING_GUIDE.md) | Guida tecnica per convertire i CSV in seed TypeScript |
+| `docs/` | Spec e piani di design, revisioni dei trigger biomeccanici |
 
----
+## Sicurezza e limiti
 
-## Come funziona l'analisi AI
-
-### Il flusso in 5 passi
-- Scegli un esercizio dal tuo piano
-- Guarda il video del PT professionista
-- Posizionati di fronte alla camera (15 secondi di preparazione)
-- Esegui l'esercizio mentre l'app registra (15-25 secondi)
-- Ricevi feedback completo entro 1-2 minuti
-
-### I 3 livelli di analisi
-- **Biomeccanica deterministica (34%)**: misura gli angoli articolari frame per frame e li confronta con range sicuri
-- **Coach AI (33%)**: Claude analizza visivamente la tua esecuzione come farebbe un PT professionista
-- **Confronto col PT (33%)**: paragona i tuoi movimenti con quelli del video professionale
-
-### Severità dei feedback
-- 🟢 Suggerimento: piccola correzione tecnica
-- 🟡 Errore: errore di esecuzione da correggere
-- 🔴 Allerta: rischio infortunio, fermati e correggi
-
-### Cosa fare se compare un'allerta
-Se vedi 🔴 Allerta, l'app ha rilevato un movimento potenzialmente pericoloso per la tua salute. Ferma l'esecuzione, leggi il feedback e ripeti l'esercizio correggendo la postura. In caso di dolore persistente, consulta un medico.
+L'analisi è uno strumento di supporto all'allenamento: **non fornisce diagnosi né terapie**. In caso di dolore persistente o patologie, consultare un professionista sanitario. I feedback hanno tre livelli di severità (suggerimento / errore / allerta rischio infortunio): davanti a un'allerta, fermare l'esecuzione e correggere la postura.
