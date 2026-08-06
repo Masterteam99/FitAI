@@ -51,7 +51,12 @@ interface ViolationState {
   curRunFrames: number; // lunghezza run corrente in frame
 }
 
-function jointAngleFor(joint: string, angles: JointAngles): number | undefined {
+export const SPEC_JOINTS = [
+  "left_knee", "right_knee", "left_elbow", "right_elbow",
+  "left_shoulder", "right_shoulder", "left_hip", "right_hip", "spine",
+] as const;
+
+export function jointAngleFor(joint: string, angles: JointAngles): number | undefined {
   switch (joint) {
     case "left_knee": return angles.leftKnee;
     case "right_knee": return angles.rightKnee;

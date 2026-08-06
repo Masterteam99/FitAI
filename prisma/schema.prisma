@@ -348,6 +348,9 @@ model Exercise {
   recordingDurationSeconds Int              @default(20) // 15-25s, durata acquisizione video utente per analisi
   caloriesPerMinute        Float            @default(5)
   professionalNotes        String?          @db.Text
+  referenceProfile         Json? // profilo biomeccanico PT (angoli per giunto/fase)
+  referenceProfileAt       DateTime? // quando generato
+  referenceProfileVersion  Int? // = REFERENCE_PROFILE_VERSION, per invalidazione
   tags                     String[]         @default([])
   isActive                 Boolean          @default(true)
   createdAt                DateTime         @default(now())

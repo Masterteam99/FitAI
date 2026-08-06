@@ -41,6 +41,21 @@ export interface L3Result {
   score: number;
   comparisonFeedback: string;
   keyDifferences: { aspect: string; user: string; pro: string }[];
+  numericScore?: number; // punteggio del confronto numerico col profilo PT (se disponibile)
+}
+
+export interface ReferenceMovement {
+  joint: string; // es. "spine", "left_knee"
+  phase: string; // es. "THROUGHOUT", "BOTTOM"
+  minAngle: number;
+  maxAngle: number;
+  meanAngle: number;
+  sampleCount: number;
+}
+
+export interface ReferenceProfile {
+  movements: ReferenceMovement[];
+  meta: { fps: number; totalFrames: number; detectedReps: number };
 }
 
 export interface FinalReport {
