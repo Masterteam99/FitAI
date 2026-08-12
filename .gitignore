@@ -44,6 +44,9 @@ yarn-error.log*
 # admin video PT raw files (uploaded via admin UI, not kept in repo)
 VIDEO PT PER APP/
 
+# business/strategy docs (riservati, tenuti solo su OneDrive)
+DOCUMENTI BUSINESS/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
