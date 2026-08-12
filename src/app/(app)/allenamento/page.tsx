@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dumbbell, Plus, Zap, Calendar, ChevronRight, CheckCircle, Loader2, Trash2 } from "lucide-react";
+import { Dumbbell, Plus, Zap, Calendar, ChevronRight, CheckCircle, Loader2, Trash2, Play } from "lucide-react";
 import { copy } from "@/content/copy";
 
 interface WorkoutPlan {
@@ -97,23 +97,17 @@ export default function AllenamentoPage() {
         </Card>
       ) : (
         <>
-          {activePlan && (
-            <div>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{copy.allenamento.activePlanSection}</h2>
-              <PlanCard plan={activePlan} onSetActive={setActive} onDelete={deletePlan} />
-            </div>
-          )}
+          {activePlan && <ActiveSessionBlock plan={activePlan} />}
 
-          {plans.filter((p) => !p.isActive).length > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{copy.allenamento.otherPlansSection}</h2>
-              <div className="space-y-3">
-                {plans.filter((p) => !p.isActive).map((plan) => (
-                  <PlanCard key={plan.id} plan={plan} onSetActive={setActive} onDelete={deletePlan} />
-                ))}
-              </div>
+          <div>
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{copy.allenamento.plansSectionTitle}</h2>
+            <div className="space-y-3">
+              {activePlan && <PlanCard plan={activePlan} onSetActive={setActive} onDelete={deletePlan} />}
+              {plans.filter((p) => !p.isActive).map((plan) => (
+                <PlanCard key={plan.id} plan={plan} onSetActive={setActive} onDelete={deletePlan} />
+              ))}
             </div>
-          )}
+          </div>
 
           <div className="pt-2">
             <Link href="/allenamento/genera-ai">
@@ -126,6 +120,49 @@ export default function AllenamentoPage() {
         </>
       )}
     </div>
+  );
+}
+
+function ActiveSessionBlock({ plan }: { plan: WorkoutPlan }) {
+  return (
+    <Card className="border-primary/40 bg-primary/5">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <p className="text-xs uppercase tracking-wider font-semibold text-primary mb-0.5">{copy.allenamento.sessionEyebrow}</p>
+            <CardTitle className="text-lg">{plan.name}</CardTitle>
+          </div>
+          <Link href={`/allenamento/${plan.id}`}>
+            <Button variant="outline" size="sm" className="gap-1.5">
+              {copy.allenamento.openFullSession} <ChevronRight className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {plan.days.map((day) => (
+          <div key={day.id} className={`flex items-center gap-3 p-3 rounded-lg ${day.restDay ? "bg-secondary/30" : "bg-secondary/50"}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${day.restDay ? "bg-border" : "bg-primary/20 text-primary"}`}>
+              {day.dayNumber}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{day.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {day.restDay ? copy.allenamento.restDayLabel : copy.allenamento.dayExercises(day.exercises.length)}
+              </p>
+            </div>
+            {!day.restDay && day.exercises.length > 0 && (
+              <Link href={`/allenamento/${plan.id}/sessione?day=${day.id}`} className="shrink-0">
+                <Button size="sm" className="gap-1.5">
+                  <Play className="w-4 h-4" />
+                  {copy.allenamento.startDayCta}
+                </Button>
+              </Link>
+            )}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }
 

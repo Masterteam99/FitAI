@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ChevronRight, Flame, History } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle, ChevronRight, Flame, History, Camera } from "lucide-react";
 import { NumberPunch } from "@/components/motion/NumberPunch";
 import { cn } from "@/lib/utils";
 import { copy } from "@/content/copy";
@@ -22,6 +23,7 @@ export function ExerciseView({ exercises, currentExIndex, currentSet, completedS
   // Prefill: ultimo carico registrato per questo esercizio (storico cross-sessione)
   const [weightInput, setWeightInput] = useState<string>(lastLoad?.weightKg != null ? String(lastLoad.weightKg) : "");
   const [repsInput, setRepsInput] = useState<string>(currentEx?.reps != null ? String(currentEx.reps) : "");
+  const [analysisOn, setAnalysisOn] = useState(false);
   if (!currentEx) return null;
 
   function handleComplete() {
@@ -50,6 +52,24 @@ export function ExerciseView({ exercises, currentExIndex, currentSet, completedS
           {currentEx.notes}
         </p>
       )}
+
+      {/* Toggle analisi avanzata (per esercizio) */}
+      <div className="mt-4 flex flex-col items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => setAnalysisOn((v) => !v)}
+          aria-pressed={analysisOn}
+          className={cn(
+            "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors",
+            analysisOn ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-foreground",
+          )}
+        >
+          <Camera className="w-3.5 h-3.5" />
+          {copy.allenamentoSessione.analysisToggleLabel}
+          <span className={cn("w-2 h-2 rounded-full", analysisOn ? "bg-primary" : "bg-muted-foreground/40")} />
+        </button>
+        <p className="text-[11px] text-muted-foreground text-center max-w-xs">{copy.allenamentoSessione.analysisToggleHint}</p>
+      </div>
 
       {/* Hero number — reps / duration */}
       <div className="flex items-end justify-center gap-4 my-10">
@@ -162,6 +182,15 @@ export function ExerciseView({ exercises, currentExIndex, currentSet, completedS
           <ChevronRight className="w-6 h-6" />
         </Button>
       </motion.div>
+
+      {analysisOn && (
+        <Link href={`/analisi/sessione?id=${currentEx.id}`} className="block mt-3">
+          <Button variant="outline" size="lg" className="w-full gap-2 border-primary/50 text-primary hover:bg-primary/5">
+            <Camera className="w-5 h-5" />
+            {copy.allenamentoSessione.analyzeCta}
+          </Button>
+        </Link>
+      )}
 
       {/* Upcoming */}
       {currentExIndex < exercises.length - 1 && (

@@ -5,7 +5,11 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Play, Dumbbell, Calendar, Clock, Zap, CheckCircle } from "lucide-react";
+import { ArrowLeft, Play, Dumbbell, Calendar, Clock, Zap, CheckCircle, Camera, Activity, AlertTriangle } from "lucide-react";
+import { computeImbalances, muscleLabel } from "@/lib/body-map";
+import { AdaptiveBodyMap } from "@/components/wow";
+import { RevisionRequestForm } from "@/components/RevisionRequestForm";
+import type { FinalReport } from "@/types/analysis";
 import { copy } from "@/content/copy";
 import type { Metadata } from "next";
 
@@ -18,9 +22,10 @@ const DIFFICULTY_LABELS: Record<string, string> = copy.allenamentoDettaglio.diff
 export default async function PlanDetailPage({ params }: Props) {
   const { id } = await params;
   const session = await auth();
+  const userId = session!.user!.id as string;
 
   const plan = await prisma.workoutPlan.findFirst({
-    where: { id, userId: session!.user!.id as string },
+    where: { id, userId },
     include: {
       days: {
         include: {
@@ -35,6 +40,17 @@ export default async function PlanDetailPage({ params }: Props) {
   });
 
   if (!plan) notFound();
+
+  const [imbalances, lastAnalysis] = await Promise.all([
+    computeImbalances(userId, 30),
+    prisma.analysisSession.findFirst({
+      where: { userId, status: "COMPLETED" },
+      orderBy: { completedAt: "desc" },
+      select: { finalReport: true },
+    }),
+  ]);
+  const topImbalances = imbalances.slice(0, 3);
+  const fr = (lastAnalysis?.finalReport ?? null) as FinalReport | null;
 
   const totalExercises = plan.days.reduce((acc, d) => acc + d.exercises.length, 0);
   const estimatedMinutes = totalExercises * 4;
@@ -64,6 +80,58 @@ export default async function PlanDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Il tuo stato — heatmap corpo + rischi + suggerimenti (consolidato dalla dashboard) */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Activity className="w-4 h-4 text-primary" />
+            {copy.allenamentoDettaglio.statusTitle}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!lastAnalysis && topImbalances.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{copy.allenamentoDettaglio.statusNoData}</p>
+          ) : (
+            <div className="grid sm:grid-cols-[150px_1fr] gap-5 items-center">
+              <div className="max-w-[150px] mx-auto">
+                <AdaptiveBodyMap
+                  mode="balance"
+                  data={imbalances.map((i) => ({ muscle: i.muscle, deficitPct: i.deficitPct }))}
+                  view="front"
+                  showToggle={false}
+                />
+              </div>
+              <div className="space-y-3">
+                {fr?.injuryRiskAlert?.level && (
+                  <div className="flex items-start gap-2 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-energy-hot mt-0.5 shrink-0" />
+                    <span><strong>{copy.allenamentoDettaglio.statusRisk}:</strong> {fr.injuryRiskAlert.level}</span>
+                  </div>
+                )}
+                {fr?.prioritizedImprovements?.[0] && (
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">{copy.allenamentoDettaglio.statusSuggestion}:</strong> {fr.prioritizedImprovements[0]}
+                  </p>
+                )}
+                {topImbalances.length > 0 ? (
+                  <ul className="space-y-1 text-xs text-muted-foreground">
+                    {topImbalances.map((i) => (
+                      <li key={i.muscle} className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-energy-hot" />
+                        {muscleLabel(i.muscle as never)}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-muted-foreground">{copy.allenamentoDettaglio.statusGoodBalance}</p>
+                )}
+                <p className="text-[11px] text-muted-foreground/80">{copy.allenamentoDettaglio.statusDisclaimer}</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="space-y-4">
         {plan.days.map((day) => (
@@ -106,6 +174,12 @@ export default async function PlanDetailPage({ params }: Props) {
                       <Badge variant="secondary" className="text-xs shrink-0 hidden sm:inline-flex">
                         {DIFFICULTY_LABELS[ex.exercise.difficulty] ?? ex.exercise.difficulty}
                       </Badge>
+                      <Link href={`/analisi/sessione?id=${ex.exercise.id}`} className="shrink-0" title={copy.allenamentoDettaglio.analyzeAction}>
+                        <Button variant="ghost" size="sm" className="gap-1.5 text-primary">
+                          <Camera className="w-4 h-4" />
+                          <span className="hidden sm:inline">{copy.allenamentoDettaglio.analyzeAction}</span>
+                        </Button>
+                      </Link>
                     </div>
                   ))}
                 </div>
@@ -121,6 +195,8 @@ export default async function PlanDetailPage({ params }: Props) {
           <p className="text-sm">{copy.allenamentoDettaglio.hintPre}<strong>{copy.allenamentoDettaglio.hintBold}</strong>{copy.allenamentoDettaglio.hintPost}</p>
         </div>
       )}
+
+      <RevisionRequestForm type="FITNESS" />
     </div>
   );
 }

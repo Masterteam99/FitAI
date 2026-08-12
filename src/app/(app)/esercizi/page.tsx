@@ -11,22 +11,27 @@ import { copy } from "@/content/copy";
 export const metadata: Metadata = { title: copy.esercizi.meta.title };
 
 interface Props {
-  searchParams: Promise<{ muscolo?: string; difficolta?: string; cerca?: string }>;
+  searchParams: Promise<{ muscolo?: string; difficolta?: string; cerca?: string; tag?: string }>;
 }
 
 export default async function EserciziPage({ searchParams }: Props) {
   const params = await searchParams;
-  const exercises = await prisma.exercise.findMany({
-    where: {
-      isActive: true,
-      ...(params.muscolo && { muscleGroupPrimary: params.muscolo as never }),
-      ...(params.difficolta && { difficulty: params.difficolta as never }),
-      ...(params.cerca && { name: { contains: params.cerca, mode: "insensitive" } }),
-    },
-    orderBy: { name: "asc" },
-    include: { biomechanicalSpec: { select: { id: true } } },
-  });
+  const [exercises, tagRows] = await Promise.all([
+    prisma.exercise.findMany({
+      where: {
+        isActive: true,
+        ...(params.muscolo && { muscleGroupPrimary: params.muscolo as never }),
+        ...(params.difficolta && { difficulty: params.difficolta as never }),
+        ...(params.tag && { tags: { has: params.tag } }),
+        ...(params.cerca && { name: { contains: params.cerca, mode: "insensitive" } }),
+      },
+      orderBy: { name: "asc" },
+      include: { biomechanicalSpec: { select: { id: true } } },
+    }),
+    prisma.exercise.findMany({ where: { isActive: true }, select: { tags: true } }),
+  ]);
 
+  const allTags = Array.from(new Set(tagRows.flatMap((r) => r.tags))).sort().slice(0, 30);
   const muscleGroups = Object.entries(MUSCLE_GROUP_LABELS);
   const difficulties = Object.entries(DIFFICULTY_LABELS);
 
@@ -71,6 +76,17 @@ export default async function EserciziPage({ searchParams }: Props) {
             </Link>
           ))}
         </div>
+
+        {allTags.length > 0 && (
+          <div className="w-full flex flex-wrap gap-2">
+            {allTags.map((t) => (
+              <Link key={t} href={`/esercizi?tag=${encodeURIComponent(t)}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${params.tag === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
+                #{t}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Grid esercizi */}

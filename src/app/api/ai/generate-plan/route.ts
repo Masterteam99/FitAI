@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
     select: {
       slug: true, name: true, muscleGroupPrimary: true, muscleGroupsSecondary: true,
       difficulty: true, equipment: true, category: true, caloriesPerMinute: true, tags: true,
+      professionalNotes: true,
     },
   });
 
@@ -74,7 +75,10 @@ export async function POST(req: NextRequest) {
     .map((e) => {
       const secondary = e.muscleGroupsSecondary.length ? ` | secondari: ${e.muscleGroupsSecondary.join(",")}` : "";
       const tags = e.tags.length ? ` | tag: ${e.tags.join(",")}` : "";
-      return `- ${e.slug}: "${e.name}" | muscolo: ${e.muscleGroupPrimary}${secondary} | difficoltà: ${e.difficulty} | attrezzatura: ${e.equipment.join(",")} | categoria: ${e.category}${tags}`;
+      // Note di pianificazione del professionista (Account Manager → editor tag):
+      // prerequisiti, controindicazioni, ordine consigliato. Segnale forte per l'AI.
+      const notes = e.professionalNotes ? ` | note PT: ${e.professionalNotes.replace(/\s+/g, " ").slice(0, 200)}` : "";
+      return `- ${e.slug}: "${e.name}" | muscolo: ${e.muscleGroupPrimary}${secondary} | difficoltà: ${e.difficulty} | attrezzatura: ${e.equipment.join(",")} | categoria: ${e.category}${tags}${notes}`;
     })
     .join("\n");
   console.log("[generate-plan] exercises loaded", { count: exercises.length });

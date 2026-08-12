@@ -84,22 +84,36 @@ export default async function EsercizioPage({ params }: Props) {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Video / thumbnail */}
         <div className="space-y-4">
-          <div className="aspect-video rounded-xl bg-secondary/50 flex items-center justify-center overflow-hidden">
-            {exercise.videoUrl ? (
-              <video src={exercise.videoUrl} controls className="w-full h-full object-cover rounded-xl" poster={exercise.thumbnailUrl ?? undefined} />
-            ) : (
-              <div className="text-center space-y-2">
-                <PlayCircle className="w-16 h-16 text-muted-foreground mx-auto" />
-                <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.videoComingSoon}</p>
-              </div>
-            )}
+          {/* Esecuzione del professionista */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.esercizioDettaglio.executionVideoLabel}</p>
+            <div className="aspect-video rounded-xl bg-secondary/50 flex items-center justify-center overflow-hidden">
+              {exercise.videoUrl ? (
+                <video src={exercise.videoUrl} controls className="w-full h-full object-cover rounded-xl" poster={exercise.thumbnailUrl ?? undefined} />
+              ) : (
+                <div className="text-center space-y-2">
+                  <PlayCircle className="w-16 h-16 text-muted-foreground mx-auto" />
+                  <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.videoComingSoon}</p>
+                </div>
+              )}
+            </div>
+            <Link href={`/analisi/sessione?id=${exercise.id}`}>
+              <Button className="w-full gap-2 mt-2">
+                <Brain className="w-4 h-4" />
+                {copy.esercizioDettaglio.activateAdvancedAnalysis}
+              </Button>
+            </Link>
           </div>
-          <Link href={`/analisi?esercizio=${exercise.slug}`}>
-            <Button className="w-full gap-2">
-              <Brain className="w-4 h-4" />
-              {copy.esercizioDettaglio.analyzeWithAi}
-            </Button>
-          </Link>
+
+          {/* Consigli del professionista */}
+          {exercise.explanationVideoUrl && (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.esercizioDettaglio.explanationVideoLabel}</p>
+              <div className="aspect-video rounded-xl bg-secondary/50 overflow-hidden">
+                <video src={exercise.explanationVideoUrl} controls className="w-full h-full object-cover rounded-xl" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Info */}

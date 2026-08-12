@@ -18,6 +18,7 @@ export async function GET() {
       weightKg: true,
       heightCm: true,
       profileVisibility: true,
+      medicalNotes: true,
       totalPoints: true,
       currentStreak: true,
       longestStreak: true,
@@ -36,6 +37,7 @@ const PatchSchema = z.object({
   fitnessLevel: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "ATHLETE"]).optional(),
   primaryGoal: z.enum(["LOSE_WEIGHT", "BUILD_MUSCLE", "ENDURANCE", "FLEXIBILITY", "GENERAL_FITNESS", "ATHLETIC_PERFORMANCE"]).optional(),
   profileVisibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
+  medicalNotes: z.string().max(2000).nullable().optional(),
 });
 
 export async function PATCH(req: NextRequest) {

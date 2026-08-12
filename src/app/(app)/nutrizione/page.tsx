@@ -9,7 +9,11 @@ import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
 import { AiNutritionPlan } from "./AiNutritionPlan";
+import { NutritionMatchCard } from "./NutritionMatchCard";
+import { RecipesCard } from "./RecipesCard";
 import { RadialGauge } from "@/components/wow";
+import { RevisionRequestForm } from "@/components/RevisionRequestForm";
+import { computeNutritionTargets, DEFAULT_TARGETS } from "@/lib/nutrition-targets";
 import { copy } from "@/content/copy";
 
 interface NutritionLog {
@@ -28,9 +32,6 @@ const MEAL_LABELS: Record<string, string> = copy.nutrizione.mealLabels;
 
 const MEAL_TYPES = Object.keys(MEAL_LABELS);
 
-// Daily targets (generic defaults)
-const TARGETS = { calories: 2000, protein: 150, carbs: 250, fat: 65 };
-
 export default function NutrizionePage() {
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [logs, setLogs] = useState<NutritionLog[]>([]);
@@ -39,6 +40,14 @@ export default function NutrizionePage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ mealType: "LUNCH", foodName: "", calories: "", protein: "", carbs: "", fat: "" });
   const [saving, setSaving] = useState(false);
+  const [targets, setTargets] = useState(DEFAULT_TARGETS);
+
+  useEffect(() => {
+    fetch("/api/profilo")
+      .then((r) => r.json())
+      .then((d) => setTargets(computeNutritionTargets({ weightKg: d.weightKg, heightCm: d.heightCm, age: d.age, goal: d.primaryGoal })))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -114,6 +123,9 @@ export default function NutrizionePage() {
         </Button>
       </div>
 
+      {/* Piano consigliato dal pool (Motore) */}
+      <NutritionMatchCard />
+
       {/* Generatore piano AI settimanale */}
       <AiNutritionPlan />
 
@@ -133,13 +145,13 @@ export default function NutrizionePage() {
       {/* Calorie del giorno — gauge */}
       <Card>
         <CardContent className="p-5 flex items-center gap-5">
-          <RadialGauge value={totals.calories} max={TARGETS.calories} size={116} color="#3fae5a" label="kcal" />
+          <RadialGauge value={totals.calories} max={targets.calories} size={116} color="#3fae5a" label="kcal" />
           <div className="text-sm">
             <p className="font-medium">{copy.nutrizione.macros.calories}</p>
             <p className="text-muted-foreground mt-0.5">
-              {totals.calories >= TARGETS.calories
+              {totals.calories >= targets.calories
                 ? "Obiettivo calorico giornaliero raggiunto."
-                : `Mancano ${TARGETS.calories - totals.calories} kcal all'obiettivo di oggi.`}
+                : `Mancano ${targets.calories - totals.calories} kcal all'obiettivo di oggi.`}
             </p>
           </div>
         </CardContent>
@@ -148,10 +160,10 @@ export default function NutrizionePage() {
       {/* Macro totals */}
       <div className="grid grid-cols-4 gap-2">
         {[
-          { label: copy.nutrizione.macros.calories, value: totals.calories, unit: copy.nutrizione.caloriesUnit, target: TARGETS.calories, color: "text-primary" },
-          { label: copy.nutrizione.macros.protein, value: Math.round(totals.protein), unit: copy.nutrizione.gramsUnit, target: TARGETS.protein, color: "text-blue-400" },
-          { label: copy.nutrizione.macros.carbs, value: Math.round(totals.carbs), unit: copy.nutrizione.gramsUnit, target: TARGETS.carbs, color: "text-orange-400" },
-          { label: copy.nutrizione.macros.fat, value: Math.round(totals.fat), unit: copy.nutrizione.gramsUnit, target: TARGETS.fat, color: "text-yellow-400" },
+          { label: copy.nutrizione.macros.calories, value: totals.calories, unit: copy.nutrizione.caloriesUnit, target: targets.calories, color: "text-primary" },
+          { label: copy.nutrizione.macros.protein, value: Math.round(totals.protein), unit: copy.nutrizione.gramsUnit, target: targets.protein, color: "text-blue-400" },
+          { label: copy.nutrizione.macros.carbs, value: Math.round(totals.carbs), unit: copy.nutrizione.gramsUnit, target: targets.carbs, color: "text-orange-400" },
+          { label: copy.nutrizione.macros.fat, value: Math.round(totals.fat), unit: copy.nutrizione.gramsUnit, target: targets.fat, color: "text-yellow-400" },
         ].map((m) => {
           const pct = Math.min(Math.round((m.value / m.target) * 100), 100);
           return (
@@ -239,6 +251,10 @@ export default function NutrizionePage() {
           )}
         </div>
       )}
+
+      <RecipesCard />
+
+      <RevisionRequestForm type="NUTRITION" />
     </div>
   );
 }

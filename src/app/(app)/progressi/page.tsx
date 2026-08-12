@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 import { format, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
 import { CountUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
+import { WeightMeasuresCard } from "./WeightMeasuresCard";
 import { copy } from "@/content/copy";
 
 interface StatsData {
@@ -19,6 +20,7 @@ interface StatsData {
   daysActive30: number;
   weeklyVolume: { weekStart: string; minutes: number }[];
   avgFeeling: number | null;
+  formScores: { date: string; score: number; exercise: string }[];
   recentSessions: { completedAt: string; totalDuration: number; overallFeeling: string | null }[];
   achievements: { achievement: { name: string; icon: string; rarity: string }; unlockedAt: string }[];
 }
@@ -97,6 +99,44 @@ export default function ProgressiPage() {
           );
         })}
       </div>
+
+      {/* Qualità dei movimenti — Form Score trend */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{copy.progressi.formScoreTitle}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {stats.formScores.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{copy.progressi.formScoreEmpty}</p>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground mb-3">
+                {copy.progressi.formScoreSubtitle}
+                {stats.formScores.length >= 2 && (
+                  <span className="ml-2 font-semibold text-primary">
+                    {copy.progressi.formScoreDelta(stats.formScores[stats.formScores.length - 1].score - stats.formScores[0].score)}
+                  </span>
+                )}
+              </p>
+              <ResponsiveContainer width="100%" height={180}>
+                <LineChart data={stats.formScores.map((s) => ({ label: format(parseISO(s.date), "dd/MM"), score: s.score }))}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
+                    formatter={(v) => [copy.progressi.formScoreTooltip(Number(v ?? 0)), ""]}
+                  />
+                  <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Peso e misure */}
+      <WeightMeasuresCard />
 
       {/* Weekly chart */}
       <Card>

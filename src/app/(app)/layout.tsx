@@ -11,7 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     where: { id: session.user.id as string },
     select: { onboardingCompleted: true, isAdmin: true, subscriptionStatus: true, premiumGrantedUntil: true },
   });
-  if (!user?.onboardingCompleted) redirect("/onboarding");
+  if (!user?.onboardingCompleted) redirect("/onboarding/quiz");
 
   const isPremium =
     user.subscriptionStatus === "ACTIVE" ||

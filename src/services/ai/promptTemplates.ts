@@ -49,7 +49,7 @@ ${params.dietType ? `- Dieta attuale: ${params.dietType}` : ""}
 ESERCIZI DISPONIBILI NEL DATABASE:
 ${params.exerciseList}
 
-Ogni esercizio riporta dei TAG (obiettivo, gruppo muscolare, attrezzatura, livello, contesto, pattern motorio, eventuali controindicazioni). Sono il tuo strumento principale di selezione.
+Ogni esercizio riporta dei TAG (obiettivo, gruppo muscolare, attrezzatura, livello, contesto, pattern motorio, eventuali controindicazioni). Sono il tuo strumento principale di selezione. Alcuni esercizi riportano anche "note PT": indicazioni del professionista (prerequisiti, controindicazioni, ordine consigliato) da rispettare quando presenti.
 
 REGOLE:
 1. Usa SOLO esercizi dalla lista sopra (usa il campo "slug" come identificatore).

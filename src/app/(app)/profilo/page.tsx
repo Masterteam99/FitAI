@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { User, LogOut, Save, Loader2, Trophy, Flame, Dumbbell, Download, Trash2, AlertTriangle } from "lucide-react";
+import { User, LogOut, Save, Loader2, Trophy, Flame, Dumbbell, Download, Trash2, AlertTriangle, Sparkles, HelpCircle, ListChecks } from "lucide-react";
 import { signOut as nextSignOut } from "next-auth/react";
+import Link from "next/link";
+import { DocumentsCard } from "@/components/DocumentsCard";
 import { copy } from "@/content/copy";
 
 interface ProfileData {
@@ -19,6 +21,7 @@ interface ProfileData {
   weightKg: number | null;
   heightCm: number | null;
   profileVisibility: "PUBLIC" | "PRIVATE";
+  medicalNotes: string | null;
   totalPoints: number;
   currentStreak: number;
   longestStreak: number;
@@ -35,6 +38,9 @@ export default function ProfiloPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({ name: "", age: "", weight: "", height: "" });
+  const [medicalNotes, setMedicalNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [savedNotes, setSavedNotes] = useState(false);
 
   useEffect(() => {
     fetch("/api/profilo")
@@ -47,9 +53,22 @@ export default function ProfiloPage() {
           weight: d.weightKg?.toString() ?? "",
           height: d.heightCm?.toString() ?? "",
         });
+        setMedicalNotes(d.medicalNotes ?? "");
       })
       .finally(() => setLoading(false));
   }, []);
+
+  async function saveMedicalNotes() {
+    setSavingNotes(true);
+    await fetch("/api/profilo", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ medicalNotes: medicalNotes.trim() || null }),
+    });
+    setSavingNotes(false);
+    setSavedNotes(true);
+    setTimeout(() => setSavedNotes(false), 3000);
+  }
 
   async function saveProfile() {
     setSaving(true);
@@ -159,6 +178,57 @@ export default function ProfiloPage() {
         </CardContent>
       </Card>
 
+      {/* Rifai il quiz */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">{copy.profilo.retakeQuiz.title}</CardTitle></CardHeader>
+        <CardContent className="flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-sm text-muted-foreground">{copy.profilo.retakeQuiz.desc}</p>
+          <Button variant="outline" asChild className="gap-2 shrink-0">
+            <Link href="/onboarding/quiz">
+              <ListChecks className="w-4 h-4" />
+              {copy.profilo.retakeQuiz.cta}
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Note mediche */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">{copy.profilo.noteMediche.title}</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">{copy.profilo.noteMediche.desc}</p>
+          <textarea
+            value={medicalNotes}
+            onChange={(e) => setMedicalNotes(e.target.value)}
+            placeholder={copy.profilo.noteMediche.placeholder}
+            maxLength={2000}
+            className="w-full bg-secondary/50 border border-border rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[90px]"
+          />
+          <p className="text-xs text-muted-foreground">{copy.profilo.noteMediche.disclaimer}</p>
+          <Button onClick={saveMedicalNotes} disabled={savingNotes} className="gap-2">
+            {savingNotes ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {savedNotes ? copy.profilo.noteMediche.saved : copy.profilo.noteMediche.save}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Documenti (fitness/nutrizione) */}
+      <DocumentsCard />
+
+      {/* Abbonamento */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">{copy.profilo.abbonamento.title}</CardTitle></CardHeader>
+        <CardContent className="flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-sm text-muted-foreground">{copy.profilo.abbonamento.desc}</p>
+          <Button variant="outline" asChild className="gap-2 shrink-0">
+            <Link href="/abbonamento">
+              <Sparkles className="w-4 h-4" />
+              {copy.profilo.abbonamento.cta}
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Visibilità profilo */}
       <Card>
         <CardHeader>
@@ -216,6 +286,27 @@ export default function ProfiloPage() {
               {copy.profilo.dataDownload}
             </a>
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Guida — come funziona l'app */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-primary" />
+            {copy.profilo.guida.title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">{copy.profilo.guida.intro}</p>
+          <div className="space-y-3">
+            {copy.profilo.guida.items.map((it) => (
+              <div key={it.q}>
+                <p className="text-sm font-medium">{it.q}</p>
+                <p className="text-sm text-muted-foreground">{it.a}</p>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 

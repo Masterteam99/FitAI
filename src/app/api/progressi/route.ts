@@ -8,7 +8,7 @@ export async function GET() {
 
   const userId = session.user.id as string;
 
-  const [user, sessions, userAchievements] = await Promise.all([
+  const [user, sessions, userAchievements, analyses] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { totalPoints: true, currentStreak: true, longestStreak: true },
@@ -24,7 +24,21 @@ export async function GET() {
       include: { achievement: { select: { name: true, icon: true, rarity: true } } },
       orderBy: { unlockedAt: "desc" },
     }),
+    prisma.analysisSession.findMany({
+      where: { userId, status: "COMPLETED", combinedScore: { not: null } },
+      select: { combinedScore: true, completedAt: true, exercise: { select: { name: true } } },
+      orderBy: { completedAt: "asc" },
+      take: 60,
+    }),
   ]);
+
+  const formScores = analyses
+    .filter((a) => a.completedAt != null)
+    .map((a) => ({
+      date: a.completedAt!.toISOString(),
+      score: Math.round(a.combinedScore ?? 0),
+      exercise: a.exercise.name,
+    }));
 
   const totalMinutes = Math.round(sessions.reduce((a, s) => a + (s.totalSeconds ?? 0), 0) / 60);
 
@@ -60,6 +74,7 @@ export async function GET() {
     daysActive30,
     weeklyVolume,
     avgFeeling,
+    formScores,
     recentSessions: sessions.map((s) => ({
       completedAt: s.completedAt?.toISOString(),
       totalSeconds: s.totalSeconds,

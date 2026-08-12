@@ -324,7 +324,6 @@ export default async function DashboardPage() {
                 <CardContent className="space-y-2">
                   {[
                     { href: "/analisi", icon: Brain },
-                    { href: "/ai-coach", icon: Target },
                     { href: "/esercizi", icon: Dumbbell },
                   ].map((pres, i) => {
                     const a = { ...pres, ...copy.dashboard.quickActions[i] };
