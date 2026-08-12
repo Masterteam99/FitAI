@@ -50,7 +50,7 @@ src/app/api/           49 route REST
 src/components/        ui/, marketing/, dashboard/, analisi/, wow/ (visualizzazioni animate)
 src/services/          biomechanical/ (angoli, fasi, valutazione spec), ai/, analysis/
 src/content/copy.ts    fonte unica di TUTTI i testi dell'interfaccia
-prisma/                schema (33 modelli), migrazioni, seed (53 esercizi con spec biomeccaniche)
+prisma/                schema (37 modelli), migrazioni, seed (53 esercizi con spec biomeccaniche)
 tests/e2e/             16 file di test Playwright
 ```
 
@@ -74,7 +74,7 @@ Variabili minime: `DATABASE_URL`, `DIRECT_URL`, `NEXTAUTH_SECRET`, `ANTHROPIC_AP
 ```bash
 npm run dev              # sviluppo
 npm run build            # build di produzione
-npm run test:unit        # Vitest — 54 test
+npm run test:unit        # Vitest — 60 test
 npm run test:e2e         # Playwright (gira contro la build di produzione)
 npm run lint             # ESLint
 npm run seed             # popola esercizi, achievement, template
@@ -85,7 +85,7 @@ CI (GitHub Actions): typecheck + lint + unit a ogni push; E2E con Postgres su bu
 
 ## Stato del progetto
 
-**Su `main`**: 42 pagine, 49 route API, 33 modelli Prisma, **54/54 unit test verdi**, typecheck pulito. Milestone M0–M12 chiuse (admin hub, visual layer, CI, Sentry inclusi) più il redesign visivo interno.
+**Su `main`** (verificato 12 ago 2026): 55 pagine, 64 route API, 37 modelli Prisma, **60/60 unit test verdi** (11 file), typecheck pulito. Milestone M0–M12 chiuse (admin hub, visual layer, CI, Sentry inclusi) + redesign "wow" + **Area Utente v2 / Account Manager / Motore**.
 
 **Branch non ancora mergiati:**
 - `feat/restyling-motion-insight` — rebrand **Motion Insight** e restyling completo: palette navy/coral, landing multi-pagina (Home a 9 sezioni, Storie, Risorse/blog, Scarica), quiz pubblico prima della registrazione, area utente a 5 tab, PWA rebrandizzata.

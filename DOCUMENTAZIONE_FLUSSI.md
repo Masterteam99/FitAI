@@ -1181,7 +1181,7 @@ Componenti animati in codice puro (SVG/CSS/motion, niente Lottie/video/3D), alim
 ## 18. Testing, CI & Observability (M12)
 
 ### 18.1 Test
-- **Unit — Vitest** (`vitest.config.ts`, `environment: node`, include solo `src/**/*.test.ts`): **54 test in 9 file**, verdi. Coprono la logica pura: biomeccanica (`angleCalculator`, `phaseDetector`, `specEvaluator`), pesi analisi (`weights`), orchestrazione vision/final-report (`visionAnalyzer`, `finalReportGenerator` con Anthropic mockato), heat scale. Comandi: `npm run test:unit` (+ `:watch`, `:coverage`).
+- **Unit — Vitest** (`vitest.config.ts`, `environment: node`, include solo `src/**/*.test.ts`): **60 test in 11 file**, verdi (verificato 12 ago 2026; il conteggio è cresciuto da 54/9 con i test su `referenceCompare`/`referenceProfile`). Coprono la logica pura: biomeccanica (`angleCalculator`, `phaseDetector`, `specEvaluator`), pesi analisi (`weights`), orchestrazione vision/final-report (`visionAnalyzer`, `finalReportGenerator` con Anthropic mockato), heat scale. Comandi: `npm run test:unit` (+ `:watch`, `:coverage`).
 - **E2E — Playwright** (`playwright.config.ts`): **16 file spec** in `tests/e2e/` (incl. `m10-admin-hub`, `m9-admin-pt-upload`, `smoke`). Girano contro una **build di produzione** (`next start`), non `next dev`. Comandi: `npm run test:e2e` (+ `:ui`, `:headed`, `:debug`).
 
 ### 18.2 CI — GitHub Actions (`.github/workflows/ci.yml`)

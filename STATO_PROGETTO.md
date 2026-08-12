@@ -32,7 +32,7 @@
 
 ## 📌 Stato attuale in una riga
 
-**APP PRODUCTION-READY + repo `Masterteam99/FitAI` (`origin/main`).** Typecheck a zero errori, **54/54 unit test (Vitest) verdi**, DB Supabase migrato e seedato, Analisi v2 (Fasi 1–5) completa, **milestone M0–M12 chiuse** più l'intero **redesign visivo "wow"** (tema organico + libreria `src/components/wow`). CI GitHub Actions (typecheck+lint+unit+E2E su Postgres) attiva, Sentry reale integrato. Resta l'azione utente di deploy su Vercel (CHECKLIST_DEPLOY.md).
+**APP PRODUCTION-READY + repo `Masterteam99/FitAI` (`origin/main`).** Typecheck a zero errori, **60/60 unit test (Vitest) verdi** (11 file, verificato 12 ago 2026), DB Supabase migrato e seedato, Analisi v2 (Fasi 1–5) completa, **milestone M0–M12 chiuse** più l'intero **redesign visivo "wow"** (tema organico + libreria `src/components/wow`). CI GitHub Actions (typecheck+lint+unit+E2E su Postgres) attiva, Sentry reale integrato. Resta l'azione utente di deploy su Vercel (CHECKLIST_DEPLOY.md).
 
 > **⚠️ Nota branch (13 lug 2026)**: `main` è il branch canonico e più avanzato. `redesign-wow` è **interamente confluito in main** (0 commit avanti) → obsoleto. `m10-admin-hub` è una **versione parallela più vecchia** dell'admin hub: quel lavoro è già su main in forma squashata (commit `a7fb614`), ma il branch è ormai divergente e indietro di 100+ commit → obsoleto. Entrambi i branch sono candidati alla cancellazione; nessun lavoro unico da recuperare.
 
@@ -341,11 +341,11 @@ step4: POST /api/onboarding (save profile + onboardingCompleted=true)
 | **Redesign "wow" (tema organico + libreria wow con dato reale)** | ✅ |
 | **Copy centralizzato in `src/content/copy.ts`** | ✅ |
 | **SEO (robots/sitemap/JSON-LD) + marketing pre-login** | ✅ |
-| Test unit (Vitest 54/54) + E2E (16 file spec) | ✅ |
+| Test unit (Vitest 60/60, 11 file) + E2E (16 file spec) | ✅ |
 | Deploy prod (Vercel) | ⏸ azione utente (CHECKLIST_DEPLOY.md) |
 
 **Copertura complessiva**: **100% v1 + 100% v2 analisi + M0–M12 chiuse + redesign wow completo**. Resta solo l'azione utente di deploy Vercel.
 
 ---
 
-*Tutti i bug bloccanti sono chiusi. Analisi v2 completa, M0–M12 chiuse, redesign "wow" confluito su main. Typecheck 0 errori, 54/54 unit test verdi. Prossimo step: (opzionale) rieseguire suite E2E completa con DB, poi deploy Vercel.*
+*Tutti i bug bloccanti sono chiusi. Analisi v2 completa, M0–M12 chiuse, redesign "wow" + Area Utente v2 confluiti su main. Typecheck 0 errori, 60/60 unit test verdi (11 file, verificato 12 ago 2026). Prossimo step: infra runtime (`prisma db push` + bucket `user-documents`), verifica funzionale loggata, poi deploy Vercel.*
