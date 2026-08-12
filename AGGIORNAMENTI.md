@@ -2,6 +2,8 @@
 
 *Changelog della sessione di restyling. Branch: `feat/restyling-motion-insight` (da `main`).*
 
+> **Nota (12 ago 2026):** questo restyling è stato **merged su `main`** (commit `af8fdac`); il changelog sotto resta come registro storico della sessione. La fase successiva (Area Utente v2 + Account Manager) è descritta in `STATO_PROGETTO.md` e `MOTION_INSIGHT_AREA_UTENTE_v2.md`.
+
 ---
 
 ## Direzione decisa

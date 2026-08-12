@@ -7,6 +7,14 @@ Documentazione Completa --- Stato Produzione
 Branch: main \| M0--M12 Completate \| Typecheck: 0 errori \| Test: 54/54
 verdi
 
+> AGGIORNAMENTO 12 AGO 2026 — Questo documento fotografa lo stato al 13 luglio
+> 2026. Da allora: (1) il restyling Motion Insight è stato MERGED su main
+> (commit af8fdac), quindi non è più "in corso" né una task di merge da fare;
+> (2) è stata costruita e committata su origin/main un'intera fase nuova —
+> Area Utente v2 (7 sezioni), Account Manager (admin editabile) e Motore
+> (quiz + target nutrizionali). Per lo stato attuale vedi STATO_PROGETTO.md
+> ("Aggiornamento 12 ago 2026") e MOTION_INSIGHT_AREA_UTENTE_v2.md.
+
 Indice dei Contenuti
 
 1\. Overview del Progetto
@@ -136,11 +144,11 @@ Metriche di Qualità
 
 ✅ Branch main: canonico
 
-Restyling Motion Insight (In Corso)
+Restyling Motion Insight (✅ MERGED su main — commit af8fdac)
 
 ✅ Fase 1--3: Bug React, landing, home
 
-🟡 Fase 4--5: Onboarding, area utente 5 tab
+✅ Fase 4--5: Onboarding, area utente (poi evoluta in Area Utente v2 a 7 sezioni)
 
 ✅ Fase 6: PWA (manifest, icone)
 
@@ -152,11 +160,11 @@ Task Prioritari
 
 🔴 Alta: Test E2E Completa
 
-🟡 Media: Merge feat/restyling-motion-insight → main
+✅ Fatto: Merge feat/restyling-motion-insight → main (commit af8fdac)
 
 🟡 Media: Error UX Globale
 
-🟡 Media: Community Feed UI/API
+✅ Fatto: Community (post + like + commenti, modello SocialComment)
 
 🟡 Media: Grafici Progressi Avanzati
 
@@ -166,9 +174,9 @@ Task Prioritari
 
 Prossimi Step
 
-1\. Merge feat/restyling-motion-insight → main
+1\. Infra runtime: npx prisma db push + creare bucket Supabase user-documents
 
-2\. Setup Vercel + env
+2\. Verifica funzionale loggata dei flussi Area Utente v2 + Setup Vercel + env
 
 3\. Deploy produzione
 

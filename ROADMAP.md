@@ -2,6 +2,8 @@
 
 *Versione 3.0 — 13 luglio 2026 (M0–M12 chiuse + redesign "wow" confluito su origin/main; typecheck 0 errori, 54/54 unit test verdi)*
 
+> **⏱️ AGGIORNAMENTO 12 ago 2026:** dopo la v3.0, il **restyling Motion Insight** è stato **merged su `main`** (`af8fdac`) ed è stata costruita/committata su `origin/main` un'intera fase nuova — **Area Utente v2** (7 sezioni), **Account Manager** (admin editabile) e **Motore** (quiz + target nutrizionali). Il tracking per-task qui sotto resta come **registro storico** dell'Analisi v2; per lo stato attuale usa `STATO_PROGETTO.md` → "Aggiornamento 12 ago 2026" e `MOTION_INSIGHT_PROSSIMI_STEP.md` per i residui.
+
 > **🎉 STATO ATTUALE (13 lug 2026)**: Fasi 1–5 chiuse e funzionanti, DB setup completato, **M0–M12 tutte chiuse** su `Masterteam99/FitAI` (`origin/main`) + intero **redesign visivo "wow"**. Vedi `STATO_PROGETTO.md` per la sintesi dettagliata per milestone (M9 admin video PT, M10 admin hub, M11 visual layer, M12 production confidence, redesign wow). Verificato: `npx tsc --noEmit` 0 errori, `npx vitest run` 54/54 verdi; suite E2E 16 file spec. **Nota branch**: `main` è il canonico; `redesign-wow` (già in main) e `m10-admin-hub` (versione parallela superata dal commit squashato `a7fb614`) sono obsoleti e candidati alla cancellazione.
 >
 > **[Storico ≤ 22 maggio]** Tutte le fasi 1–5 chiuse. **Sessione 8 (15 maggio)**: avviato master plan M0–M5 (`~/.claude/plans/cosa-manca-da-fare-swirling-puzzle.md`). **M0 done** (error boundaries, PWA icons, CORS doc). **M1 done**: Playwright 19 test verdi; fixato bug profilo PATCH (`weight`/`height` → `weightKg`/`heightCm`) + `aria-label` Send AI Coach. **Sessione 11 (22 maggio)**: M8 Daily Mission chiusa + verifica E2E.

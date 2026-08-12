@@ -6,6 +6,8 @@ Documento di riferimento per sviluppatori e nuovi agenti che entrano nel progett
 
 > **Copertura**: questo documento copre l'app fino a **M0–M12 chiuse + intero redesign visivo "wow"** (branch `main`, `origin/main`). Rispetto alla v1.0 sono state aggiunte le sezioni **15 (Marketing pre-login)**, **16 (Admin: video PT + hub)**, **17 (Visual layer & libreria "wow")**, **18 (Testing, CI & Observability)**; le sezioni esistenti 1–14 sono state riviste e annotate con i cambiamenti del redesign dove rilevante. Stato verificato al 14 lug 2026: `tsc --noEmit` 0 errori, `vitest run` 54/54 verdi.
 
+> **⚠️ NON ancora coperto qui (aggiornamento 12 ago 2026):** dopo la v2.0 sono stati aggiunti — e committati su `origin/main` — il **restyling merged** (`af8fdac`) e un'intera fase nuova: **Area Utente v2** (7 sezioni: Dashboard · La tua sessione · Il tuo piano nutrizionale · Libreria · Progressi · Community · Profilo), **Account Manager** (`/admin/quiz`, `/admin/revisions`, `/admin/nutrition-plans`, `/admin/exercises/new`+`/tags`), **Motore** (quiz `/onboarding/quiz`, target Mifflin-St Jeor, abbinamento nutrizionale, ricette AI), e nuovi modelli Prisma (`RevisionRequest`, `QuizConfig`, `SocialComment`, `UserDocument` + enum `DocumentKind`, campi `medicalNotes`/`explanationVideoUrl`). Community è ora **interattiva** (post/like/commenti), non più read-only. Per questa fase la fonte è `STATO_PROGETTO.md` ("Aggiornamento 12 ago 2026") + `MOTION_INSIGHT_AREA_UTENTE_v2.md`. ⚠️ Lo schema v2 richiede ancora `npx prisma db push` e il bucket Supabase `user-documents`.
+
 ---
 
 ## Indice

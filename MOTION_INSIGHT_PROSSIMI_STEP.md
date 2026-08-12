@@ -3,7 +3,11 @@
 > Documento operativo: cosa resta da fare dopo il grande blocco di implementazione dell'area utente,
 > del Motore e dell'Account Manager. Diviso in **residui tecnici** e la **visione "Account Manager
 > completo"** (ogni sezione modificabile da un manager, con salvataggio che si adatta a tutti gli utenti).
-> Aggiornato: 2026-08-11.
+> Aggiornato: 2026-08-12.
+>
+> **Nota stato (12 ago 2026):** tutto il lavoro area utente v2 / Account Manager / Motore è ora
+> **committato e pushato su `origin/main`** (`5ad7b41`, `0f391cc`, `14b79b6`, `a4188de`). I residui
+> qui sotto restano validi; i punti 1–2 (`db push` + bucket) sono azioni **infra runtime**, non codice.
 
 ---
 
@@ -19,8 +23,9 @@
    estrazione testo (PDF) + prompt AI dedicato → aggiornamento dei piani dell'utente.
 4. **Progressi — trend carichi aggregato** — il 1RM per esercizio è già nel dettaglio esercizio;
    manca una vista "carichi principali" nella pagina Progressi (aggregando i log di sessione).
-5. **Landing — pagina "Chi siamo"** — mancano vision + bio del cofondatore tecnico (unica pagina
-   marketing non ancora scritta in `MOTION_INSIGHT_COPY_FINALE.md`).
+5. ~~**Landing — pagina "Chi siamo"**~~ — ✅ **FATTO**: la pagina esiste
+   (`src/app/(marketing)/chi-siamo/page.tsx`) con hero, intro e valori da `copy.chiSiamo`.
+   (Resta eventuale rifinitura contenuti vision/bio cofondatore, ma non è più "mancante".)
 6. **Verifica visiva/funzionale** — tutto passa `tsc`+ESLint ma NON è stato verificato loggato:
    serve avviare l'app con un account (dopo `db push` + bucket) e testare i flussi.
 

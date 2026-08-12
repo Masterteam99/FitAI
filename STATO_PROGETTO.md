@@ -1,7 +1,30 @@
 # Motion Insight (ex FitAI) — Stato del Progetto
-*Aggiornato: 21 luglio 2026 (restyling Motion Insight — 6 fasi eseguite sul branch `feat/restyling-motion-insight`, typecheck 0 errori, lint 0 errori)*
+*Aggiornato: 12 agosto 2026 (Area Utente v2 + Account Manager + Motore — committati su `main`; typecheck/ESLint puliti. Verifica funzionale loggata ancora da fare: richiede `prisma db push` + bucket Supabase `user-documents`).*
 
-> **🎨 RESTYLING IN CORSO**: il brand è ora **Motion Insight** e il sito/app è in fase di restyling completo (palette navy/coral, landing multi-pagina, area utente a 5 tab, PWA). Vedi **`AGGIORNAMENTI.md`** per il changelog dettagliato della sessione. Lo storico qui sotto (M0–M12 + redesign "wow") resta valido come base tecnica.
+> **✅ RESTYLING MERGED + AREA UTENTE v2**: il rebrand **Motion Insight** e il restyling sono **confluiti in `main`** (commit `af8fdac merge: restyling Motion Insight in main`). Sopra a quello è stata costruita e **committata** un'intera fase nuova: **Area Utente v2** (7 sezioni), **Account Manager** (admin editabile) e **Motore di pianificazione** (quiz). Sintesi qui sotto in "Aggiornamento 12 ago 2026". Lo storico più in basso (M0–M12 + redesign "wow" + restyling) resta valido come base tecnica.
+
+---
+
+## 🆕 Aggiornamento 12 agosto 2026 — Area Utente v2 + Account Manager + Motore
+
+> Fase costruita sopra al restyling merged. Tutto **committato e pushato su `origin/main`** (commit `5ad7b41` core, `0f391cc` admin, `14b79b6` area-utente, `a4188de` docs). Passa `tsc`+ESLint; **la verifica funzionale loggata NON è ancora stata fatta** (serve `npx prisma db push` + creazione bucket Supabase `user-documents`).
+
+**Area Utente v2 — 7 sezioni** (`Dashboard · La tua sessione · Il tuo piano nutrizionale · Libreria · Progressi · Community · Profilo`; su mobile 5 in tab-bar + Community/Profilo nel menu ☰):
+- **Sessione**: toggle "Analisi avanzata" per esercizio; pannello "Il tuo stato" (heatmap + rischio + suggerimento); richiesta di revisione manuale (`RevisionRequest`).
+- **Nutrizione**: target personalizzati Mifflin-St Jeor (non più 2000 kcal fissi); abbinamento piano dal pool (`/api/nutrition/match`); ricette AI (`/api/ai/recipes`).
+- **Libreria**: filtro per tag; dettaglio con doppio video PT (esecuzione + consigli) + "Attiva analisi avanzata".
+- **Progressi**: trend Form Score; peso e misure (`UserProgress`).
+- **Community**: creazione post + like + commenti (`SocialComment`) — **non più read-only MVP**.
+- **Profilo**: note mediche (testo), upload documenti fitness/nutrizione (`UserDocument` + Supabase), card abbonamento, quiz ripetibile.
+- **AI Coach**: codice ed endpoint (`/api/ai/chat`, pagina `/ai-coach`) ancora presenti ma **rimosso dalla navigazione** dell'area utente v2 (scelta di prodotto).
+
+**Account Manager (admin)** — pattern "modifica → salva → si applica a tutti":
+- ✅ Quiz onboarding editabile (`/admin/quiz`, `QuizConfig` in DB) → renderizzato in `/onboarding/quiz`.
+- ✅ Coda revisioni (`/admin/revisions`), editor tag/note esercizi (`/admin/exercises/tags`), pool piani nutrizionali crea/elimina (`/admin/nutrition-plans`), form "Nuovo esercizio" completo con trigger biomeccanici (`/admin/exercises/new`).
+
+**Schema Prisma v2** (committato in `schema.prisma`, **`db push` ancora da eseguire**): `medicalNotes`, `explanationVideoUrl`, modelli `RevisionRequest`, `QuizConfig`, `SocialComment`, `UserDocument` (+ enum `DocumentKind`), uso di `UserProgress`.
+
+**Residui noti** (vedi `MOTION_INSIGHT_PROSSIMI_STEP.md`): parsing/adattamento AI dei documenti caricati (l'upload c'è, la lettura no); trend carichi aggregato in Progressi; editor "modifica esercizio esistente" e "modifica pool nutrizionale"; template piani fitness CRUD; `SiteContent` per copy editabili senza deploy.
 
 > **⚠️ IMPORTANTE**: l'Analisi v2 è **implementata e funzionante** (Fasi 1–5 chiuse). La spec autoritativa resta in `ANALYSIS_SPEC.md` (root). Per una vista panoramica di TUTTI i flussi dell'app (auth, onboarding, allenamento, analisi, nutrizione, progressi, infrastruttura, daily mission) fare riferimento a **`DOCUMENTAZIONE_FLUSSI.md`** (root), che è il documento di onboarding sviluppatori.
 
@@ -15,7 +38,9 @@
 
 ---
 
-## 🎨 Restyling Motion Insight (branch `feat/restyling-motion-insight` — NON ancora su main)
+## 🎨 Restyling Motion Insight (✅ confluito in `main` — commit `af8fdac`)
+
+> **Nota (12 ago 2026):** questo restyling è ora **merged su `main`**; la sezione sotto resta come registro delle 6 fasi eseguite. Sopra al restyling è stata poi costruita l'**Area Utente v2** (vedi sezione "Aggiornamento 12 ago 2026" in cima).
 
 Restyling completo secondo `DOCUMENTI BUSINESS/ISTRUZIONI_CLAUDE_CODE.md` (6 fasi). Direzione: **navy `#16213E` / coral `#E94560` (solo azioni) / teal / lime**, base chiara, display **Sora** + Inter, brand **Motion Insight**.
 
@@ -293,10 +318,15 @@ step4: POST /api/onboarding (save profile + onboardingCompleted=true)
 | Report finale con `combinedScore`, `injuryRiskAlert`, `prioritizedImprovements` | ✅ |
 | Nutrizione tracking giornaliero (log pasti, macro totals) | ✅ |
 | Progressi (stats + BarChart settimanale + LineChart 30gg + achievements grid) | ✅ |
-| AI Coach chat streaming | ✅ |
+| AI Coach chat streaming (endpoint presente, ma de-linkato dalla nav area utente v2) | ⚠️ |
 | Catalogo esercizi (filtri + dettaglio biomeccanico) | ✅ |
 | Profilo (edit + logout) + GDPR export/delete | ✅ |
-| Community feed (read-only MVP) | ✅ |
+| Community (post + like + commenti — non più read-only) | ✅ |
+| **Area Utente v2 (7 sezioni web+PWA)** | ✅ |
+| **Account Manager: quiz editabile / revisioni / pool nutrizionale / nuovo esercizio+tag** | ✅ |
+| **Motore: quiz onboarding + target Mifflin-St Jeor + abbinamento pool + ricette AI** | ✅ |
+| **Profilo: note mediche + upload documenti (`UserDocument`)** | ✅ (parsing/adattamento AI ⏳) |
+| **Progressi: trend Form Score + peso/misure** | ✅ (trend carichi aggregato ⏳) |
 | PWA offline + icons | ✅ |
 | Error UX globale (boundary + toast) | ✅ |
 | Email transactional + reset password + verify email | ✅ |

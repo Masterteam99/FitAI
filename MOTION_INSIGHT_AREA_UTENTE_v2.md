@@ -10,7 +10,7 @@
 > `⚠️` nota legale/di attenzione · `❓` decisione aperta.
 >
 > **Riferimenti:** mappa dello stato attuale del codice = analisi in chat; landing = `MOTION_INSIGHT_COPY_FINALE.md`.
-> **Ultimo aggiornamento:** 2026-08-11 — avvio v2.
+> **Ultimo aggiornamento:** 2026-08-12 — v2 implementata e committata su `origin/main` (`5ad7b41`, `0f391cc`, `14b79b6`, `a4188de`); verifica loggata ancora da fare.
 
 ---
 
@@ -19,7 +19,7 @@
 `Dashboard · La tua sessione · Il tuo piano nutrizionale · Libreria · Progressi · Community · Profilo`
 
 - **Analisi** non è più un tab: vive come **"Attiva analisi avanzata"** dentro *La tua sessione* e *Libreria* (il flusso tecnico esistente `/analisi/sessione` viene richiamato da lì).
-- **AI Coach** → ❌ **rimosso per ora** dal sito e dall'area utente (per scelta: non incluso in questa fase).
+- **AI Coach** → ❌ **rimosso dalla navigazione** (per scelta: non incluso in questa fase). Il codice e l'endpoint (`/api/ai/chat`, pagina `/ai-coach`) esistono ancora ma non sono linkati nell'area utente v2.
 - **Abbonamento** (`/abbonamento`) → dentro **Profilo**.
 - **Community** → **confermata come sezione**, posizionata **prima di Profilo**.
 - ✅ **Tab-bar mobile (confermato):** i **5 principali** in basso (Dashboard · La tua sessione · Il tuo piano nutrizionale · Libreria · Progressi); **Community** e **Profilo** dentro un **menu ☰** (tre stanghette). Su desktop tutte e 7 nella sidebar.
@@ -71,15 +71,15 @@
 - Progressi: **peso e misure** (grafico + aggiunta, modello `UserProgress`).
 - Profilo: **upload documenti** fitness/nutrizione (Supabase, modello `UserDocument`).
 
-**Da fare (residui)**
+**Da fare (residui reali — aggiornato 12 ago 2026)**
 - Nutrizione: **adattamento automatico dei piani dal documento caricato** (serve parsing/AI del file — l'upload c'è, la lettura no).
 - Progressi: **trend carichi aggregato** (il 1RM per esercizio è già nel dettaglio esercizio).
-- ⚙️ Infra: creare il bucket Supabase **`user-documents`** perché l'upload funzioni.
-- Nutrizione: ricette AI, adattamento da documento.
-- Libreria: anteprima video pro nella card, doppio riquadro video nel dettaglio, micro-sezioni.
-- Progressi: trend carichi, peso/misure.
-- Profilo: upload documenti (fitness/nutrizione).
-- Community: creazione post / like / commenti.
+- ⚙️ Infra (runtime, non codice): eseguire `npx prisma db push` e creare il bucket Supabase **`user-documents`** perché upload/schema funzionino.
+- ⚙️ Verifica funzionale **loggata** dei flussi (mai fatta finora).
+
+> ✅ **Già completati** (erano elencati qui come "da fare", ora fatti e committati su `main`): ricette AI,
+> doppio video PT nel dettaglio libreria + anteprima/micro-sezioni, peso/misure in Progressi,
+> upload documenti nel Profilo, creazione post/like/commenti in Community.
 
 ---
 

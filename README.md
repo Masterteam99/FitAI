@@ -1,6 +1,6 @@
 # Motion Insight (repo: FitAI)
 
-> **Nota sul nome**: il prodotto è stato rinominato **Motion Insight**. Il codice su `main` usa ancora il naming storico *FitAI* in alcune stringhe e nel nome del pacchetto: il rebrand completo vive sul branch `feat/restyling-motion-insight` (vedi [Stato del progetto](#stato-del-progetto)).
+> **Nota sul nome**: il prodotto è stato rinominato **Motion Insight**. Il rebrand/restyling è ora **confluito in `main`** (commit `af8fdac`); il naming storico *FitAI* resta solo nel nome del repo (`Masterteam99/FitAI`), nel package e in alcune stringhe interne. Sopra al restyling è stata costruita l'**Area Utente v2** + **Account Manager** (vedi `STATO_PROGETTO.md` → "Aggiornamento 12 ago 2026").
 
 App fitness AI-driven: genera piani di allenamento e nutrizione personalizzati con Claude e **analizza l'esecuzione tecnica degli esercizi dal video**, restituendo un punteggio di forma 0–100 con le correzioni.
 
@@ -20,6 +20,8 @@ Oltre all'analisi:
 - **Piani AI** di allenamento e nutrizione (streaming, few-shot su template), rigenerabili e adattivi
 - **Tracking**: sessioni, carichi, streak, achievement, progressi, mappa corporea degli squilibri
 - **Admin hub**: utenti, abbonamenti, statistiche, gestione admin, uso/costo AI, audit log, upload dei video PT
+- **Area Utente v2** (7 sezioni, web + PWA): sessione con analisi avanzata on/off, piano nutrizionale con target personalizzati e ricette AI, libreria filtrabile per tag, progressi (Form Score + peso/misure), community (post/like/commenti), profilo con upload documenti
+- **Account Manager**: quiz onboarding editabile, coda revisioni, pool piani nutrizionali, editor tag/nuovo esercizio (modifiche che si applicano a tutti gli utenti)
 
 ## Stack
 

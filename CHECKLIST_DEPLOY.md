@@ -4,6 +4,20 @@ Lista di azioni manuali da eseguire al di fuori del codebase per portare FitAI i
 
 ---
 
+## Area Utente v2 — infra da eseguire (aggiornato 12 ago 2026)
+
+> Il codice dell'Area Utente v2 / Account Manager è committato su `main`, ma richiede questi due passi runtime prima di poter testare i flussi loggati. Senza, upload documenti e le feature legate ai nuovi modelli danno errore.
+
+### [ ] `npx prisma db push` — applicare lo schema v2
+
+Applica al DB Supabase le aggiunte già presenti in `prisma/schema.prisma`: `medicalNotes`, `explanationVideoUrl`, modelli `RevisionRequest`, `QuizConfig`, `SocialComment`, `UserDocument` (+ enum `DocumentKind`).
+
+### [ ] Creare il bucket Supabase `user-documents`
+
+Serve per l'upload dei documenti utente (fitness/nutrizione) dal Profilo (`/api/documents`). Senza il bucket l'upload fallisce a runtime (stesso schema del bucket video analisi). Bucket privato; l'accesso avviene via signed URL lato server.
+
+---
+
 ## M0 — Quick wins
 
 ### [ ] CORS bucket `exercise-videos` su Supabase
