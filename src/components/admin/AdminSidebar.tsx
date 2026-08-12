@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, CreditCard, Dumbbell, BarChart3, ShieldCheck, Bot, History } from "lucide-react";
+import { Users, CreditCard, Dumbbell, BarChart3, ShieldCheck, Bot, History, MessageSquare, Apple, ListChecks } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { copy } from "@/content/copy";
 
@@ -13,6 +13,9 @@ const ADMIN_TABS = [
   { href: "/admin/stats", label: copy.adminSidebar.tabStats, icon: BarChart3 },
   { href: "/admin/admins", label: copy.adminSidebar.tabAdmins, icon: ShieldCheck },
   { href: "/admin/ai-usage", label: copy.adminSidebar.tabAiUsage, icon: Bot },
+  { href: "/admin/revisions", label: copy.adminSidebar.tabRevisions, icon: MessageSquare },
+  { href: "/admin/nutrition-plans", label: copy.adminSidebar.tabNutritionPool, icon: Apple },
+  { href: "/admin/quiz", label: copy.adminSidebar.tabQuiz, icon: ListChecks },
 ];
 
 export function AdminSidebar() {

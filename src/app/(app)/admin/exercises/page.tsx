@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Tags, Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AdminExercisesTable } from "@/components/admin/AdminExercisesTable";
 import { AdminMetricCard } from "@/components/admin/AdminMetricCard";
@@ -20,11 +23,27 @@ export default async function AdminExercisesPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">{copy.adminExercises.title}</h1>
-        <p className="text-sm text-muted-foreground">
-          {copy.adminExercises.subtitle}
-        </p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold">{copy.adminExercises.title}</h1>
+          <p className="text-sm text-muted-foreground">
+            {copy.adminExercises.subtitle}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/exercises/tags">
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <Tags className="w-4 h-4" />
+              {copy.adminExerciseTags.openEditor}
+            </Button>
+          </Link>
+          <Link href="/admin/exercises/new">
+            <Button size="sm" className="gap-1.5">
+              <Plus className="w-4 h-4" />
+              {copy.adminNewExercise.newExercise}
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
