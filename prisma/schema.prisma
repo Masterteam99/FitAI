@@ -201,6 +201,7 @@ model User {
   dietType            String? // onnivora, vegetariana, vegana, chetogenica, mediterranea, altro
   pastInjuries        String[]     @default([]) // array libero
   pastSports          String[]     @default([]) // multi-select
+  medicalNotes        String? // note mediche facoltative scritte dall'utente (testo libero, nessun file)
   nutritionPlanJson   Json?
   onboardingCompleted Boolean      @default(false)
   totalPoints         Int          @default(0)
@@ -224,10 +225,13 @@ model User {
   achievements          UserAchievement[]
   socialPosts           SocialPost[]
   socialLikes           SocialLike[]
+  socialComments        SocialComment[]
+  documents             UserDocument[]
   challengeParticipants ChallengeParticipant[]
   notifications         Notification[]
   wearables             WearableIntegration[]
   dailyCheckins         DailyCheckin[]
+  revisionRequests      RevisionRequest[]
   adminActions          AdminActionLog[]      @relation("AdminActionActor")
 
   @@map("users")
@@ -343,6 +347,7 @@ model Exercise {
   equipment                Equipment[]      @default([NONE])
   category                 ExerciseCategory
   videoUrl                 String? // VIDEO_RIF_1: video PT pro per riferimento e Logica 3
+  explanationVideoUrl      String? // video del professionista che spiega l'esecuzione (consigli)
   thumbnailUrl             String?
   durationSeconds          Int?
   recordingDurationSeconds Int              @default(20) // 15-25s, durata acquisizione video utente per analisi
@@ -657,12 +662,26 @@ model SocialPost {
   imageUrl         String?
   likesCount       Int          @default(0)
   createdAt        DateTime     @default(now())
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   likes            SocialLike[]
+  comments         SocialComment[]
 
   @@index([userId])
   @@index([createdAt])
   @@map("social_posts")
+}
+
+model SocialComment {
+  id        String     @id @default(cuid())
+  postId    String
+  userId    String
+  content   String     @db.Text
+  createdAt DateTime   @default(now())
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("social_comments")
 }
 
 model SocialLike {
@@ -752,4 +771,54 @@ model AdminActionLog {
   @@index([actorId])
   @@index([createdAt])
   @@index([action])
+}
+
+model RevisionRequest {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      RevisionType
+  message   String
+  status    RevisionStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+
+  @@index([userId])
+  @@index([status])
+  @@map("revision_requests")
+}
+
+enum RevisionType {
+  FITNESS
+  NUTRITION
+}
+
+enum RevisionStatus {
+  PENDING
+  REVIEWED
+}
+
+model QuizConfig {
+  id            String   @id
+  questionsJson Json
+  updatedAt     DateTime @updatedAt
+
+  @@map("quiz_config")
+}
+
+model UserDocument {
+  id        String       @id @default(cuid())
+  userId    String
+  kind      DocumentKind
+  name      String
+  path      String
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_documents")
+}
+
+enum DocumentKind {
+  FITNESS
+  NUTRITION
 }

@@ -36,6 +36,7 @@ export const STORAGE_BUCKETS = {
   ANALYSIS_VIDEOS: "analysis-videos",
   USER_AVATARS: "user-avatars",
   PROGRESS_PHOTOS: "progress-photos",
+  USER_DOCUMENTS: "user-documents",
 } as const;
 
 export async function uploadFile(
