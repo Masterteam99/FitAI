@@ -1,12 +1,12 @@
 # FitAI — Documentazione Flussi e Architettura
 
-*Versione 2.0 — 14 luglio 2026 (aggiornamento M9→M12 + redesign "wow"). v1.0 era 14 maggio 2026 (sessione 7).*
+*Versione 2.1 — 12 agosto 2026 (aggiunta §21 Area Utente v2 + Motore + Account Manager; annotate §2/4/5/9/10/11/12/13). v2.0 era 14 luglio 2026 (M9→M12 + redesign "wow"); v1.0 14 maggio 2026.*
 
 Documento di riferimento per sviluppatori e nuovi agenti che entrano nel progetto. Mappa ogni sezione dell'app, le sue funzionalità e i flussi end-to-end. Per ogni claim sono indicati i path dei sorgenti.
 
 > **Copertura**: questo documento copre l'app fino a **M0–M12 chiuse + intero redesign visivo "wow"** (branch `main`, `origin/main`). Rispetto alla v1.0 sono state aggiunte le sezioni **15 (Marketing pre-login)**, **16 (Admin: video PT + hub)**, **17 (Visual layer & libreria "wow")**, **18 (Testing, CI & Observability)**; le sezioni esistenti 1–14 sono state riviste e annotate con i cambiamenti del redesign dove rilevante. Stato verificato al 14 lug 2026: `tsc --noEmit` 0 errori, `vitest run` 54/54 verdi.
 
-> **⚠️ NON ancora coperto qui (aggiornamento 12 ago 2026):** dopo la v2.0 sono stati aggiunti — e committati su `origin/main` — il **restyling merged** (`af8fdac`) e un'intera fase nuova: **Area Utente v2** (7 sezioni: Dashboard · La tua sessione · Il tuo piano nutrizionale · Libreria · Progressi · Community · Profilo), **Account Manager** (`/admin/quiz`, `/admin/revisions`, `/admin/nutrition-plans`, `/admin/exercises/new`+`/tags`), **Motore** (quiz `/onboarding/quiz`, target Mifflin-St Jeor, abbinamento nutrizionale, ricette AI), e nuovi modelli Prisma (`RevisionRequest`, `QuizConfig`, `SocialComment`, `UserDocument` + enum `DocumentKind`, campi `medicalNotes`/`explanationVideoUrl`). Community è ora **interattiva** (post/like/commenti), non più read-only. Per questa fase la fonte è `STATO_PROGETTO.md` ("Aggiornamento 12 ago 2026") + `MOTION_INSIGHT_AREA_UTENTE_v2.md`. ⚠️ Lo schema v2 richiede ancora `npx prisma db push` e il bucket Supabase `user-documents`.
+> **🆕 Aggiornamento 12 ago 2026 — Area Utente v2:** dopo la v2.0 sono stati aggiunti — e committati su `origin/main` — il **restyling merged** (`af8fdac`) e un'intera fase nuova: **Area Utente v2** (7 sezioni), **Account Manager**, **Motore** (quiz + target nutrizionali). Questa fase è **documentata in dettaglio nella nuova [§21](#21-area-utente-v2--motore--account-manager-ago-2026)**; le sezioni 4, 5, 9, 10, 11, 12, 13 qui sotto sono state **annotate** con i cambiamenti v2 (in particolare §12 Community non è più un placeholder). ⚠️ Lo schema v2 richiede ancora `npx prisma db push` e il bucket Supabase `user-documents` per funzionare a runtime.
 
 ---
 
@@ -32,6 +32,7 @@ Documento di riferimento per sviluppatori e nuovi agenti che entrano nel progett
 18. [Testing, CI & Observability (M12)](#18-testing-ci--observability-m12) 🆕
 19. [Riepilogo modelli AI per endpoint](#19-riepilogo-modelli-ai-per-endpoint)
 20. [Errori noti, limitazioni, TODO](#20-errori-noti-limitazioni-todo)
+21. [Area Utente v2 + Motore + Account Manager (ago 2026)](#21-area-utente-v2--motore--account-manager-ago-2026) 🆕
 
 ---
 
@@ -98,6 +99,8 @@ Documento di riferimento per sviluppatori e nuovi agenti che entrano nel progett
 ## 2. Modello dati (schema Prisma)
 
 File: `prisma/schema.prisma`. Client generato in `src/generated/prisma/` (import: `from "@/generated/prisma"`).
+
+> **🆕 v2 (ago 2026): 37 modelli totali.** Rispetto alla v2.0 lo schema aggiunge: campo `User.medicalNotes`, campo `Exercise.explanationVideoUrl`, e i modelli **`RevisionRequest`**, **`QuizConfig`**, **`SocialComment`**, **`UserDocument`** (+ enum **`DocumentKind`**: FITNESS/NUTRITION); `UserProgress` è ora usato attivamente (peso/misure). ⚠️ Queste aggiunte sono nello schema ma richiedono `npx prisma db push` sul DB. Vedi [§21.8](#218-nuovi-modelli-prisma-v2).
 
 ### Enum (17 totali)
 
@@ -246,6 +249,8 @@ Esempio guard nel layout: `src/app/(app)/layout.tsx` controlla session + `onboar
 
 ## 4. Onboarding 4-step
 
+> **🆕 v2 (ago 2026): l'entry point dell'onboarding è ora il QUIZ, non i 4 step.** `src/app/(app)/layout.tsx` reindirizza gli utenti con `onboardingCompleted: false` a **`/onboarding/quiz`** (non più `/onboarding/step1`). Il flusso 4-step descritto qui sotto **esiste ancora nel codice** ma non è più il percorso principale. Dettaglio del quiz in [§21.2](#212-onboarding--quiz).
+
 L'onboarding raccoglie il profilo utente in 4 schermate, conservando lo stato in **sessionStorage** (chiave `fitai-onboarding`) tramite l'helper `onboardingState.ts`. Al termine genera il primo piano AI di allenamento.
 
 ### Helper sessionStorage
@@ -344,6 +349,8 @@ if (!user?.onboardingCompleted) redirect("/onboarding");
 ---
 
 ## 5. Dashboard e navigazione
+
+> **🆕 v2 (ago 2026): la navigazione è cambiata.** La `Navbar` è ora **copy-driven** (`src/content/copy.ts` → `copy.navbar`) con **7 sezioni**: 5 principali (Dashboard, La tua sessione `/allenamento`, Il tuo piano nutrizionale `/nutrizione`, Libreria `/esercizi`, Progressi) in sidebar desktop e bottom tab-bar mobile; **Community** e **Profilo** in coda alla sidebar e nel menu ☰ mobile; **Admin** condizionale (`isAdmin`). Le **quick action** verso `/ai-coach` non ci sono più (AI Coach de-linkato — vedi §9). Struttura completa in [§21.1](#211-navigazione-v2-7-sezioni). Le quick action e il layout dashboard qui sotto restano validi tranne il link AI Coach.
 
 ### Dashboard
 
@@ -819,6 +826,8 @@ Empty states gestiti da `<ReportSkeleton>` (durante PROCESSING) e `<ReportError>
 
 ## 9. AI Coach (chat)
 
+> **🆕 v2 (ago 2026): AI Coach è de-linkato dalla navigazione.** L'endpoint `POST /api/ai/chat` e la pagina `/ai-coach` **esistono ancora** e funzionano (descritti sotto), ma **non sono raggiungibili** dalla nav dell'Area Utente v2 (scelta di prodotto: escluso da questa fase).
+
 `POST /api/ai/chat` — chat conversazionale streaming. File `src/app/api/ai/chat/route.ts`.
 
 ```typescript
@@ -848,6 +857,8 @@ Rate limit `aiRatelimit` (10/min). System prompt empatico, scientifico, motivant
 ---
 
 ## 10. Nutrizione
+
+> **🆕 v2 (ago 2026):** aggiunti **target personalizzati** (Mifflin-St Jeor, `src/lib/nutrition-targets.ts` — non più 2000 kcal fissi), **abbinamento piano dal pool** (`GET /api/nutrition/match` → `NutritionPlanTemplate`, card `NutritionMatchCard`) e **ricette AI** (`POST /api/ai/recipes`, card `RecipesCard`). Dettaglio in [§21.3](#213-motore-nutrizionale).
 
 ### 10.1 Generazione AI piano nutrizionale
 
@@ -921,6 +932,8 @@ UI: date navigator (frecce ±1 giorno, disabled su today), macro grid 4 colonne 
 
 ## 11. Progressi
 
+> **🆕 v2 (ago 2026):** `GET /api/progressi` ora restituisce anche il **trend Form Score** (`formScores` dalle `AnalysisSession` completate) oltre a volume settimanale e achievement; aggiunto **peso e misure** via `GET/POST /api/progress-entries` (modello `UserProgress`: `weightKg`, `measurementWaistCm`, `notes`), card `WeightMeasuresCard`. Residuo: trend carichi aggregato. Dettaglio in [§21.4](#214-progressi-v2).
+
 `src/app/(app)/progressi/page.tsx` + `GET /api/progressi`.
 
 API aggrega in parallelo:
@@ -968,19 +981,23 @@ Empty state: se `totalSessions === 0` → placeholder "Completa la prima session
 
 ## 12. Community
 
-`src/app/(app)/community/page.tsx` — **placeholder**. Card con Construction icon + testo "Prossimamente — Feed social, sfide, classifiche e condivisione progressi in arrivo!".
+> **🆕 v2 (ago 2026): non è più un placeholder — è interattiva.** Dettaglio in [§21.5](#215-community-interattiva).
 
-Schema DB pronto per implementazione futura:
-- `SocialPost` con types: WORKOUT_SHARE, ACHIEVEMENT, PROGRESS_PHOTO, CHALLENGE_COMPLETION
-- `SocialLike` (unique su `[postId, userId]`)
-- `Challenge` con `target` Json + `reward` Json
-- `ChallengeParticipant` con `currentProgress` Json
+`src/app/(app)/community/page.tsx` — feed social funzionante:
+- **`GET /api/community/feed`** — post degli utenti con `profileVisibility: "PUBLIC"`, ordinati per data desc, paginazione a **cursor** (`limit` max 50), ogni item con `likedByMe` e `commentsCount`.
+- **`POST /api/community/posts`** — crea un `SocialPost` (`type: WORKOUT_SHARE`, `content` ≤ 1000 char).
+- **Like**: `src/app/api/community/posts/[id]/like/route.ts` (toggle `SocialLike`, unique `[postId, userId]`).
+- **Commenti**: `src/app/api/community/posts/[id]/comments/route.ts` → modello **`SocialComment`** (nuovo in v2).
+
+Schema DB (parti ancora non esposte in UI): `Challenge` con `target`/`reward` Json, `ChallengeParticipant` con `currentProgress` Json (sfide/classifiche non ancora implementate).
 
 ---
 
 ## 13. Profilo
 
-`src/app/(app)/profilo/page.tsx` — client component. `GET /api/profilo` ritorna:
+> **🆕 v2 (ago 2026): il Profilo è molto più ricco.** Oltre a stats/edit qui sotto ora include: **note mediche** (`medicalNotes`, via `/api/profilo`), **upload documenti** fitness/nutrizione (`GET/POST/DELETE /api/documents` → `UserDocument` su bucket Supabase `user-documents`, card `DocumentsCard`), **richiesta di revisione manuale** (`POST /api/revision-requests` → `RevisionRequest`, form `RevisionRequestForm`), **card abbonamento** e **quiz ripetibile**. ⚠️ Il parsing/adattamento AI dei documenti caricati NON è implementato (solo storage). Dettaglio in [§21.6](#216-profilo-v2).
+
+`src/app/(app)/profilo/page.tsx` — client component. `GET /api/profilo` ritorna (base storica):
 
 ```typescript
 {
@@ -1218,11 +1235,11 @@ API neutra su Sentry, **attiva solo con DSN** (`SENTRY_DSN` server / `NEXT_PUBLI
 - **Test E2E**: suite Playwright presente (16 file spec) e girata in CI contro build di produzione. **Nota**: il singolo giro *manuale* completo *onboarding → piano → workout → analisi → report* con video reale resta la prova consigliata prima del deploy (vedi §8 e "Motion Insight" sotto).
 - **Error boundary globale**: `src/app/(app)/error.tsx` **esiste**.
 - **PWA**: `public/icon-192.png`, `public/icon-512.png`, `public/manifest.json`, `public/sw.js` **presenti**.
-- **Community feed**: API `GET /api/community/feed` presente e la pagina la consuma (MVP read-only).
+- **Community feed**: ora **interattiva** (post + like + commenti, modello `SocialComment`), non più read-only. Vedi §12 e §21.5.
 
 ### 🟡 Ancora aperti / non bloccanti
 
-- **Grafici progressi**: estensioni (peso corporeo trend, foto progressi) ancora TODO.
+- **Grafici progressi**: **peso/misure fatti** (`UserProgress` via `/api/progress-entries`) e **trend Form Score** attivo; restano TODO il **trend carichi aggregato** e le foto progressi.
 - **Deploy Vercel**: azione utente (account + env vars).
 - **`BodyMap.tsx`** ricalcola la logica colore heat invece di importare `wow/heat/heatScale` (micro-refactor).
 
@@ -1246,6 +1263,79 @@ Riportate qui per evitare regressioni:
 - **MealType**: solo BREAKFAST/LUNCH/DINNER/SNACK (NON PRE_WORKOUT/POST_WORKOUT)
 - **Next.js 16**: `middleware.ts` → `proxy.ts` (export `auth as proxy`)
 - **Prisma 7**: importa da `@/generated/prisma` (NON da `@prisma/client`)
+
+---
+
+## 21. Area Utente v2 + Motore + Account Manager (ago 2026)
+
+> Fase costruita sopra al restyling merged (`af8fdac`), committata su `origin/main` (`5ad7b41`, `0f391cc`, `14b79b6`). Passa `tsc`+ESLint; **verifica funzionale loggata non ancora fatta** (richiede `npx prisma db push` + bucket Supabase `user-documents`). Ogni voce sotto è verificata sul codice.
+
+### 21.1 Navigazione v2 (7 sezioni)
+
+`src/components/layout/Navbar.tsx` — nav **copy-driven** da `src/content/copy.ts` (`copy.navbar`):
+- **5 principali** (`NAV_ITEMS`): Dashboard (`/dashboard`), La tua sessione (`/allenamento`), Il tuo piano nutrizionale (`/nutrizione`), Libreria (`/esercizi`), Progressi (`/progressi`).
+- **Menu** (`MENU_ITEMS`): Community (`/community`), Profilo (`/profilo`).
+- **Desktop**: sidebar fissa `w-64` con i 5 principali + separatore + 2 menu + link **Admin** condizionale (`isAdmin`) + card **Premium** (se `!isPremium`) + utente/logout.
+- **Mobile**: header con logo + menu ☰ (Community, Profilo, Admin, Esci) + **bottom tab-bar** con i 5 principali.
+- **AI Coach non è in nav** (vedi §9).
+
+### 21.2 Onboarding = Quiz
+
+- `src/app/(app)/layout.tsx`: se `!user.onboardingCompleted` → `redirect("/onboarding/quiz")`.
+- `src/app/(auth)/onboarding/quiz/page.tsx` renderizza la config da **`GET /api/quiz`** → `QuizConfig` dal DB (`quizConfig`, id `"singleton"`) oppure `DEFAULT_QUIZ` (`src/lib/quiz.ts`, 8 domande: goal, level, place, equipment, days, time, diet, notes).
+- All'invio **`POST /api/quiz`** → `mapAnswersToUser()` mappa solo le **chiavi di sistema riconosciute** ai campi utente (`primaryGoal`, `fitnessLevel`, `weeklyWorkoutDays`, `availableEquipment`, `dietType`, `medicalNotes`) + `onboardingCompleted: true`.
+- Il vecchio flusso `/onboarding/step1-4` resta nel codice ma non è più l'entry point.
+
+### 21.3 Motore nutrizionale
+
+- **Target**: `src/lib/nutrition-targets.ts` → `computeNutritionTargets()` (Mifflin-St Jeor su `weightKg`/`heightCm`/`age`/`primaryGoal`).
+- **Abbinamento pool**: `GET /api/nutrition/match` sceglie un `NutritionPlanTemplate` con priorità **(goal+diet) → goal → qualsiasi**; ritorna nome, descrizione, macro, testo settimanale, rationale. Card `src/app/(app)/nutrizione/NutritionMatchCard.tsx`.
+- **Ricette AI**: `POST /api/ai/recipes` (rate-limited via `aiRatelimit`) → Claude `MODELS.DEFAULT` genera 3 ricette in base a goal/diet/target. Card `RecipesCard.tsx`.
+
+### 21.4 Progressi v2
+
+- `GET /api/progressi`: oltre a volume settimanale (8 sett.), sessioni, streak, achievement, ritorna **`formScores`** (trend `combinedScore` dalle `AnalysisSession` completate).
+- **Peso/misure**: `GET/POST /api/progress-entries` → modello `UserProgress` (`weightKg`, `measurementWaistCm`, `notes`; POST richiede almeno un valore). Card `WeightMeasuresCard.tsx`.
+- Residuo: **trend carichi aggregato** (l'ultimo carico per esercizio è già in `GET /api/me/last-loads`, usato per il prefill in sessione).
+
+### 21.5 Community interattiva
+
+- **`GET /api/community/feed`**: post di utenti `profileVisibility: "PUBLIC"`, ordine desc, **paginazione a cursor** (`limit` max 50); ogni item con `likedByMe` e `commentsCount`.
+- **`POST /api/community/posts`**: crea `SocialPost` (`type: WORKOUT_SHARE`, `content` ≤ 1000).
+- **Like**: `/api/community/posts/[id]/like` (`SocialLike`). **Commenti**: `/api/community/posts/[id]/comments` (`SocialComment`, nuovo modello v2).
+- Non ancora esposti: sfide/classifiche (`Challenge`, `ChallengeParticipant`).
+
+### 21.6 Profilo v2
+
+- **Note mediche**: `medicalNotes` (testo libero) via `/api/profilo`.
+- **Documenti**: `GET/POST/DELETE /api/documents` → `UserDocument` (`kind` FITNESS|NUTRITION, max 10MB, PDF/JPEG/PNG/WebP) su bucket Supabase **`user-documents`** (privato, download via **signed URL** 1h lato server). Card `src/components/DocumentsCard.tsx`. ⚠️ Solo storage: **nessun parsing/adattamento AI** del contenuto (residuo).
+- **Richiesta revisione**: `POST /api/revision-requests` → `RevisionRequest` (`type` FITNESS|NUTRITION, `message` 3–2000). Form `src/components/RevisionRequestForm.tsx`.
+- Card **abbonamento** + **quiz ripetibile**.
+
+### 21.7 Account Manager (admin)
+
+Pattern comune: **config/modello in DB → API admin (`requireAdmin`, `src/lib/admin.ts`) → editor UI in `/admin/...` → le pagine utente leggono dal DB** (una modifica si riflette su tutti).
+
+| Sezione | Pagina | API | Modello |
+|---|---|---|---|
+| Quiz | `/admin/quiz` | `GET/PUT /api/admin/quiz` | `QuizConfig` (singleton) |
+| Revisioni | `/admin/revisions` | `GET/PATCH /api/admin/revisions` (status PENDING/REVIEWED) | `RevisionRequest` |
+| Pool nutrizionale | `/admin/nutrition-plans` | `GET/POST/DELETE /api/admin/nutrition-plans` | `NutritionPlanTemplate` |
+| Nuovo esercizio | `/admin/exercises/new` | `POST /api/admin/exercises` | `Exercise` + spec biomeccaniche |
+| Tag/note esercizi | `/admin/exercises/tags` | `/api/admin/exercises/[id]/tags` | `Exercise.tags`/`professionalNotes` |
+
+Il form "Nuovo esercizio" include **video PT esecuzione + spiegazione** (`videoUrl`/`explanationVideoUrl`), copy, muscoli/difficoltà/categoria/attrezzatura, durate, tag e **trigger biomeccanici** (JSON → spec nidificata `Movement→Phase→Trigger`).
+
+### 21.8 Nuovi modelli Prisma v2
+
+`User.medicalNotes`, `Exercise.explanationVideoUrl`, `RevisionRequest`, `QuizConfig`, `SocialComment`, `UserDocument` (+ enum `DocumentKind`), uso attivo di `UserProgress`. ⚠️ Presenti nello schema ma **richiedono `npx prisma db push`**; l'upload documenti richiede il **bucket Supabase `user-documents`**.
+
+### 21.9 Residui noti (v2)
+
+- Parsing/adattamento AI dei documenti caricati (solo storage oggi).
+- Trend carichi aggregato in Progressi.
+- Account Manager: editor "modifica esercizio esistente" e "modifica pool nutrizionale"; template piani fitness CRUD; `SiteContent` per copy editabili senza deploy.
+- Verifica funzionale loggata di tutti i flussi (mai eseguita).
 
 ---
 

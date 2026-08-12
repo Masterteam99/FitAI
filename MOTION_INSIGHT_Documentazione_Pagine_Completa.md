@@ -567,6 +567,12 @@ proprietà, no training use without consent. Last update: 15 maggio 2026.
 
 SEZIONE 2: AUTENTICAZIONE & ONBOARDING
 
+[Nota 12 ago 2026: l'onboarding principale e ora il QUIZ (/onboarding/quiz),
+verso cui puntano le CTA "Calcola il tuo piano gratis". Il flusso 4-step
+descritto sotto esiste ancora nel codice ma non e piu l'entry point. Questo
+documento copre solo pagine pubbliche/auth: l'area utente app e in
+DOCUMENTAZIONE_FLUSSI.md §21.]
+
 9 pagine (login, registrati, password reset, email verify, 4-step
 onboarding, welcome tour)
 
