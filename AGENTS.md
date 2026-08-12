@@ -3,3 +3,20 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+# Diario di sessione (SEMPRE)
+
+Questo progetto usa due documenti-diario alla radice, da mantenere **ogni sessione**:
+
+- **`COSE_FATTE_IN_SESSIONE.md`** — cosa è stato fatto, come, cosa è cambiato e in che modo.
+- **`COSE_DA_FARE.md`** — i next step per la sessione successiva.
+
+**A INIZIO sessione:** leggi entrambi per capire da dove ripartire e cosa fare.
+
+**A FINE sessione:** aggiorna entrambi:
+- in `COSE_FATTE_IN_SESSIONE.md` aggiungi **in cima** una nuova voce di sessione **numerata + datata**
+  (`## Sessione N — YYYY-MM-DD — titolo`), descrivendo cosa/come/cosa è cambiato (con gli hash dei commit se ci sono);
+- in `COSE_DA_FARE.md` spunta ciò che è stato chiuso (`✅ FATTO (YYYY-MM-DD)`, non cancellare) e aggiungi
+  i nuovi step **numerati** con la **data di inserimento** (`[agg. YYYY-MM-DD]`).
+
+Le voci di entrambi i file vanno sempre **numerate in ordine e datate**.
