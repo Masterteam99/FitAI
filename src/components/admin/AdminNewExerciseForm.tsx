@@ -16,19 +16,52 @@ const DIFFICULTIES = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
 const inputCls = "w-full h-9 px-3 rounded-lg border border-border bg-input text-sm focus:outline-none focus:ring-1 focus:ring-ring";
 const areaCls = "w-full bg-secondary/50 border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary";
 
-export function AdminNewExerciseForm() {
+export interface ExerciseInitial {
+  name: string;
+  slug: string;
+  description: string;
+  instructions: string[];
+  muscleGroupPrimary: string;
+  muscleGroupsSecondary: string[];
+  difficulty: string;
+  category: string;
+  equipment: string[];
+  videoUrl: string | null;
+  explanationVideoUrl: string | null;
+  thumbnailUrl: string | null;
+  durationSeconds: number | null;
+  recordingDurationSeconds: number;
+  caloriesPerMinute: number;
+  professionalNotes: string | null;
+  tags: string[];
+  biomechanicalSpec: unknown | null;
+}
+
+export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: string; initial?: ExerciseInitial } = {}) {
   const c = copy.adminNewExercise;
   const router = useRouter();
+  const isEdit = Boolean(exerciseId);
 
   const [f, setF] = useState({
-    name: "", slug: "", description: "", instructions: "",
-    muscleGroupPrimary: MUSCLES[0], difficulty: DIFFICULTIES[0], category: CATEGORIES[0],
-    videoUrl: "", explanationVideoUrl: "", thumbnailUrl: "",
-    durationSeconds: "", recordingDurationSeconds: "20", caloriesPerMinute: "5",
-    professionalNotes: "", tags: "", specText: "",
+    name: initial?.name ?? "",
+    slug: initial?.slug ?? "",
+    description: initial?.description ?? "",
+    instructions: (initial?.instructions ?? []).join("\n"),
+    muscleGroupPrimary: initial?.muscleGroupPrimary ?? MUSCLES[0],
+    difficulty: initial?.difficulty ?? DIFFICULTIES[0],
+    category: initial?.category ?? CATEGORIES[0],
+    videoUrl: initial?.videoUrl ?? "",
+    explanationVideoUrl: initial?.explanationVideoUrl ?? "",
+    thumbnailUrl: initial?.thumbnailUrl ?? "",
+    durationSeconds: initial?.durationSeconds != null ? String(initial.durationSeconds) : "",
+    recordingDurationSeconds: String(initial?.recordingDurationSeconds ?? 20),
+    caloriesPerMinute: String(initial?.caloriesPerMinute ?? 5),
+    professionalNotes: initial?.professionalNotes ?? "",
+    tags: (initial?.tags ?? []).join(", "),
+    specText: initial?.biomechanicalSpec ? JSON.stringify(initial.biomechanicalSpec, null, 2) : "",
   });
-  const [secondary, setSecondary] = useState<string[]>([]);
-  const [equipment, setEquipment] = useState<string[]>(["NONE"]);
+  const [secondary, setSecondary] = useState<string[]>(initial?.muscleGroupsSecondary ?? []);
+  const [equipment, setEquipment] = useState<string[]>(initial?.equipment ?? ["NONE"]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,8 +80,8 @@ export function AdminNewExerciseForm() {
     const num = (s: string) => (s.trim() === "" ? null : Number(s));
 
     setSaving(true);
-    const res = await fetch("/api/admin/exercises", {
-      method: "POST",
+    const res = await fetch(isEdit ? `/api/admin/exercises/${exerciseId}` : "/api/admin/exercises", {
+      method: isEdit ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: f.name.trim(),
@@ -84,7 +117,7 @@ export function AdminNewExerciseForm() {
 
   return (
     <Card>
-      <CardHeader><CardTitle className="text-base">{c.newExercise}</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-base">{isEdit ? c.editExercise : c.newExercise}</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <Field label={c.nameLabel}><Input value={f.name} onChange={(e) => set("name", e.target.value)} /></Field>
         <Field label={c.slugLabel}><Input value={f.slug} onChange={(e) => set("slug", e.target.value)} placeholder="auto" /></Field>
@@ -142,7 +175,7 @@ export function AdminNewExerciseForm() {
 
         <Button onClick={submit} disabled={saving || !canSubmit} className="gap-2">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-          {saving ? c.creating : c.create}
+          {saving ? (isEdit ? c.savingChanges : c.creating) : isEdit ? c.saveChanges : c.create}
         </Button>
       </CardContent>
     </Card>

@@ -2,12 +2,13 @@
 
 import { useMemo, useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toaster";
-import { Check, X, Upload, Trash2, Video, Activity } from "lucide-react";
+import { Check, X, Upload, Trash2, Video, Activity, Pencil } from "lucide-react";
 import { copy } from "@/content/copy";
 import { extractReferenceProfileFromVideo } from "@/lib/analysis/pt-profile-extract";
 
@@ -128,6 +129,12 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
                   <Badge variant={ex.isActive ? "default" : "outline"} className={ex.isActive ? "" : "text-muted-foreground"}>
                     {ex.isActive ? copy.adminExercises.table.active : copy.adminExercises.table.inactive}
                   </Badge>
+                  <Button asChild size="sm" variant="outline" className="gap-1.5">
+                    <Link href={`/admin/exercises/${ex.id}/edit`}>
+                      <Pencil className="w-3.5 h-3.5" />
+                      {copy.adminExercises.table.edit}
+                    </Link>
+                  </Button>
                   <Button size="sm" onClick={() => setDialogExercise(ex)} className="gap-1.5">
                     <Upload className="w-3.5 h-3.5" />
                     {ex.videoUrl ? copy.adminExercises.table.replace : copy.adminExercises.table.upload}

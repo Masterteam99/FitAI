@@ -21,6 +21,10 @@ type UserRow = {
   premiumGrantedUntil: string | null;
   createdAt: string;
   sessionsCount: number;
+  lastWorkoutDate: string | null;
+  aiCostEur: number;
+  revenueEur: number;
+  marginEur: number;
 };
 
 type Response = {
@@ -28,6 +32,7 @@ type Response = {
   page: number;
   totalPages: number;
   counters: { total: number; premium: number; admin: number };
+  economics: { mrrEur: number; aiCostEur: number; marginEur: number; period: string };
 };
 
 export function UsersTable() {
@@ -76,6 +81,19 @@ export function UsersTable() {
         <AdminMetricCard label={copy.adminUsers.table.metricAdmin} value={data.counters.admin} tone="success" />
       </div>
 
+      {/* Economia utenti: ricavo (MRR) vs costo AI stimato → margine */}
+      <div>
+        <div className="flex items-baseline justify-between gap-2 mb-2">
+          <h2 className="text-sm font-semibold">{copy.adminUsers.table.econTitle}</h2>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <AdminMetricCard label={copy.adminUsers.table.metricMrr} value={copy.adminUsers.table.eur(data.economics.mrrEur)} tone="success" />
+          <AdminMetricCard label={copy.adminUsers.table.metricAiCost} value={copy.adminUsers.table.eur(data.economics.aiCostEur)} tone="premium" />
+          <AdminMetricCard label={copy.adminUsers.table.metricMargin} value={copy.adminUsers.table.eur(data.economics.marginEur)} tone={data.economics.marginEur >= 0 ? "success" : "danger"} />
+        </div>
+        <p className="text-xs text-muted-foreground mt-1.5">{copy.adminUsers.table.econHint}</p>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-3">
         <form onSubmit={onSearch} className="flex-1">
           <Input
@@ -118,6 +136,21 @@ export function UsersTable() {
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
                   {u.email} · {copy.adminUsers.table.meta(new Date(u.createdAt).toLocaleDateString("it-IT"), u.sessionsCount)}
+                  {" · "}
+                  {u.lastWorkoutDate
+                    ? copy.adminUsers.table.lastWorkout(new Date(u.lastWorkoutDate).toLocaleDateString("it-IT"))
+                    : copy.adminUsers.table.lastWorkoutNever}
+                </div>
+                <div className="flex gap-3 mt-1 text-xs flex-wrap">
+                  <span className="text-purple-600 dark:text-purple-500">
+                    {copy.adminUsers.table.colCost}: {copy.adminUsers.table.eur(u.aiCostEur)}
+                  </span>
+                  <span className="text-green-600 dark:text-green-500">
+                    {copy.adminUsers.table.colRevenue}: {copy.adminUsers.table.eur(u.revenueEur)}
+                  </span>
+                  <span className={u.marginEur >= 0 ? "text-green-600 dark:text-green-500 font-medium" : "text-red-600 dark:text-red-500 font-medium"}>
+                    {copy.adminUsers.table.colMargin}: {copy.adminUsers.table.eur(u.marginEur)}
+                  </span>
                 </div>
               </div>
               <div className="flex gap-2 flex-wrap shrink-0">

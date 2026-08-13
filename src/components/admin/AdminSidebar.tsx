@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, CreditCard, Dumbbell, BarChart3, ShieldCheck, Bot, History, MessageSquare, Apple, ListChecks } from "lucide-react";
+import { Users, CreditCard, Dumbbell, BarChart3, ShieldCheck, Bot, History, MessageSquare, Apple, ListChecks, Type, ClipboardList, UtensilsCrossed } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { copy } from "@/content/copy";
 
@@ -15,7 +15,10 @@ const ADMIN_TABS = [
   { href: "/admin/ai-usage", label: copy.adminSidebar.tabAiUsage, icon: Bot },
   { href: "/admin/revisions", label: copy.adminSidebar.tabRevisions, icon: MessageSquare },
   { href: "/admin/nutrition-plans", label: copy.adminSidebar.tabNutritionPool, icon: Apple },
+  { href: "/admin/workout-plans", label: copy.adminSidebar.tabWorkoutPool, icon: ClipboardList },
+  { href: "/admin/recipes", label: copy.adminSidebar.tabRecipes, icon: UtensilsCrossed },
   { href: "/admin/quiz", label: copy.adminSidebar.tabQuiz, icon: ListChecks },
+  { href: "/admin/site-content", label: copy.adminSidebar.tabSiteContent, icon: Type },
 ];
 
 export function AdminSidebar() {

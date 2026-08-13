@@ -13,7 +13,7 @@ export async function GET() {
   const docs = await prisma.userDocument.findMany({
     where: { userId: session.user.id as string },
     orderBy: { createdAt: "desc" },
-    select: { id: true, kind: true, name: true, path: true, createdAt: true },
+    select: { id: true, kind: true, name: true, path: true, createdAt: true, analysisJson: true, analyzedAt: true },
   });
 
   const admin = docs.length ? getSupabaseAdmin() : null;
@@ -24,7 +24,15 @@ export async function GET() {
         const { data } = await admin.storage.from(STORAGE_BUCKETS.USER_DOCUMENTS).createSignedUrl(d.path, 60 * 60);
         url = data?.signedUrl ?? null;
       }
-      return { id: d.id, kind: d.kind, name: d.name, createdAt: d.createdAt.toISOString(), url };
+      return {
+        id: d.id,
+        kind: d.kind,
+        name: d.name,
+        createdAt: d.createdAt.toISOString(),
+        url,
+        analysis: d.analysisJson ?? null,
+        analyzedAt: d.analyzedAt?.toISOString() ?? null,
+      };
     }),
   );
 
@@ -61,7 +69,7 @@ export async function POST(req: NextRequest) {
     select: { id: true, kind: true, name: true, createdAt: true },
   });
 
-  return NextResponse.json({ id: doc.id, kind: doc.kind, name: doc.name, createdAt: doc.createdAt.toISOString(), url: null }, { status: 201 });
+  return NextResponse.json({ id: doc.id, kind: doc.kind, name: doc.name, createdAt: doc.createdAt.toISOString(), url: null, analysis: null, analyzedAt: null }, { status: 201 });
 }
 
 export async function DELETE(req: NextRequest) {

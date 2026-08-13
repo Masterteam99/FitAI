@@ -9,6 +9,7 @@ import { format, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
 import { CountUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
 import { WeightMeasuresCard } from "./WeightMeasuresCard";
+import { LoadTrendsCard } from "./LoadTrendsCard";
 import { copy } from "@/content/copy";
 
 interface StatsData {
@@ -137,6 +138,9 @@ export default function ProgressiPage() {
 
       {/* Peso e misure */}
       <WeightMeasuresCard />
+
+      {/* Andamento carichi principali */}
+      <LoadTrendsCard />
 
       {/* Weekly chart */}
       <Card>

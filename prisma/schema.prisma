@@ -805,14 +805,50 @@ model QuizConfig {
   @@map("quiz_config")
 }
 
+// Override editabili dei copy del sito (chiave dot-path es. "prezzi.premiumPrice").
+// Le pagine leggono l'override dal DB se presente, altrimenti il default da copy.ts.
+// Consente al gestore di modificare titoli/sottotitoli/CTA/prezzi senza deploy.
+model SiteContent {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_content")
+}
+
+// Pool di ricette curate dal gestore. Mostrate all'utente in base alla dieta;
+// l'AI resta come fallback quando non ci sono ricette curate pertinenti.
+model Recipe {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @db.Text
+  mealType    MealType? // BREAKFAST/LUNCH/DINNER/SNACK — facoltativo
+  dietType    String? // onnivora/vegetariana/vegana/... — null = adatta a tutte
+  calories    Int?
+  proteinG    Int?
+  carbsG      Int?
+  fatG        Int?
+  ingredients String[]  @default([])
+  steps       String[]  @default([])
+  tags        String[]  @default([])
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@index([dietType])
+  @@index([isActive])
+  @@map("recipes")
+}
+
 model UserDocument {
-  id        String       @id @default(cuid())
-  userId    String
-  kind      DocumentKind
-  name      String
-  path      String
-  createdAt DateTime     @default(now())
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String       @id @default(cuid())
+  userId       String
+  kind         DocumentKind
+  name         String
+  path         String
+  analysisJson Json? // analisi AI del documento (sintesi + aggiustamenti consigliati fitness/nutrizione)
+  analyzedAt   DateTime? // quando è stata generata l'analisi AI
+  createdAt    DateTime     @default(now())
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("user_documents")

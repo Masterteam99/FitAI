@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, AdminAccessError } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { NutritionPlanSchema, buildPlanData } from "@/lib/admin/nutrition-plan-schema";
+import { RecipeSchema, buildRecipeData } from "@/lib/admin/recipe-schema";
 
 async function guard() {
   try {
@@ -17,19 +17,20 @@ export async function GET() {
   const blocked = await guard();
   if (blocked) return blocked;
 
-  const items = await prisma.nutritionPlanTemplate.findMany({
+  const items = await prisma.recipe.findMany({
     orderBy: { createdAt: "desc" },
-    select: { id: true, name: true, description: true, dietType: true, targetGoal: true, createdAt: true },
+    select: { id: true, title: true, description: true, mealType: true, dietType: true, isActive: true, createdAt: true },
   });
 
   return NextResponse.json({
-    items: items.map((p) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      dietType: p.dietType,
-      targetGoal: p.targetGoal,
-      createdAt: p.createdAt.toISOString(),
+    items: items.map((r) => ({
+      id: r.id,
+      title: r.title,
+      description: r.description,
+      mealType: r.mealType,
+      dietType: r.dietType,
+      isActive: r.isActive,
+      createdAt: r.createdAt.toISOString(),
     })),
   });
 }
@@ -38,14 +39,10 @@ export async function POST(req: NextRequest) {
   const blocked = await guard();
   if (blocked) return blocked;
 
-  const parsed = NutritionPlanSchema.safeParse(await req.json().catch(() => null));
+  const parsed = RecipeSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Dati non validi" }, { status: 400 });
 
-  const created = await prisma.nutritionPlanTemplate.create({
-    data: { ...buildPlanData(parsed.data), estimatedProfileJson: {} },
-    select: { id: true },
-  });
-
+  const created = await prisma.recipe.create({ data: buildRecipeData(parsed.data), select: { id: true } });
   return NextResponse.json(created, { status: 201 });
 }
 
@@ -56,6 +53,6 @@ export async function DELETE(req: NextRequest) {
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id mancante" }, { status: 400 });
 
-  await prisma.nutritionPlanTemplate.delete({ where: { id } });
+  await prisma.recipe.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

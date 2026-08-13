@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { CookieBanner } from "@/components/layout/CookieBanner";
 import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister";
 import { AchievementUnlockProvider } from "@/components/celebration/AchievementUnlock";
+import { CopyProvider } from "@/content/CopyProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -22,7 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <CopyProvider>{children}</CopyProvider>
         <Toaster />
         <CookieBanner />
         <ServiceWorkerRegister />
