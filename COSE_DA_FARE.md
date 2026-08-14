@@ -13,9 +13,9 @@
 
 ## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-14 sera]`
 
-- Tutto il lavoro **feature #4/#5/#6 (a–e) + sezione Utenti (economia)** è **FATTO, verificato**. Working
-  tree ha anche il porting completo landing/satellite/area-utente/admin + tema scuro (Sessioni 5-6),
-  **non ancora committato**. Tutto su branch **`feature/account-manager-completo`**, non ancora in `main`.
+- Tutto il lavoro **feature #4/#5/#6 (a–e) + sezione Utenti (economia)** è **FATTO, verificato**. Il porting
+  completo landing/satellite/area-utente/admin + tema scuro (Sessioni 5-6) è **committato e pushato**
+  (commit `8924d46`) sul branch **`feature/account-manager-completo`**, **non ancora integrato in `main`**.
 - **Design ufficiale = anteprima scura/lime** (decisione utente 14/08). Codice **interamente allineato**:
   tema scuro su tutto il sito · home + 5 pagine satellite (Il Metodo, Per Chi, FAQ, Prezzi, Chi siamo) ·
   **area utente (7 schermate) + admin (2 schermate mockate) verificate contro il mockup reale** — trovati e

@@ -127,7 +127,8 @@ allo stato attuale del codice **TUTTI** i documenti che poi rileggo per capire l
 **Stato a fine sessione:** tutti i documenti di stato (10 file + 2 diari + memoria) riflettono lo snapshot
 14/08: **codice allineato all'anteprima v2** nel tema (scuro/lime), nei contenuti di home + 5 pagine satellite,
 **e ora anche in area utente + admin** (7/9 schermate già corrette, 2 gap reali colmati). Verificato via
-tsc/eslint su tutto il progetto. Modifiche nel working tree, da committare.
+tsc/eslint su tutto il progetto. **Committato e pushato** (commit `8924d46`) su
+`feature/account-manager-completo` — **non ancora integrato in `main`**.
 
 ---
 
