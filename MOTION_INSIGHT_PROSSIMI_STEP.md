@@ -1,3 +1,19 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-14
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto, **valgono i diari**.
+>
+> **QUASI TUTTO CIÒ CHE SEGUE È GIÀ FATTO** (Sessioni 3–4). Mappa rapida:
+> - PARTE 1 · #1 `db push` → ✅ · #2 bucket `user-documents` → ✅ · #3 parsing AI documenti → ✅ (feature #4) · #4 trend carichi → ✅ (feature #5) · #5 Chi siamo → ✅ · #6 verifica loggata → ✅ (Sess. 3).
+> - PARTE 2 · **A** edit esercizio → ✅ (#6a) · **B** template allenamenti → ✅ (#6b) · **C** modifica pool nutrizionale → ✅ (#6c) · **D** pool ricette curate → ✅ (#6e) · **E** quiz → ✅ · **F** SiteContent → ✅ (#6d).
+> - **Aggiornamento 14 ago 2026 (sera):** landing (home) + 5 pagine satellite + **area utente (7 schermate)
+>   + admin (2 schermate)** confrontate col mockup reale e **portate nel codice**; tema scuro/lime su tutto il
+>   sito. La verifica precedente (click non funzionanti) era un errore mio; l'utente aveva ragione. 7/9
+>   schermate app erano già allineate; 2 gap reali colmati: Dashboard "Alimentazione di oggi", Profilo "I tuoi
+>   video registrati" (+ fix schema additivo `AnalysisSession.videoPath`, applicato al DB).
+> - **Residui reali aperti:** integrare il branch **`feature/account-manager-completo`** in `main` · ripristinare credito Anthropic + Upstash (per *verificare* l'output AI) · verifica manuale "analisi avanzata" · verifica end-to-end con sessione reale delle 2 feature nuove · pagine `funzionalita`/`storie`/`risorse` non allineate · deploy.
+> Il testo sotto è tenuto come storico della visione "Account Manager completo".
+
+---
+
 # Motion Insight — Prossimi step
 
 > Documento operativo: cosa resta da fare dopo il grande blocco di implementazione dell'area utente,

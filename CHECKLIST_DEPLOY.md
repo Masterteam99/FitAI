@@ -1,3 +1,11 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-14
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Snapshot codice (14 ago 2026, sera):** area utente v2 + Account Manager **COMPLETI e verificati**; infra runtime applicata; **tema scuro/lime + home/5 satellite/area-utente/admin tutti portati e verificati** (tsc/eslint puliti). Lavoro sul branch **`feature/account-manager-completo`** (pushato, **non ancora in `main`**). Il **deploy Vercel non è ancora stato fatto** — questa checklist resta valida per quello.
+> **Aperti:** integrare il branch in `main` · ripristinare credito Anthropic + Upstash Redis · verifica manuale "analisi avanzata" · verifica end-to-end con sessione reale (video/nutrizione dashboard) · **deploy Vercel** · CORS bucket `exercise-videos`.
+
+---
+
 # Checklist Deploy & Setup Produzione
 
 Lista di azioni manuali da eseguire al di fuori del codebase per portare FitAI in produzione. Si compila incrementalmente con l'avanzare delle milestone M0-M5.

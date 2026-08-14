@@ -518,6 +518,7 @@ model AnalysisSession {
   exerciseId      String
   status          AnalysisStatus @default(RECORDING)
   videoUrl        String? // URL Supabase Storage del video utente (15-25s)
+  videoPath       String? // path nel bucket analysis-videos (serve per poterlo eliminare su richiesta utente)
   durationSeconds Int?
   startedAt       DateTime       @default(now())
   completedAt     DateTime?

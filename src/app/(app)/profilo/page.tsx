@@ -10,6 +10,7 @@ import { User, LogOut, Save, Loader2, Trophy, Flame, Dumbbell, Download, Trash2,
 import { signOut as nextSignOut } from "next-auth/react";
 import Link from "next/link";
 import { DocumentsCard } from "@/components/DocumentsCard";
+import { ProfileVideosCard } from "@/components/ProfileVideosCard";
 import { copy } from "@/content/copy";
 
 interface ProfileData {
@@ -214,6 +215,9 @@ export default function ProfiloPage() {
 
       {/* Documenti (fitness/nutrizione) */}
       <DocumentsCard />
+
+      {/* Video delle analisi registrate */}
+      <ProfileVideosCard />
 
       {/* Abbonamento */}
       <Card>

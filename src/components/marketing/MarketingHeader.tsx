@@ -7,7 +7,7 @@ const NAV = copy.marketingHeader.nav;
 
 export function MarketingHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 backdrop-blur-md" style={{ background: "rgba(244,247,251,.85)" }}>
+    <header className="sticky top-0 z-40 border-b border-border/70 backdrop-blur-md" style={{ background: "rgba(10,15,28,.85)" }}>
       <div className="max-w-[1180px] mx-auto px-7 py-5 flex items-center justify-between">
         <OrganicLogo />
 

@@ -1,3 +1,11 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-14
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Snapshot codice (14 ago 2026, sera):** area utente v2 + Account Manager **COMPLETI e verificati**; feature **#4/#5/#6a–e CHIUSE**; infra runtime applicata; **tema scuro/lime su tutto il sito**; **HOME + 5 pagine satellite + area utente (7 schermate) + admin (2 schermate)** confrontate col mockup reale e allineate (2 gap trovati e colmati: Dashboard "Alimentazione di oggi", Profilo "I tuoi video registrati" con fix schema `AnalysisSession.videoPath`). Verificato: tsc/eslint puliti su tutto il progetto. Branch **`feature/account-manager-completo`** (pushato, **non ancora in `main`**).
+> **Aperti:** integrare il branch in `main` · ripristinare credito Anthropic + Upstash Redis · verifica manuale "analisi avanzata" · verifica end-to-end con sessione reale delle 2 feature nuove (video/nutrizione dashboard) · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore, Chi siamo, FAQ, P.IVA, dati competitor) · deploy.
+
+---
+
 # Motion Insight (ex FitAI) — Stato del Progetto
 *Aggiornato: 12 agosto 2026 (Area Utente v2 + Account Manager + Motore — committati su `main`; typecheck/ESLint puliti. Verifica funzionale loggata ancora da fare: richiede `prisma db push` + bucket Supabase `user-documents`).*
 

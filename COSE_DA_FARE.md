@@ -11,15 +11,23 @@
 
 ---
 
-## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-13]`
+## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-14 sera]`
 
-- Tutto il lavoro **feature #4/#5/#6 (a–e) + sezione Utenti (economia)** è **FATTO, verificato, committato
-  e pushato** sul branch **`feature/account-manager-completo`** (2 commit: `feat` codice + `docs` diari).
-  **Su `main` NON è ancora integrato.**
+- Tutto il lavoro **feature #4/#5/#6 (a–e) + sezione Utenti (economia)** è **FATTO, verificato**. Working
+  tree ha anche il porting completo landing/satellite/area-utente/admin + tema scuro (Sessioni 5-6),
+  **non ancora committato**. Tutto su branch **`feature/account-manager-completo`**, non ancora in `main`.
+- **Design ufficiale = anteprima scura/lime** (decisione utente 14/08). Codice **interamente allineato**:
+  tema scuro su tutto il sito · home + 5 pagine satellite (Il Metodo, Per Chi, FAQ, Prezzi, Chi siamo) ·
+  **area utente (7 schermate) + admin (2 schermate mockate) verificate contro il mockup reale** — trovati e
+  colmati 2 gap (Dashboard "Alimentazione di oggi", Profilo "I tuoi video registrati" + fix schema
+  `AnalysisSession.videoPath`). ✅ **FATTO (2026-08-14).**
+- ⚠️ **Da verificare con sessione reale (non fatto in autonomia, serve login):** che `/api/me/videos` e la
+  nuova card Profilo funzionino end-to-end con dati reali (upload → elimina video → report resta); che la
+  card "Alimentazione di oggi" in Dashboard mostri numeri corretti con un utente che logga pasti.
 - **Primo passo:** integrare il branch (PR o merge) → vedi step **1**.
-- Poi: sistemare le **2 dipendenze esterne** (credito Anthropic, Upstash Redis) per poter verificare le
-  feature AI → step **2–3**.
-- Lavoro di sostanza successivo: **landing (step 5)** e **deploy (step 6)**.
+- Poi: sistemare le **2 dipendenze esterne** (credito Anthropic, Upstash Redis) → step **2–3**.
+- Lavoro di sostanza successivo: pagine `funzionalita`/`storie`/`risorse` da allineare, placeholder da
+  compilare, **deploy** (step 6).
 
 ---
 
@@ -44,18 +52,29 @@
 4. **Verifica manuale "analisi avanzata" (sessione)** — registrazione video + MediaPipe pose + L1/L2/L3 +
    report. Richiede webcam/video reali (non automatizzabile). La pagina `/analisi` renderizza già. `[agg. 2026-08-13]`
 
-5. **Landing / marketing** (da `Aggiornameni possibili.md`; ora modificabile anche dal pannello
-   **SiteContent** `/admin/site-content` senza deploy):
-   - 5a. CTA "analizza la tua tecnica" con **prova analisi gratuita** via inserimento mail.
-   - 5b. Sezione **"in 3 passi"**: "registri"→"registra", aggiungere webcam/mocap visivi.
-   - 5c. Ridurre "Da dove vuoi partire" a **4 voci** (casa, palestra, stop/infortunio, over 50);
-     togliere gravidanza/running da "Per chi".
-   - 5d. **Prezzi**: tabella comparativa competitor + funzionalità.
-   - 5e. **FAQ** in sezione dedicata (fuori dalla landing) e ampliarle.
-   - 5f. Pagina **"Il metodo"**: togliere elenco 53 esercizi; rafforzare **privacy video**; fondere gli
-     spunti di "Cosa fa" e valutare l'eliminazione della pagina.
+5. **Landing / marketing** — home page portata a v2 il **2026-08-14** (`src/app/page.tsx` + `copy.landing`
+   riscritti da `Motion-Insight-anteprima v2.html`; tema scuro/lime applicato a tutto il sito via
+   `globals.css` `.theme-organic`). Sotto-step 5c ✅ FATTO (2026-08-14: "Da dove vuoi partire" ridotto a 4 voci,
+   gravidanza/corro tolte). Residuo:
+   - 5a. CTA "analizza la tua tecnica" con **prova analisi gratuita** via inserimento mail — non ancora fatto.
+   - 5d. **Prezzi**: la landing ora linka `/prezzi` per il dettaglio; verificare che la pagina `/prezzi` abbia
+     la tabella comparativa competitor (dati `[DATI da verificare]` da confermare prima del lancio).
+   - 5e. **FAQ**: link "Tutte le domande frequenti →" già in landing; verificare che `/faq` sia completa.
+   - 5f. Pagina **"Il metodo"** (`/come-funziona`): non ancora riallineata a v2 (rimane la vecchia versione
+     "correzione in tempo reale/33 punti"); la landing ora la linka come "Guarda il metodo nel dettaglio →" —
+     va aggiornata per coerenza con la nuova narrativa "registra e ricevi un'analisi".
    - 5g. **Risorse**: ampliare a 360° (non solo allenamento), da validare col cofondatore.
-   `[agg. 2026-08-12]`
+   - ✅ **FATTO (2026-08-14):** pagine satellite `come-funziona` (Il Metodo), `per-chi`, `faq`, `prezzi`,
+     `chi-siamo` riallineate a `MOTION_INSIGHT_COPY_FINALE.md`. Verificato tsc/eslint + lettura dev server.
+   - **Ancora aperto:** `funzionalita` e `storie` non toccate (non coperte da COPY_FINALE — da decidere se
+     tenerle, fonderle o eliminarle). `risorse`: struttura/categorie pronte in COPY_FINALE ma i testi degli
+     articoli non sono scritti (i temi salute/infortuni richiedono validazione del cofondatore prima di
+     pubblicare — non generabili in autonomia).
+   - **Placeholder da compilare (NON inventare):** citazione cofondatore in home, 4 blocchi "Chi siamo",
+     7 risposte FAQ, P.IVA nel footer, verifica prezzi competitor `[DATI da verificare]` (home + prezzi),
+     dati tecnici privacy in "Il Metodo" (storage/conservazione/cancellazione), pagina "per le aziende"
+     (oggi non esiste: CTA in Prezzi disattivata).
+   `[agg. 2026-08-14]`
 
 6. **Deploy**:
    - 6a. **Deploy Vercel** (account + env vars) — vedi `CHECKLIST_DEPLOY.md`.

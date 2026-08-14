@@ -11,6 +11,126 @@
 
 ---
 
+## Sessione 5 — 2026-08-14 — Allineamento di TUTTI i documenti di stato allo stato reale del codice
+
+**Contesto:** ricorreva un problema: a inizio sessione i documenti di stato (non solo i diari) erano fermi
+al 12/08 — cioè **prima** delle Sessioni 3 e 4 — e mi facevano ripartire con la convinzione che feature
+già chiuse fossero "da fare". Richiesta esplicita dell'utente: *"aggiorna i documenti"* significa allineare
+allo stato attuale del codice **TUTTI** i documenti che poi rileggo per capire lo stato, non solo i due diari.
+
+**Cosa è stato fatto e come:**
+1. **Banner "⚠️ STATO REALE — aggiornato 2026-08-14"** in cima a **9 documenti di stato**: `STATO_PROGETTO.md`,
+   `ROADMAP.md`, `README.md`, `MOTION_INSIGHT_AREA_UTENTE_v2.md`, `MOTION_INSIGHT_COMPLETE.md`,
+   `MOTION_INSIGHT_Documentazione_Pagine_Completa.md`, `DOCUMENTAZIONE_FLUSSI.md`, `CHECKLIST_DEPLOY.md`,
+   `AGGIORNAMENTI.md`. Il banner: (a) dichiara i due diari **unica fonte autorevole** (in conflitto vincono
+   i diari); (b) dà lo snapshot codice (area utente v2 + Account Manager completi/verificati; #4/#5/#6 chiusi;
+   infra applicata; branch `feature/account-manager-completo` non ancora in main); (c) elenca i residui reali.
+2. **`MOTION_INSIGHT_PROSSIMI_STEP.md`** riscritto in testa: era il peggiore (elencava come "da fare" db push,
+   bucket, parsing AI, trend carichi, edit esercizio, template, pool nutri, pool ricette, SiteContent — tutti
+   **già fatti**). Aggiunta mappa "già fatto" punto per punto + residui reali.
+3. **Memoria** aggiornata: `motion-insight-redesign.md` riscritta allo stato reale (con mappa etichetta-menu↔route);
+   nuova memoria-feedback `aggiorna-documenti-significato.md` (regola permanente sul significato di "aggiorna i documenti");
+   indice `MEMORY.md` allineato.
+
+4. **DESIGN: allineato il codice all'anteprima scura (decisione utente).** Confermato che lo stile ufficiale è
+   `Motion-Insight-anteprima.html` (SCURO: sfondo `#0A0F1C`, accento LIME `#C8F751`, teal `#4FD1C5`, testo `#ECF1F8`).
+   Scoperto che **tutto il sito** (landing + area utente + admin) è avvolto in `.theme-organic`, che però era
+   **chiaro** (navy/coral) → il codice NON rifletteva l'anteprima. **Fix in `src/app/globals.css`:** rimappati tutti
+   i token di `.theme-organic` (e gli alias `--organic-*` + i glow) sulla palette scura dell'anteprima → **l'intero
+   sito ora è scuro/lime da un unico punto**. Verificato live su `localhost:3000` (`--background:#0a0f1c`,
+   `--primary:#c8f751`, testo `#ECF1F8`). Zero colori chiari hardcoded nei componenti (tutto token-driven → swap pulito).
+   Aggiornati kit `KIT_CLAUDE_DESIGN_APP.md` e memoria. **Follow-up:** allineare i font esatti (Space Grotesk + Inter;
+   oggi Sora/Geist), poi verifica visiva per-pagina quando il pannello browser compone gli screenshot.
+
+5. **Confronto anteprima v1 vs v2 vs codice live** (richiesta esplicita utente, che aveva già sostituito v1→v2
+   nel repo). Estratto il contenuto reale di `Motion-Insight-anteprima v2.html` (serviva un mini server statico
+   locale: il contenuto è iniettato via JS, non testo statico). Confermato che v2 supersede v1 (piccole differenze:
+   upload video oltre a registrazione, 3 nuove voci in "Non solo analisi" — kilocalorie/community/ricette —,
+   footer senza placeholder ragione sociale) e che **nessuna delle due era ancora nel codice** (home live aveva
+   narrativa "correzione in tempo reale" con 6 personas, non "registra e ricevi un'analisi" con 4 personas di v2).
+
+6. **PORTING landing v2 → codice (fatto davvero, non solo doc).** `src/content/copy.ts` → `copy.landing`
+   interamente riscritta con la copy reale v2 (hero, Il problema, In tre passi, Cosa ricevi + report campione
+   77/100, Da dove vuoi partire [4], Il confronto per fase, Non solo analisi [6], Fiducia, voce cofondatore
+   placeholder, prezzi compatti, tabella competitor). `src/app/page.tsx` riscritta di conseguenza (12 sezioni,
+   nuovi componenti inline: report card, barre di confronto per fase, tabella competitor responsive). Nav header
+   allineata a v2 (`Il Metodo · Per Chi · Chi siamo · Prezzi · Risorse`, CTA "Inizia gratis").
+   **Bug trovati e corretti:** `MarketingHeader.tsx`/`MarketingFooter.tsx` avevano sfondi chiari hardcoded
+   (bypassavano i token, sarebbero rimasti bianchi sul tema scuro) → corretti.
+   **Verificato:** `tsc --noEmit` e `eslint` puliti sui file toccati; dev server compila (200); testo renderizzato
+   confrontato col testo reale di v2 (combacia sezione per sezione); tema scuro confermato via stile calcolato
+   (`background-color: rgb(10,15,28)`); nessun errore console.
+   **Non ancora fatto:** le pagine marketing satellite (`per-chi`, `funzionalita`, `come-funziona`, `prezzi`,
+   `chi-siamo`, `faq`, `storie`) NON sono state riallineate a v2 — restano con contenuti precedenti. Placeholder
+   ancora da compilare (non inventati): citazione cofondatore, P.IVA footer, verifica dati prezzi competitor.
+
+7. **Porting pagine satellite marketing → `MOTION_INSIGHT_COPY_FINALE.md`** (richiesta esplicita "continua con
+   le pagine satellite"). Fonte dichiarata come unica valida dall'handoff (`HANDOFF_DESIGN_LANDING.md`).
+   Portate 5 pagine:
+   - **Il Metodo** (`/come-funziona`): riscritta da zero (era basata su `ScrollExplainer` a 5 step con la
+     vecchia narrativa "33 punti/tempo reale", incompatibile col nuovo contenuto) → 7 sezioni A-G (perché si
+     registra invece di correggere in tempo reale, i tre livelli di analisi, come si legge il punteggio,
+     l'analisi come punto di partenza, cosa Motion Insight non è, privacy video, chiusura).
+   - **Per Chi** (`/per-chi`): 5 segmenti (non più 6) con citazione utente + CTA "Inizia da qui" per card;
+     rimossa la CTA/quiz finale (decisione esplicita della fonte).
+   - **FAQ** (`/faq`): 3 risposte reali della fonte + 7 nuove domande con placeholder `[DA COMPLETARE]`
+     etichettato (nessuna risposta inventata, per convenzione di repo).
+   - **Prezzi** (`/prezzi` + `PrezziContent.tsx`, cablata su `useCopy()`): piani aggiornati (tagline, badge
+     "Consigliato", tolto "AI Coach 24/7" dalle feature Premium), + 4 sezioni nuove: tabella "cosa include ogni
+     piano", 2 tabelle confronto competitor (prezzo mensile + funzionalità, con caption `[DATI da verificare]`),
+     "quanto costa oggi farsi seguire", FAQ prezzi, blocco aziende (CTA disattivata: nessuna pagina aziende
+     esiste ancora, non ho creato un link finto).
+   - **Chi siamo** (`/chi-siamo`): sostituito il testo precedente (che sembrava inventato) con i 4 blocchi
+     placeholder dichiarati dalla fonte come "IN LAVORAZIONE" (Vision, Chi siamo, Cofondatore tecnico, Dove
+     stiamo andando) — nessun contenuto inventato.
+   **Non toccate** (fuori scope/senza fonte pronta): `funzionalita`, `risorse` (articoli non scritti), `storie`.
+   **Verificato:** `tsc --noEmit` e `eslint` puliti su tutti i file; ognuna delle 5 pagine aperta sul dev server
+   e il testo renderizzato confrontato con `MOTION_INSIGHT_COPY_FINALE.md` (combacia); nessun errore console.
+
+8. **Verifica file "Area utente/Admin"** (l'utente aveva sovrascritto `Motion-Insight-anteprima v2.html` con
+   una versione più recente, credendo contenesse anche Area utente/Admin). Servito via mini-server locale e
+   ispezionato: la barra "Sito · Area utente · Mobile·PWA · Admin" ha `onclick` **vuoto** su tutti i pulsanti
+   (`function kd(){}`) — sono **etichette decorative** che elencano gli altri documenti del progetto Claude
+   Design, non tab funzionanti. Il body è **identico byte-per-byte** alla landing già portata: **nessun
+   contenuto nuovo da importare**. Serve l'export reale delle viste "Area utente"/"Admin" (file/link separati).
+
+9. **Aggiornamento documenti su scala totale** (richiesta esplicita: non solo i 2 diari). Rinfrescato lo
+   "STATO REALE" in tutti i 10 documenti già bannerizzati (Sessione 5) con lo snapshot corrente: home + 5
+   satellite portate, tema scuro/lime applicato, Area utente/Admin in attesa di export reale.
+
+10. **Area utente + Admin: risolto il blocco ed esplorato tutto (l'utente aveva ragione).** La verifica di
+    prima (Sessione 5, punto 8) era sbagliata: avevo testato il click senza aspettare il re-render della SPA.
+    Riprovato con `wait` espliciti tra i click: la barra "Sito · Area utente · Mobile·PWA · Admin" **è
+    funzionante davvero** (runtime a moduli-blob). Esplorate cliccando tutte le sezioni: **Area utente** (7
+    schermate: Dashboard, La tua sessione, Piano nutrizionale, Libreria, Progressi, Community, Profilo) e
+    **Admin** (solo 2 sezioni mockate: Utenti, Esercizi→Nuovo esercizio; le altre 4 voci menu non hanno
+    contenuto disegnato dietro).
+
+11. **Porting Area utente/Admin → codice.** Confrontata ogni schermata col codice esistente: **7 su 9 erano
+    già perfettamente allineate** (nessuna modifica). Trovati e implementati **2 gap reali**:
+    - **Dashboard** — aggiunta sezione "Alimentazione di oggi" (`src/app/(app)/dashboard/page.tsx`): nuova
+      query Prisma (`nutritionLog` di oggi) + `computeNutritionTargets` (stesso lib di `/nutrizione`) + card
+      con `RadialGauge`. "Ultima analisi" del mockup era già coperta da `FormScoreHero` esistente.
+    - **Profilo** — aggiunta sezione "I tuoi video registrati" (`ProfileVideosCard.tsx`, nuova API
+      `/api/me/videos` GET+DELETE). Scoperto un gap architetturale reale: `AnalysisSession.videoUrl` salvava
+      solo un URL firmato temporaneo, non il path — impossibile cancellare il file dallo storage in modo
+      affidabile. **Fix:** campo additivo `AnalysisSession.videoPath` (schema Prisma + `prisma db push`,
+      applicato al DB Supabase + `prisma generate`), popolato in `/api/analysis/upload-video`. La cancellazione
+      (singola o totale) rimuove solo il video dal bucket `analysis-videos` e azzera i riferimenti: il report
+      dell'analisi (punteggi, feedback) resta, come richiesto dal mockup ("l'analisi già ricevuta resta").
+    **Verificato:** `tsc --noEmit` pulito su tutto il progetto; `eslint` 0 errori (33 warning preesistenti,
+    non miei, su file non toccati); dev server compila; redirect auth funziona per utente non loggato (test
+    end-to-end con sessione reale non possibile in questo ambiente, nessuna credenziale disponibile).
+    Il kit `KIT_CLAUDE_DESIGN_APP.md` ha esaurito il suo scopo — il mockup reale è stato portato direttamente,
+    non serve più dare istruzioni a Claude Design per quella parte.
+
+**Stato a fine sessione:** tutti i documenti di stato (10 file + 2 diari + memoria) riflettono lo snapshot
+14/08: **codice allineato all'anteprima v2** nel tema (scuro/lime), nei contenuti di home + 5 pagine satellite,
+**e ora anche in area utente + admin** (7/9 schermate già corrette, 2 gap reali colmati). Verificato via
+tsc/eslint su tutto il progetto. Modifiche nel working tree, da committare.
+
+---
+
 ## Sessione 4 — 2026-08-13 — Feature area utente #4/#5 + Account Manager completo #6 (a–e) + sezione Utenti economia
 
 **Contesto:** ripresa dopo lo sblocco infra (Sessione 3). Obiettivo: chiudere le feature residue 🟡
