@@ -1,3 +1,15 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Snapshot codice (15 ago 2026):** oltre allo stato del 14/08, in Sessione 6 chiuso MVP polish
+> (toast, validazione form, cambio email/password, sistema notifiche da zero, fix filtri Libreria) e
+> l'intero **piano "Sessione/Nutrizione/Analisi"** (10 fasi — vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6)).
+> Branch **`feature/mvp-launch-polish`**, non ancora in `main`.
+> **Aperti:** integrare i branch in `main` · verificare switch fotocamera/analisi inline con hardware
+> reale · resto invariato, vedi `STATO_PROGETTO.md`.
+
+---
+
 Motion Insight
 
 App Fitness AI-Driven con Analisi Video della Tecnica

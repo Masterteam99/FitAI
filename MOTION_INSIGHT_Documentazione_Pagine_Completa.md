@@ -1,3 +1,15 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Snapshot codice (15 ago 2026):** le pagine `/allenamento`, `/allenamento/[id]`, `/analisi/sessione`,
+> `/analisi/report/[id]`, `/nutrizione` descritte in questo documento sono cambiate in modo sostanziale
+> in Sessione 6 (nuove sezioni, nuovo flusso analisi, nuova pagina `/allenamento/sessioni/[id]`) —
+> vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6) per il dettaglio pagina per pagina. Branch
+> **`feature/mvp-launch-polish`**, non ancora in `main`.
+> **Aperti:** integrare i branch in `main` · resto invariato, vedi `STATO_PROGETTO.md`.
+
+---
+
 Tutte le pagine: copy, struttura, obiettivi, note tecniche
 
 Generato: 10/08/2026 \| Progetto: Motion Insight (app fitness AI:

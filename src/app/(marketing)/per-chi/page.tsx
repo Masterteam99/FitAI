@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Footprints, House, Dumbbell, Baby, HeartPulse, Activity, ChevronRight } from "lucide-react";
+import { Home, Dumbbell, Building2, HeartPulse, PersonStanding, ChevronRight, Quote } from "lucide-react";
 import { FadeIn, SlideUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
 import { copy } from "@/content/copy";
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: copy.perChi.meta.description,
 };
 
-const SEGMENT_ICONS = [Footprints, House, Dumbbell, Baby, HeartPulse, Activity];
+const SEGMENT_ICONS = [Home, Dumbbell, Building2, HeartPulse, PersonStanding];
 
 export default function PerChiPage() {
   const c = copy.perChi;
@@ -33,40 +33,34 @@ export default function PerChiPage() {
         </FadeIn>
       </section>
 
-      <section className="max-w-[1180px] mx-auto px-7 pb-16">
-        <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="max-w-[1180px] mx-auto px-7 pb-24">
+        <Stagger className="grid md:grid-cols-2 gap-6">
           {c.segments.map((s, i) => {
             const Icon = SEGMENT_ICONS[i];
             return (
               <StaggerItem key={s.title}>
-                <div className="group bg-card border border-border rounded-[22px] p-8 h-full transition-all duration-300 hover:-translate-y-1.5 hover:border-[var(--organic-terracotta-soft)] hover:shadow-[0_24px_50px_-28px_rgba(22,33,62,.28)]">
-                  <div className="w-14 h-14 rounded-2xl grid place-items-center mb-5" style={{ background: "rgba(15,158,153,.12)", color: "var(--organic-green-deep)" }}>
+                <div className="group bg-card border border-border rounded-[22px] p-8 h-full transition-all duration-300 hover:-translate-y-1.5 hover:border-[var(--organic-terracotta-soft)] hover:shadow-[0_24px_50px_-28px_rgba(0,0,0,.4)]">
+                  <div className="w-14 h-14 rounded-2xl grid place-items-center mb-5" style={{ background: "rgba(79,209,197,.12)", color: "var(--organic-sage-deep)" }}>
                     <Icon className="w-7 h-7" />
                   </div>
-                  <h2 className="font-display text-xl mb-2">{s.title}</h2>
-                  <p className="text-muted-foreground text-[0.95rem]">{s.desc}</p>
+                  <h2 className="font-display text-xl mb-3">{s.title}</h2>
+                  <div className="flex gap-2.5 mb-4">
+                    <Quote className="w-4 h-4 shrink-0 mt-1" style={{ color: "var(--organic-green)" }} />
+                    <p className="text-sm italic text-foreground/80">{s.quote}</p>
+                  </div>
+                  <p className="text-muted-foreground text-[0.95rem] mb-5">{s.desc}</p>
+                  <Link
+                    href="/onboarding/step1"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold transition-all group-hover:gap-2.5"
+                    style={{ color: "var(--organic-terracotta)" }}
+                  >
+                    {c.segmentCta} <ChevronRight className="w-4 h-4" />
+                  </Link>
                 </div>
               </StaggerItem>
             );
           })}
         </Stagger>
-      </section>
-
-      <section className="max-w-[1180px] mx-auto px-7 pb-24">
-        <div className="relative overflow-hidden rounded-[32px] p-10 md:p-14 text-center" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
-          <div className="organic-blob w-[380px] h-[380px] -top-32 -right-24 opacity-30" style={{ background: "var(--organic-terracotta)" }} />
-          <div className="relative z-[2] max-w-[560px] mx-auto">
-            <h2 className="font-display text-[clamp(1.8rem,3vw,2.4rem)] mb-3" style={{ color: "var(--organic-sand)" }}>{c.ctaTitle}</h2>
-            <p className="mb-7" style={{ color: "rgba(232,241,226,.74)" }}>{c.ctaSubtitle}</p>
-            <Link
-              href="/registrati"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(233,69,96,.55)]"
-              style={{ background: "var(--organic-terracotta)" }}
-            >
-              {c.cta} <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
       </section>
     </>
   );

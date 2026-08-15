@@ -17,6 +17,7 @@ import { computeImbalances, muscleLabel } from "@/lib/body-map";
 import { AdaptiveBodyMap, RadialGauge } from "@/components/wow";
 import { StreakHeatmap } from "@/components/visualizations/StreakHeatmap";
 import { FadeIn, Stagger, StaggerItem, CardHover, CountUp, PageTransition } from "@/components/motion/MotionPrimitives";
+import { computeNutritionTargets, DEFAULT_TARGETS } from "@/lib/nutrition-targets";
 import { copy } from "@/content/copy";
 import type { Metadata } from "next";
 
@@ -28,8 +29,13 @@ export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user!.id as string;
 
-  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions, totalSessions, weeklySessions, lastAnalysis] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId }, select: { name: true, currentStreak: true, totalPoints: true, longestStreak: true } }),
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const [user, activePlan, recentSessions, achievements, mission, imbalances, streakSessions, totalSessions, weeklySessions, lastAnalysis, todayNutritionLogs] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true, currentStreak: true, totalPoints: true, longestStreak: true, age: true, weightKg: true, heightCm: true, primaryGoal: true } }),
     prisma.workoutPlan.findFirst({ where: { userId, isActive: true }, include: { days: { include: { exercises: { include: { exercise: true } } } } } }),
     prisma.workoutSession.findMany({ where: { userId, status: "COMPLETED" }, orderBy: { completedAt: "desc" }, take: 5, include: { planDay: true } }),
     prisma.userAchievement.findMany({ where: { userId }, include: { achievement: true }, orderBy: { unlockedAt: "desc" }, take: 3 }),
@@ -46,7 +52,14 @@ export default async function DashboardPage() {
       orderBy: { completedAt: "desc" },
       select: { combinedScore: true, completedAt: true, finalReport: true, l1Result: true, l2Result: true, l3Result: true, exercise: { select: { name: true } } },
     }),
+    prisma.nutritionLog.findMany({ where: { userId, date: { gte: todayStart, lte: todayEnd } }, select: { calories: true, proteinG: true, carbsG: true, fatG: true } }),
   ]);
+
+  const nutritionTargets = computeNutritionTargets({ weightKg: user?.weightKg, heightCm: user?.heightCm, age: user?.age, goal: user?.primaryGoal }) ?? DEFAULT_TARGETS;
+  const nutritionTotals = todayNutritionLogs.reduce(
+    (acc, l) => ({ calories: acc.calories + l.calories, protein: acc.protein + l.proteinG, carbs: acc.carbs + l.carbsG, fat: acc.fat + l.fatG }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
 
   // Aggrega streak ultimi 90 giorni
   const streakMap = new Map<string, number>();
@@ -273,6 +286,21 @@ export default async function DashboardPage() {
                       ? "Obiettivo settimanale raggiunto. Ottimo ritmo."
                       : `Ti manca${weeklyRemaining === 1 ? "" : "no"} ${weeklyRemaining} allenament${weeklyRemaining === 1 ? "o" : "i"} per l'obiettivo di questa settimana.`}
                   </p>
+                </CardContent>
+              </Card>
+            </FadeIn>
+
+            <FadeIn delay={0.09}>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{copy.dashboard.nutritionTitle}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center gap-5">
+                  <RadialGauge value={Math.round(nutritionTotals.calories)} max={nutritionTargets.calories} size={104} color="#3fae5a" label={copy.dashboard.nutritionTargetSuffix} />
+                  <div className="text-sm space-y-1">
+                    <p className="text-muted-foreground">{Math.round(nutritionTotals.protein)}g proteine · {Math.round(nutritionTotals.carbs)}g carboidrati · {Math.round(nutritionTotals.fat)}g grassi</p>
+                    <Link href="/nutrizione" className="text-xs text-muted-foreground hover:text-primary">{copy.dashboard.nutritionCta}</Link>
+                  </div>
                 </CardContent>
               </Card>
             </FadeIn>

@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 
   await prisma.analysisSession.update({
     where: { id: analysisSessionId },
-    data: { videoUrl: signed.signedUrl, status: "PROCESSING" },
+    data: { videoUrl: signed.signedUrl, videoPath: path, status: "PROCESSING" },
   });
 
   return NextResponse.json({ videoUrl: signed.signedUrl, path });

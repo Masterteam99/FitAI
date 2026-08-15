@@ -1,3 +1,11 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Snapshot codice (15 ago 2026):** oltre allo stato del 14/08 (area utente v2 + Account Manager completi), in Sessione 6 sono stati chiusi: MVP polish (toast, validazione 4 form admin, cambio email/password, sistema notifiche reminder streak email+push costruito da zero, fix filtri Libreria) e l'intero **piano "Sessione/Nutrizione/Analisi"** (10 fasi + lavoro inline — vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6)): collegamento reale sessione-allenamento↔analisi-video (prima due sistemi scollegati), calendario settimanale, storico feedback per sessione, gerarchia piano nutrizionale (+ fix bug persistenza piano AI), priorità documento professionista, switch fotocamera, analisi mostrata inline. Tutto su branch **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`, **non ancora in `main`**). Verificato: tsc/eslint puliti, testato dal vivo con dati reali.
+> **Aperti:** integrare i branch in `main` · verificare switch fotocamera e flusso analisi inline con hardware reale (non testabile in questo ambiente di sviluppo) · aggiungere env VAPID/CRON su Vercel prima del deploy · ripristinare credito Anthropic + Upstash Redis · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore, Chi siamo, FAQ, P.IVA, dati competitor) · deploy.
+
+---
+
 # Motion Insight (repo: FitAI)
 
 > **Nota sul nome**: il prodotto è stato rinominato **Motion Insight**. Il rebrand/restyling è ora **confluito in `main`** (commit `af8fdac`); il naming storico *FitAI* resta solo nel nome del repo (`Masterteam99/FitAI`), nel package e in alcune stringhe interne. Sopra al restyling è stata costruita l'**Area Utente v2** + **Account Manager** (vedi `STATO_PROGETTO.md` → "Aggiornamento 12 ago 2026").

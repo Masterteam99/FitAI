@@ -11,7 +11,7 @@ import { copy } from "@/content/copy";
 export const metadata: Metadata = { title: copy.esercizi.meta.title };
 
 interface Props {
-  searchParams: Promise<{ muscolo?: string; difficolta?: string; cerca?: string; tag?: string }>;
+  searchParams: Promise<{ muscolo?: string; difficolta?: string; cerca?: string; tag?: string; attrezzatura?: string }>;
 }
 
 export default async function EserciziPage({ searchParams }: Props) {
@@ -23,6 +23,7 @@ export default async function EserciziPage({ searchParams }: Props) {
         ...(params.muscolo && { muscleGroupPrimary: params.muscolo as never }),
         ...(params.difficolta && { difficulty: params.difficolta as never }),
         ...(params.tag && { tags: { has: params.tag } }),
+        ...(params.attrezzatura && { equipment: { has: params.attrezzatura as never } }),
         ...(params.cerca && { name: { contains: params.cerca, mode: "insensitive" } }),
       },
       orderBy: { name: "asc" },
@@ -34,6 +35,19 @@ export default async function EserciziPage({ searchParams }: Props) {
   const allTags = Array.from(new Set(tagRows.flatMap((r) => r.tags))).sort().slice(0, 30);
   const muscleGroups = Object.entries(MUSCLE_GROUP_LABELS);
   const difficulties = Object.entries(DIFFICULTY_LABELS);
+  const equipmentOptions = Object.entries(EQUIPMENT_LABELS).filter(([key]) => key !== "NONE");
+
+  function buildHref(overrides: Partial<{ muscolo: string; difficolta: string; tag: string; attrezzatura: string; cerca: string }>) {
+    const next = { ...params, ...overrides };
+    const qs = new URLSearchParams();
+    if (next.cerca) qs.set("cerca", next.cerca);
+    if (next.muscolo) qs.set("muscolo", next.muscolo);
+    if (next.difficolta) qs.set("difficolta", next.difficolta);
+    if (next.tag) qs.set("tag", next.tag);
+    if (next.attrezzatura) qs.set("attrezzatura", next.attrezzatura);
+    const s = qs.toString();
+    return s ? `/esercizi?${s}` : "/esercizi";
+  }
 
   const difficultyColor = { BEGINNER: "success", INTERMEDIATE: "warning", ADVANCED: "destructive" } as const;
 
@@ -47,6 +61,10 @@ export default async function EserciziPage({ searchParams }: Props) {
       {/* Filtri */}
       <div className="flex flex-wrap gap-3">
         <form className="relative flex-1 min-w-48 max-w-xs">
+          {params.muscolo && <input type="hidden" name="muscolo" value={params.muscolo} />}
+          {params.difficolta && <input type="hidden" name="difficolta" value={params.difficolta} />}
+          {params.tag && <input type="hidden" name="tag" value={params.tag} />}
+          {params.attrezzatura && <input type="hidden" name="attrezzatura" value={params.attrezzatura} />}
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             name="cerca"
@@ -57,11 +75,11 @@ export default async function EserciziPage({ searchParams }: Props) {
         </form>
 
         <div className="flex flex-wrap gap-2">
-          <Link href="/esercizi" className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${!params.muscolo ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
+          <Link href={buildHref({ muscolo: undefined })} className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${!params.muscolo ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
             {copy.esercizi.allFilter}
           </Link>
           {muscleGroups.map(([key, label]) => (
-            <Link key={key} href={`/esercizi?muscolo=${key}${params.difficolta ? `&difficolta=${params.difficolta}` : ""}`}
+            <Link key={key} href={buildHref({ muscolo: params.muscolo === key ? undefined : key })}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${params.muscolo === key ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
               {label}
             </Link>
@@ -70,8 +88,17 @@ export default async function EserciziPage({ searchParams }: Props) {
 
         <div className="flex gap-2">
           {difficulties.map(([key, label]) => (
-            <Link key={key} href={`/esercizi?difficolta=${key}${params.muscolo ? `&muscolo=${params.muscolo}` : ""}`}
+            <Link key={key} href={buildHref({ difficolta: params.difficolta === key ? undefined : key })}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${params.difficolta === key ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="w-full flex flex-wrap gap-2">
+          {equipmentOptions.map(([key, label]) => (
+            <Link key={key} href={buildHref({ attrezzatura: params.attrezzatura === key ? undefined : key })}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${params.attrezzatura === key ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
               {label}
             </Link>
           ))}
@@ -80,7 +107,7 @@ export default async function EserciziPage({ searchParams }: Props) {
         {allTags.length > 0 && (
           <div className="w-full flex flex-wrap gap-2">
             {allTags.map((t) => (
-              <Link key={t} href={`/esercizi?tag=${encodeURIComponent(t)}`}
+              <Link key={t} href={buildHref({ tag: params.tag === t ? undefined : t })}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${params.tag === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-foreground"}`}>
                 #{t}
               </Link>

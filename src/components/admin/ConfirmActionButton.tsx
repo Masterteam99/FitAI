@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { copy } from "@/content/copy";
 
@@ -36,10 +37,11 @@ export function ConfirmActionButton({
         <Button
           variant="outline"
           size="sm"
-          className={cn("border", toneClass, className)}
+          className={cn("border gap-1.5", toneClass, className)}
           disabled={pending || disabled}
           onClick={() => startTransition(async () => { await onConfirm(); setConfirming(false); })}
         >
+          {pending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           {pending ? copy.confirmAction.pending : (confirmLabel ?? copy.confirmAction.confirm)}
         </Button>
         <Button variant="ghost" size="sm" onClick={() => setConfirming(false)} disabled={pending}>

@@ -1,3 +1,11 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Snapshot codice (15 ago 2026):** oltre allo stato del 14/08 (area utente v2 + Account Manager completi), in Sessione 6 l'area "La tua sessione" e "Nutrizione" descritte in questo documento sono state **notevolmente estese**: calendario settimanale, riepilogo settimana, ultimi feedback AI, equilibrio muscolare, storico feedback per sessione passata, gerarchia unica del piano nutrizionale, analisi video collegata alla sessione (prima due sistemi scollegati) e mostrata inline. Dettaglio completo in `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6). Branch **`feature/mvp-launch-polish`**, non ancora in `main`.
+> **Aperti:** integrare i branch in `main` · verificare switch fotocamera e flusso analisi inline con hardware reale · resto invariato, vedi `STATO_PROGETTO.md`.
+
+---
+
 # Motion Insight — AREA UTENTE v2 (spec di lavoro)
 
 > **Cos'è questo file:** la specifica della nuova area utente (web **e** mobile: sono identiche,

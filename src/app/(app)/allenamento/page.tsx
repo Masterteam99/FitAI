@@ -5,7 +5,12 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dumbbell, Plus, Zap, Calendar, ChevronRight, CheckCircle, Loader2, Trash2, Play } from "lucide-react";
+import { Dumbbell, Plus, Zap, Calendar, ChevronRight, CheckCircle, Loader2, Trash2, Play, History, Clock, Weight } from "lucide-react";
+import { WeeklyCalendarStrip } from "@/components/allenamento/WeeklyCalendarStrip";
+import { WeekRecapCard } from "@/components/allenamento/WeekRecapCard";
+import { RecentFeedbackCard } from "@/components/allenamento/RecentFeedbackCard";
+import { BodyBalanceCard } from "@/components/allenamento/BodyBalanceCard";
+import { ProfessionalNotesCard } from "@/components/allenamento/ProfessionalNotesCard";
 import { copy } from "@/content/copy";
 
 interface WorkoutPlan {
@@ -19,10 +24,19 @@ interface WorkoutPlan {
   days: { id: string; dayNumber: number; name: string; restDay: boolean; exercises: { id: string }[] }[];
 }
 
+interface PastSession {
+  id: string;
+  completedAt: string | null;
+  totalSeconds: number | null;
+  totalVolumeKg: number | null;
+  planDay: { name: string } | null;
+}
+
 const GOAL_LABELS: Record<string, string> = copy.allenamento.goalLabels;
 
 export default function AllenamentoPage() {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
+  const [pastSessions, setPastSessions] = useState<PastSession[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +44,10 @@ export default function AllenamentoPage() {
       .then((r) => r.json())
       .then((data) => setPlans(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false));
+    fetch("/api/workout-sessions?limit=6")
+      .then((r) => r.json())
+      .then((data) => setPastSessions(Array.isArray(data) ? data : []))
+      .catch(() => undefined);
   }, []);
 
   async function setActive(id: string) {
@@ -74,6 +92,8 @@ export default function AllenamentoPage() {
         </Link>
       </div>
 
+      <ProfessionalNotesCard />
+
       {plans.length === 0 ? (
         <Card className="border-dashed border-2">
           <CardContent className="py-16 text-center space-y-4">
@@ -97,6 +117,8 @@ export default function AllenamentoPage() {
         </Card>
       ) : (
         <>
+          {activePlan && <WeeklyCalendarStrip planId={activePlan.id} days={activePlan.days} />}
+          {activePlan && <WeekRecapCard planId={activePlan.id} plannedPerWeek={activePlan.workoutsPerWeek} />}
           {activePlan && <ActiveSessionBlock plan={activePlan} />}
 
           <div>
@@ -109,6 +131,12 @@ export default function AllenamentoPage() {
             </div>
           </div>
 
+          <PastSessionsCard sessions={pastSessions} />
+
+          <RecentFeedbackCard />
+
+          <BodyBalanceCard />
+
           <div className="pt-2">
             <Link href="/allenamento/genera-ai">
               <Button variant="outline" className="gap-2 w-full sm:w-auto">
@@ -120,6 +148,56 @@ export default function AllenamentoPage() {
         </>
       )}
     </div>
+  );
+}
+
+function PastSessionsCard({ sessions }: { sessions: PastSession[] }) {
+  if (sessions.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <History className="w-5 h-5 text-primary" />
+            {copy.allenamento.recentSessions.title}
+          </CardTitle>
+          <Link href="/progressi" className="text-xs text-primary hover:underline shrink-0">
+            {copy.allenamento.recentSessions.seeAll}
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {sessions.map((s) => {
+          const minutes = s.totalSeconds ? Math.round(s.totalSeconds / 60) : null;
+          const date = s.completedAt
+            ? new Date(s.completedAt).toLocaleDateString("it-IT", { day: "numeric", month: "short" })
+            : null;
+          return (
+            <Link key={s.id} href={`/allenamento/sessioni/${s.id}`} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/40 hover:bg-secondary/70 transition-colors">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{s.planDay?.name ?? copy.allenamento.recentSessions.fallbackName}</p>
+                <p className="text-xs text-muted-foreground">{date}</p>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
+                {minutes != null && (
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    {copy.allenamento.recentSessions.minutes(minutes)}
+                  </span>
+                )}
+                {s.totalVolumeKg != null && s.totalVolumeKg > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Weight className="w-3.5 h-3.5" />
+                    {copy.allenamento.recentSessions.volume(Math.round(s.totalVolumeKg))}
+                  </span>
+                )}
+              </div>
+            </Link>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }
 

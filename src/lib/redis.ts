@@ -20,17 +20,37 @@ const noopLimiter: RateLimiter = {
   },
 };
 
+// Se Upstash è configurato ma irraggiungibile a runtime (rete/DNS giù, istanza
+// in pausa), la chiamata `.limit()` lancia: qui degradiamo a fail-open (consenti)
+// invece di far crashare la route con un 500 — coerente col comportamento quando
+// le env mancano. Il rate limiting resta attivo quando Upstash risponde.
+function resilient(limiter: RateLimiter, label: string): RateLimiter {
+  return {
+    async limit(identifier: string) {
+      try {
+        return await limiter.limit(identifier);
+      } catch (e) {
+        console.error(`[ratelimit:${label}] Upstash non raggiungibile, fail-open`, e instanceof Error ? e.message : e);
+        return { success: true };
+      }
+    },
+  };
+}
+
 function makeLimiter(
   tokens: number,
   window: Parameters<typeof Ratelimit.slidingWindow>[1],
   prefix: string,
 ): RateLimiter {
   if (!redis) return noopLimiter;
-  return new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(tokens, window),
+  return resilient(
+    new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(tokens, window),
+      prefix,
+    }),
     prefix,
-  });
+  );
 }
 
 // Rate limiter per endpoint AI (10 req/min)

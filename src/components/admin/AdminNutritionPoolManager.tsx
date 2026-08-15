@@ -1,12 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Loader2 } from "lucide-react";
+import { Plus, Trash2, Loader2, Pencil, Save } from "lucide-react";
 import { copy } from "@/content/copy";
+
+const nonNegNumStr = z.string().refine((s) => s.trim() === "" || Number(s) >= 0, "Deve essere un numero non negativo");
+const planFormSchema = z.object({
+  name: z.string().trim().min(2, "Minimo 2 caratteri").max(150, "Massimo 150 caratteri"),
+  description: z.string().trim().min(2, "Minimo 2 caratteri").max(2000, "Massimo 2000 caratteri"),
+  rationale: z.string().trim().min(2, "Minimo 2 caratteri").max(2000, "Massimo 2000 caratteri"),
+  weeklyPlanText: z.string().trim().min(2, "Minimo 2 caratteri").max(8000, "Massimo 8000 caratteri"),
+  calories: nonNegNumStr,
+  protein: nonNegNumStr,
+  carbs: nonNegNumStr,
+  fat: nonNegNumStr,
+});
+type PlanFormFields = z.infer<typeof planFormSchema>;
+type PlanFieldErrors = Partial<Record<keyof PlanFormFields, string>>;
 
 interface Item {
   id: string;
@@ -17,26 +32,73 @@ interface Item {
   createdAt: string;
 }
 
+interface PlanFull {
+  name: string;
+  description: string;
+  dietType: string;
+  targetGoal: keyof typeof copy.adminNutritionPool.goals;
+  rationale: string;
+  weeklyPlanText: string;
+  calories: number | null;
+  protein: number | null;
+  carbs: number | null;
+  fat: number | null;
+}
+
 const c = copy.adminNutritionPool;
 const GOAL_KEYS = Object.keys(c.goals) as (keyof typeof c.goals)[];
 
 export function AdminNutritionPoolManager({ initial }: { initial: Item[] }) {
   const [items, setItems] = useState<Item[]>(initial);
   const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<{ id: string; data: PlanFull } | null>(null);
+  const [loadingEditId, setLoadingEditId] = useState<string | null>(null);
 
   async function remove(id: string) {
     await fetch(`/api/admin/nutrition-plans?id=${id}`, { method: "DELETE" });
     setItems((prev) => prev.filter((i) => i.id !== id));
   }
 
+  async function startEdit(id: string) {
+    setLoadingEditId(id);
+    try {
+      const res = await fetch(`/api/admin/nutrition-plans/${id}`);
+      if (!res.ok) return;
+      const { plan } = await res.json();
+      setShowForm(false);
+      setEditing({ id, data: plan as PlanFull });
+    } finally {
+      setLoadingEditId(null);
+    }
+  }
+
   return (
     <div className="space-y-4">
-      <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
-        <Plus className="w-4 h-4" />
-        {c.newPlan}
-      </Button>
+      {!editing && (
+        <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
+          <Plus className="w-4 h-4" />
+          {c.newPlan}
+        </Button>
+      )}
 
-      {showForm && <CreateForm onCreated={(it) => { setItems((prev) => [it, ...prev]); setShowForm(false); }} />}
+      {showForm && !editing && (
+        <PlanForm
+          onSaved={(it) => { setItems((prev) => [it, ...prev]); setShowForm(false); }}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
+
+      {editing && (
+        <PlanForm
+          planId={editing.id}
+          initial={editing.data}
+          onSaved={(it) => {
+            setItems((prev) => prev.map((i) => (i.id === it.id ? { ...i, ...it } : i)));
+            setEditing(null);
+          }}
+          onCancel={() => setEditing(null)}
+        />
+      )}
 
       {items.length === 0 ? (
         <p className="text-sm text-muted-foreground">{c.empty}</p>
@@ -54,9 +116,19 @@ export function AdminNutritionPoolManager({ initial }: { initial: Item[] }) {
                     </div>
                     <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{i.description}</p>
                   </div>
-                  <button onClick={() => remove(i.id)} aria-label={c.deleteAria} className="text-muted-foreground hover:text-destructive transition-colors p-1 shrink-0">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => startEdit(i.id)}
+                      aria-label={c.editAria}
+                      disabled={loadingEditId === i.id}
+                      className="text-muted-foreground hover:text-foreground transition-colors p-1"
+                    >
+                      {loadingEditId === i.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pencil className="w-4 h-4" />}
+                    </button>
+                    <button onClick={() => remove(i.id)} aria-label={c.deleteAria} className="text-muted-foreground hover:text-destructive transition-colors p-1">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -67,47 +139,95 @@ export function AdminNutritionPoolManager({ initial }: { initial: Item[] }) {
   );
 }
 
-function CreateForm({ onCreated }: { onCreated: (i: Item) => void }) {
+function PlanForm({
+  planId,
+  initial,
+  onSaved,
+  onCancel,
+}: {
+  planId?: string;
+  initial?: PlanFull;
+  onSaved: (i: Item) => void;
+  onCancel: () => void;
+}) {
+  const isEdit = Boolean(planId);
   const [form, setForm] = useState({
-    name: "", description: "", dietType: c.dietTypes[0] as string, targetGoal: GOAL_KEYS[0],
-    rationale: "", weeklyPlanText: "", calories: "", protein: "", carbs: "", fat: "",
+    name: initial?.name ?? "",
+    description: initial?.description ?? "",
+    dietType: initial?.dietType ?? (c.dietTypes[0] as string),
+    targetGoal: initial?.targetGoal ?? GOAL_KEYS[0],
+    rationale: initial?.rationale ?? "",
+    weeklyPlanText: initial?.weeklyPlanText ?? "",
+    calories: initial?.calories != null ? String(initial.calories) : "",
+    protein: initial?.protein != null ? String(initial.protein) : "",
+    carbs: initial?.carbs != null ? String(initial.carbs) : "",
+    fat: initial?.fat != null ? String(initial.fat) : "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<PlanFieldErrors>({});
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
+    if (k in fieldErrors) setFieldErrors((p) => { const n = { ...p }; delete n[k as keyof PlanFieldErrors]; return n; });
   }
 
   const canSubmit = form.name.trim().length >= 2 && form.description.trim().length >= 2
     && form.rationale.trim().length >= 2 && form.weeklyPlanText.trim().length >= 2;
 
   async function submit() {
-    setSaving(true);
     setError(null);
+    const validation = planFormSchema.safeParse({
+      name: form.name,
+      description: form.description,
+      rationale: form.rationale,
+      weeklyPlanText: form.weeklyPlanText,
+      calories: form.calories,
+      protein: form.protein,
+      carbs: form.carbs,
+      fat: form.fat,
+    });
+    if (!validation.success) {
+      const errors: PlanFieldErrors = {};
+      for (const issue of validation.error.issues) {
+        const key = issue.path[0] as keyof PlanFormFields;
+        if (!errors[key]) errors[key] = issue.message;
+      }
+      setFieldErrors(errors);
+      setError(c.error);
+      return;
+    }
+    setFieldErrors({});
+
+    setSaving(true);
     const num = (s: string) => (s.trim() === "" ? null : Number(s));
-    const res = await fetch("/api/admin/nutrition-plans", {
-      method: "POST",
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim(),
+      dietType: form.dietType,
+      targetGoal: form.targetGoal,
+      rationale: form.rationale.trim(),
+      weeklyPlanText: form.weeklyPlanText.trim(),
+      calories: num(form.calories),
+      protein: num(form.protein),
+      carbs: num(form.carbs),
+      fat: num(form.fat),
+    };
+    const res = await fetch(isEdit ? `/api/admin/nutrition-plans/${planId}` : "/api/admin/nutrition-plans", {
+      method: isEdit ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name.trim(),
-        description: form.description.trim(),
-        dietType: form.dietType,
-        targetGoal: form.targetGoal,
-        rationale: form.rationale.trim(),
-        weeklyPlanText: form.weeklyPlanText.trim(),
-        calories: num(form.calories),
-        protein: num(form.protein),
-        carbs: num(form.carbs),
-        fat: num(form.fat),
-      }),
+      body: JSON.stringify(payload),
     });
     setSaving(false);
     if (!res.ok) { setError(c.error); return; }
-    const { id } = await res.json();
-    onCreated({
-      id, name: form.name.trim(), description: form.description.trim(),
-      dietType: form.dietType, targetGoal: form.targetGoal, createdAt: new Date().toISOString(),
+    const body = await res.json();
+    onSaved({
+      id: isEdit ? (planId as string) : body.id,
+      name: payload.name,
+      description: payload.description,
+      dietType: payload.dietType,
+      targetGoal: payload.targetGoal,
+      createdAt: new Date().toISOString(),
     });
   }
 
@@ -115,16 +235,18 @@ function CreateForm({ onCreated }: { onCreated: (i: Item) => void }) {
 
   return (
     <Card className="border-primary/30">
-      <CardHeader><CardTitle className="text-base">{c.newPlan}</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-base">{isEdit ? c.editPlan : c.newPlan}</CardTitle></CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.nameLabel}</label>
           <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
+          {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.descLabel}</label>
           <textarea value={form.description} onChange={(e) => set("description", e.target.value)} maxLength={2000}
             className="w-full bg-secondary/50 border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[60px]" />
+          {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
@@ -140,27 +262,32 @@ function CreateForm({ onCreated }: { onCreated: (i: Item) => void }) {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-2">
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.caloriesLabel}</label><Input type="number" value={form.calories} onChange={(e) => set("calories", e.target.value)} /></div>
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.proteinLabel}</label><Input type="number" value={form.protein} onChange={(e) => set("protein", e.target.value)} /></div>
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.carbsLabel}</label><Input type="number" value={form.carbs} onChange={(e) => set("carbs", e.target.value)} /></div>
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.fatLabel}</label><Input type="number" value={form.fat} onChange={(e) => set("fat", e.target.value)} /></div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.caloriesLabel}</label><Input type="number" value={form.calories} onChange={(e) => set("calories", e.target.value)} />{fieldErrors.calories && <p className="text-xs text-destructive">{fieldErrors.calories}</p>}</div>
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.proteinLabel}</label><Input type="number" value={form.protein} onChange={(e) => set("protein", e.target.value)} />{fieldErrors.protein && <p className="text-xs text-destructive">{fieldErrors.protein}</p>}</div>
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.carbsLabel}</label><Input type="number" value={form.carbs} onChange={(e) => set("carbs", e.target.value)} />{fieldErrors.carbs && <p className="text-xs text-destructive">{fieldErrors.carbs}</p>}</div>
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.fatLabel}</label><Input type="number" value={form.fat} onChange={(e) => set("fat", e.target.value)} />{fieldErrors.fat && <p className="text-xs text-destructive">{fieldErrors.fat}</p>}</div>
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.rationaleLabel}</label>
           <textarea value={form.rationale} onChange={(e) => set("rationale", e.target.value)} maxLength={2000}
             className="w-full bg-secondary/50 border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[60px]" />
+          {fieldErrors.rationale && <p className="text-xs text-destructive">{fieldErrors.rationale}</p>}
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.weeklyLabel}</label>
           <textarea value={form.weeklyPlanText} onChange={(e) => set("weeklyPlanText", e.target.value)} placeholder={c.weeklyPlaceholder} maxLength={8000}
             className="w-full bg-secondary/50 border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[100px]" />
+          {fieldErrors.weeklyPlanText && <p className="text-xs text-destructive">{fieldErrors.weeklyPlanText}</p>}
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
-        <Button onClick={submit} disabled={saving || !canSubmit} className="gap-2">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-          {saving ? c.creating : c.create}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={submit} disabled={saving || !canSubmit} className="gap-2">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : isEdit ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {saving ? (isEdit ? c.savingChanges : c.creating) : isEdit ? c.saveChanges : c.create}
+          </Button>
+          <Button variant="outline" onClick={onCancel} disabled={saving}>{c.cancel}</Button>
+        </div>
       </CardContent>
     </Card>
   );

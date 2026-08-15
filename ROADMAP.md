@@ -1,3 +1,15 @@
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Snapshot codice (15 ago 2026):** in Sessione 6 chiuso l'intero piano "Sessione/Nutrizione/Analisi"
+> (10 fasi, vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6)) + MVP polish (toast, validazione form,
+> cambio email/password, sistema notifiche reminder da zero, fix filtri Libreria). Branch
+> **`feature/mvp-launch-polish`**, non ancora in `main`. Dettagli in `STATO_PROGETTO.md`.
+> **Aperti:** integrare i branch in `main` · verificare switch fotocamera/analisi inline con hardware
+> reale · env VAPID/CRON su Vercel prima del deploy · resto invariato (vedi `STATO_PROGETTO.md`).
+
+---
+
 # FitAI — Roadmap Esecutiva (Analisi v2 + Estensioni)
 
 *Versione 3.0 — 13 luglio 2026 (M0–M12 chiuse + redesign "wow" confluito su origin/main; typecheck 0 errori, 54/54 unit test verdi)*

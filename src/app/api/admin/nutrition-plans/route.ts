@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, AdminAccessError } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
+import { NutritionPlanSchema, buildPlanData } from "@/lib/admin/nutrition-plan-schema";
 
 async function guard() {
   try {
@@ -34,38 +34,15 @@ export async function GET() {
   });
 }
 
-const CreateSchema = z.object({
-  name: z.string().min(2).max(120),
-  description: z.string().min(2).max(2000),
-  dietType: z.string().min(2).max(40),
-  targetGoal: z.enum(["LOSE_WEIGHT", "BUILD_MUSCLE", "ENDURANCE", "FLEXIBILITY", "GENERAL_FITNESS", "ATHLETIC_PERFORMANCE"]),
-  rationale: z.string().min(2).max(2000),
-  weeklyPlanText: z.string().min(2).max(8000),
-  calories: z.number().int().min(0).max(10000).nullable().optional(),
-  protein: z.number().int().min(0).max(1000).nullable().optional(),
-  carbs: z.number().int().min(0).max(1000).nullable().optional(),
-  fat: z.number().int().min(0).max(1000).nullable().optional(),
-});
-
 export async function POST(req: NextRequest) {
   const blocked = await guard();
   if (blocked) return blocked;
 
-  const parsed = CreateSchema.safeParse(await req.json().catch(() => null));
+  const parsed = NutritionPlanSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Dati non validi" }, { status: 400 });
-  const d = parsed.data;
 
   const created = await prisma.nutritionPlanTemplate.create({
-    data: {
-      name: d.name,
-      description: d.description,
-      dietType: d.dietType,
-      targetGoal: d.targetGoal,
-      estimatedProfileJson: {},
-      targetMacrosJson: { calories: d.calories ?? null, protein: d.protein ?? null, carbs: d.carbs ?? null, fat: d.fat ?? null },
-      weeklyPlanJson: { text: d.weeklyPlanText },
-      rationale: d.rationale,
-    },
+    data: { ...buildPlanData(parsed.data), estimatedProfileJson: {} },
     select: { id: true },
   });
 

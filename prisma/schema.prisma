@@ -204,6 +204,8 @@ model User {
   medicalNotes        String? // note mediche facoltative scritte dall'utente (testo libero, nessun file)
   nutritionPlanJson   Json?
   onboardingCompleted Boolean      @default(false)
+  notifyEmailReminders Boolean     @default(true)
+  notifyPush          Boolean      @default(false)
   totalPoints         Int          @default(0)
   currentStreak       Int          @default(0)
   longestStreak       Int          @default(0)
@@ -233,6 +235,7 @@ model User {
   dailyCheckins         DailyCheckin[]
   revisionRequests      RevisionRequest[]
   adminActions          AdminActionLog[]      @relation("AdminActionActor")
+  pushSubscriptions     PushSubscription[]
 
   @@map("users")
 }
@@ -493,6 +496,7 @@ model WorkoutSession {
   plan           WorkoutPlan?             @relation(fields: [planId], references: [id])
   planDay        WorkoutPlanDay?          @relation(fields: [planDayId], references: [id])
   exercises      WorkoutSessionExercise[]
+  analysisSessions AnalysisSession[]
 
   @@index([userId])
   @@index([planId])
@@ -507,6 +511,7 @@ model WorkoutSessionExercise {
   completedSets Json           @default("[]")
   session       WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   exercise      Exercise       @relation(fields: [exerciseId], references: [id])
+  analysisSessions AnalysisSession[]
 
   @@index([sessionId])
   @@map("workout_session_exercises")
@@ -518,9 +523,15 @@ model AnalysisSession {
   exerciseId      String
   status          AnalysisStatus @default(RECORDING)
   videoUrl        String? // URL Supabase Storage del video utente (15-25s)
+  videoPath       String? // path nel bucket analysis-videos (serve per poterlo eliminare su richiesta utente)
   durationSeconds Int?
   startedAt       DateTime       @default(now())
   completedAt     DateTime?
+
+  // Collegamento facoltativo alla sessione di allenamento del piano (se l'analisi è stata fatta
+  // dentro il flusso guidato "La tua sessione" invece che come analisi isolata da /analisi).
+  workoutSessionId         String?
+  workoutSessionExerciseId String?
 
   // Analisi v2 — output strutturati per logica + sintesi finale
   l1Result      Json? // L1Result: score, triggeredFeedback, detectedPhases, rawAngles
@@ -529,11 +540,15 @@ model AnalysisSession {
   finalReport   Json? // FinalReport: combinedScore, overallJudgment, prioritizedImprovements, injuryRiskAlert, positiveAspects
   combinedScore Float? // Manteniamo top-level per query/index veloci
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise Exercise @relation(fields: [exerciseId], references: [id])
+  user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise               Exercise                 @relation(fields: [exerciseId], references: [id])
+  workoutSession         WorkoutSession?          @relation(fields: [workoutSessionId], references: [id], onDelete: SetNull)
+  workoutSessionExercise WorkoutSessionExercise?  @relation(fields: [workoutSessionExerciseId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([exerciseId])
+  @@index([workoutSessionId])
+  @@index([workoutSessionExerciseId])
   @@map("analysis_sessions")
 }
 
@@ -711,6 +726,19 @@ model Notification {
   @@map("notifications")
 }
 
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
 model WearableIntegration {
   id           String           @id @default(cuid())
   userId       String
@@ -805,14 +833,50 @@ model QuizConfig {
   @@map("quiz_config")
 }
 
+// Override editabili dei copy del sito (chiave dot-path es. "prezzi.premiumPrice").
+// Le pagine leggono l'override dal DB se presente, altrimenti il default da copy.ts.
+// Consente al gestore di modificare titoli/sottotitoli/CTA/prezzi senza deploy.
+model SiteContent {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_content")
+}
+
+// Pool di ricette curate dal gestore. Mostrate all'utente in base alla dieta;
+// l'AI resta come fallback quando non ci sono ricette curate pertinenti.
+model Recipe {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @db.Text
+  mealType    MealType? // BREAKFAST/LUNCH/DINNER/SNACK — facoltativo
+  dietType    String? // onnivora/vegetariana/vegana/... — null = adatta a tutte
+  calories    Int?
+  proteinG    Int?
+  carbsG      Int?
+  fatG        Int?
+  ingredients String[]  @default([])
+  steps       String[]  @default([])
+  tags        String[]  @default([])
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@index([dietType])
+  @@index([isActive])
+  @@map("recipes")
+}
+
 model UserDocument {
-  id        String       @id @default(cuid())
-  userId    String
-  kind      DocumentKind
-  name      String
-  path      String
-  createdAt DateTime     @default(now())
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String       @id @default(cuid())
+  userId       String
+  kind         DocumentKind
+  name         String
+  path         String
+  analysisJson Json? // analisi AI del documento (sintesi + aggiustamenti consigliati fitness/nutrizione)
+  analyzedAt   DateTime? // quando è stata generata l'analisi AI
+  createdAt    DateTime     @default(now())
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("user_documents")

@@ -42,14 +42,14 @@ export const copy = {
   // ── Header marketing → src/components/marketing/MarketingHeader.tsx ──
   marketingHeader: {
     nav: [
-      { href: "/come-funziona", label: "Come funziona" },
-      { href: "/per-chi", label: "Per chi" },
+      { href: "/come-funziona", label: "Il Metodo" },
+      { href: "/per-chi", label: "Per Chi" },
+      { href: "/chi-siamo", label: "Chi siamo" },
       { href: "/prezzi", label: "Prezzi" },
-      { href: "/storie", label: "Storie" },
       { href: "/risorse", label: "Risorse" },
     ],
     login: "Accedi",
-    signup: "Prova Gratis",
+    signup: "Inizia gratis",
   },
 
   // ── Footer marketing → src/components/marketing/MarketingFooter.tsx ──
@@ -110,84 +110,133 @@ export const copy = {
 
   // ── Landing → src/app/page.tsx ──
   landing: {
-    // ── 1. HERO ──
-    heroTitle: { pre: "Alleni da solo? Ora hai un ", highlight: "occhio esperto", post: " che ti guarda." } as HeroTitle,
+    // ── 1. HERO — copy v2 (fonte: Motion-Insight-anteprima v2.html) ──
+    heroEyebrow: "Analisi del movimento con intelligenza artificiale",
+    heroTitle: { pre: "Alleni da solo. Ma la tua tecnica è ", highlight: "corretta?", post: "" } as HeroTitle,
     heroLead:
-      "Motion Insight usa la fotocamera per vedere la tua tecnica e correggerti in tempo reale — così migliori davvero, senza farti male.",
-    ctaPrimary: "Trova il tuo percorso",
-    ctaSecondary: "Guarda la demo",
-    ctaMicro: "Gratis · nessuna carta · 2 minuti",
-    heroBadge: "🔒 Il video resta sul tuo telefono.",
-    trustBadges: ["Nessun attrezzo", "In tempo reale", "In italiano"],
+      "Registra 20/30 secondi della tua esecuzione. Motion Insight la analizza e ti restituisce un'analisi completa: cosa funziona, cosa no, e cosa correggere per primo.",
+    ctaPrimary: "Analizza la tua tecnica",
+    ctaSecondary: "Come funziona",
+    ctaMicro: "Gratis · nessuna carta richiesta · bastano il telefono e due metri di spazio o il caricamento di un video di un tuo esercizio.",
 
-    // ── 2. PER CHI SEI ──
+    // ── 2. IL PROBLEMA ──
+    problemTitle: { pre: "Il problema di allenarsi da soli non è la fatica. ", highlight: "È il dubbio.", post: "" } as HeroTitle,
+    problemText:
+      "Nessuno ti guarda. Nessuno ti dice che la schiena si sta arrotondando, che un ginocchio cede verso l'interno, che stai compensando con le spalle. Così un errore diventa un'abitudine, e un'abitudine diventa un dolore.",
+    problemPoints: [
+      "Non sai se lo stai facendo bene.",
+      "I fastidi tornano sempre negli stessi punti.",
+      "Un professionista che ti segua costa 200-400 € al mese.",
+    ],
+
+    // ── 3. IN TRE PASSI ──
+    stepsEyebrow: "In tre passi",
+    stepsTitle: { pre: "Registri. Analizziamo. ", highlight: "Sai cosa correggere.", post: "" } as HeroTitle,
+    steps: [
+      { num: "1", title: "Registri", desc: "Appoggi il telefono, un conto alla rovescia ti dà il tempo di posizionarti, poi esegui." },
+      { num: "2", title: "Analizziamo", desc: "Il movimento viene esaminato su tre livelli diversi e confrontato con l'esecuzione di un professionista." },
+      { num: "3", title: "Ricevi l'analisi", desc: "In un paio di minuti: punteggio, rischi da tenere d'occhio, e i correttivi in ordine di priorità." },
+    ],
+    stepsLink: "Guarda il metodo nel dettaglio →",
+
+    // ── 4. COSA RICEVI (report campione) ──
+    reportEyebrow: "Cosa ricevi",
+    reportTitle: { pre: "Non un «bravo». ", highlight: "Un'analisi dettagliata.", post: "" } as HeroTitle,
+    reportText:
+      "Alla fine di ogni analisi ricevi un documento leggibile: quanto vale la tua esecuzione, dove si discosta da quella corretta, quali sono i rischi, e da cosa conviene partire per migliorare.",
+    reportBullets: [
+      "Punteggio complessivo della forma",
+      "Confronto fase per fase con l'esecuzione di un professionista",
+      "Avviso sul rischio di infortunio, quando presente",
+      "Miglioramenti in ordine di priorità",
+    ],
+    reportCard: {
+      score: 77,
+      verdict: "Buona base, due correzioni",
+      risk: "Rischio ginocchio destro",
+      fixesTitle: "Da correggere, in ordine",
+      fixes: [
+        "Nella fase di discesa il ginocchio destro cede verso l'interno — un pattern spesso associato a dolore alla rotula.",
+        "La schiena si arrotonda negli ultimi centimetri di discesa.",
+        "Il ritmo di risalita è irregolare tra una ripetizione e l'altra.",
+      ],
+    },
+
+    // ── 5. DA DOVE VUOI PARTIRE (4 percorsi) ──
     segmentsEyebrow: "Per chi è",
     segmentsTitle: { pre: "Da dove vuoi ", highlight: "partire", post: "?" } as HeroTitle,
-    segmentsSubtitle: "Ogni corpo e ogni obiettivo hanno il loro percorso. Scegli il tuo.",
+    segmentsSubtitle: "Ogni situazione ha il suo percorso.",
     segments: [
-      { title: "Corro", desc: "Migliora la corsa e previeni gli infortuni tipici del runner." },
-      { title: "Mi alleno a casa", desc: "Nessun attrezzo: bastano fotocamera e spazio per muoverti." },
-      { title: "Vado in palestra", desc: "Perfeziona la tecnica sui pesi e progredisci in sicurezza." },
-      { title: "Riparto dopo un infortunio", desc: "Movimenti controllati e progressivi, senza forzare." },
+      { title: "Mi alleno a casa (con o senza attrezzi)", desc: "Bastano il telefono e un po' di spazio; se hai manubri o elastici, il carico cresce in modo graduale." },
+      { title: "Vado in palestra", desc: "Perfeziona i movimenti fondamentali sotto carico." },
+      { title: "Riparto dopo uno stop o infortunio", desc: "Progressione graduale, senza forzare." },
       { title: "Ho superato i 50", desc: "Forza, equilibrio e mobilità, con i tuoi tempi." },
-      { title: "Torno in forma dopo la gravidanza", desc: "Rientro graduale, core e pavimento pelvico." },
     ],
 
-    // ── 3. TI RICONOSCI? ──
-    painEyebrow: "Ti riconosci?",
-    painTitle: { pre: "Ti suona ", highlight: "familiare", post: "?" } as HeroTitle,
-    painSubtitle: "Non è colpa tua: nessuno ti ha mai detto cosa stavi sbagliando.",
-    pains: [
-      "Faccio gli esercizi ma non sono sicuro di farli bene.",
-      "Ho un fastidio ricorrente a schiena, ginocchia o spalle.",
-      "Mi alleno da mesi ma i risultati non arrivano.",
-      "Un personal trainer costa troppo per seguirmi sempre.",
+    // ── 6. IL CONFRONTO (scostamento per fase vs professionista) ──
+    compareEyebrow: "Il confronto",
+    compareTitle: { pre: "Ti misuriamo su chi lo fa di ", highlight: "mestiere.", post: "" } as HeroTitle,
+    compareText:
+      "Per ogni esercizio abbiamo registrato l'esecuzione di un professionista. La tua viene messa a confronto con la sua, fase per fase: è così che l'analisi ti dice non solo che c'è un errore, ma quanto ti allontani da come andrebbe fatto.",
+    compareLabels: { you: "La tua esecuzione", pro: "Riferimento professionista" },
+    comparePhases: [
+      { label: "Discesa", value: 68 },
+      { label: "Punto basso", value: 84 },
+      { label: "Risalita", value: 71 },
+      { label: "Blocco finale", value: 88 },
     ],
 
-    // ── 4. COME FUNZIONA (i "33 punti" vivono SOLO qui) ──
-    stepsEyebrow: "Come funziona",
-    stepsTitle: { pre: "Dalla fotocamera al ", highlight: "consiglio", post: ", in un attimo." } as HeroTitle,
-    steps: [
-      { num: "01", title: "Inquadra e muoviti", desc: "Basta la fotocamera." },
-      { num: "02", title: "L'AI legge 33 punti del tuo corpo", desc: "Fino a 30 volte al secondo." },
-      { num: "03", title: "Ricevi la correzione", desc: "Angoli, allineamento, profondità." },
-      { num: "04", title: "Il piano si adatta", desc: "Ai tuoi progressi." },
+    // ── 7. NON SOLO ANALISI ──
+    extrasEyebrow: "Non solo analisi",
+    extrasTitle: { pre: "Attorno all'analisi, ", highlight: "tutto quello che serve.", post: "" } as HeroTitle,
+    extras: [
+      { title: "Piano di allenamento su misura", desc: "Generato sui tuoi obiettivi, livello e attrezzatura." },
+      { title: "Piano alimentare", desc: "Calibrato sul tuo fabbisogno reale." },
+      { title: "Progressi nel tempo", desc: "Come cambia la qualità dei tuoi movimenti, non solo il peso." },
+      { title: "Calcolo delle kilocalorie", desc: "Fabbisogno giornaliero stimato sui tuoi dati." },
+      { title: "Community (presto)", desc: "Confronto tra persone con obiettivi simili." },
+      { title: "Ricette (presto)", desc: "In linea con il tuo piano alimentare." },
     ],
 
-    // ── 5. IL TUO FORM SCORE (il Form Score e "+18%" vivono SOLO qui) ──
-    formEyebrow: "Il tuo Form Score",
-    formTitle: { pre: "La qualità dei tuoi movimenti, finalmente ", highlight: "misurabile", post: "." } as HeroTitle,
-    formText:
-      "Non solo peso e ripetizioni: il Form Score ti dà un punteggio oggettivo (0-100) sulla qualità della tua esecuzione, e ti mostra come cresce settimana dopo settimana.",
-    formChartLabel: "Form Score",
-    formChartDelta: "+18% questo mese",
+    // ── 8. FIDUCIA (metodo dichiarato / professionisti veri / privacy video) ──
+    trustTitle: { pre: "Perché puoi fidarti dei numeri che ", highlight: "leggi.", post: "" } as HeroTitle,
+    trust: [
+      { title: "Il metodo è dichiarato.", desc: "Spieghiamo come funziona l'analisi, cosa misura e quali sono i suoi limiti.", link: "Leggi il metodo →", href: "/come-funziona" },
+      { title: "I riferimenti sono di professionisti veri.", desc: "Le esecuzioni di confronto sono registrate da professionisti del settore." },
+      { title: "Le tue immagini sono trattate con attenzione.", desc: "Spieghiamo esattamente cosa succede al video che registri.", link: "Come trattiamo i video →", href: "/privacy" },
+    ],
 
-    // ── 6. SICUREZZA & PRIVACY (on-device vive SOLO qui + FAQ) ──
-    privacyEyebrow: "Sicurezza & Privacy",
-    privacyTitle: { pre: "La tua privacy è ", highlight: "sacra", post: ". La tua sicurezza anche." } as HeroTitle,
-    privacyText:
-      "Il video viene elaborato direttamente sul tuo telefono: nessun filmato viene mai salvato o inviato. E ti proponiamo solo esercizi adatti al tuo livello, con progressione graduale.",
+    // ── 9. VOCE DEL COFONDATORE (placeholder — NON inventare, da compilare dal team) ──
+    founderQuote: "[TESTO DA PRODURRE: due righe del cofondatore sul perché è nato Motion Insight]",
+    founderName: "[NOME] — [QUALIFICA E ANNI DI ESPERIENZA]",
 
-    // ── 7. STORIE ──
-    storieTitle: { pre: "Le prime storie stanno ", highlight: "arrivando", post: "." } as HeroTitle,
-    storieText:
-      "Preferiamo mostrarti testimonianze vere — con nome, città e risultato reale — piuttosto che frasi inventate. Le stiamo raccogliendo ora.",
-    storieLink: "Vai alle storie",
-
-    // ── 8. PREZZI (3 piani) ──
+    // ── 10. PREZZI (versione compatta landing, il dettaglio vive in /prezzi) ──
     pricingEyebrow: "Prezzi",
-    pricingTitle: { pre: "Un piano per ", highlight: "ogni obiettivo", post: "." } as HeroTitle,
-    plans: [
-      { name: "Free", amount: "€0", period: "/ per sempre", desc: "Per iniziare e provare la correzione della forma.", features: ["3 piani AI al mese", "5 analisi video al mese", "Libreria esercizi"], cta: "Crea account", featured: false, badge: null as string | null },
-      { name: "Premium", amount: "€9,90", period: "/ mese", desc: "L'esperienza completa, senza limiti.", features: ["Analisi e correzione illimitate", "Piani AI illimitati", "Nutrizione dinamica", "AI Coach 24/7"], cta: "Prova 7 giorni gratis", featured: true, badge: "Più scelto" as string | null },
-      { name: "Annuale", amount: "€79,90", period: "/ anno", desc: "Il massimo risparmio: due mesi in regalo.", features: ["Tutto Premium", "Due mesi gratis", "Priorità supporto"], cta: "Passa all'annuale", featured: false, badge: "−33%" as string | null },
+    pricingTitle: { pre: "Inizia gratis. Passa a Premium ", highlight: "quando ti serve.", post: "" } as HeroTitle,
+    pricingMini: [
+      { name: "Free", price: "€0", badge: null as string | null },
+      { name: "Premium", price: "€9,90/mese", badge: null as string | null },
+      { name: "Annuale", price: "€79,90/anno", badge: "−33%" as string | null },
     ],
-    pricingGuarantee: "Prova 7 giorni gratis · Disdici quando vuoi · Rimborso entro 30 giorni.",
+    pricingGuarantee: "Prova 7 giorni · Disdici quando vuoi · Rimborso entro 30 giorni",
+    pricingLink: "Vedi cosa include ogni piano →",
 
-    // ── 9. CTA FINALE (una sola azione) ──
-    finalTitle: { pre: "Pronto a ", highlight: "migliorare davvero", post: "?" } as HeroTitle,
-    finalSubtitle: "Trova il tuo percorso in 2 minuti. Gratis, nessuna carta.",
-    finalCta: "Trova il tuo percorso",
+    // ── 11. TABELLA COMPETITOR ──
+    compTableTitle: "Cosa ottieni, e a che prezzo.",
+    compTableCaption: "[DATI da verificare] Prezzi competitor rilevati da fonti pubbliche (mercato USA, in $) — dettaglio e fonti nella pagina Prezzi.",
+    compTableCols: ["Cosa fai", "Classi live (Buddyfit)", "Solo tecnica (FormCheck AI)", "Solo piani (Fitbod)", "Motion Insight"],
+    compTableRows: [
+      { label: "Analisi della tua tecnica", values: ["—", "✅", "—", "✅"] },
+      { label: "Piano di allenamento su misura", values: ["classi", "—", "✅", "✅"] },
+      { label: "Alimentazione", values: ["—", "—", "—", "✅ ricette"] },
+      { label: "Prezzo/mese (circa)", values: ["17,99 €", "~12 $", "~13 $", "9,90 €"] },
+    ],
+    compTableNote: "Le classi live ti fanno allenare ma nessuno guarda te; chi fa la tecnica non ti dà il piano; chi ti dà il piano non guarda la tecnica; un coach umano costa venti volte tanto. Motion Insight mette tutto insieme e, soprattutto, guarda la tua esecuzione.",
+    faqLink: "Tutte le domande frequenti →",
+
+    // ── 12. CTA FINALE ──
+    finalTitle: { pre: "Scopri cosa dice la tua ", highlight: "prima esecuzione.", post: "" } as HeroTitle,
+    finalCta: "Analizza la tua tecnica",
 
     // Visual hero (riusato da OrganicHeroVisual — non mostra il Form Score)
     scoreCard: {
@@ -204,26 +253,43 @@ export const copy = {
     floatCard: { title: "Correzione in tempo reale", sub: "rep 6 · lato sinistro" },
   },
 
-  // ── /per-chi → src/app/(marketing)/per-chi/page.tsx ──
+  // ── /per-chi → src/app/(marketing)/per-chi/page.tsx — fonte: MOTION_INSIGHT_COPY_FINALE.md PAGINA 3 ──
   perChi: {
     meta: {
       title: "Per chi è",
-      description: "Runner, allenamento a casa, palestra, post-parto, over 50, rientro da infortunio: trova il tuo percorso con la correzione della forma AI.",
+      description: "Allenamento a casa, in palestra, rientro da infortunio, over 50: trova il tuo percorso con l'analisi della tecnica AI.",
     },
-    badge: "Per chi è",
-    heroTitle: { pre: "Un percorso per ", highlight: "ogni corpo" } as HeroTitle,
-    heroSubtitle: "Qualunque sia il tuo punto di partenza, Motion Insight guarda come ti muovi e adatta allenamento, tecnica e nutrizione a te.",
+    badge: "Per chi",
+    heroTitle: { pre: "Situazioni diverse, ", highlight: "percorsi diversi" } as HeroTitle,
+    heroSubtitle: "Motion Insight si adatta a dove ti alleni e a da dove parti.",
     segments: [
-      { title: "Runner ed endurance", desc: "Previeni gli infortuni da corsa e migliora l'efficienza del gesto: l'AI vede appoggio, postura e simmetria." },
-      { title: "Ti alleni a casa", desc: "Nessun attrezzo necessario: la palestra è il tuo salotto. Correzione della forma anche a corpo libero." },
-      { title: "Vai in palestra", desc: "Perfeziona la tecnica sui pesi e progredisci in sicurezza, con il carico giusto proposto serie dopo serie." },
-      { title: "Neo-mamme (post-parto)", desc: "Rientro graduale e sicuro, con focus su core e pavimento pelvico, ai tuoi ritmi." },
-      { title: "Over 50", desc: "Forza, equilibrio e prevenzione con progressioni su misura e movimenti controllati." },
-      { title: "Rientro da infortunio", desc: "Movimenti progressivi e controllati: l'AI tiene d'occhio i compensi e ti protegge." },
+      {
+        title: "Mi alleno a casa senza attrezzi",
+        quote: "Hai un tappetino, due metri di spazio e venti minuti. Nessuno che ti guardi.",
+        desc: "Motion Insight lavora esattamente in queste condizioni: bastano il telefono appoggiato e il corpo libero. Gli esercizi proposti non richiedono attrezzatura, e l'analisi funziona anche in spazi stretti purché l'inquadratura ti contenga tutto.",
+      },
+      {
+        title: "Mi alleno a casa con manubri o elastici",
+        quote: "Hai due manubri e un elastico, ma non sai se stai caricando troppo o troppo poco.",
+        desc: "Il piano usa quello che hai davvero e cresce di carico in modo graduale. Le analisi ti dicono se la tecnica tiene quando il peso aumenta: è lì che gli errori si pagano.",
+      },
+      {
+        title: "Vado in palestra",
+        quote: "Hai i macchinari e i bilancieri, ma nessuno che ti guardi mentre esegui.",
+        desc: "Registri una serie dei movimenti fondamentali e ricevi l'analisi. Sotto carico la tecnica conta il doppio, e i correttivi arrivano in ordine di priorità invece che tutti insieme.",
+      },
+      {
+        title: "Riparto dopo uno stop o infortunio",
+        quote: "Sei fermo da mesi e hai paura di farti male appena ricominci.",
+        desc: "La progressione parte da dove sei, non da dove eri. Gli avvisi sul rischio ti dicono quando un movimento non è ancora pronto per te, così riprendi senza forzare.",
+      },
+      {
+        title: "Ho superato i 50",
+        quote: "Vuoi restare forte e stabile, non gareggiare con nessuno.",
+        desc: "Il piano lavora su forza, equilibrio e mobilità, con i tuoi tempi. L'analisi tiene conto della qualità del movimento, che a questa età conta più del carico.",
+      },
     ],
-    ctaTitle: "Non sai da dove partire?",
-    ctaSubtitle: "Il quiz di 2 minuti costruisce il percorso giusto per te.",
-    cta: "Calcola il tuo piano gratis",
+    segmentCta: "Inizia da qui",
   },
 
   // ── /funzionalita → src/app/(marketing)/funzionalita/page.tsx ──
@@ -250,37 +316,86 @@ export const copy = {
     ctaButton: "Calcola il tuo piano gratis",
   },
 
-  // ── /come-funziona → src/app/(marketing)/come-funziona/page.tsx ──
+  // ── /come-funziona ("Il Metodo") → src/app/(marketing)/come-funziona/page.tsx — fonte: MOTION_INSIGHT_COPY_FINALE.md PAGINA 2 ──
   comeFunziona: {
     meta: {
-      title: `Come funziona`,
-      description: "Dal profilo al piano AI all'analisi della tecnica: scopri come Motion Insight ti accompagna in cinque passi.",
+      title: `Il Metodo`,
+      description: "Come funziona l'analisi del movimento di Motion Insight: i tre livelli di analisi, come si legge il punteggio, e i limiti dichiarati.",
     },
-    heroTitle: { pre: "Come l'AI ", highlight: "vede la tua tecnica" } as HeroTitle,
-    heroSubtitle: "Nessuna magia e nessun sensore: solo la fotocamera del tuo telefono e un'analisi che avviene sul tuo dispositivo. Ecco cosa succede, passo per passo.",
-    stepLabel: "Passo",
-    steps: [
-      { title: "Riprendi la tua esecuzione", desc: "Attivi la fotocamera e ti alleni. Nessun attrezzo, nessun wearable: basta inquadrare il movimento." },
-      { title: "L'AI legge 33 punti del corpo", desc: "La computer vision traccia la tua postura fino a 30 volte al secondo e misura angoli, allineamento, profondità e simmetria." },
-      { title: "Ricevi il feedback immediato", desc: "Ti dice esattamente cosa correggere — «ginocchia in linea», «schiena troppo inclinata» — con un Form Score oggettivo da 0 a 100." },
-      { title: "Il piano si adatta a te", desc: "In base a come vai, come ti senti e quanto tempo hai, il programma successivo si ricalibra automaticamente." },
-      { title: "La tua privacy resta tua", desc: "Il video è elaborato sul tuo dispositivo: nessun filmato viene mai salvato o inviato. Conforme al GDPR." },
-    ],
-    ctaTitle: "Pronto a vedere cosa correggere?",
-    ctaButton: "Calcola il tuo piano gratis",
+    eyebrow: "Il Metodo",
+    heroTitle: { pre: "Come facciamo a sapere se ti stai muovendo ", highlight: "bene", post: "." } as HeroTitle,
+    heroSubtitle: "Nessuna magia: tre analisi diverse sullo stesso video, e un confronto con chi lo fa di mestiere.",
+
+    sectionA: {
+      title: { pre: "Perché registriamo invece di correggerti ", highlight: "mentre ti muovi", post: "." } as HeroTitle,
+      paragraphs: [
+        "Un'analisi accurata richiede di guardare l'intero movimento, fase per fase, e di poterlo rivedere più volte. Mentre ti muovi non è possibile: si può solo dare un'indicazione generica, che suona bene ma non misura niente.",
+        "Per questo la registrazione è silenziosa: nessuno scheletro a schermo, nessuna voce che ti interrompe. Tu esegui come faresti da solo — che è esattamente ciò che va misurato. L'analisi arriva dopo, in un paio di minuti.",
+      ],
+      compare: [
+        { title: "Correzione durante l'esecuzione", desc: "Appariscente, ma superficiale: nessuna misura affidabile in movimento." },
+        { title: "Analisi dopo la registrazione", desc: "Il movimento viene riesaminato fase per fase, più volte, con misure ripetibili." },
+      ],
+    },
+    sectionB: {
+      title: { pre: "I tre ", highlight: "livelli di analisi", post: "." } as HeroTitle,
+      levels: [
+        { title: "Geometria del corpo", desc: "Vengono ricostruiti i punti articolari nello spazio e misurati angoli, allineamenti e profondità in ogni fase del movimento." },
+        { title: "Lettura visiva", desc: "I fotogrammi chiave vengono esaminati per cogliere ciò che i soli numeri non dicono: compensi, rigidità, esitazioni." },
+        { title: "Confronto con il professionista", desc: "La tua esecuzione viene messa accanto a quella registrata da un professionista, fase per fase." },
+      ],
+      note: "I tre risultati vengono uniti in un unico giudizio, con un punteggio complessivo.",
+    },
+    sectionC: {
+      title: { pre: "Come si legge ", highlight: "l'analisi", post: "." } as HeroTitle,
+      items: [
+        { title: "Il punteggio", desc: "Da 0 a 100, è la sintesi dei tre livelli. Serve a capire a che punto sei, non a darti un voto." },
+        { title: "L'avviso di rischio", desc: "Compare solo quando un movimento può portare a un infortunio. È sempre accompagnato da un'icona e da una spiegazione: non ti affidiamo mai al solo colore." },
+        { title: "Le priorità", desc: "Tre cose da sistemare, in ordine di importanza. Si parte dalla prima: correggere tutto insieme non funziona." },
+      ],
+    },
+    sectionD: {
+      title: { pre: "L'analisi è il punto di partenza, ", highlight: "non il traguardo", post: "." } as HeroTitle,
+      text: "Il punteggio ti dice dove sei; il resto di Motion Insight lavora perché tu migliori: il piano di allenamento si adatta a ciò che l'analisi rivela e i progressi seguono la qualità dei tuoi movimenti nel tempo. L'analisi è il motore di tutto il resto.",
+    },
+    sectionE: {
+      title: { pre: "Cosa Motion Insight ", highlight: "non è", post: "." } as HeroTitle,
+      intro: "Dichiarare i limiti fa parte del metodo. Se sai cosa non possiamo fare, puoi fidarti di quello che facciamo.",
+      items: [
+        { title: "Non è un dispositivo medico", desc: "È uno strumento di allenamento. Non emette diagnosi e non va usato per decisioni sanitarie." },
+        { title: "Non sostituisce un professionista", desc: "Se hai dolore o un infortunio in corso, serve una persona che ti visiti. L'analisi può accompagnare quel percorso, non rimpiazzarlo." },
+        { title: "Ha bisogno di condizioni minime", desc: "Buona luce e inquadratura completa. Se il corpo esce dal campo, l'analisi te lo dice invece di indovinare." },
+      ],
+    },
+    sectionF: {
+      eyebrow: "Privacy",
+      title: { pre: "I tuoi video ", highlight: "restano tuoi", post: "." } as HeroTitle,
+      intro: "Registri immagini di te stesso in casa tua: è giusto sapere esattamente cosa succede, e cosa non succede.",
+      items: [
+        { title: "Non vengono mostrati a nessuno", desc: "Il video è associato solo al tuo account. Nessun altro utente lo vede." },
+        { title: "Non vengono usati per pubblicità", desc: "Non li vendiamo, non li cediamo, non li usiamo per profilarti." },
+        { title: "Servono solo alla tua analisi", desc: "Vengono caricati per essere analizzati e per poterli rivedere accanto al risultato. Nient'altro." },
+        { title: "Li controlli tu", desc: "Puoi rivederli o eliminarli quando vuoi dal profilo: un singolo video o l'intero storico. L'analisi già ricevuta resta." },
+      ],
+      dataDisclaimer: "[DA COMPLETARE: dati tecnici reali — fornitore storage, tempi di conservazione, procedura di cancellazione]",
+    },
+    sectionG: {
+      title: { pre: "Il metodo si giudica sui ", highlight: "risultati che ti dà", post: "." } as HeroTitle,
+      cta: "Prova con la tua prima esecuzione",
+    },
   },
 
-  // ── /prezzi → src/app/(marketing)/prezzi/page.tsx ──
+  // ── /prezzi → src/app/(marketing)/prezzi/page.tsx — fonte: MOTION_INSIGHT_COPY_FINALE.md PAGINA 5 ──
   prezzi: {
     meta: {
       title: `Prezzi`,
-      description: "Inizia gratis con piani AI, correzione della forma e nutrizione. Passa a Premium a €9,90 al mese, con prova di 7 giorni gratis.",
+      description: "Un prezzo chiaro, nessuna sorpresa. Inizia gratis con l'analisi della tecnica, passa a Premium a €9,90 al mese quando vuoi.",
     },
-    heroTitle: { pre: "Un piano per ", highlight: "ogni obiettivo" } as HeroTitle,
-    heroSubtitle: "Inizia gratis e passa a Premium quando vuoi. Prova 7 giorni gratis, disdici quando vuoi, soddisfatto o rimborsato entro 30 giorni.",
+    heroTitle: { pre: "Un prezzo chiaro. ", highlight: "Nessuna sorpresa.", post: "" } as HeroTitle,
+    heroSubtitle: "Prova 7 giorni · Disdici quando vuoi · Rimborso entro 30 giorni",
     free: {
       name: "Free",
-      tagline: "Per iniziare e provare la correzione della forma",
+      tagline: "Per capire se fa per te",
       price: "€0",
       period: "/ per sempre",
       features: [
@@ -294,44 +409,107 @@ export const copy = {
     },
     premium: {
       name: "Premium",
-      tagline: "Correzione e adattamento senza limiti",
-      badge: "Più scelto",
+      tagline: "Tutto illimitato, nessun vincolo",
+      badge: "Consigliato",
       price: "€9,90",
       period: "/ al mese",
       yearlyNote: "oppure €79,90 all'anno (risparmi il 33%)",
       features: [
-        "Correzione forma e analisi illimitate",
+        "Analisi della tecnica illimitate",
+        "Confronto fase per fase con l'esecuzione di un professionista",
         "Piani di allenamento AI illimitati e adattivi",
-        "Nutrizione dinamica + «Svuota-Frigo»",
-        "AI Coach 24/7 con il contesto dei tuoi dati",
+        "Piano alimentare su misura",
         "Storico completo e statistiche avanzate",
         "Supporto prioritario",
       ],
       cta: "Prova 7 giorni gratis",
     },
     footnote: "Prova Premium 7 giorni gratis. I limiti del piano Free si azzerano ogni mese. Disdici o cambia piano quando vuoi dal profilo; soddisfatto o rimborsato entro 30 giorni.",
+
+    // Tabella "cosa include ogni piano"
+    featureTableTitle: "Cosa include ogni piano",
+    featureTable: {
+      cols: ["Funzione", "Free", "Premium"],
+      rows: [
+        { label: "Analisi della tecnica", values: ["Limitate", "Illimitate"] },
+        { label: "Catalogo esercizi", values: ["Sì", "Sì"] },
+        { label: "Storico delle analisi", values: ["Sì", "Sì"] },
+        { label: "Confronto con il professionista", values: ["—", "Sì"] },
+        { label: "Piano di allenamento generato", values: ["—", "Sì"] },
+        { label: "Piano alimentare", values: ["—", "Sì"] },
+      ],
+    },
+
+    // Confronto competitor (A: prezzo mensile · B: funzionalità) — dati [🧩 da verificare]
+    competitorTitle: "Quanto costano gli altri",
+    competitorCaption: "[DATI da verificare] Valori rilevati da recensioni/comparazioni pubbliche, mercato USA in $, agosto 2026. Indicativi e soggetti a cambiare.",
+    competitorPriceTable: {
+      cols: ["Soluzione", "Tipo", "Prezzo/mese (circa)"],
+      rows: [
+        { label: "Buddyfit (mercato IT)", values: ["Classi live/on-demand + ricette", "17,99 €"] },
+        { label: "FormCheck AI", values: ["Analisi tecnica da video", "~12–13 $"] },
+        { label: "Fitbod", values: ["Solo piani di allenamento", "~12,99–15,99 $"] },
+        { label: "Zing Coach", values: ["Tracking live + piani", "~18,99 $"] },
+        { label: "Freeletics", values: ["Coach AI, piani", "~8,50–34,99 $"] },
+        { label: "Future", values: ["Coach umano", "199 $"] },
+        { label: "Motion Insight Premium", values: ["Analisi + piano + nutrizione", "9,90 €"] },
+      ],
+    },
+    competitorFeatureTable: {
+      cols: ["Funzionalità", "Buddyfit (classi live)", "FormCheck AI (sola tecnica)", "Fitbod (soli piani)", "Future (coach umano)", "Motion Insight"],
+      rows: [
+        { label: "Analisi della tua tecnica da video", values: ["—", "✅", "—", "parziale (umano)", "✅"] },
+        { label: "Confronto con un professionista", values: ["—", "—", "—", "n/d", "✅"] },
+        { label: "Piano di allenamento su misura", values: ["classi da seguire", "—", "✅", "✅", "✅"] },
+        { label: "Alimentazione", values: ["ricette", "—", "—", "limitato", "✅ piano"] },
+        { label: "Progressi sulla qualità del movimento", values: ["—", "—", "—", "—", "✅"] },
+        { label: "Prezzo/mese (circa)", values: ["17,99 €", "~12 $", "~13 $", "199 $", "9,90 €"] },
+      ],
+    },
+    competitorMessage: "Le classi live (come Buddyfit) ti fanno allenare ma nessuno guarda la tua esecuzione; le app di sola tecnica fanno solo quello; quelle di soli piani non guardano come ti muovi; un coach umano fa di più ma costa venti volte tanto. Motion Insight tiene insieme analisi, piano e alimentazione — a 9,90 € — e soprattutto guarda la tua tecnica.",
+
+    // Quanto costa oggi farsi seguire
+    costTitle: "Quanto costa oggi farsi seguire",
+    costText: "Un professionista in presenza fa cose che noi non facciamo: ti mette le mani addosso, ti conosce, adatta tutto mentre sei lì con lui. Motion Insight è complementare, non alternativo — e copre i giorni in cui nessuno ti guarda.",
+    costRows: [
+      { label: "Personal trainer in presenza", value: "200-400 €/mese" },
+      { label: "Valutazione biomeccanica singola", value: "[DATI da verificare]" },
+      { label: "Motion Insight Premium", value: "9,90 €/mese — analisi illimitate" },
+    ],
+
+    // FAQ prezzi
+    faqPrezziTitle: "Domande sui prezzi",
+    faqPrezzi: [
+      { q: "Cosa succede quando finisce la prova?", a: "Alla fine dei 7 giorni non si attiva niente da solo. Se non confermi, resti sul piano Free e continui a usare Motion Insight con le analisi limitate." },
+      { q: "Come disdico?", a: "Dal profilo, in due tocchi, senza scrivere a nessuno. Continui a usare Premium fino alla fine del periodo già pagato." },
+      { q: "Che differenza c'è tra mensile e annuale?", a: "Le funzioni sono identiche. L'annuale costa il 33% in meno — due mesi in regalo — ma si paga in una volta." },
+      { q: "Cosa resta con il piano Free?", a: "Il catalogo degli esercizi, lo storico delle analisi già fatte e un numero limitato di nuove analisi ogni mese." },
+    ],
+
+    // Blocco aziende
+    azTitle: "Sei un'azienda?",
+    azText: "Motion Insight come benessere aziendale, con dati aggregati e anonimi.",
+    azCta: "Vedi la pagina aziende",
   },
 
-  // ── /chi-siamo → src/app/(marketing)/chi-siamo/page.tsx ──
+  // ── /chi-siamo → src/app/(marketing)/chi-siamo/page.tsx — fonte: MOTION_INSIGHT_COPY_FINALE.md PAGINA 4 ──
+  // ⚠️ Pagina [✍️ IN LAVORAZIONE]: servono vision, storia del progetto e bio del cofondatore dal team.
+  // NON inventare — 4 blocchi placeholder etichettati, in attesa dei dati reali.
   chiSiamo: {
     meta: {
       title: `Chi siamo`,
-      description: "La nostra missione: rendere l'allenamento personalizzato e sicuro accessibile a tutti grazie all'intelligenza artificiale.",
+      description: "La vision di Motion Insight e le persone che lo stanno costruendo.",
     },
-    heroTitle: { pre: "Il personal trainer AI ", highlight: "che vede gli errori" } as HeroTitle,
-    heroSubtitle: `${APP_NAME} nasce da un'idea semplice: chi si allena da solo non dovrebbe farsi male per una tecnica sbagliata solo perché non ha un occhio esperto accanto.`,
-    intro: [
-      "Abbiamo unito intelligenza artificiale e computer vision per dare a chiunque quello sguardo: la fotocamera legge come ti muovi e ti dice esattamente cosa correggere, in tempo reale, in italiano — senza sensori e senza mandare via i tuoi video.",
-      "Non vendiamo schede preconfezionate uguali per tutti. Ogni piano parte dal tuo profilo — obiettivi, livello, attrezzatura e storico — e si adatta ai tuoi risultati, giorno dopo giorno.",
-    ],
-    values: [
-      { title: "Vedere per prevenire", desc: "La tecnica sbagliata, ripetuta, fa male. Il nostro scopo è mostrartela e correggerla prima che diventi un infortunio." },
-      { title: "La tua privacy è sacra", desc: "Il video è elaborato sul tuo dispositivo: nessun filmato viene salvato o inviato. Conforme al GDPR, per scelta." },
-      { title: "Concreto, non tecnicismi", desc: "Niente «rete neurale» o «algoritmo proprietario»: ti diciamo cosa correggere e perché, in un italiano chiaro." },
+    heroTitle: { pre: "Chi siamo e ", highlight: "perché", post: "" } as HeroTitle,
+    blocks: [
+      { title: "Vision", text: "[DA COMPLETARE — dati dal team: perché Motion Insight, quale problema risolve nel lungo periodo]" },
+      { title: "Chi siamo", text: "[DA COMPLETARE — dati dal team: i co-creatori, la storia della nascita del progetto]" },
+      { title: "Il cofondatore tecnico", text: "[DA COMPLETARE — dati dal team: bio, esperienza, ruolo nel progetto]" },
+      { title: "Dove stiamo andando", text: "[DA COMPLETARE — dati dal team: chiusura, direzione futura]" },
     ],
     ctaTitle: "Unisciti a noi",
     ctaSubtitle: `Inizia il tuo percorso con ${APP_NAME}, gratis.`,
-    ctaButton: "Calcola il tuo piano gratis",
+    ctaButton: "Analizza la tua tecnica",
   },
 
   // ── /storie → src/app/(marketing)/storie/page.tsx ──
@@ -387,26 +565,29 @@ export const copy = {
     },
   },
 
-  // ── /faq → src/app/(marketing)/faq/page.tsx ──
+  // ── /faq → src/app/(marketing)/faq/page.tsx — fonte: MOTION_INSIGHT_COPY_FINALE.md PAGINA 7 ──
   faq: {
     meta: {
-      title: `FAQ`,
-      description: "Risposte alle domande più frequenti su piani AI, analisi video, abbonamenti e privacy.",
+      title: `Domande frequenti`,
+      description: "Risposte alle domande più comuni su Motion Insight: come funziona l'analisi, privacy dei video, piani e prezzi.",
     },
-    heroTitle: { pre: "Domande ", highlight: "frequenti" } as HeroTitle,
-    heroSubtitle: "Privacy, fotocamera, funzionamento: tutto quello che c'è da sapere prima di iniziare.",
+    heroTitle: { pre: "Le risposte alle domande più ", highlight: "comuni" } as HeroTitle,
+    heroSubtitle: "Privacy, funzionamento, piani: tutto quello che c'è da sapere prima di iniziare.",
     faqs: [
-      { q: "L'AI vede davvero cosa faccio?", a: "Sì. Dal video la computer vision traccia 33 punti del tuo corpo e misura angoli, allineamento, profondità e simmetria, fase per fase. Poi ti dice esattamente cosa correggere, con un Form Score da 0 a 100." },
-      { q: "I miei video vengono salvati o inviati?", a: "No. L'elaborazione avviene sul tuo dispositivo: nessun filmato viene mai salvato o inviato ai nostri server. È il nostro principio, ed è conforme al GDPR." },
-      { q: "Funziona senza attrezzi, a casa?", a: "Sì. Durante la configurazione indichi cosa hai a disposizione, anche solo il peso corporeo: i piani e l'analisi si adattano di conseguenza." },
-      { q: "Serve un telefono potente?", a: "No. Basta uno smartphone recente con una fotocamera e spazio per muoverti. L'analisi è ottimizzata per girare fluida sul dispositivo." },
-      { q: "Posso usarlo se sono principiante assoluto?", a: "Assolutamente. I piani partono dal tuo livello e la correzione della forma è pensata proprio per chi vuole imparare la tecnica giusta fin dall'inizio." },
-      { q: "Come disdico l'abbonamento?", a: "In qualsiasi momento dal tuo profilo. L'abbonamento resta attivo fino alla fine del periodo già pagato; con la prova di 7 giorni non ti viene addebitato nulla se disdici prima." },
-      { q: "Motion Insight sostituisce un medico o un fisioterapista?", a: "No. È uno strumento di supporto all'allenamento: ti aiuta a migliorare la tecnica e a ridurre gli errori, ma non fornisce diagnosi né terapie. In caso di dolore o patologie, consulta un professionista sanitario." },
+      { q: "L'analisi funziona davvero?", a: "Si basa su tre misurazioni diverse dello stesso video — geometria del corpo, lettura dei fotogrammi chiave e confronto con l'esecuzione di un professionista — che vengono unite in un unico giudizio. Nella pagina Il Metodo spieghiamo cosa misura e quali sono i suoi limiti." },
+      { q: "Il video che registro dove finisce?", a: "Viene caricato per essere analizzato e resta associato solo al tuo account. Non viene mostrato ad altri né usato per pubblicità. Puoi rivederlo o eliminarlo quando vuoi dal profilo." },
+      { q: "Serve un telefono recente?", a: "No. Serve una fotocamera (del telefono o la webcam del computer) e una buona luce. Conta di più la posizione: a circa due metri, con tutto il corpo nell'inquadratura." },
+      { q: "Che differenza c'è tra Free e Premium?", a: "[DA COMPLETARE]" },
+      { q: "Quante analisi posso fare con il piano gratuito?", a: "[DA COMPLETARE]" },
+      { q: "Quali esercizi posso far analizzare?", a: "[DA COMPLETARE]" },
+      { q: "Come si disdice l'abbonamento?", a: "[DA COMPLETARE]" },
+      { q: "Motion Insight va bene se ho avuto un infortunio?", a: "[DA COMPLETARE]" },
+      { q: "Funziona anche senza connessione / come PWA?", a: "[DA COMPLETARE]" },
+      { q: "I miei dati e i video sono al sicuro?", a: "[DA COMPLETARE — rimando alla pagina Il Metodo → Privacy]" },
     ],
     ctaTitle: "Hai ancora dubbi?",
     ctaSubtitle: `Il modo migliore per capire ${APP_NAME} è provarlo.`,
-    ctaButton: "Calcola il tuo piano gratis",
+    ctaButton: "Analizza la tua tecnica",
   },
 
   // ── /login → src/app/(auth)/login/page.tsx ──
@@ -729,6 +910,9 @@ export const copy = {
     ],
     lastAchievementsTitle: "Ultimi Achievement",
     pointsLabel: (n: number) => `+${n} punti`,
+    nutritionTitle: "Alimentazione di oggi",
+    nutritionTargetSuffix: "kcal target",
+    nutritionCta: "Vedi il piano dei pasti →",
   },
 
   // ── DailyMissionCard → src/components/dashboard/DailyMissionCard.tsx ──
@@ -781,6 +965,36 @@ export const copy = {
     restDayLabel: "Riposo",
     startDayCta: "Inizia",
     openFullSession: "Apri la sessione completa",
+    recentSessions: {
+      title: "Sessioni recenti",
+      seeAll: "Vedi tutti i progressi →",
+      fallbackName: "Allenamento",
+      minutes: (n: number) => `${n} min`,
+      volume: (n: number) => `${n} kg`,
+    },
+    weeklyCalendar: {
+      weekdayLabels: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"],
+      restDayTitle: "Giorno di riposo",
+    },
+    weekRecap: {
+      title: "Questa settimana",
+      sessionsLabel: "Allenamenti",
+      volumeLabel: "Kg sollevati",
+      streakLabel: "Streak",
+    },
+    recentFeedback: {
+      title: "Ultimi feedback",
+    },
+    bodyBalance: {
+      title: "Equilibrio muscolare",
+      balanced: "Buon equilibrio tra i gruppi muscolari negli ultimi 30 giorni.",
+    },
+    professionalNotes: {
+      title: "Indicazioni dal tuo professionista",
+      subtitle: "Hai caricato questo documento nel Profilo. Il tuo piano allenamenti resta quello impostato qui sotto — queste sono indicazioni aggiuntive da tenere a mente.",
+      adjustments: "Aggiustamenti consigliati",
+      cautions: "Da tenere d'occhio",
+    },
     plansSectionTitle: "I tuoi piani",
   },
 
@@ -813,6 +1027,36 @@ export const copy = {
     statusGoodBalance: "Buon equilibrio muscolare.",
     statusNoData: "Fai un'analisi per vedere qui il tuo stato e i rischi.",
     statusDisclaimer: "Avvisi di allenamento, non diagnosi mediche.",
+    nextSession: {
+      eyebrow: "Prossimo allenamento",
+      badge: "Prossimo",
+      exercises: (n: number) => `${n} eserciz${n === 1 ? "io" : "i"}`,
+      progress: (done: number, total: number) => `${done} di ${total} allenamenti completati`,
+      week: (current: number, total: number) => `Settimana ${current} di ${total}`,
+    },
+    history: {
+      title: "Sessioni completate in questo piano",
+      fallbackName: "Allenamento",
+      minutes: (n: number) => `${n} min`,
+      volume: (n: number) => `${n} kg`,
+    },
+  },
+
+  // ── /allenamento/sessioni/[id] → src/app/(app)/allenamento/sessioni/[id]/page.tsx ──
+  sessioneStorico: {
+    meta: { title: "Sessione completata" },
+    backToPlan: "Torna al piano",
+    backToSessions: "Torna alle sessioni",
+    fallbackName: "Allenamento",
+    minutes: (n: number) => `${n} min`,
+    volume: (n: number) => `${n} kg sollevati`,
+    viewAnalysis: "Vedi l'analisi ricevuta",
+    setSummary: (reps?: number, weightKg?: number) => {
+      if (reps != null && weightKg != null) return `${reps} rip · ${weightKg} kg`;
+      if (reps != null) return `${reps} rip`;
+      if (weightKg != null) return `${weightKg} kg`;
+      return "Serie completata";
+    },
   },
 
   // ── /allenamento/[id]/sessione → src/app/(app)/allenamento/[id]/sessione/page.tsx ──
@@ -839,6 +1083,7 @@ export const copy = {
     statExercises: "Esercizi",
     statTotalSets: "Set tot.",
     musclesHitToday: "Muscoli colpiti oggi",
+    analysesRecapTitle: "Analisi di questa sessione",
     dashboard: "Dashboard",
     plan: "Piano",
     exit: "Esci",
@@ -949,6 +1194,12 @@ export const copy = {
 
   // ── /nutrizione → src/app/(app)/nutrizione/page.tsx ──
   nutrizione: {
+    professionalPlan: {
+      title: "Il tuo piano dal professionista",
+      subtitle: "Hai caricato questo documento nel Profilo: ha priorità sul piano AI e su quello consigliato.",
+      adjustments: "Aggiustamenti nutrizione",
+      cautions: "Da tenere d'occhio",
+    },
     mealLabels: {
       BREAKFAST: "Colazione",
       LUNCH: "Pranzo",
@@ -967,6 +1218,10 @@ export const copy = {
     recipesCta: "Genera ricette",
     recipesLoading: "Sto pensando…",
     recipesError: "Generazione non riuscita. Riprova.",
+    recipesCuratedBadge: "Selezionata",
+    recipesAiHint: "Vuoi altre idee? Generane di nuove con l'AI.",
+    recipesIngredients: "Ingredienti",
+    recipesSteps: "Preparazione",
     add: "Aggiungi",
     macros: {
       calories: "Calorie",
@@ -1042,6 +1297,12 @@ export const copy = {
     weeklyVolumeTitle: "Volume settimanale (ultime 8 settimane)",
     achievementsTitle: (n: number) => `Achievement sbloccati (${n})`,
     emptyState: "Completa la prima sessione per vedere i tuoi progressi!",
+    loadTrendsTitle: "Andamento carichi principali",
+    loadTrendsSubtitle: "Il carico massimo per sessione sui tuoi esercizi più allenati.",
+    loadTrendsEmpty: "Registra i carichi durante le sessioni per vedere qui l'andamento.",
+    loadTrendsTooltip: (n: number) => `${n} kg`,
+    loadTrendsDelta: (d: number) => `${d >= 0 ? "+" : ""}${d} kg dalla prima volta`,
+    loadTrendsLast: (n: number) => `Ultimo: ${n} kg`,
   },
 
   // ── /esercizi → src/app/(app)/esercizi/page.tsx ──
@@ -1201,6 +1462,23 @@ export const copy = {
       empty: "Nessun documento caricato.",
       deleteAria: "Elimina documento",
       error: "Caricamento non riuscito.",
+      analyze: "Analizza con AI",
+      analyzing: "Analisi in corso…",
+      reanalyze: "Rianalizza",
+      analyzeError: "Analisi non riuscita. Riprova.",
+      analysisSummary: "Sintesi",
+      analysisFitness: "Aggiustamenti allenamento",
+      analysisNutrition: "Aggiustamenti nutrizione",
+      analysisCautions: "Da segnalare al medico",
+      analysisDisclaimer: "Suggerimenti generati da AI a partire dal documento. Non sono un consulto medico.",
+    },
+    videos: {
+      title: "I tuoi video registrati",
+      countLabel: (n: number) => `${n} video, uno per ogni analisi. Puoi eliminarli singolarmente o tutti insieme: l'analisi già ricevuta resta.`,
+      empty: "Nessun video registrato.",
+      manage: "Gestisci i video",
+      deleteAll: "Elimina tutti i video",
+      confirmDeleteAll: "Eliminare tutti i video registrati? L'analisi già ricevuta resta, ma i video non saranno più rivedibili.",
     },
     noteMediche: {
       title: "Note mediche",
@@ -1209,6 +1487,45 @@ export const copy = {
       disclaimer: "Bastano poche parole: non inserire referti o documenti medici.",
       save: "Salva note",
       saved: "Salvato!",
+    },
+    changeEmail: {
+      title: "Cambia email",
+      desc: "Ti invieremo un link di verifica al nuovo indirizzo.",
+      newEmailLabel: "Nuova email",
+      newEmailPlaceholder: "nuovo@indirizzo.it",
+      passwordLabel: "Password attuale",
+      passwordPlaceholder: "La tua password",
+      cta: "Aggiorna email",
+      success: "Email aggiornata! Controlla la posta per verificarla.",
+      genericError: "Aggiornamento non riuscito. Riprova.",
+    },
+    changePassword: {
+      title: "Cambia password",
+      desc: "Scegli una nuova password di almeno 8 caratteri.",
+      currentLabel: "Password attuale",
+      currentPlaceholder: "Password attuale",
+      newLabel: "Nuova password",
+      newPlaceholder: "Nuova password (min. 8 caratteri)",
+      confirmLabel: "Conferma nuova password",
+      confirmPlaceholder: "Ripeti la nuova password",
+      cta: "Aggiorna password",
+      success: "Password aggiornata!",
+      mismatchError: "Le due password non coincidono",
+      genericError: "Aggiornamento non riuscito. Riprova.",
+    },
+    notifiche: {
+      title: "Notifiche",
+      desc: "Scegli come vuoi essere avvisato quando il tuo streak è a rischio.",
+      emailLabel: "Promemoria via email",
+      emailDesc: "Un'email se non ti alleni entro fine giornata e hai uno streak attivo.",
+      pushLabel: "Notifiche push",
+      pushDesc: "Notifica sul dispositivo, stesso avviso via browser/app.",
+      pushEnable: "Attiva",
+      pushDisable: "Disattiva",
+      pushUnsupported: "Il tuo browser non supporta le notifiche push.",
+      pushPermissionDenied: "Notifiche bloccate dal browser. Abilitale nelle impostazioni del sito.",
+      saved: "Preferenza salvata",
+      error: "Operazione non riuscita. Riprova.",
     },
     guida: {
       title: "Come funziona Motion Insight",
@@ -1295,6 +1612,12 @@ export const copy = {
     cameraInactive: "Fotocamera non attiva",
     proVideoUnavailable: "Video PT non disponibile",
     start: "Inizia",
+    tabExecution: "Esecuzione",
+    tabExplanation: "Spiegazione",
+    explanationVideoUnavailable: "Video di spiegazione non disponibile",
+    notesTitle: "Note del professionista",
+    switchCamera: "Cambia fotocamera",
+    resultSubtitle: "Analisi completata",
   },
 
   // ── /analisi/report/[id] → src/app/(app)/analisi/report/[id]/page.tsx ──
@@ -1325,6 +1648,7 @@ export const copy = {
     syncedVideosTitle: "Video sincronizzati",
     repeatAnalysis: "Ripeti l'analisi",
     otherExercises: "Altri esercizi",
+    backToSession: "Torna alla sessione",
   },
 
   // ── /admin/users → src/app/(app)/admin/users/page.tsx + src/components/admin/UsersTable.tsx ──
@@ -1344,6 +1668,17 @@ export const copy = {
       badgeGranted: "OMAGGIO",
       noName: "—",
       meta: (date: string, sessions: number) => `iscritto ${date} · ${sessions} sessioni`,
+      metricMrr: "Ricavo mensile (MRR)",
+      metricAiCost: "Costo AI (mese)",
+      metricMargin: "Margine (mese)",
+      econTitle: "Economia utenti (mese corrente)",
+      econHint: "Costo AI stimato dall'utilizzo vs ricavo dal piano. Il margine è ricavo − costo.",
+      lastWorkout: (date: string) => `ultimo allenamento ${date}`,
+      lastWorkoutNever: "mai allenato",
+      colCost: "Costo AI",
+      colRevenue: "Ricavo",
+      colMargin: "Margine",
+      eur: (n: number) => `€${n.toFixed(2)}`,
       revokeAdmin: "Revoca admin",
       makeAdmin: "Rendi admin",
       grantPremium: "Premium 30g",
@@ -1464,6 +1799,7 @@ export const copy = {
       inactive: "Disattivo",
       replace: "Sostituisci",
       upload: "Carica",
+      edit: "Modifica",
       deactivate: "Disattiva",
       activate: "Attiva",
     },
@@ -1509,8 +1845,30 @@ export const copy = {
     tabAiUsage: "AI Usage",
     tabRevisions: "Revisioni",
     tabNutritionPool: "Pool nutrizione",
+    tabWorkoutPool: "Pool allenamenti",
+    tabRecipes: "Ricette",
     tabQuiz: "Quiz",
+    tabSiteContent: "Contenuti sito",
     activity: "Attività recente →",
+  },
+
+  // ── /admin/site-content → src/app/(app)/admin/site-content/page.tsx + src/components/admin/SiteContentEditor.tsx ──
+  adminSiteContent: {
+    title: "Contenuti del sito",
+    subtitle: "Modifica testi, titoli, CTA e prezzi delle pagine senza rideploy. Le modifiche sono live per tutti.",
+    searchPlaceholder: "Cerca chiave o testo (es. prezzi, premium)…",
+    loading: "Caricamento…",
+    empty: "Nessuna voce corrisponde alla ricerca.",
+    overriddenBadge: "Modificato",
+    defaultLabel: "Default",
+    save: "Salva",
+    saving: "Salvataggio…",
+    reset: "Ripristina default",
+    saved: "Salvato",
+    saveError: "Salvataggio non riuscito.",
+    overriddenCount: (n: number) => `${n} voci modificate`,
+    onlyOverridden: "Solo modificati",
+    all: "Tutti",
   },
 
   // ── /admin/revisions → src/app/(app)/admin/revisions/page.tsx ──
@@ -1559,6 +1917,11 @@ export const copy = {
     weeklyPlaceholder: "Descrivi i pasti della settimana…",
     create: "Crea piano",
     creating: "Creazione…",
+    editPlan: "Modifica piano",
+    saveChanges: "Salva modifiche",
+    savingChanges: "Salvataggio…",
+    cancel: "Annulla",
+    editAria: "Modifica piano",
     deleteAria: "Elimina piano",
     error: "Operazione non riuscita. Controlla i campi.",
     goals: {
@@ -1570,6 +1933,74 @@ export const copy = {
       ATHLETIC_PERFORMANCE: "Performance sportiva",
     },
     dietTypes: ["onnivora", "vegetariana", "vegana", "chetogenica", "mediterranea", "altro"],
+  },
+
+  // ── /admin/workout-plans → src/app/(app)/admin/workout-plans/page.tsx + src/components/admin/AdminWorkoutTemplateManager.tsx ──
+  adminWorkoutPool: {
+    meta: { title: "Pool piani allenamento" },
+    title: "Pool piani di allenamento",
+    subtitle: "I template di allenamento tra cui l'AI/motore sceglie per l'utente. Crea, modifica ed elimina.",
+    newTemplate: "Nuovo template",
+    editTemplate: "Modifica template",
+    empty: "Nessun template. Creane uno.",
+    nameLabel: "Nome del template",
+    descLabel: "Per chi / a cosa serve",
+    difficultyLabel: "Livello",
+    weeksLabel: "Durata (settimane)",
+    perWeekLabel: "Sessioni/sett.",
+    goalsLabel: "Obiettivi (uno o più)",
+    equipmentLabel: "Attrezzatura richiesta",
+    rationaleLabel: "Quando usarlo (per il motore)",
+    daysLabel: "Struttura giorni (JSON)",
+    daysHint: "JSON dei giorni/esercizi del piano. Lascia vuoto per []",
+    daysPlaceholder: '[ { "day": 1, "name": "Upper body", "exercises": [] } ]',
+    weeksBadge: (w: number, s: number) => `${w} sett · ${s}/sett`,
+    create: "Crea template",
+    creating: "Creazione…",
+    saveChanges: "Salva modifiche",
+    savingChanges: "Salvataggio…",
+    cancel: "Annulla",
+    editAria: "Modifica template",
+    deleteAria: "Elimina template",
+    error: "Operazione non riuscita. Controlla i campi.",
+    invalidJson: "Il JSON dei giorni non è valido.",
+  },
+
+  // ── /admin/recipes → src/app/(app)/admin/recipes/page.tsx + src/components/admin/AdminRecipesManager.tsx ──
+  adminRecipes: {
+    meta: { title: "Pool ricette curate" },
+    title: "Ricette curate",
+    subtitle: "Ricette scelte dal gestore, mostrate all'utente in base alla dieta. L'AI resta come fallback quando non ce ne sono di adatte.",
+    newRecipe: "Nuova ricetta",
+    editRecipe: "Modifica ricetta",
+    empty: "Nessuna ricetta curata. Creane una (altrimenti l'utente vedrà solo quelle AI).",
+    titleLabel: "Titolo",
+    descLabel: "Descrizione",
+    mealLabel: "Pasto",
+    dietLabel: "Dieta",
+    dietAll: "Tutte le diete",
+    mealAny: "Qualsiasi",
+    meals: { BREAKFAST: "Colazione", LUNCH: "Pranzo", DINNER: "Cena", SNACK: "Spuntino" },
+    caloriesLabel: "Kcal",
+    proteinLabel: "Prot (g)",
+    carbsLabel: "Carb (g)",
+    fatLabel: "Grassi (g)",
+    ingredientsLabel: "Ingredienti (uno per riga)",
+    ingredientsPlaceholder: "200g petto di pollo\n80g riso integrale\n…",
+    stepsLabel: "Preparazione (un passo per riga)",
+    stepsPlaceholder: "Cuoci il riso\nGrigliare il pollo\n…",
+    tagsLabel: "Tag (separati da virgola)",
+    tagsPlaceholder: "proteica, veloce, meal-prep",
+    activeLabel: "Attiva (visibile agli utenti)",
+    inactive: "Disattiva",
+    create: "Crea ricetta",
+    creating: "Creazione…",
+    saveChanges: "Salva modifiche",
+    savingChanges: "Salvataggio…",
+    cancel: "Annulla",
+    editAria: "Modifica ricetta",
+    deleteAria: "Elimina ricetta",
+    error: "Operazione non riuscita. Controlla i campi.",
   },
 
   // ── /admin/exercises/new → src/app/(app)/admin/exercises/new/page.tsx ──
@@ -1603,6 +2034,9 @@ export const copy = {
     error: "Creazione non riuscita. Controlla i campi.",
     created: "Esercizio creato ✓",
     newExercise: "Nuovo esercizio",
+    editExercise: "Modifica esercizio",
+    saveChanges: "Salva modifiche",
+    savingChanges: "Salvataggio…",
   },
 
   // ── /admin/quiz → src/app/(app)/admin/quiz/page.tsx ──

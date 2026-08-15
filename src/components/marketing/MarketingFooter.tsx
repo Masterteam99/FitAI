@@ -49,7 +49,7 @@ export function MarketingFooter() {
       {/* Barra CTA fissa su mobile (brief §2.3) */}
       <div
         className="md:hidden fixed bottom-0 inset-x-0 z-40 p-3 border-t backdrop-blur-md"
-        style={{ background: "rgba(244,247,251,.92)", borderColor: "var(--border)" }}
+        style={{ background: "rgba(10,15,28,.92)", borderColor: "var(--border)" }}
       >
         <Link
           href="/registrati"

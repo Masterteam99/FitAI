@@ -55,47 +55,48 @@
   --energy-hot:  oklch(0.62 0.24 25);    /* rosso: intensità alta */
 }
 
-/* ─── Tema Motion Insight (landing + superficie marketing) ─────────────────
-   Palette del brief §5.1: navy #16213E, coral #E94560 (solo azioni),
-   teal #0F9E99, lime #C6F135, neutri chiari. Display geometrico (Sora).
-   I nomi variabile "--organic-*" sono mantenuti per compatibilità con le
-   sezioni esistenti, ma i valori sono rimappati sulla palette Motion Insight. */
+/* ─── Tema Motion Insight (app + landing + marketing) — DARK ────────────────
+   Palette ANTEPRIMA UFFICIALE (Motion-Insight-anteprima.html): sfondo scuro
+   #0A0F1C, card #121A2B, testo #ECF1F8, accento LIME #C8F751 (primario + CTA),
+   TEAL #4FD1C5 (evidenze secondarie), amber #FFB547 (rischi). Display geometrico.
+   I nomi variabile "--organic-*" restano per compatibilità con le sezioni
+   esistenti, ma i valori sono rimappati sulla palette scura dell'anteprima. */
 .theme-organic {
-  --background: #f4f7fb;          /* cloud */
-  --foreground: #1b1b1b;          /* ink */
-  --card: #ffffff;
-  --card-foreground: #1b1b1b;
-  --primary: #16213e;            /* navy profondo */
-  --primary-foreground: #ffffff;
-  --secondary: #eaf1f8;
-  --secondary-foreground: #16213e;
-  --muted: #eaf1f8;
-  --muted-foreground: #555555;
-  --accent: #e94560;             /* coral — SOLO azioni/CTA */
-  --accent-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #ffffff;
-  --ring: #e94560;
+  --background: #0a0f1c;          /* navy quasi-nero */
+  --foreground: #ecf1f8;          /* testo chiaro */
+  --card: #121a2b;
+  --card-foreground: #ecf1f8;
+  --primary: #c8f751;            /* LIME: primario + CTA */
+  --primary-foreground: #0a0f1c; /* testo scuro su lime */
+  --secondary: #1b2540;          /* superficie elevata */
+  --secondary-foreground: #ecf1f8;
+  --muted: #1b2540;
+  --muted-foreground: #94a3b8;   /* grigio-slate */
+  --accent: #c8f751;             /* LIME — azioni/CTA */
+  --accent-foreground: #0a0f1c;
+  --border: #1e2a3d;
+  --input: #121a2b;
+  --ring: #c8f751;
   --font-display: var(--font-sora);
 
-  /* Palette Motion Insight rimappata sui nomi "organic" preesistenti */
-  --organic-terracotta: #e94560;       /* coral: azioni/CTA */
-  --organic-terracotta-soft: #f2778b;
-  --organic-terracotta-deep: #c9324b;
-  --organic-sage: #7c89a6;             /* navy-grigio di supporto */
-  --organic-sage-deep: #0f9e99;        /* teal: link/etichette di supporto */
-  --organic-sage-pale: #c3cedf;
-  --organic-forest: #16213e;           /* navy: blocchi scuri */
-  --organic-espresso: #16213e;         /* navy: blocchi/price card scuri */
-  --organic-sand: #eaf1f8;             /* sezioni alternate */
-  --organic-cream: #f4f7fb;
-  --organic-paper: #ffffff;
-  --organic-line: #e2e8f0;
+  /* Palette anteprima rimappata sui nomi "organic" preesistenti */
+  --organic-terracotta: #c8f751;       /* lime: azioni/CTA (ex coral) */
+  --organic-terracotta-soft: #d9f87e;
+  --organic-terracotta-deep: #a8d63a;
+  --organic-sage: #5a6b7f;             /* slate di supporto */
+  --organic-sage-deep: #4fd1c5;        /* teal: link/etichette di supporto */
+  --organic-sage-pale: #3a4658;
+  --organic-forest: #121a2b;           /* blocchi scuri (card) */
+  --organic-espresso: #0f1626;         /* blocchi/price card più scuri */
+  --organic-sand: #121a2b;             /* sezioni alternate */
+  --organic-cream: #0a0f1c;
+  --organic-paper: #121a2b;
+  --organic-line: #1e2a3d;
 
-  /* Accenti brand: teal per evidenze/link, lime per stati positivi/energia */
-  --organic-green: #0f9e99;            /* teal: highlight titoli, link */
-  --organic-green-deep: #0b7e7a;
-  --organic-green-soft: #c6f135;       /* lime: stati positivi, Form Score alto */
+  /* Accenti brand: lime primario, teal secondario */
+  --organic-green: #c8f751;            /* lime: highlight titoli, numeri, accento */
+  --organic-green-deep: #a8d63a;
+  --organic-green-soft: #d9f87e;       /* lime chiaro: stati positivi, Form Score alto */
 
   font-family: var(--font-manrope), system-ui, sans-serif;
   background: var(--background);
@@ -129,10 +130,10 @@
   color: transparent;
 }
 .theme-organic .glow-energy {
-  box-shadow: 0 14px 30px -10px rgba(63, 174, 90, 0.5);
+  box-shadow: 0 14px 30px -10px rgba(200, 247, 81, 0.45);
 }
 .theme-organic .glow-primary {
-  box-shadow: 0 10px 24px -8px rgba(63, 174, 90, 0.45);
+  box-shadow: 0 10px 24px -8px rgba(200, 247, 81, 0.4);
 }
 
 /* ─── Energy utilities ─────────────────────────────────────────────────── */
