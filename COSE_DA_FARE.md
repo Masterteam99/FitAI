@@ -13,18 +13,23 @@
 
 ## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-15]`
 
+- **Primo passo della prossima sessione: fare il merge in `main`.** Due branch pronti e pushati, non
+  ancora integrati:
+  - `feature/account-manager-completo` (Sessioni 1-5: area utente v2, Account Manager, tema scuro/lime)
+  - `feature/mvp-launch-polish` (Sessione 6, parte da sopra: MVP polish + piano Sessione/Nutrizione/Analisi)
+  Da fare in ordine: merge/PR di `feature/account-manager-completo` in `main`, poi merge/PR di
+  `feature/mvp-launch-polish` in `main` (o direttamente quest'ultimo se già include tutto il primo).
 - **Sessione 6 (15/08) conclusa**: MVP polish (toast/validazione/email-password/notifiche/filtri
-  libreria) + piano completo "Sessione/Nutrizione/Analisi" (10 fasi, tutte chiuse) sul branch
-  **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`, non ancora in `main`).
-  Dettaglio completo in `COSE_FATTE_IN_SESSIONE.md` Sessione 6 e in `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis).
+  libreria) + piano completo "Sessione/Nutrizione/Analisi" (10 fasi, tutte chiuse). Dettaglio completo
+  in `COSE_FATTE_IN_SESSIONE.md` Sessione 6 e in `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis).
 - ⚠️ **Da verificare con hardware reale (non fatto in autonomia, serve dispositivo mobile vero):**
   switch fotocamera anteriore/posteriore (Fase 10) e flusso "analisi inline" end-to-end con
   registrazione video reale (fotocamera bloccata nell'ambiente di sviluppo usato).
 - **Prima di deploy**: aggiungere su Vercel le env var `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
   `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, opzionale `CRON_SECRET` (per il sistema
   notifiche/reminder costruito in Sessione 6 — valori generati sono in `.env.local` locale).
-- Sotto ancora aperti i residui di Sessione 5 (branch `feature/account-manager-completo` da integrare
-  in `main`, dipendenze esterne, landing/placeholder) — vedi sezione storica sotto, invariata.
+- Sotto ancora aperti i residui di Sessione 5 (dipendenze esterne, landing/placeholder) — vedi sezione
+  storica sotto, invariata.
 
 ---
 
