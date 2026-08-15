@@ -6,7 +6,7 @@ import { checkQuota, incrementUsage } from "@/lib/billing/gating";
 import { captureError } from "@/lib/observability";
 import { z } from "zod";
 
-const schema = z.object({ exerciseId: z.string() });
+const schema = z.object({ exerciseId: z.string(), workoutSessionId: z.string().optional() });
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -32,8 +32,19 @@ export async function POST(req: NextRequest) {
   });
   if (!exercise) return NextResponse.json({ error: "Esercizio non trovato" }, { status: 404 });
 
+  // Se arriva da una sessione di allenamento guidata, colleghiamo l'analisi solo se la
+  // sessione appartiene davvero a questo utente (altrimenti la ignoriamo silenziosamente).
+  let workoutSessionId: string | undefined;
+  if (parsed.data.workoutSessionId) {
+    const ws = await prisma.workoutSession.findFirst({
+      where: { id: parsed.data.workoutSessionId, userId: session.user.id as string },
+      select: { id: true },
+    });
+    if (ws) workoutSessionId = ws.id;
+  }
+
   const analysisSession = await prisma.analysisSession.create({
-    data: { userId: session.user.id, exerciseId: exercise.id, status: "RECORDING" },
+    data: { userId: session.user.id, exerciseId: exercise.id, status: "RECORDING", workoutSessionId },
   });
 
   if (!gate.premium) {
@@ -49,6 +60,7 @@ export async function POST(req: NextRequest) {
       name: exercise.name,
       slug: exercise.slug,
       videoUrl: exercise.videoUrl,
+      explanationVideoUrl: exercise.explanationVideoUrl,
       professionalNotes: exercise.professionalNotes,
       recordingDurationSeconds: exercise.recordingDurationSeconds,
     },

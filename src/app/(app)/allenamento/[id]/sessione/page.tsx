@@ -23,6 +23,7 @@ function WorkoutSessionContent() {
     exercises,
     loading,
     error,
+    sessionId,
     currentExIndex,
     currentSet,
     phase,
@@ -61,7 +62,7 @@ function WorkoutSessionContent() {
 
   if (phase === "completed") {
     const durationMin = Math.round((Date.now() - startTimeRef.current.getTime()) / 60000);
-    return <CompletedView planId={planId} exercises={exercises} durationMin={durationMin} />;
+    return <CompletedView planId={planId} exercises={exercises} durationMin={durationMin} sessionId={sessionId} />;
   }
 
   const totalSets = exercises.reduce((a, e) => a + e.sets, 0);
@@ -98,6 +99,8 @@ function WorkoutSessionContent() {
               completedSets={completedSets}
               lastLoad={lastLoads[exercises[currentExIndex]?.id ?? ""]}
               onCompleteSet={completeSet}
+              sessionId={sessionId}
+              returnUrl={dayId ? `/allenamento/${planId}/sessione?day=${dayId}` : undefined}
             />
           )}
         </AnimatePresence>

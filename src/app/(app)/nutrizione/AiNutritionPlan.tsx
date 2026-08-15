@@ -49,7 +49,7 @@ interface DayPlan {
   snacks?: Meal[];
 }
 
-interface NutritionPlan {
+export interface NutritionPlan {
   name: string;
   description?: string;
   dietType?: string;
@@ -89,12 +89,20 @@ function MealRow({ label, meal }: { label: string; meal: Meal }) {
   );
 }
 
-export function AiNutritionPlan() {
+export function AiNutritionPlan({ initialPlan }: { initialPlan?: NutritionPlan | null } = {}) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [quotaExceeded, setQuotaExceeded] = useState(false);
-  const [plan, setPlan] = useState<NutritionPlan | null>(null);
+  const [plan, setPlan] = useState<NutritionPlan | null>(initialPlan ?? null);
+
+  // Il piano AI persistito arriva async dal profilo del genitore: se cambia dopo il mount
+  // (fetch completata) e l'utente non ha ancora generato/aperto nulla in questa sessione,
+  // aggiorniamo lo stato — altrimenti al refresh il piano salvato sparirebbe dalla vista.
+  useEffect(() => {
+    if (initialPlan && !plan) setPlan(initialPlan);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPlan]);
   const [form, setForm] = useState({
     weightKg: "", heightCm: "", age: "", gender: "M",
     activityLevel: "moderato", dietType: "onnivora", targetGoal: "GENERAL_FITNESS",

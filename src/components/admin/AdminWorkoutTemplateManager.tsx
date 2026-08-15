@@ -1,12 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Loader2, Pencil, Save } from "lucide-react";
 import { copy } from "@/content/copy";
+
+const inRange = (min: number, max: number) =>
+  z.string().refine((s) => Number(s) >= min && Number(s) <= max, `Deve essere tra ${min} e ${max}`);
+const templateFormSchema = z.object({
+  name: z.string().trim().min(2, "Minimo 2 caratteri").max(150, "Massimo 150 caratteri"),
+  description: z.string().trim().min(2, "Minimo 2 caratteri").max(2000, "Massimo 2000 caratteri"),
+  rationale: z.string().trim().min(2, "Minimo 2 caratteri").max(2000, "Massimo 2000 caratteri"),
+  durationWeeks: inRange(1, 52),
+  workoutsPerWeek: inRange(1, 7),
+});
+type TemplateFormFields = z.infer<typeof templateFormSchema>;
+type TemplateFieldErrors = Partial<Record<keyof TemplateFormFields, string>>;
 
 const LEVELS = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "ATHLETE"];
 const GOALS = ["LOSE_WEIGHT", "BUILD_MUSCLE", "ENDURANCE", "FLEXIBILITY", "GENERAL_FITNESS", "ATHLETIC_PERFORMANCE"];
@@ -139,8 +152,12 @@ function TemplateForm({
   const [equipment, setEquipment] = useState<string[]>(initial?.requiredEquipment ?? ["NONE"]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<TemplateFieldErrors>({});
 
-  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) { setForm((f) => ({ ...f, [k]: v })); }
+  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (k in fieldErrors) setFieldErrors((p) => { const n = { ...p }; delete n[k as keyof TemplateFieldErrors]; return n; });
+  }
   function toggle(list: string[], setList: (v: string[]) => void, val: string) {
     setList(list.includes(val) ? list.filter((x) => x !== val) : [...list, val]);
   }
@@ -149,6 +166,25 @@ function TemplateForm({
 
   async function submit() {
     setError(null);
+    const validation = templateFormSchema.safeParse({
+      name: form.name,
+      description: form.description,
+      rationale: form.rationale,
+      durationWeeks: form.durationWeeks,
+      workoutsPerWeek: form.workoutsPerWeek,
+    });
+    if (!validation.success) {
+      const errors: TemplateFieldErrors = {};
+      for (const issue of validation.error.issues) {
+        const key = issue.path[0] as keyof TemplateFormFields;
+        if (!errors[key]) errors[key] = issue.message;
+      }
+      setFieldErrors(errors);
+      setError(c.error);
+      return;
+    }
+    setFieldErrors({});
+
     let daysJson: unknown = [];
     if (form.daysText.trim()) {
       try { daysJson = JSON.parse(form.daysText); }
@@ -191,23 +227,23 @@ function TemplateForm({
     <Card className="border-primary/30">
       <CardHeader><CardTitle className="text-base">{isEdit ? c.editTemplate : c.newTemplate}</CardTitle></CardHeader>
       <CardContent className="space-y-3">
-        <Field label={c.nameLabel}><Input value={form.name} onChange={(e) => set("name", e.target.value)} /></Field>
-        <Field label={c.descLabel}><textarea value={form.description} onChange={(e) => set("description", e.target.value)} className={`${areaCls} min-h-[60px]`} /></Field>
+        <Field label={c.nameLabel} error={fieldErrors.name}><Input value={form.name} onChange={(e) => set("name", e.target.value)} /></Field>
+        <Field label={c.descLabel} error={fieldErrors.description}><textarea value={form.description} onChange={(e) => set("description", e.target.value)} className={`${areaCls} min-h-[60px]`} /></Field>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Field label={c.difficultyLabel}>
             <select value={form.difficulty} onChange={(e) => set("difficulty", e.target.value)} className={inputCls}>
               {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
           </Field>
-          <Field label={c.weeksLabel}><Input type="number" min="1" max="52" value={form.durationWeeks} onChange={(e) => set("durationWeeks", e.target.value)} /></Field>
-          <Field label={c.perWeekLabel}><Input type="number" min="1" max="7" value={form.workoutsPerWeek} onChange={(e) => set("workoutsPerWeek", e.target.value)} /></Field>
+          <Field label={c.weeksLabel} error={fieldErrors.durationWeeks}><Input type="number" min="1" max="52" value={form.durationWeeks} onChange={(e) => set("durationWeeks", e.target.value)} /></Field>
+          <Field label={c.perWeekLabel} error={fieldErrors.workoutsPerWeek}><Input type="number" min="1" max="7" value={form.workoutsPerWeek} onChange={(e) => set("workoutsPerWeek", e.target.value)} /></Field>
         </div>
 
         <Field label={c.goalsLabel}><ChipMulti options={GOALS} selected={goals} onToggle={(v) => toggle(goals, setGoals, v)} /></Field>
         <Field label={c.equipmentLabel}><ChipMulti options={EQUIPMENT} selected={equipment} onToggle={(v) => toggle(equipment, setEquipment, v)} /></Field>
 
-        <Field label={c.rationaleLabel}><textarea value={form.rationale} onChange={(e) => set("rationale", e.target.value)} className={`${areaCls} min-h-[60px]`} /></Field>
+        <Field label={c.rationaleLabel} error={fieldErrors.rationale}><textarea value={form.rationale} onChange={(e) => set("rationale", e.target.value)} className={`${areaCls} min-h-[60px]`} /></Field>
         <Field label={c.daysLabel}>
           <textarea value={form.daysText} onChange={(e) => set("daysText", e.target.value)} placeholder={c.daysPlaceholder} className={`${areaCls} min-h-[120px] font-mono text-xs`} />
           <p className="text-[11px] text-muted-foreground mt-1">{c.daysHint}</p>
@@ -226,11 +262,12 @@ function TemplateForm({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children, error }: { label: string; children: React.ReactNode; error?: string }) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-medium text-muted-foreground">{label}</label>
       {children}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }

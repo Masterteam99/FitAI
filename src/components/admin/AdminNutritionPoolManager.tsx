@@ -1,12 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Loader2, Pencil, Save } from "lucide-react";
 import { copy } from "@/content/copy";
+
+const nonNegNumStr = z.string().refine((s) => s.trim() === "" || Number(s) >= 0, "Deve essere un numero non negativo");
+const planFormSchema = z.object({
+  name: z.string().trim().min(2, "Minimo 2 caratteri").max(150, "Massimo 150 caratteri"),
+  description: z.string().trim().min(2, "Minimo 2 caratteri").max(2000, "Massimo 2000 caratteri"),
+  rationale: z.string().trim().min(2, "Minimo 2 caratteri").max(2000, "Massimo 2000 caratteri"),
+  weeklyPlanText: z.string().trim().min(2, "Minimo 2 caratteri").max(8000, "Massimo 8000 caratteri"),
+  calories: nonNegNumStr,
+  protein: nonNegNumStr,
+  carbs: nonNegNumStr,
+  fat: nonNegNumStr,
+});
+type PlanFormFields = z.infer<typeof planFormSchema>;
+type PlanFieldErrors = Partial<Record<keyof PlanFormFields, string>>;
 
 interface Item {
   id: string;
@@ -150,17 +165,41 @@ function PlanForm({
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<PlanFieldErrors>({});
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
+    if (k in fieldErrors) setFieldErrors((p) => { const n = { ...p }; delete n[k as keyof PlanFieldErrors]; return n; });
   }
 
   const canSubmit = form.name.trim().length >= 2 && form.description.trim().length >= 2
     && form.rationale.trim().length >= 2 && form.weeklyPlanText.trim().length >= 2;
 
   async function submit() {
-    setSaving(true);
     setError(null);
+    const validation = planFormSchema.safeParse({
+      name: form.name,
+      description: form.description,
+      rationale: form.rationale,
+      weeklyPlanText: form.weeklyPlanText,
+      calories: form.calories,
+      protein: form.protein,
+      carbs: form.carbs,
+      fat: form.fat,
+    });
+    if (!validation.success) {
+      const errors: PlanFieldErrors = {};
+      for (const issue of validation.error.issues) {
+        const key = issue.path[0] as keyof PlanFormFields;
+        if (!errors[key]) errors[key] = issue.message;
+      }
+      setFieldErrors(errors);
+      setError(c.error);
+      return;
+    }
+    setFieldErrors({});
+
+    setSaving(true);
     const num = (s: string) => (s.trim() === "" ? null : Number(s));
     const payload = {
       name: form.name.trim(),
@@ -201,11 +240,13 @@ function PlanForm({
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.nameLabel}</label>
           <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
+          {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.descLabel}</label>
           <textarea value={form.description} onChange={(e) => set("description", e.target.value)} maxLength={2000}
             className="w-full bg-secondary/50 border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[60px]" />
+          {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
@@ -221,21 +262,23 @@ function PlanForm({
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-2">
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.caloriesLabel}</label><Input type="number" value={form.calories} onChange={(e) => set("calories", e.target.value)} /></div>
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.proteinLabel}</label><Input type="number" value={form.protein} onChange={(e) => set("protein", e.target.value)} /></div>
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.carbsLabel}</label><Input type="number" value={form.carbs} onChange={(e) => set("carbs", e.target.value)} /></div>
-          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.fatLabel}</label><Input type="number" value={form.fat} onChange={(e) => set("fat", e.target.value)} /></div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.caloriesLabel}</label><Input type="number" value={form.calories} onChange={(e) => set("calories", e.target.value)} />{fieldErrors.calories && <p className="text-xs text-destructive">{fieldErrors.calories}</p>}</div>
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.proteinLabel}</label><Input type="number" value={form.protein} onChange={(e) => set("protein", e.target.value)} />{fieldErrors.protein && <p className="text-xs text-destructive">{fieldErrors.protein}</p>}</div>
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.carbsLabel}</label><Input type="number" value={form.carbs} onChange={(e) => set("carbs", e.target.value)} />{fieldErrors.carbs && <p className="text-xs text-destructive">{fieldErrors.carbs}</p>}</div>
+          <div className="space-y-1"><label className="text-xs text-muted-foreground">{c.fatLabel}</label><Input type="number" value={form.fat} onChange={(e) => set("fat", e.target.value)} />{fieldErrors.fat && <p className="text-xs text-destructive">{fieldErrors.fat}</p>}</div>
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.rationaleLabel}</label>
           <textarea value={form.rationale} onChange={(e) => set("rationale", e.target.value)} maxLength={2000}
             className="w-full bg-secondary/50 border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[60px]" />
+          {fieldErrors.rationale && <p className="text-xs text-destructive">{fieldErrors.rationale}</p>}
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{c.weeklyLabel}</label>
           <textarea value={form.weeklyPlanText} onChange={(e) => set("weeklyPlanText", e.target.value)} placeholder={c.weeklyPlaceholder} maxLength={8000}
             className="w-full bg-secondary/50 border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[100px]" />
+          {fieldErrors.weeklyPlanText && <p className="text-xs text-destructive">{fieldErrors.weeklyPlanText}</p>}
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="flex gap-2">

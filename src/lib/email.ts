@@ -92,3 +92,33 @@ export async function sendWelcomeEmail(to: string, name: string | null) {
   const text = `Benvenuto su Motion Insight, ${firstName}!\n\nGenera piani AI, analizza la tecnica, traccia progressi e chiedi al coach AI.\n\nDashboard: ${APP_URL}/dashboard`;
   return send({ to, subject: `Benvenuto su Motion Insight, ${firstName}!`, html, text });
 }
+
+export async function sendReminderEmail(to: string, name: string | null, streak: number) {
+  const firstName = name?.split(" ")[0] ?? "atleta";
+  const html = layout(
+    `Il tuo streak di ${streak} giorni è a rischio 🔥`,
+    `<p>Ciao ${firstName}, non hai ancora registrato un allenamento oggi. Allenati adesso per mantenere la tua serie di ${streak} giorni consecutivi!</p>`,
+    `${APP_URL}/dashboard`,
+    "Vai alla dashboard"
+  );
+  const text = `Ciao ${firstName}, il tuo streak di ${streak} giorni è a rischio. Allenati oggi: ${APP_URL}/dashboard`;
+  return send({ to, subject: `${firstName}, il tuo streak di ${streak} giorni è a rischio!`, html, text });
+}
+
+export async function sendEmailChangedNotice(to: string, newEmail: string) {
+  const html = layout(
+    "Email account modificata",
+    `<p>L'indirizzo email del tuo account Motion Insight è stato cambiato in <strong>${newEmail}</strong>.</p><p style='color:#6e7681;font-size:13px'>Se non sei stato tu, contatta subito il supporto.</p>`
+  );
+  const text = `L'email del tuo account Motion Insight è stata cambiata in ${newEmail}. Se non sei stato tu, contatta il supporto.`;
+  return send({ to, subject: "Motion Insight — email account modificata", html, text });
+}
+
+export async function sendPasswordChangedNotice(to: string) {
+  const html = layout(
+    "Password modificata",
+    "<p>La password del tuo account Motion Insight è stata cambiata.</p><p style='color:#6e7681;font-size:13px'>Se non sei stato tu, contatta subito il supporto e reimposta la password.</p>"
+  );
+  const text = "La password del tuo account Motion Insight è stata cambiata. Se non sei stato tu, contatta il supporto.";
+  return send({ to, subject: "Motion Insight — password modificata", html, text });
+}

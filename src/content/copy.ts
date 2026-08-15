@@ -965,6 +965,36 @@ export const copy = {
     restDayLabel: "Riposo",
     startDayCta: "Inizia",
     openFullSession: "Apri la sessione completa",
+    recentSessions: {
+      title: "Sessioni recenti",
+      seeAll: "Vedi tutti i progressi →",
+      fallbackName: "Allenamento",
+      minutes: (n: number) => `${n} min`,
+      volume: (n: number) => `${n} kg`,
+    },
+    weeklyCalendar: {
+      weekdayLabels: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"],
+      restDayTitle: "Giorno di riposo",
+    },
+    weekRecap: {
+      title: "Questa settimana",
+      sessionsLabel: "Allenamenti",
+      volumeLabel: "Kg sollevati",
+      streakLabel: "Streak",
+    },
+    recentFeedback: {
+      title: "Ultimi feedback",
+    },
+    bodyBalance: {
+      title: "Equilibrio muscolare",
+      balanced: "Buon equilibrio tra i gruppi muscolari negli ultimi 30 giorni.",
+    },
+    professionalNotes: {
+      title: "Indicazioni dal tuo professionista",
+      subtitle: "Hai caricato questo documento nel Profilo. Il tuo piano allenamenti resta quello impostato qui sotto — queste sono indicazioni aggiuntive da tenere a mente.",
+      adjustments: "Aggiustamenti consigliati",
+      cautions: "Da tenere d'occhio",
+    },
     plansSectionTitle: "I tuoi piani",
   },
 
@@ -997,6 +1027,36 @@ export const copy = {
     statusGoodBalance: "Buon equilibrio muscolare.",
     statusNoData: "Fai un'analisi per vedere qui il tuo stato e i rischi.",
     statusDisclaimer: "Avvisi di allenamento, non diagnosi mediche.",
+    nextSession: {
+      eyebrow: "Prossimo allenamento",
+      badge: "Prossimo",
+      exercises: (n: number) => `${n} eserciz${n === 1 ? "io" : "i"}`,
+      progress: (done: number, total: number) => `${done} di ${total} allenamenti completati`,
+      week: (current: number, total: number) => `Settimana ${current} di ${total}`,
+    },
+    history: {
+      title: "Sessioni completate in questo piano",
+      fallbackName: "Allenamento",
+      minutes: (n: number) => `${n} min`,
+      volume: (n: number) => `${n} kg`,
+    },
+  },
+
+  // ── /allenamento/sessioni/[id] → src/app/(app)/allenamento/sessioni/[id]/page.tsx ──
+  sessioneStorico: {
+    meta: { title: "Sessione completata" },
+    backToPlan: "Torna al piano",
+    backToSessions: "Torna alle sessioni",
+    fallbackName: "Allenamento",
+    minutes: (n: number) => `${n} min`,
+    volume: (n: number) => `${n} kg sollevati`,
+    viewAnalysis: "Vedi l'analisi ricevuta",
+    setSummary: (reps?: number, weightKg?: number) => {
+      if (reps != null && weightKg != null) return `${reps} rip · ${weightKg} kg`;
+      if (reps != null) return `${reps} rip`;
+      if (weightKg != null) return `${weightKg} kg`;
+      return "Serie completata";
+    },
   },
 
   // ── /allenamento/[id]/sessione → src/app/(app)/allenamento/[id]/sessione/page.tsx ──
@@ -1023,6 +1083,7 @@ export const copy = {
     statExercises: "Esercizi",
     statTotalSets: "Set tot.",
     musclesHitToday: "Muscoli colpiti oggi",
+    analysesRecapTitle: "Analisi di questa sessione",
     dashboard: "Dashboard",
     plan: "Piano",
     exit: "Esci",
@@ -1133,6 +1194,12 @@ export const copy = {
 
   // ── /nutrizione → src/app/(app)/nutrizione/page.tsx ──
   nutrizione: {
+    professionalPlan: {
+      title: "Il tuo piano dal professionista",
+      subtitle: "Hai caricato questo documento nel Profilo: ha priorità sul piano AI e su quello consigliato.",
+      adjustments: "Aggiustamenti nutrizione",
+      cautions: "Da tenere d'occhio",
+    },
     mealLabels: {
       BREAKFAST: "Colazione",
       LUNCH: "Pranzo",
@@ -1421,6 +1488,45 @@ export const copy = {
       save: "Salva note",
       saved: "Salvato!",
     },
+    changeEmail: {
+      title: "Cambia email",
+      desc: "Ti invieremo un link di verifica al nuovo indirizzo.",
+      newEmailLabel: "Nuova email",
+      newEmailPlaceholder: "nuovo@indirizzo.it",
+      passwordLabel: "Password attuale",
+      passwordPlaceholder: "La tua password",
+      cta: "Aggiorna email",
+      success: "Email aggiornata! Controlla la posta per verificarla.",
+      genericError: "Aggiornamento non riuscito. Riprova.",
+    },
+    changePassword: {
+      title: "Cambia password",
+      desc: "Scegli una nuova password di almeno 8 caratteri.",
+      currentLabel: "Password attuale",
+      currentPlaceholder: "Password attuale",
+      newLabel: "Nuova password",
+      newPlaceholder: "Nuova password (min. 8 caratteri)",
+      confirmLabel: "Conferma nuova password",
+      confirmPlaceholder: "Ripeti la nuova password",
+      cta: "Aggiorna password",
+      success: "Password aggiornata!",
+      mismatchError: "Le due password non coincidono",
+      genericError: "Aggiornamento non riuscito. Riprova.",
+    },
+    notifiche: {
+      title: "Notifiche",
+      desc: "Scegli come vuoi essere avvisato quando il tuo streak è a rischio.",
+      emailLabel: "Promemoria via email",
+      emailDesc: "Un'email se non ti alleni entro fine giornata e hai uno streak attivo.",
+      pushLabel: "Notifiche push",
+      pushDesc: "Notifica sul dispositivo, stesso avviso via browser/app.",
+      pushEnable: "Attiva",
+      pushDisable: "Disattiva",
+      pushUnsupported: "Il tuo browser non supporta le notifiche push.",
+      pushPermissionDenied: "Notifiche bloccate dal browser. Abilitale nelle impostazioni del sito.",
+      saved: "Preferenza salvata",
+      error: "Operazione non riuscita. Riprova.",
+    },
     guida: {
       title: "Come funziona Motion Insight",
       intro: "Tutto quello che puoi fare, in breve.",
@@ -1506,6 +1612,12 @@ export const copy = {
     cameraInactive: "Fotocamera non attiva",
     proVideoUnavailable: "Video PT non disponibile",
     start: "Inizia",
+    tabExecution: "Esecuzione",
+    tabExplanation: "Spiegazione",
+    explanationVideoUnavailable: "Video di spiegazione non disponibile",
+    notesTitle: "Note del professionista",
+    switchCamera: "Cambia fotocamera",
+    resultSubtitle: "Analisi completata",
   },
 
   // ── /analisi/report/[id] → src/app/(app)/analisi/report/[id]/page.tsx ──
@@ -1536,6 +1648,7 @@ export const copy = {
     syncedVideosTitle: "Video sincronizzati",
     repeatAnalysis: "Ripeti l'analisi",
     otherExercises: "Altri esercizi",
+    backToSession: "Torna alla sessione",
   },
 
   // ── /admin/users → src/app/(app)/admin/users/page.tsx + src/components/admin/UsersTable.tsx ──

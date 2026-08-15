@@ -22,6 +22,9 @@ export async function GET() {
       totalPoints: true,
       currentStreak: true,
       longestStreak: true,
+      notifyEmailReminders: true,
+      notifyPush: true,
+      nutritionPlanJson: true,
     },
   });
 
@@ -38,6 +41,7 @@ const PatchSchema = z.object({
   primaryGoal: z.enum(["LOSE_WEIGHT", "BUILD_MUSCLE", "ENDURANCE", "FLEXIBILITY", "GENERAL_FITNESS", "ATHLETIC_PERFORMANCE"]).optional(),
   profileVisibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
   medicalNotes: z.string().max(2000).nullable().optional(),
+  notifyEmailReminders: z.boolean().optional(),
 });
 
 export async function PATCH(req: NextRequest) {
@@ -51,7 +55,7 @@ export async function PATCH(req: NextRequest) {
   const updated = await prisma.user.update({
     where: { id: session.user.id as string },
     data: parsed.data,
-    select: { name: true, age: true, weightKg: true, heightCm: true },
+    select: { name: true, age: true, weightKg: true, heightCm: true, notifyEmailReminders: true },
   });
 
   return NextResponse.json(updated);

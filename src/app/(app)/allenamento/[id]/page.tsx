@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Play, Dumbbell, Calendar, Clock, Zap, CheckCircle, Camera, Activity, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Play, Dumbbell, Calendar, Clock, Zap, CheckCircle, Camera, Activity, AlertTriangle, History, Target, Weight } from "lucide-react";
 import { computeImbalances, muscleLabel } from "@/lib/body-map";
 import { AdaptiveBodyMap } from "@/components/wow";
 import { RevisionRequestForm } from "@/components/RevisionRequestForm";
@@ -41,12 +41,17 @@ export default async function PlanDetailPage({ params }: Props) {
 
   if (!plan) notFound();
 
-  const [imbalances, lastAnalysis] = await Promise.all([
+  const [imbalances, lastAnalysis, planSessions] = await Promise.all([
     computeImbalances(userId, 30),
     prisma.analysisSession.findFirst({
       where: { userId, status: "COMPLETED" },
       orderBy: { completedAt: "desc" },
       select: { finalReport: true },
+    }),
+    prisma.workoutSession.findMany({
+      where: { userId, planId: plan.id, status: "COMPLETED" },
+      orderBy: { completedAt: "desc" },
+      select: { id: true, planDayId: true, completedAt: true, totalSeconds: true, totalVolumeKg: true },
     }),
   ]);
   const topImbalances = imbalances.slice(0, 3);
@@ -54,6 +59,18 @@ export default async function PlanDetailPage({ params }: Props) {
 
   const totalExercises = plan.days.reduce((acc, d) => acc + d.exercises.length, 0);
   const estimatedMinutes = totalExercises * 4;
+
+  // Progresso: quanti allenamenti pianificati (giorni non-riposo × settimane) vs completati.
+  const workoutDays = plan.days.filter((d) => !d.restDay && d.exercises.length > 0);
+  const totalPlannedSessions = workoutDays.length * plan.durationWeeks;
+  const completedCount = planSessions.length;
+  const progressPct = totalPlannedSessions > 0 ? Math.min(100, Math.round((completedCount / totalPlannedSessions) * 100)) : 0;
+  const currentWeek = workoutDays.length > 0 ? Math.min(plan.durationWeeks, Math.floor(completedCount / workoutDays.length) + 1) : 1;
+
+  // Prossimo giorno: quello successivo all'ultimo completato nel ciclo settimanale.
+  const lastCompletedDayId = planSessions[0]?.planDayId ?? null;
+  const lastIndex = lastCompletedDayId ? workoutDays.findIndex((d) => d.id === lastCompletedDayId) : -1;
+  const nextDay = workoutDays.length > 0 ? workoutDays[(lastIndex + 1) % workoutDays.length] : null;
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -80,6 +97,36 @@ export default async function PlanDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Prossimo allenamento + progresso nel piano */}
+      {nextDay && (
+        <Card className="border-primary/40 bg-primary/5">
+          <CardContent className="p-4 sm:p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div>
+                <p className="text-xs uppercase tracking-wider font-semibold text-primary mb-1 flex items-center gap-1.5">
+                  <Target className="w-3.5 h-3.5" />
+                  {copy.allenamentoDettaglio.nextSession.eyebrow}
+                </p>
+                <p className="text-lg font-bold">{nextDay.name}</p>
+                <p className="text-sm text-muted-foreground">{copy.allenamentoDettaglio.nextSession.exercises(nextDay.exercises.length)}</p>
+              </div>
+              <Link href={`/allenamento/${plan.id}/sessione?day=${nextDay.id}`}>
+                <Button className="gap-1.5"><Play className="w-4 h-4" />{copy.allenamentoDettaglio.startDay}</Button>
+              </Link>
+            </div>
+            <div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+                <span>{copy.allenamentoDettaglio.nextSession.progress(completedCount, totalPlannedSessions)}</span>
+                <span>{copy.allenamentoDettaglio.nextSession.week(currentWeek, plan.durationWeeks)}</span>
+              </div>
+              <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Il tuo stato — heatmap corpo + rischi + suggerimenti (consolidato dalla dashboard) */}
       <Card>
@@ -137,8 +184,13 @@ export default async function PlanDetailPage({ params }: Props) {
         {plan.days.map((day) => (
           <Card key={day.id} className={day.restDay ? "opacity-60" : ""}>
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">{copy.allenamentoDettaglio.dayLabel(day.dayNumber, day.name)}</CardTitle>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-base">{copy.allenamentoDettaglio.dayLabel(day.dayNumber, day.name)}</CardTitle>
+                  {nextDay?.id === day.id && (
+                    <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">{copy.allenamentoDettaglio.nextSession.badge}</Badge>
+                  )}
+                </div>
                 {!day.restDay && day.exercises.length > 0 && (
                   <Link href={`/allenamento/${plan.id}/sessione?day=${day.id}`}>
                     <Button size="sm" className="gap-1.5">
@@ -188,6 +240,40 @@ export default async function PlanDetailPage({ params }: Props) {
           </Card>
         ))}
       </div>
+
+      {/* Sessioni completate in questo piano — passato */}
+      {planSessions.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <History className="w-4 h-4 text-primary" />
+              {copy.allenamentoDettaglio.history.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {planSessions.slice(0, 8).map((s) => {
+              const dayName = plan.days.find((d) => d.id === s.planDayId)?.name ?? copy.allenamentoDettaglio.history.fallbackName;
+              const minutes = s.totalSeconds ? Math.round(s.totalSeconds / 60) : null;
+              const date = s.completedAt ? new Date(s.completedAt).toLocaleDateString("it-IT", { day: "numeric", month: "short" }) : null;
+              return (
+                <Link key={s.id} href={`/allenamento/sessioni/${s.id}`} className="flex items-center gap-3 p-2.5 rounded-lg bg-secondary/40 hover:bg-secondary/70 transition-colors">
+                  <CheckCircle className="w-4 h-4 text-primary shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{dayName}</p>
+                    <p className="text-xs text-muted-foreground">{date}</p>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
+                    {minutes != null && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{copy.allenamentoDettaglio.history.minutes(minutes)}</span>}
+                    {s.totalVolumeKg != null && s.totalVolumeKg > 0 && (
+                      <span className="flex items-center gap-1"><Weight className="w-3.5 h-3.5" />{copy.allenamentoDettaglio.history.volume(Math.round(s.totalVolumeKg))}</span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {plan.days.some((d) => !d.restDay && d.exercises.length > 0) && (
         <div className="flex items-center gap-3 pt-2 p-4 rounded-xl bg-primary/5 border border-primary/20">

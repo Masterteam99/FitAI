@@ -204,6 +204,8 @@ model User {
   medicalNotes        String? // note mediche facoltative scritte dall'utente (testo libero, nessun file)
   nutritionPlanJson   Json?
   onboardingCompleted Boolean      @default(false)
+  notifyEmailReminders Boolean     @default(true)
+  notifyPush          Boolean      @default(false)
   totalPoints         Int          @default(0)
   currentStreak       Int          @default(0)
   longestStreak       Int          @default(0)
@@ -233,6 +235,7 @@ model User {
   dailyCheckins         DailyCheckin[]
   revisionRequests      RevisionRequest[]
   adminActions          AdminActionLog[]      @relation("AdminActionActor")
+  pushSubscriptions     PushSubscription[]
 
   @@map("users")
 }
@@ -493,6 +496,7 @@ model WorkoutSession {
   plan           WorkoutPlan?             @relation(fields: [planId], references: [id])
   planDay        WorkoutPlanDay?          @relation(fields: [planDayId], references: [id])
   exercises      WorkoutSessionExercise[]
+  analysisSessions AnalysisSession[]
 
   @@index([userId])
   @@index([planId])
@@ -507,6 +511,7 @@ model WorkoutSessionExercise {
   completedSets Json           @default("[]")
   session       WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   exercise      Exercise       @relation(fields: [exerciseId], references: [id])
+  analysisSessions AnalysisSession[]
 
   @@index([sessionId])
   @@map("workout_session_exercises")
@@ -523,6 +528,11 @@ model AnalysisSession {
   startedAt       DateTime       @default(now())
   completedAt     DateTime?
 
+  // Collegamento facoltativo alla sessione di allenamento del piano (se l'analisi è stata fatta
+  // dentro il flusso guidato "La tua sessione" invece che come analisi isolata da /analisi).
+  workoutSessionId         String?
+  workoutSessionExerciseId String?
+
   // Analisi v2 — output strutturati per logica + sintesi finale
   l1Result      Json? // L1Result: score, triggeredFeedback, detectedPhases, rawAngles
   l2Result      Json? // L2Result: score, qualitativeAnalysis, visualObservations, injuryRiskFlags
@@ -530,11 +540,15 @@ model AnalysisSession {
   finalReport   Json? // FinalReport: combinedScore, overallJudgment, prioritizedImprovements, injuryRiskAlert, positiveAspects
   combinedScore Float? // Manteniamo top-level per query/index veloci
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise Exercise @relation(fields: [exerciseId], references: [id])
+  user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise               Exercise                 @relation(fields: [exerciseId], references: [id])
+  workoutSession         WorkoutSession?          @relation(fields: [workoutSessionId], references: [id], onDelete: SetNull)
+  workoutSessionExercise WorkoutSessionExercise?  @relation(fields: [workoutSessionExerciseId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([exerciseId])
+  @@index([workoutSessionId])
+  @@index([workoutSessionExerciseId])
   @@map("analysis_sessions")
 }
 
@@ -710,6 +724,19 @@ model Notification {
 
   @@index([userId])
   @@map("notifications")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 model WearableIntegration {

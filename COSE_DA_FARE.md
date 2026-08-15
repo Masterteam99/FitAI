@@ -11,7 +11,24 @@
 
 ---
 
-## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-14 sera]`
+## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-15]`
+
+- **Sessione 6 (15/08) conclusa**: MVP polish (toast/validazione/email-password/notifiche/filtri
+  libreria) + piano completo "Sessione/Nutrizione/Analisi" (10 fasi, tutte chiuse) sul branch
+  **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`, non ancora in `main`).
+  Dettaglio completo in `COSE_FATTE_IN_SESSIONE.md` Sessione 6 e in `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`.
+- ⚠️ **Da verificare con hardware reale (non fatto in autonomia, serve dispositivo mobile vero):**
+  switch fotocamera anteriore/posteriore (Fase 10) e flusso "analisi inline" end-to-end con
+  registrazione video reale (fotocamera bloccata nell'ambiente di sviluppo usato).
+- **Prima di deploy**: aggiungere su Vercel le env var `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
+  `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, opzionale `CRON_SECRET` (per il sistema
+  notifiche/reminder costruito in Sessione 6 — valori generati sono in `.env.local` locale).
+- Sotto ancora aperti i residui di Sessione 5 (branch `feature/account-manager-completo` da integrare
+  in `main`, dipendenze esterne, landing/placeholder) — vedi sezione storica sotto, invariata.
+
+---
+
+## ▶️ Storico "parti da qui" — Sessione 5 `[agg. 2026-08-14 sera]`
 
 - Tutto il lavoro **feature #4/#5/#6 (a–e) + sezione Utenti (economia)** è **FATTO, verificato**. Il porting
   completo landing/satellite/area-utente/admin + tema scuro (Sessioni 5-6) è **committato e pushato**
@@ -87,6 +104,18 @@
 ---
 
 ## ✅ Fatto (storico, per riferimento)
+
+**Sessione 6 (2026-08-15)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md` e `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`:
+- ✅ MVP polish: toast coverage, validazione 4 form admin, cambio email/password, sistema notifiche
+  reminder streak (email+push, da zero), fix filtri Libreria esercizi.
+- ✅ Piano Sessione/Nutrizione/Analisi — 10 fasi + lavoro inline, tutte chiuse e testate dal vivo:
+  link schema AnalysisSession↔WorkoutSession, secondo video PT, sessione↔analisi collegate con
+  persistenza progresso, recap con analisi, storico feedback per sessione passata, calendario
+  settimanale, riepilogo settimana + ultimi feedback + equilibrio muscolare, piano nutrizionale
+  con gerarchia unica (+ fix bug persistenza), priorità documento professionista, switch fotocamera,
+  analisi mostrata inline senza redirect.
+- ⚠️ Switch fotocamera e flusso inline non verificabili con hardware reale in questo ambiente —
+  da confermare su dispositivo mobile vero.
 
 **Sessione 4 (2026-08-13)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md`:
 - ✅ **#4** Analisi AI documenti (`/api/documents/[id]/analyze`, UI profilo, campi `UserDocument.analysisJson/analyzedAt`) + rate-limiter fail-open.

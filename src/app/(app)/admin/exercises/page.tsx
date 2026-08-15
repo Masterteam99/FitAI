@@ -46,7 +46,7 @@ export default async function AdminExercisesPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <AdminMetricCard label={copy.adminExercises.metricTotal} value={total} />
         <AdminMetricCard label={copy.adminExercises.metricWithVideo} value={withVideo} tone="success" />
         <AdminMetricCard label={copy.adminExercises.metricActive} value={activeCount} tone="info" />

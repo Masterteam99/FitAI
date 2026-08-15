@@ -1,22 +1,41 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Trophy } from "lucide-react";
+import { ChevronRight, Trophy, Camera } from "lucide-react";
 import { GradientMesh } from "@/components/visualizations/GradientMesh";
 import { NumberPunch } from "@/components/motion/NumberPunch";
 import { copy } from "@/content/copy";
 import type { Exercise } from "./useWorkoutSession";
 
-export function CompletedView({ planId, exercises, durationMin }: {
+interface SessionAnalysis {
+  id: string;
+  exerciseId: string;
+  exerciseName: string;
+  score: number | null;
+  topImprovement: string | null;
+}
+
+export function CompletedView({ planId, exercises, durationMin, sessionId }: {
   planId: string;
   exercises: Exercise[];
   durationMin: number;
+  sessionId?: string | null;
 }) {
   const reduced = useReducedMotion();
   const totalSets = exercises.reduce((a, e) => a + e.sets, 0);
   const muscles = Array.from(new Set(exercises.map((e) => e.muscleGroupPrimary)));
+  const [analyses, setAnalyses] = useState<SessionAnalysis[]>([]);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    fetch(`/api/workout-sessions/${sessionId}/analyses`)
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((d: { items: SessionAnalysis[] }) => setAnalyses(d.items ?? []))
+      .catch(() => {});
+  }, [sessionId]);
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-6">
@@ -72,6 +91,33 @@ export function CompletedView({ planId, exercises, durationMin }: {
             ))}
           </div>
         </div>
+
+        {analyses.length > 0 && (
+          <div className="bg-card/60 backdrop-blur border border-border rounded-xl p-4 max-w-md mx-auto text-left">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+              <Camera className="w-3.5 h-3.5" />
+              {copy.allenamentoSessione.analysesRecapTitle}
+            </div>
+            <div className="space-y-2">
+              {analyses.map((a) => (
+                <Link
+                  key={a.id}
+                  href={`/analisi/report/${a.id}`}
+                  className="flex items-center gap-3 p-2.5 rounded-lg bg-secondary/40 hover:bg-secondary/70 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{a.exerciseName}</p>
+                    {a.topImprovement && <p className="text-xs text-muted-foreground truncate">{a.topImprovement}</p>}
+                  </div>
+                  {a.score != null && (
+                    <span className="shrink-0 text-lg font-display font-bold text-primary">{a.score}</span>
+                  )}
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
           <Link href="/dashboard">

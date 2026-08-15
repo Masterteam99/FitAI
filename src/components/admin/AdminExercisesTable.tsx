@@ -102,7 +102,7 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
           ) : (
             <ul className="divide-y">
               {filtered.map((ex) => (
-                <li key={ex.id} className="flex items-center gap-3 p-4">
+                <li key={ex.id} className="flex flex-wrap items-center gap-3 p-4">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{ex.name}</p>
                     <p className="text-xs text-muted-foreground truncate">

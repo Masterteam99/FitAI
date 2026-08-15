@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ConfirmActionButton } from "./ConfirmActionButton";
 import { AdminMetricCard } from "./AdminMetricCard";
 import { UserDetailDrawer } from "./UserDetailDrawer";
+import { toast } from "@/components/ui/toaster";
 import { copy } from "@/content/copy";
 
 type UserRow = {
@@ -65,9 +66,13 @@ export function UsersTable() {
     const res = await fetch(url, { method });
     if (res.ok) {
       startTransition(() => { fetchData(); router.refresh(); });
+      toast({ title: successLabel, variant: "success" });
     } else {
       const data = await res.json().catch(() => ({}));
-      alert(copy.adminUsers.table.actionFailed(successLabel, data.error ?? copy.adminUsers.table.unknownError));
+      toast({
+        title: copy.adminUsers.table.actionFailed(successLabel, data.error ?? copy.adminUsers.table.unknownError),
+        variant: "destructive",
+      });
     }
   };
 
@@ -75,7 +80,7 @@ export function UsersTable() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <AdminMetricCard label={copy.adminUsers.table.metricTotal} value={data.counters.total} />
         <AdminMetricCard label={copy.adminUsers.table.metricPremium} value={data.counters.premium} tone="premium" />
         <AdminMetricCard label={copy.adminUsers.table.metricAdmin} value={data.counters.admin} tone="success" />
@@ -86,7 +91,7 @@ export function UsersTable() {
         <div className="flex items-baseline justify-between gap-2 mb-2">
           <h2 className="text-sm font-semibold">{copy.adminUsers.table.econTitle}</h2>
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <AdminMetricCard label={copy.adminUsers.table.metricMrr} value={copy.adminUsers.table.eur(data.economics.mrrEur)} tone="success" />
           <AdminMetricCard label={copy.adminUsers.table.metricAiCost} value={copy.adminUsers.table.eur(data.economics.aiCostEur)} tone="premium" />
           <AdminMetricCard label={copy.adminUsers.table.metricMargin} value={copy.adminUsers.table.eur(data.economics.marginEur)} tone={data.economics.marginEur >= 0 ? "success" : "danger"} />

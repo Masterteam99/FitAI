@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { usePoseDetection } from "@/hooks/usePoseDetection";
@@ -10,15 +10,18 @@ import { captureFrame, extractProFrames, type LabeledFrame } from "@/lib/analysi
 import { AnalysisErrorState } from "@/components/analisi/AnalysisErrorState";
 import { AnalysisProcessingView } from "@/components/analisi/AnalysisProcessingView";
 import { RecordingStage } from "@/components/analisi/RecordingStage";
+import { AnalysisReportContent, type AnalysisReportData } from "@/components/analisi/AnalysisReportContent";
+import { AnalysisReportActions } from "@/components/analisi/AnalysisReportActions";
 import { copy } from "@/content/copy";
 
-type Phase = "IDLE" | "COUNTDOWN" | "RECORDING" | "UPLOADING" | "ANALYZING" | "ERROR";
+type Phase = "IDLE" | "COUNTDOWN" | "RECORDING" | "UPLOADING" | "ANALYZING" | "RESULT" | "ERROR";
 
 interface ExerciseData {
   id: string;
   name: string;
   slug: string;
   videoUrl?: string;
+  explanationVideoUrl?: string;
   professionalNotes?: string;
   recordingDurationSeconds: number;
 }
@@ -28,8 +31,9 @@ const NUM_USER_FRAMES = 8;
 
 function SessioneContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const exerciseId = searchParams.get("id");
+  const workoutSessionId = searchParams.get("wsId");
+  const wsReturn = searchParams.get("wsReturn");
 
   const [phase, setPhase] = useState<Phase>("IDLE");
   const [exercise, setExercise] = useState<ExerciseData | null>(null);
@@ -38,6 +42,7 @@ function SessioneContent() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [analysisStep, setAnalysisStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [reportData, setReportData] = useState<AnalysisReportData | null>(null);
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -46,7 +51,7 @@ function SessioneContent() {
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const frameTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { videoRef, stream, isLoading: cameraLoading, error: cameraError, startCamera, stopCamera } = useCamera();
+  const { videoRef, stream, isLoading: cameraLoading, error: cameraError, canSwitchCamera, startCamera, stopCamera, switchCamera } = useCamera();
   const { startRecording: storeStart, stopRecording: storeStop, frameHistory, reset: storeReset } = useAnalysisStore();
 
   usePoseDetection({ videoRef, enabled: !!stream && phase === "RECORDING" });
@@ -57,7 +62,7 @@ function SessioneContent() {
     fetch("/api/analysis/start", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ exerciseId }),
+      body: JSON.stringify({ exerciseId, workoutSessionId: workoutSessionId ?? undefined }),
     })
       .then((r) => r.json())
       .then((data) => {
@@ -69,7 +74,7 @@ function SessioneContent() {
         setAnalysisSessionId(data.analysisSessionId);
       })
       .catch(() => setError(copy.analisiSessione.exerciseNotFound));
-  }, [exerciseId]);
+  }, [exerciseId, workoutSessionId]);
 
   const cleanup = useCallback(() => {
     if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
@@ -113,7 +118,26 @@ function SessioneContent() {
       if (!completeRes.ok || data.error) {
         throw new Error(data.error ?? copy.analisiSessione.analysisFailed);
       }
-      router.push(`/analisi/report/${data.analysisSessionId}`);
+
+      // Mostriamo il risultato qui, senza navigare a una pagina separata: chi arriva dalla
+      // sessione guidata vede l'analisi e le correzioni nella stessa schermata dell'esercizio.
+      const reportRes = await fetch(`/api/analysis/${data.analysisSessionId}`);
+      const reportJson = await reportRes.json();
+      if (!reportRes.ok || reportJson.error) {
+        throw new Error(copy.analisiSessione.analysisFailed);
+      }
+      setReportData({
+        exerciseName: reportJson.exercise.name,
+        exerciseSlug: reportJson.exercise.slug,
+        exerciseVideoUrl: reportJson.exercise.videoUrl,
+        videoUrl: reportJson.videoUrl,
+        l1Result: reportJson.l1Result,
+        l2Result: reportJson.l2Result,
+        l3Result: reportJson.l3Result,
+        finalReport: reportJson.finalReport,
+        combinedScore: reportJson.combinedScore,
+      });
+      setPhase("RESULT");
     } catch (e) {
       setPhase("ERROR");
       setError(e instanceof Error ? e.message : copy.analisiSessione.processingError);
@@ -121,7 +145,7 @@ function SessioneContent() {
       stopCamera();
       storeReset();
     }
-  }, [analysisSessionId, exercise, frameHistory, router, stopCamera, storeReset]);
+  }, [analysisSessionId, exercise, frameHistory, stopCamera, storeReset]);
 
   const startRecordingPhase = useCallback(() => {
     if (!exercise || !stream || !analysisSessionId) return;
@@ -217,6 +241,22 @@ function SessioneContent() {
     return <AnalysisProcessingView uploading={phase === "UPLOADING"} analysisStep={analysisStep} />;
   }
 
+  if (phase === "RESULT") {
+    if (!reportData || !exercise) {
+      return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+    }
+    return (
+      <div className="space-y-6 max-w-3xl">
+        <div>
+          <h1 className="text-2xl font-bold">{copy.analisiReport.reportTitle(exercise.name)}</h1>
+          <p className="text-muted-foreground">{copy.analisiSessione.resultSubtitle}</p>
+        </div>
+        <AnalysisReportContent report={reportData} />
+        <AnalysisReportActions exerciseId={exercise.id} wsReturn={wsReturn} />
+      </div>
+    );
+  }
+
   return (
     <RecordingStage
       phase={phase}
@@ -228,8 +268,10 @@ function SessioneContent() {
       cameraError={cameraError}
       cameraLoading={cameraLoading}
       canStart={!!analysisSessionId}
+      canSwitchCamera={canSwitchCamera}
       onCountdownComplete={onCountdownComplete}
       onStart={startCountdown}
+      onSwitchCamera={switchCamera}
     />
   );
 }

@@ -10,13 +10,15 @@ import { cn } from "@/lib/utils";
 import { copy } from "@/content/copy";
 import type { Exercise, LastLoad } from "./useWorkoutSession";
 
-export function ExerciseView({ exercises, currentExIndex, currentSet, completedSets, lastLoad, onCompleteSet }: {
+export function ExerciseView({ exercises, currentExIndex, currentSet, completedSets, lastLoad, onCompleteSet, sessionId, returnUrl }: {
   exercises: Exercise[];
   currentExIndex: number;
   currentSet: number;
   completedSets: Record<string, number>;
   lastLoad?: LastLoad;
   onCompleteSet: (log?: { weightKg?: number; reps?: number }) => void;
+  sessionId?: string | null;
+  returnUrl?: string;
 }) {
   const reduced = useReducedMotion();
   const currentEx = exercises[currentExIndex];
@@ -184,7 +186,10 @@ export function ExerciseView({ exercises, currentExIndex, currentSet, completedS
       </motion.div>
 
       {analysisOn && (
-        <Link href={`/analisi/sessione?id=${currentEx.id}`} className="block mt-3">
+        <Link
+          href={`/analisi/sessione?id=${currentEx.id}${sessionId ? `&wsId=${sessionId}` : ""}${returnUrl ? `&wsReturn=${encodeURIComponent(returnUrl)}` : ""}`}
+          className="block mt-3"
+        >
           <Button variant="outline" size="lg" className="w-full gap-2 border-primary/50 text-primary hover:bg-primary/5">
             <Camera className="w-5 h-5" />
             {copy.allenamentoSessione.analyzeCta}

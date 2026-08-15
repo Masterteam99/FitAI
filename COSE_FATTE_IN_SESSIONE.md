@@ -11,6 +11,86 @@
 
 ---
 
+## Sessione 6 — 2026-08-15 — MVP polish (fix Cowork) + piano Sessione/Nutrizione/Analisi (10 fasi)
+
+**Contesto:** ricevuti documenti da Claude Cowork con una roadmap MVP (scritta per un'app HTML/JS
+vanilla generica, non per questo codebase React/Next). Audit ha mostrato che gran parte era già
+implementata meglio del previsto. Poi l'utente ha chiesto miglioramenti mirati sull'area "La tua
+sessione", "Nutrizione" e sul flusso di analisi video, con piano scritto prima del codice. Lavorato
+tutto sul branch **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`).
+
+### Parte 1 — Fix MVP polish (audit-first, solo gap reali)
+1. **Toast coverage**: `UsersTable.tsx` usava `alert()` sugli errori, nessun feedback sui successi →
+   sostituito col sistema toast esistente, con conferma anche sui successi.
+2. **Validazione form admin**: estesa a 4 form (Esercizi, Ricette, Pool nutrizionale, Template
+   allenamento) — zod + errori inline per campo, prima solo un gate booleano sul submit.
+3. **Cambio email/password**: non esisteva nessuna UI per farlo dal Profilo — creati endpoint
+   (`/api/account/change-email`, `/api/account/change-password`) + 2 sezioni Profilo, con notifica
+   email di sicurezza.
+4. **Sistema notifiche da zero**: nessuna infrastruttura di invio esisteva. Costruiti: modello
+   `PushSubscription`, campi `User.notifyEmailReminders/notifyPush` (schema additivo), VAPID keys,
+   service worker con `push`/`notificationclick`, cron giornaliero (`vercel.json` → `/api/cron/reminders`)
+   che avvisa via email+push chi ha uno streak a rischio, sezione preferenze in Profilo.
+5. **Cosmetici responsive**: griglie fisse 3/4 colonne rotte su mobile, sistemate in vari punti admin.
+6. **Libreria esercizi**: filtro attrezzatura era importato ma mai collegato (dead code) — attivato;
+   combinare più filtri insieme non funzionava (si sovrascrivevano) — corretto con `buildHref()`.
+
+Verificato tutto con `tsc`/`eslint` puliti + test dal vivo nel browser con utenti/dati reali (creati e
+rimossi ad ogni test).
+
+### Parte 2 — Prototipo di design (artifact)
+Su richiesta di valutazione UX/fitness: pubblicato un artifact con due concept (card "prossimo
+allenamento" in evidenza su Sessione, gerarchia CTA landing) — usato per allineare le decisioni prima
+di toccare il codice reale, non implementato direttamente.
+
+### Parte 3 — Piano scritto: `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md` (10 fasi, tutte chiuse)
+
+**Scoperta chiave:** il flusso "sessione allenamento" e il flusso "analisi video AI" erano due sistemi
+completamente scollegati (nessun FK nello schema, navigazione che portava via l'utente senza ritorno).
+
+- **Fase 1** — schema: link `AnalysisSession` ↔ `WorkoutSession`/`WorkoutSessionExercise` (additivo).
+- **Fase 2** — secondo video PT (tab Esecuzione/Spiegazione) + note professionista mostrate (prima nel
+  DB ma mai renderizzate). Countdown 15s verificato NON essere un bug (nessun campo lo rende
+  configurabile, `recordingDurationSeconds` già usato correttamente per la registrazione).
+- **Fase 3** — collegamento reale sessione↔analisi: l'AnalysisSession creata durante la sessione
+  guidata ora si lega davvero al `workoutSessionId`; report con CTA "Torna alla sessione". **Bug
+  scoperto e risolto in corsa**: uscire per un'analisi e tornare faceva ripartire la sessione da zero —
+  aggiunta persistenza del progresso in `sessionStorage` (`useWorkoutSession.ts`).
+- **Fase 4** — recap fine sessione (`CompletedView.tsx`) ora mostra punteggio+correzione per ogni
+  esercizio analizzato (nuovo endpoint `/api/workout-sessions/[id]/analyses`), prima solo durata/set.
+- **Fase 5** — nuova pagina `/allenamento/sessioni/[id]`: storico di una sessione passata con feedback
+  per esercizio. Collegata da "Sessioni recenti" e "Sessioni completate in questo piano" (ora cliccabili).
+- **Fase 6** — calendario settimanale (`WeeklyCalendarStrip.tsx`) su `/allenamento`. Scoperto che il
+  piano è un ciclo ricorrente non ancorato a giorni reali → distribuzione equidistante sui 7 giorni
+  come guida visiva, coerente con la logica "prossimo allenamento" già esistente.
+- **Fase 7** — 3 nuove card su `/allenamento`: "Questa settimana" (allenamenti/kg/streak),
+  "Ultimi feedback" (nuovo endpoint `/api/me/recent-analyses`), "Equilibrio muscolare" (riuso di
+  `AdaptiveBodyMap`, prima confinato alla pagina piano).
+- **Fase 8** — Nutrizione: **bug corretto** — il piano AI generato veniva salvato
+  (`User.nutritionPlanJson`) ma mai riletto al caricamento, spariva al refresh. Corretto +
+  gerarchia: un solo "piano attivo" visibile (AI ha priorità sul pool), non più sovrapposti.
+- **Fase 9** — priorità al documento di un professionista caricato in Profilo (se analizzato):
+  lato Nutrizione sostituisce del tutto AI/pool; lato Allenamento — dove non può sostituire il piano
+  strutturato per limite tecnico reale (PDF = testo libero, non giorni/esercizi strutturati) — mostra
+  invece una card "Indicazioni dal tuo professionista" sempre visibile accanto al piano.
+- **Fase 10** — switch fotocamera anteriore/posteriore in `useCamera.ts` (rilevamento multi-camera via
+  `enumerateDevices`), bottone in `RecordingStage.tsx`. Non testabile con hardware reale in questo
+  ambiente.
+- **Lavoro inline finale**: il risultato dell'analisi ora appare nella stessa schermata di
+  registrazione invece di un redirect a pagina separata — estratto `AnalysisReportContent` +
+  `AnalysisReportActions` come componenti condivisi tra `/analisi/report/[id]` (invariata per i link
+  esterni) e la nuova fase `RESULT` in `/analisi/sessione`.
+
+**Verifica:** ogni fase testata dal vivo nel browser con dati reali (utenti/piani/sessioni creati e
+poi eliminati), `tsc`+`eslint` puliti su tutto il progetto ad ogni passo. Limiti onesti segnalati:
+switch fotocamera e flusso inline non testabili end-to-end con hardware reale in questo ambiente
+(fotocamera bloccata nel Browser pane).
+
+**File nuovi principali:** `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md` (piano+stato avanzamento dettagliato),
+~15 nuovi componenti/endpoint (vedi piano per elenco completo).
+
+---
+
 ## Sessione 5 — 2026-08-14 — Allineamento di TUTTI i documenti di stato allo stato reale del codice
 
 **Contesto:** ricorreva un problema: a inizio sessione i documenti di stato (non solo i diari) erano fermi

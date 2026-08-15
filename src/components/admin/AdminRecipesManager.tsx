@@ -1,12 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Loader2, Pencil, Save } from "lucide-react";
 import { copy } from "@/content/copy";
+
+const nonNegNumStr = z.string().refine((s) => s.trim() === "" || Number(s) >= 0, "Deve essere un numero non negativo");
+const recipeFormSchema = z.object({
+  title: z.string().trim().min(2, "Minimo 2 caratteri").max(150, "Massimo 150 caratteri"),
+  description: z.string().trim().min(2, "Minimo 2 caratteri").max(2000, "Massimo 2000 caratteri"),
+  calories: nonNegNumStr,
+  proteinG: nonNegNumStr,
+  carbsG: nonNegNumStr,
+  fatG: nonNegNumStr,
+});
+type RecipeFormFields = z.infer<typeof recipeFormSchema>;
+type RecipeFieldErrors = Partial<Record<keyof RecipeFormFields, string>>;
 
 const c = copy.adminRecipes;
 const MEAL_TYPES: { value: string; label: string }[] = [
@@ -151,14 +164,38 @@ function RecipeForm({
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<RecipeFieldErrors>({});
 
-  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) { setForm((f) => ({ ...f, [k]: v })); }
+  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (k in fieldErrors) setFieldErrors((p) => { const n = { ...p }; delete n[k as keyof RecipeFieldErrors]; return n; });
+  }
 
   const canSubmit = form.title.trim().length >= 2 && form.description.trim().length >= 2;
 
   async function submit() {
-    setSaving(true);
     setError(null);
+    const validation = recipeFormSchema.safeParse({
+      title: form.title,
+      description: form.description,
+      calories: form.calories,
+      proteinG: form.proteinG,
+      carbsG: form.carbsG,
+      fatG: form.fatG,
+    });
+    if (!validation.success) {
+      const errors: RecipeFieldErrors = {};
+      for (const issue of validation.error.issues) {
+        const key = issue.path[0] as keyof RecipeFormFields;
+        if (!errors[key]) errors[key] = issue.message;
+      }
+      setFieldErrors(errors);
+      setError(c.error);
+      return;
+    }
+    setFieldErrors({});
+
+    setSaving(true);
     const num = (s: string) => (s.trim() === "" ? null : Number(s));
     const payload = {
       title: form.title.trim(),
@@ -197,8 +234,8 @@ function RecipeForm({
     <Card className="border-primary/30">
       <CardHeader><CardTitle className="text-base">{isEdit ? c.editRecipe : c.newRecipe}</CardTitle></CardHeader>
       <CardContent className="space-y-3">
-        <Field label={c.titleLabel}><Input value={form.title} onChange={(e) => set("title", e.target.value)} /></Field>
-        <Field label={c.descLabel}><textarea value={form.description} onChange={(e) => set("description", e.target.value)} maxLength={2000} className={`${areaCls} min-h-[60px]`} /></Field>
+        <Field label={c.titleLabel} error={fieldErrors.title}><Input value={form.title} onChange={(e) => set("title", e.target.value)} /></Field>
+        <Field label={c.descLabel} error={fieldErrors.description}><textarea value={form.description} onChange={(e) => set("description", e.target.value)} maxLength={2000} className={`${areaCls} min-h-[60px]`} /></Field>
 
         <div className="grid grid-cols-2 gap-3">
           <Field label={c.mealLabel}>
@@ -213,11 +250,11 @@ function RecipeForm({
           </Field>
         </div>
 
-        <div className="grid grid-cols-4 gap-2">
-          <Field label={c.caloriesLabel}><Input type="number" value={form.calories} onChange={(e) => set("calories", e.target.value)} /></Field>
-          <Field label={c.proteinLabel}><Input type="number" value={form.proteinG} onChange={(e) => set("proteinG", e.target.value)} /></Field>
-          <Field label={c.carbsLabel}><Input type="number" value={form.carbsG} onChange={(e) => set("carbsG", e.target.value)} /></Field>
-          <Field label={c.fatLabel}><Input type="number" value={form.fatG} onChange={(e) => set("fatG", e.target.value)} /></Field>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <Field label={c.caloriesLabel} error={fieldErrors.calories}><Input type="number" value={form.calories} onChange={(e) => set("calories", e.target.value)} /></Field>
+          <Field label={c.proteinLabel} error={fieldErrors.proteinG}><Input type="number" value={form.proteinG} onChange={(e) => set("proteinG", e.target.value)} /></Field>
+          <Field label={c.carbsLabel} error={fieldErrors.carbsG}><Input type="number" value={form.carbsG} onChange={(e) => set("carbsG", e.target.value)} /></Field>
+          <Field label={c.fatLabel} error={fieldErrors.fatG}><Input type="number" value={form.fatG} onChange={(e) => set("fatG", e.target.value)} /></Field>
         </div>
 
         <Field label={c.ingredientsLabel}><textarea value={form.ingredients} onChange={(e) => set("ingredients", e.target.value)} placeholder={c.ingredientsPlaceholder} className={`${areaCls} min-h-[70px]`} /></Field>
@@ -242,11 +279,12 @@ function RecipeForm({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children, error }: { label: string; children: React.ReactNode; error?: string }) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-medium text-muted-foreground">{label}</label>
       {children}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }

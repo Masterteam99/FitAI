@@ -8,8 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
-import { AiNutritionPlan } from "./AiNutritionPlan";
+import { AiNutritionPlan, type NutritionPlan } from "./AiNutritionPlan";
 import { NutritionMatchCard } from "./NutritionMatchCard";
+import { ProfessionalPlanCard, type ProfessionalDoc } from "./ProfessionalPlanCard";
 import { RecipesCard } from "./RecipesCard";
 import { RadialGauge } from "@/components/wow";
 import { RevisionRequestForm } from "@/components/RevisionRequestForm";
@@ -41,12 +42,27 @@ export default function NutrizionePage() {
   const [form, setForm] = useState({ mealType: "LUNCH", foodName: "", calories: "", protein: "", carbs: "", fat: "" });
   const [saving, setSaving] = useState(false);
   const [targets, setTargets] = useState(DEFAULT_TARGETS);
+  const [persistedPlan, setPersistedPlan] = useState<NutritionPlan | null | undefined>(undefined);
+  const [professionalDoc, setProfessionalDoc] = useState<ProfessionalDoc | null | undefined>(undefined);
 
   useEffect(() => {
     fetch("/api/profilo")
       .then((r) => r.json())
-      .then((d) => setTargets(computeNutritionTargets({ weightKg: d.weightKg, heightCm: d.heightCm, age: d.age, goal: d.primaryGoal })))
-      .catch(() => {});
+      .then((d) => {
+        setTargets(computeNutritionTargets({ weightKg: d.weightKg, heightCm: d.heightCm, age: d.age, goal: d.primaryGoal }));
+        setPersistedPlan((d.nutritionPlanJson as NutritionPlan | null) ?? null);
+      })
+      .catch(() => setPersistedPlan(null));
+
+    // Priorità massima: un piano caricato come documento da un professionista (Profilo → Documenti),
+    // se già analizzato dall'AI, batte sia il piano generato dal quiz sia quello del pool.
+    fetch("/api/documents")
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((d: { items: Array<{ id: string; kind: string; name: string; url: string | null; analysis: ProfessionalDoc["analysis"] | null }> }) => {
+        const doc = (d.items ?? []).find((it) => it.kind === "NUTRITION" && it.analysis);
+        setProfessionalDoc(doc ? { id: doc.id, name: doc.name, url: doc.url, analysis: doc.analysis! } : null);
+      })
+      .catch(() => setProfessionalDoc(null));
   }, []);
 
   useEffect(() => {
@@ -123,11 +139,19 @@ export default function NutrizionePage() {
         </Button>
       </div>
 
-      {/* Piano consigliato dal pool (Motore) */}
-      <NutritionMatchCard />
-
-      {/* Generatore piano AI settimanale */}
-      <AiNutritionPlan />
+      {/* Piano attivo — priorità: 1) documento di un professionista caricato in Profilo (se analizzato),
+          2) piano AI generato dal quiz, 3) piano consigliato dal pool. Solo uno resta visibile come
+          "piano attivo", invece di mostrarli tutti sovrapposti senza gerarchia. */}
+      {professionalDoc === undefined || persistedPlan === undefined ? null : professionalDoc ? (
+        <ProfessionalPlanCard doc={professionalDoc} />
+      ) : persistedPlan ? (
+        <AiNutritionPlan initialPlan={persistedPlan} />
+      ) : (
+        <>
+          <NutritionMatchCard />
+          <AiNutritionPlan initialPlan={null} />
+        </>
+      )}
 
       {/* Date navigator */}
       <div className="flex items-center gap-3 justify-center">
