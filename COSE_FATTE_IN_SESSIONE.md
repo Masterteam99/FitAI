@@ -43,7 +43,7 @@ Su richiesta di valutazione UX/fitness: pubblicato un artifact con due concept (
 allenamento" in evidenza su Sessione, gerarchia CTA landing) — usato per allineare le decisioni prima
 di toccare il codice reale, non implementato direttamente.
 
-### Parte 3 — Piano scritto: `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md` (10 fasi, tutte chiuse)
+### Parte 3 — Piano Sessione/Nutrizione/Analisi (10 fasi, tutte chiuse)
 
 **Scoperta chiave:** il flusso "sessione allenamento" e il flusso "analisi video AI" erano due sistemi
 completamente scollegati (nessun FK nello schema, navigazione che portava via l'utente senza ritorno).
@@ -86,8 +86,10 @@ poi eliminati), `tsc`+`eslint` puliti su tutto il progetto ad ogni passo. Limiti
 switch fotocamera e flusso inline non testabili end-to-end con hardware reale in questo ambiente
 (fotocamera bloccata nel Browser pane).
 
-**File nuovi principali:** `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md` (piano+stato avanzamento dettagliato),
-~15 nuovi componenti/endpoint (vedi piano per elenco completo).
+**File nuovi principali:** ~15 nuovi componenti/endpoint (dettaglio tecnico in `DOCUMENTAZIONE_FLUSSI.md`
+§7-8-10 e §14bis). Il piano di lavoro scritto durante la sessione (`PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`)
+è stato smistato in `DOCUMENTAZIONE_FLUSSI.md` a fine sessione e rimosso, per non lasciare un documento
+in più da mantenere — questo diario resta la fonte storica di cosa è stato fatto.
 
 ---
 

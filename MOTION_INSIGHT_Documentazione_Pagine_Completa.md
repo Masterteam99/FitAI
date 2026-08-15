@@ -4,7 +4,7 @@
 > **Snapshot codice (15 ago 2026):** le pagine `/allenamento`, `/allenamento/[id]`, `/analisi/sessione`,
 > `/analisi/report/[id]`, `/nutrizione` descritte in questo documento sono cambiate in modo sostanziale
 > in Sessione 6 (nuove sezioni, nuovo flusso analisi, nuova pagina `/allenamento/sessioni/[id]`) —
-> vedi `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md` per il dettaglio pagina per pagina. Branch
+> vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6) per il dettaglio pagina per pagina. Branch
 > **`feature/mvp-launch-polish`**, non ancora in `main`.
 > **Aperti:** integrare i branch in `main` · resto invariato, vedi `STATO_PROGETTO.md`.
 

@@ -11,7 +11,7 @@
 >   video registrati" (+ fix schema additivo `AnalysisSession.videoPath`, applicato al DB).
 > - **Aggiornamento 15 ago 2026 — Sessione 6:** chiuso MVP polish (toast, validazione form, cambio
 >   email/password, sistema notifiche reminder da zero, fix filtri Libreria) e l'intero **piano
->   "Sessione/Nutrizione/Analisi"** (10 fasi + lavoro inline). Dettaglio: `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`.
+>   "Sessione/Nutrizione/Analisi"** (10 fasi + lavoro inline). Dettaglio: `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6).
 >   Branch **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`), non ancora in `main`.
 > - **Residui reali aperti:** integrare i branch in `main` · verificare switch fotocamera + flusso
 >   analisi inline con hardware reale (fotocamera bloccata nell'ambiente di sviluppo) · ripristinare

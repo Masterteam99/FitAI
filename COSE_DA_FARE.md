@@ -16,7 +16,7 @@
 - **Sessione 6 (15/08) conclusa**: MVP polish (toast/validazione/email-password/notifiche/filtri
   libreria) + piano completo "Sessione/Nutrizione/Analisi" (10 fasi, tutte chiuse) sul branch
   **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`, non ancora in `main`).
-  Dettaglio completo in `COSE_FATTE_IN_SESSIONE.md` Sessione 6 e in `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`.
+  Dettaglio completo in `COSE_FATTE_IN_SESSIONE.md` Sessione 6 e in `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis).
 - ⚠️ **Da verificare con hardware reale (non fatto in autonomia, serve dispositivo mobile vero):**
   switch fotocamera anteriore/posteriore (Fase 10) e flusso "analisi inline" end-to-end con
   registrazione video reale (fotocamera bloccata nell'ambiente di sviluppo usato).
@@ -105,7 +105,7 @@
 
 ## ✅ Fatto (storico, per riferimento)
 
-**Sessione 6 (2026-08-15)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md` e `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`:
+**Sessione 6 (2026-08-15)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md` e `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis):
 - ✅ MVP polish: toast coverage, validazione 4 form admin, cambio email/password, sistema notifiche
   reminder streak (email+push, da zero), fix filtri Libreria esercizi.
 - ✅ Piano Sessione/Nutrizione/Analisi — 10 fasi + lavoro inline, tutte chiuse e testate dal vivo:

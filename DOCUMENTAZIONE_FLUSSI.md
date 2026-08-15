@@ -5,7 +5,8 @@
 > descritti qui come separati sono stati **collegati** in Sessione 6 (schema + UI): un'analisi fatta
 > durante la sessione guidata ora si lega alla sessione stessa, il risultato si mostra inline invece
 > di un redirect, e il progresso della sessione si conserva se l'utente esce per analizzare un
-> esercizio. Vedi `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md` per il dettaglio. Branch
+> esercizio. Dettaglio aggiornato nelle sezioni §7, §8, §10 e §14bis qui sotto (vedi anche
+> `COSE_FATTE_IN_SESSIONE.md`, Sessione 6). Branch
 > **`feature/mvp-launch-polish`**, non ancora in `main`.
 > **Aperti:** integrare i branch in `main` · resto invariato, vedi `STATO_PROGETTO.md`.
 
@@ -154,7 +155,8 @@ File: `prisma/schema.prisma`. Client generato in `src/generated/prisma/` (import
 | `WorkoutPlanExercise` | Esercizio in un giorno (sets, reps, `restSeconds`, `durationSeconds`) |
 | `WorkoutSession` | Sessione di allenamento eseguita (status, `totalSeconds`, `totalVolumeKg`) |
 | `WorkoutSessionExercise` | Esercizio eseguito (`completedSets` Json) |
-| `AnalysisSession` | Sessione di analisi video (`l1Result/l2Result/l3Result/finalReport` Json + `combinedScore`) |
+| `AnalysisSession` | Sessione di analisi video (`l1Result/l2Result/l3Result/finalReport` Json + `combinedScore`). 🆕 Sessione 6: `workoutSessionId`/`workoutSessionExerciseId` opzionali → collega l'analisi alla `WorkoutSession` in cui è stata fatta (prima nessun link) |
+| `PushSubscription` | 🆕 Sessione 6 — sottoscrizione push utente (`endpoint`, `p256dh`, `auth`) per il reminder streak |
 | `UserProgress` | Tracking corporeo (peso, misure, foto) |
 | `NutritionLog` | Log alimentare (`proteinG/carbsG/fatG/fiberG`) |
 | `Achievement` | Template badge sbloccabile |
@@ -505,6 +507,21 @@ const planJson = JSON.parse(fullText.match(/```json\n?([\s\S]*?)\n?```/)[1]);
 - Badge "Attivo" e "AI" (`generatedByAI`)
 - Azioni: "Vai al piano", "Imposta attivo" (toggle), delete
 
+**🆕 v3 (ago 2026, Sessione 6):** sopra al piano attivo, la pagina mostra anche:
+- **`ProfessionalNotesCard`**: se l'utente ha un documento FITNESS analizzato in Profilo → Documenti,
+  mostra gli aggiustamenti/avvisi suggeriti. Informativa, non sostituisce il piano strutturato (un PDF
+  è testo libero, non dati strutturati in giorni/esercizi).
+- **`WeeklyCalendarStrip`**: striscia Lun–Dom che distribuisce equamente i giorni del piano (`dayNumber`)
+  sui 7 slot settimanali (formula `Math.floor(i * 7 / N)`). **Non è un calendario a date fisse** — il
+  piano è un ciclo ricorrente, non ancorato a giorni reali. Un giorno è "fatto" (spuntato, cliccabile →
+  `/allenamento/sessioni/{id}`) se c'è una `WorkoutSession COMPLETED` questa settimana con quel `planDayId`
+  (`GET /api/workout-plans/{id}/completed-this-week`).
+- **`WeekRecapCard`**: allenamenti fatti/pianificati questa settimana, kg totali, streak (`/api/profilo`).
+- **`PastSessionsCard`**: ultime sessioni completate (`/api/workout-sessions?limit=6`), righe cliccabili.
+- **`RecentFeedbackCard`**: ultime 5 analisi AI ricevute (`/api/me/recent-analyses`), punteggio+correzione.
+- **`BodyBalanceCard`**: riuso di `AdaptiveBodyMap` (`/api/me/body-map?mode=balance`) — prima confinato
+  solo alla pagina di dettaglio piano.
+
 ### 7.3 Dettaglio piano
 
 `src/app/(app)/allenamento/[id]/page.tsx` — server component. Carica con `prisma.workoutPlan.findFirst` + include giorni + esercizi ordinati. Mostra:
@@ -513,6 +530,14 @@ const planJson = JSON.parse(fullText.match(/```json\n?([\s\S]*?)\n?```/)[1]);
 - Lista giorni: dayNumber, name, badge restDay
 - Per ogni giorno: esercizi numerati con muscolo primario, sets×reps (o durationSeconds), restSeconds, badge difficoltà
 - Pulsante "Inizia" → `/allenamento/{id}/sessione?day={dayId}`
+
+**🆕 v3 (ago 2026, Sessione 6):**
+- **Card "Prossimo allenamento"**: calcolata da `WorkoutSession` completate per quel `planId` — trova
+  l'ultimo `planDayId` completato, propone il successivo nel ciclo (`workoutDays[(lastIndex+1) % N]`).
+  Mostra anche una barra di progresso `completati/pianificati totali` (`workoutDays.length * durationWeeks`)
+  e la settimana corrente stimata. Badge "Prossimo" sul giorno corrispondente nell'elenco sotto.
+- **Sezione "Sessioni completate in questo piano"**: storico filtrato su questo `planId` (diverso dalla
+  lista generale di `/allenamento`), righe cliccabili verso `/allenamento/sessioni/{id}`.
 
 ### 7.4 Sessione live
 
@@ -543,6 +568,19 @@ Flusso:
 4. Fase "rest": countdown timer (useInterval), pausa/riprendi/salta
 5. Fase "completed": Trophy icon, sommario, link dashboard/piano
 ```
+
+**🆕 v3 (ago 2026, Sessione 6):**
+- **Persistenza progresso** (`useWorkoutSession.ts`): `sessionId`, `currentExIndex`, `currentSet`,
+  `completedSets`, log serie salvati in `sessionStorage` (chiave `motion-insight:workout-session:{dayId}`)
+  ad ogni serie completata, ripristinati al mount se presenti. Necessario perché l'utente può uscire
+  verso `/analisi/sessione` per un'analisi avanzata e tornare — senza questo, tornare ricreava una
+  `WorkoutSession` nuova e faceva ripartire l'esercizio da zero.
+- **Toggle "Analisi avanzata"** (`ExerciseView.tsx`): se attivo, il link verso l'analisi include
+  `wsId={sessionId}` e `wsReturn={URL della sessione corrente}` — collega l'`AnalysisSession` creata
+  alla `WorkoutSession` in corso (vedi §8) e permette il ritorno guidato.
+- **Fase "completed"** ora mostra anche, se presenti, le analisi fatte durante la sessione: punteggio +
+  correzione principale per esercizio (`GET /api/workout-sessions/{id}/analyses`), cliccabili verso il
+  report completo. Prima il recap mostrava solo durata/esercizi/set.
 
 ### 7.5 API `/api/workout-sessions`
 
@@ -588,6 +626,15 @@ if (new Date().getHours() < 7) candidates.push("early_bird");
 // Tutto in una transazione
 ```
 
+### 🆕 7.7 Storico sessione passata (v3, ago 2026, Sessione 6)
+
+`src/app/(app)/allenamento/sessioni/[id]/page.tsx` — server component. Apre una `WorkoutSession`
+passata (`prisma.workoutSession.findFirst` + include `exercises.exercise` + `planDay`/`plan`). Per ogni
+esercizio fatto mostra le serie completate (reps×peso da `completedSets` JSON) e, se quell'esercizio è
+stato analizzato durante quella sessione (join client-side su `AnalysisSession.workoutSessionId` +
+`exerciseId`), punteggio + correzione principale con link al report. Collegata da: "Sessioni recenti"
+(§7.2), "Sessioni completate in questo piano" (§7.3) — righe rese cliccabili in questa v3.
+
 ---
 
 ## 8. Analisi v2 — il flusso centrale
@@ -599,19 +646,31 @@ Il cuore tecnico di FitAI. Il sistema analizza un video di 15–25s dell'utente 
 `src/app/(app)/analisi/sessione/page.tsx` — state machine:
 
 ```
-IDLE → COUNTDOWN_15S → RECORDING → UPLOADING → ANALYZING → COMPLETED | ERROR
+IDLE → COUNTDOWN_15S → RECORDING → UPLOADING → ANALYZING → RESULT | ERROR
 ```
 
-- **IDLE**: carica metadata esercizio via `/api/analysis/start`, mostra video PT + camera, button "Inizia"
-- **COUNTDOWN (15s)**: `CountdownCircle` SVG; **in parallelo** chiama `extractProFrames(exercise.videoUrl, 6)` che usa un canvas off-screen per estrarre 6 frame dal video PT (operazione best-effort, fallisce silenziosamente su CORS)
+- **IDLE**: carica metadata esercizio via `/api/analysis/start` (che riceve anche `workoutSessionId`
+  opzionale se si arriva dalla sessione guidata — vedi §7.4 — verificato appartenere all'utente e
+  salvato su `AnalysisSession.workoutSessionId`). Mostra: due tab **Esecuzione/Spiegazione**
+  (`videoUrl`/`explanationVideoUrl` dell'esercizio — 🆕 v3, prima solo un video), note del
+  professionista (`professionalNotes`, 🆕 v3, prima non mostrate), camera, button "Inizia".
+- **COUNTDOWN (15s, fisso)**: `CountdownCircle` SVG; **in parallelo** chiama `extractProFrames(exercise.videoUrl, 6)` che usa un canvas off-screen per estrarre 6 frame dal video PT (operazione best-effort, fallisce silenziosamente su CORS). Il 15s è una scelta di prodotto fissa, non c'è un
+  campo che lo renda configurabile per esercizio (verificato in Sessione 6 — non è un bug).
+  🆕 v3: se il device ha più di una fotocamera (`enumerateDevices`), un bottone permette lo switch
+  anteriore/posteriore (`useCamera.switchCamera()`) durante IDLE/COUNTDOWN (non durante RECORDING).
 - **RECORDING**: 
   - `MediaRecorder` con codec `video/webm;codecs=vp9` → fallback vp8 → fallback webm puro
-  - Durata `exercise.recordingDurationSeconds` (15/20/25s a seconda dell'esercizio)
+  - Durata `exercise.recordingDurationSeconds` (15/20/25s a seconda dell'esercizio) — questo campo
+    era già usato correttamente prima di Sessione 6, non serviva fix.
   - Intervallo `(duration * 1000) / 8` ms: ogni tick estrae uno snapshot via canvas `captureFrame(video)` → JPEG base64 → push in `userFramesRef` con label `t=Xs`
   - `usePoseDetection({ enabled: true, silent: true })` accumula `frameHistory` e `worldFrameHistory` in store (no skeleton, no voce, no feedback live)
 - **UPLOADING**: stop MediaRecorder → Blob → `FormData` con `video` + `analysisSessionId` → `POST /api/analysis/upload-video` → riceve `{ videoUrl, path }`
 - **ANALYZING**: `POST /api/analysis/complete` con `{ analysisSessionId, frameHistory, userFrames, proFrames, durationSeconds }`. Polling stato durante l'attesa.
-- **COMPLETED**: `router.push('/analisi/report/{id}')`
+- **RESULT** (🆕 v3, prima era `router.push('/analisi/report/{id}')`): i dati del report vengono
+  caricati via `GET /api/analysis/{id}` e mostrati **nella stessa pagina**, senza redirect — stesso
+  contenuto della pagina report (§8.9), tramite i componenti condivisi `AnalysisReportContent` +
+  `AnalysisReportActions`. Se si arriva dalla sessione guidata (`wsReturn` in query string, validato
+  come path interno relativo), il CTA principale è "Torna alla sessione" verso quell'URL.
 
 ### 8.2 MediaPipe pose
 
@@ -823,15 +882,20 @@ Se Haiku fallisce o ritorna JSON invalido, c'è un **fallback locale** che assem
 
 ### 8.9 Pagina report
 
-`src/app/(app)/analisi/report/[id]/page.tsx`. Server component.
+`src/app/(app)/analisi/report/[id]/page.tsx`. Server component. **🆕 v3 (Sessione 6):** il corpo del
+report è stato estratto in due componenti condivisi, riusati anche dalla fase `RESULT` inline (§8.1):
 
-- Hero: anello SVG `r=45` con `stroke-dashoffset = 282.74 * (1 - combined/100)`, score grande al centro
-- Card "Giudizio del Coach" (overallJudgment)
-- Banner `injuryRiskAlert` colorato (solo se level ≠ BASSO)
-- Lista numerata "Migliora prima di tutto" (prioritizedImprovements)
-- Lista check "Punti di forza" (positiveAspects)
-- Componente `<AnalysisDetails>` espandibile con 3 tabs interni (L1 score+trigger, L2 osservazioni vision, L3 differenze chiave)
-- Componente `<VideoSyncPlayer>` con play/pause sincronizzati utente vs PT
+- `AnalysisReportContent` (`src/components/analisi/`): hero con anello SVG `r=45` (`stroke-dashoffset =
+  282.74 * (1 - combined/100)`), score grande al centro, card "Giudizio del Coach" (overallJudgment),
+  banner `injuryRiskAlert` (solo se level ≠ BASSO), lista "Migliora prima di tutto"
+  (prioritizedImprovements), lista "Punti di forza" (positiveAspects), `<AnalysisDetails>` (3 tab
+  L1/L2/L3), `<VideoSyncPlayer>` (play/pause sincronizzati utente vs PT).
+- `AnalysisReportActions`: CTA finali — se `wsReturn` presente in query string, "Torna alla sessione"
+  (primario) + "Ripeti analisi"; altrimenti "Ripeti analisi" (primario) + "Altri esercizi".
+
+Nuovo endpoint `GET /api/analysis/{id}` espone gli stessi dati per il fetch client-side (usato dalla
+fase `RESULT` inline). La pagina server resta invariata nel comportamento per chi vi arriva da un link
+diretto (es. da "Ultimi feedback", storico sessione).
 
 Empty states gestiti da `<ReportSkeleton>` (durante PROCESSING) e `<ReportError>` (se status=ERROR).
 
@@ -872,6 +936,21 @@ Rate limit `aiRatelimit` (10/min). System prompt empatico, scientifico, motivant
 ## 10. Nutrizione
 
 > **🆕 v2 (ago 2026):** aggiunti **target personalizzati** (Mifflin-St Jeor, `src/lib/nutrition-targets.ts` — non più 2000 kcal fissi), **abbinamento piano dal pool** (`GET /api/nutrition/match` → `NutritionPlanTemplate`, card `NutritionMatchCard`) e **ricette AI** (`POST /api/ai/recipes`, card `RecipesCard`). Dettaglio in [§21.3](#213-motore-nutrizionale).
+>
+> **🆕 v3 (ago 2026, Sessione 6) — gerarchia "piano attivo" unico.** Prima le tre fonti (documento
+> professionista, piano AI, match pool) potevano comparire tutte insieme senza ordine. Ora `/nutrizione`
+> mostra **una sola** sezione "piano attivo", con priorità:
+> 1. **Documento professionista** (`ProfessionalPlanCard`) — se l'utente ha caricato un documento
+>    NUTRITION in Profilo → Documenti ed è stato analizzato dall'AI (`GET /api/documents`, filtro
+>    `kind==="NUTRITION" && analysis`), mostra sintesi + aggiustamenti + link al file. Sostituisce
+>    del tutto AI/pool.
+> 2. **Piano AI del quiz** (`AiNutritionPlan`, `User.nutritionPlanJson`) — **bug corretto in Sessione 6**:
+>    il piano veniva salvato da `POST /api/ai/generate-nutrition-plan` ma `/api/profilo` non lo
+>    restituiva e la pagina non lo rileggeva al mount, quindi spariva al refresh pur restando nel DB.
+>    Ora `/api/profilo` include `nutritionPlanJson` e la pagina lo passa come `initialPlan`.
+> 3. **Match dal pool** (`NutritionMatchCard`) — fallback se nessuno dei due sopra è presente.
+>
+> Il log pasti (§10.2) e le ricette restano invariati, solo riposizionati sotto il piano attivo.
 
 ### 10.1 Generazione AI piano nutrizionale
 
@@ -1008,7 +1087,20 @@ Schema DB (parti ancora non esposte in UI): `Challenge` con `target`/`reward` Js
 
 ## 13. Profilo
 
-> **🆕 v2 (ago 2026): il Profilo è molto più ricco.** Oltre a stats/edit qui sotto ora include: **note mediche** (`medicalNotes`, via `/api/profilo`), **upload documenti** fitness/nutrizione (`GET/POST/DELETE /api/documents` → `UserDocument` su bucket Supabase `user-documents`, card `DocumentsCard`), **richiesta di revisione manuale** (`POST /api/revision-requests` → `RevisionRequest`, form `RevisionRequestForm`), **card abbonamento** e **quiz ripetibile**. ⚠️ Il parsing/adattamento AI dei documenti caricati NON è implementato (solo storage). Dettaglio in [§21.6](#216-profilo-v2).
+> **🆕 v2 (ago 2026): il Profilo è molto più ricco.** Oltre a stats/edit qui sotto ora include: **note mediche** (`medicalNotes`, via `/api/profilo`), **upload documenti** fitness/nutrizione (`GET/POST/DELETE /api/documents` → `UserDocument` su bucket Supabase `user-documents`, card `DocumentsCard`), **richiesta di revisione manuale** (`POST /api/revision-requests` → `RevisionRequest`, form `RevisionRequestForm`), **card abbonamento** e **quiz ripetibile**. Dettaglio in [§21.6](#216-profilo-v2).
+> ~~⚠️ Il parsing/adattamento AI dei documenti caricati NON è implementato~~ — **nota superata**: da
+> Sessione 4 esiste `POST /api/documents/{id}/analyze` (Claude legge PDF/immagine nativamente →
+> sintesi + aggiustamenti fitness/nutrizione + cautele, salvati in `UserDocument.analysisJson`). Da
+> Sessione 6 questa analisi viene anche **usata** per dare priorità al piano del professionista in
+> Nutrizione/Allenamento (§10, §7.2).
+>
+> **🆕 v3 (ago 2026, Sessione 6):**
+> - **Cambio email/password**: `POST /api/account/change-email` (richiede password attuale se
+>   presente, invia verifica alla nuova email + notifica alla vecchia) e `POST /api/account/change-password`
+>   (richiede password attuale, invia notifica di sicurezza). Componenti `ChangeEmailCard`/`ChangePasswordCard`.
+> - **Notifiche** (`NotificationsCard`): toggle `User.notifyEmailReminders` (via `PATCH /api/profilo`)
+>   e attivazione push (`POST/DELETE /api/push/subscribe`, modello `PushSubscription`) — vedi nuova
+>   sezione [§14bis](#14bis-sistema-notifiche-reminder-streak-sessione-6) per l'infrastruttura di invio.
 
 `src/app/(app)/profilo/page.tsx` — client component. `GET /api/profilo` ritorna (base storica):
 
@@ -1017,7 +1109,9 @@ Schema DB (parti ancora non esposte in UI): `Challenge` con `target`/`reward` Js
   name, email,
   fitnessLevel, primaryGoal,
   age, weightKg, heightCm,
-  totalPoints, currentStreak, longestStreak
+  totalPoints, currentStreak, longestStreak,
+  notifyEmailReminders, notifyPush,   // 🆕 Sessione 6
+  nutritionPlanJson                    // 🆕 Sessione 6 — ora riletto per il piano AI persistito (§10)
 }
 ```
 
@@ -1027,7 +1121,21 @@ UI:
 - Edit form: name, age (10–99), weight (30–300), height (100–250) → `PATCH /api/profilo`
 - Logout button → `signOut({ callbackUrl: "/" })`
 
-`PATCH` con Zod accetta solo i campi modificabili (anche `fitnessLevel`/`primaryGoal`).
+`PATCH` con Zod accetta solo i campi modificabili (anche `fitnessLevel`/`primaryGoal`, `notifyEmailReminders`).
+
+### 🆕 14bis. Sistema notifiche reminder streak (Sessione 6)
+
+Costruito da zero (prima non esisteva nessuna infrastruttura di invio):
+- **Schema additivo**: `User.notifyEmailReminders`/`notifyPush`, modello `PushSubscription`
+  (`endpoint` unique, `p256dh`, `auth`, `userId`).
+- **Push**: `src/lib/push.ts` (server, `web-push` + VAPID) e `src/lib/push-client.ts` (client,
+  wrapper `Notification`/`PushManager`). Service worker `public/sw.js` con handler `push` e
+  `notificationclick`.
+- **Cron**: `src/app/api/cron/reminders/route.ts`, schedulato in `vercel.json` (`0 18 * * *`,
+  protetto da `CRON_SECRET` se impostato). Trova utenti con `currentStreak > 0` e nessun allenamento
+  completato oggi, invia email (`sendReminderEmail`, `src/lib/email.ts`) + push.
+- **Env var necessarie in produzione** (non ancora su Vercel): `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
+  `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, `CRON_SECRET` (opzionale) — vedi `CHECKLIST_DEPLOY.md`.
 
 ---
 
