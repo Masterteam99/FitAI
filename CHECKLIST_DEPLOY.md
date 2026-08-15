@@ -1,8 +1,17 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-14
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (14 ago 2026, sera):** area utente v2 + Account Manager **COMPLETI e verificati**; infra runtime applicata; **tema scuro/lime + home/5 satellite/area-utente/admin tutti portati e verificati** (tsc/eslint puliti). Lavoro sul branch **`feature/account-manager-completo`** (pushato, **non ancora in `main`**). Il **deploy Vercel non è ancora stato fatto** — questa checklist resta valida per quello.
-> **Aperti:** integrare il branch in `main` · ripristinare credito Anthropic + Upstash Redis · verifica manuale "analisi avanzata" · verifica end-to-end con sessione reale (video/nutrizione dashboard) · **deploy Vercel** · CORS bucket `exercise-videos`.
+> **Snapshot codice (15 ago 2026):** oltre allo stato del 14/08, in Sessione 6 chiuso MVP polish +
+> piano "Sessione/Nutrizione/Analisi" (10 fasi). Lavoro sul branch **`feature/mvp-launch-polish`**
+> (pushato, **non ancora in `main`**). Il **deploy Vercel non è ancora stato fatto** — questa checklist
+> resta valida, con un'aggiunta importante sotto.
+> **⚠️ Nuove env var da aggiungere su Vercel prima del deploy** (sistema notifiche costruito in
+> Sessione 6): `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`,
+> opzionale `CRON_SECRET` (protegge l'endpoint `/api/cron/reminders`, già configurato in `vercel.json`
+> con schedule giornaliera). Valori generati sono in `.env.local` locale (non committato).
+> **Aperti:** integrare i branch in `main` · verificare switch fotocamera/analisi inline con hardware
+> reale · ripristinare credito Anthropic + Upstash Redis · verifica manuale "analisi avanzata" ·
+> **deploy Vercel** (+ env VAPID/CRON sopra) · CORS bucket `exercise-videos`.
 
 ---
 

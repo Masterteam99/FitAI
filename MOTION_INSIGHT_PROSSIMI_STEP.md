@@ -9,7 +9,14 @@
 >   sito. La verifica precedente (click non funzionanti) era un errore mio; l'utente aveva ragione. 7/9
 >   schermate app erano già allineate; 2 gap reali colmati: Dashboard "Alimentazione di oggi", Profilo "I tuoi
 >   video registrati" (+ fix schema additivo `AnalysisSession.videoPath`, applicato al DB).
-> - **Residui reali aperti:** integrare il branch **`feature/account-manager-completo`** in `main` · ripristinare credito Anthropic + Upstash (per *verificare* l'output AI) · verifica manuale "analisi avanzata" · verifica end-to-end con sessione reale delle 2 feature nuove · pagine `funzionalita`/`storie`/`risorse` non allineate · deploy.
+> - **Aggiornamento 15 ago 2026 — Sessione 6:** chiuso MVP polish (toast, validazione form, cambio
+>   email/password, sistema notifiche reminder da zero, fix filtri Libreria) e l'intero **piano
+>   "Sessione/Nutrizione/Analisi"** (10 fasi + lavoro inline). Dettaglio: `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`.
+>   Branch **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`), non ancora in `main`.
+> - **Residui reali aperti:** integrare i branch in `main` · verificare switch fotocamera + flusso
+>   analisi inline con hardware reale (fotocamera bloccata nell'ambiente di sviluppo) · ripristinare
+>   credito Anthropic + Upstash (per *verificare* l'output AI) · pagine `funzionalita`/`storie`/`risorse`
+>   non allineate · env VAPID/CRON su Vercel prima del deploy · deploy.
 > Il testo sotto è tenuto come storico della visione "Account Manager completo".
 
 ---

@@ -1,8 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-14
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (14 ago 2026, sera):** area utente v2 + Account Manager **COMPLETI e verificati**; feature **#4/#5/#6a–e CHIUSE**; infra runtime applicata; **tema scuro/lime su tutto il sito**; **HOME + 5 pagine satellite + area utente (7 schermate) + admin (2 schermate)** confrontate col mockup reale e allineate (2 gap trovati e colmati: Dashboard "Alimentazione di oggi", Profilo "I tuoi video registrati" con fix schema `AnalysisSession.videoPath`). Verificato: tsc/eslint puliti su tutto il progetto. Branch **`feature/account-manager-completo`** (pushato, **non ancora in `main`**).
-> **Aperti:** integrare il branch in `main` · ripristinare credito Anthropic + Upstash Redis · verifica manuale "analisi avanzata" · verifica end-to-end con sessione reale delle 2 feature nuove (video/nutrizione dashboard) · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore, Chi siamo, FAQ, P.IVA, dati competitor) · deploy.
+> **Snapshot codice (15 ago 2026):** il flusso "sessione allenamento" e il flusso "analisi video AI"
+> descritti qui come separati sono stati **collegati** in Sessione 6 (schema + UI): un'analisi fatta
+> durante la sessione guidata ora si lega alla sessione stessa, il risultato si mostra inline invece
+> di un redirect, e il progresso della sessione si conserva se l'utente esce per analizzare un
+> esercizio. Vedi `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md` per il dettaglio. Branch
+> **`feature/mvp-launch-polish`**, non ancora in `main`.
+> **Aperti:** integrare i branch in `main` · resto invariato, vedi `STATO_PROGETTO.md`.
 
 ---
 

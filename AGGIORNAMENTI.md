@@ -1,5 +1,5 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-14 (sera)
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. Snapshot: area utente v2 + Account Manager **completi e verificati**, #4/#5/#6 **chiusi**, infra **applicata**, **tema scuro/lime + home/5 satellite/area-utente/admin tutti portati e verificati** (tsc/eslint puliti); branch **`feature/account-manager-completo`** (non ancora in `main`).
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. Snapshot: oltre a quanto già chiuso al 14/08, in Sessione 6 chiuso MVP polish + piano "Sessione/Nutrizione/Analisi" (10 fasi, vedi `PIANO_SESSIONE_NUTRIZIONE_ANALISI.md`); branch **`feature/mvp-launch-polish`** (non ancora in `main`).
 
 ---
 
