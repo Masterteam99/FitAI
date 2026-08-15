@@ -1,5 +1,5 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. Snapshot: oltre a quanto già chiuso al 14/08, in Sessione 6 chiuso MVP polish + piano "Sessione/Nutrizione/Analisi" (10 fasi, vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6)); branch **`feature/mvp-launch-polish`** (non ancora in `main`).
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è ora completamente aggiornato e in produzione (Sessioni 7-8: merge, deploy Vercel live, fix login/quiz/libreria, pagina esercizio ridisegnata, database alimenti, editor trigger admin, Progressi ristrutturato, Community "in arrivo" — commit `725d8c1`, pushato e deployato). Dettaglio in `COSE_FATTE_IN_SESSIONE.md`.
 
 ---
 

@@ -1,14 +1,15 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026):** il flusso "sessione allenamento" e il flusso "analisi video AI"
-> descritti qui come separati sono stati **collegati** in Sessione 6 (schema + UI): un'analisi fatta
-> durante la sessione guidata ora si lega alla sessione stessa, il risultato si mostra inline invece
-> di un redirect, e il progresso della sessione si conserva se l'utente esce per analizzare un
-> esercizio. Dettaglio aggiornato nelle sezioni §7, §8, §10 e §14bis qui sotto (vedi anche
-> `COSE_FATTE_IN_SESSIONE.md`, Sessione 6). Branch
-> **`feature/mvp-launch-polish`**, non ancora in `main`.
-> **Aperti:** integrare i branch in `main` · resto invariato, vedi `STATO_PROGETTO.md`.
+> **Snapshot codice (15 ago 2026, notte):** `main` include ora tutto (Sessioni 1-8), pushato e in
+> produzione. Rispetto a quanto descritto qui: la pagina esercizio (§ dettaglio Libreria) è stata
+> ridisegnata — due video affiancati (spiegazione/esecuzione), parametri biomeccanici tolti dalla
+> vista utente, checkbox al posto del vecchio bottone "Attiva analisi avanzata"; il diario
+> nutrizionale ora usa ricerca alimento + grammatura invece di calorie/macro inserite a mano; Admin ha
+> un editor guidato per i trigger biomeccanici (non più JSON grezzo) e una nuova sezione Alimenti;
+> Community è dietro un placeholder "in arrivo". Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md`
+> (Sessioni 7-8).
+> **Aperti:** vedi `STATO_PROGETTO.md`.
 
 ---
 

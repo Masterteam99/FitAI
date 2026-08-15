@@ -1,8 +1,30 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026):** oltre allo stato del 14/08 (area utente v2 + Account Manager completi), in Sessione 6 sono stati chiusi: MVP polish (toast, validazione 4 form admin, cambio email/password, sistema notifiche reminder streak email+push costruito da zero, fix filtri Libreria) e l'intero **piano "Sessione/Nutrizione/Analisi"** (10 fasi + lavoro inline — vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6)): collegamento reale sessione-allenamento↔analisi-video (prima due sistemi scollegati), calendario settimanale, storico feedback per sessione, gerarchia piano nutrizionale (+ fix bug persistenza piano AI), priorità documento professionista, switch fotocamera, analisi mostrata inline. Tutto su branch **`feature/mvp-launch-polish`** (da `feature/account-manager-completo`, **non ancora in `main`**). Verificato: tsc/eslint puliti, testato dal vivo con dati reali.
-> **Aperti:** integrare i branch in `main` · verificare switch fotocamera e flusso analisi inline con hardware reale (non testabile in questo ambiente di sviluppo) · aggiungere env VAPID/CRON su Vercel prima del deploy · ripristinare credito Anthropic + Upstash Redis · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore, Chi siamo, FAQ, P.IVA, dati competitor) · deploy.
+> **Snapshot codice (15 ago 2026, notte):** `main` è ora **in produzione** su Vercel
+> (`fit-ai-six-ruddy.vercel.app`), non più solo su branch.
+> - **Sessione 7:** merge di `feature/mvp-launch-polish` in `main` (PR #2, commit `ee7e867`), deploy
+>   Vercel verificato live e sano, bug Upstash Redis trovato e risolto (database ricreato, env var
+>   aggiornate).
+> - **Sessione 8:** verifica end-to-end di tutti i flussi principali (login, quiz, libreria,
+>   allenamento, analisi) con **3 bug reali trovati e corretti**: email non normalizzata (case-mismatch
+>   → account duplicati, "password errata" ricorrente) + collegamento Google↔email/password;
+>   onboarding che rimbalzava un utente già loggato alla schermata di registrazione invece di
+>   generare/salvare il piano; filtro non valido in Libreria che mandava in crash la pagina. Poi 4
+>   richieste da `Aggiornameni possibili.md`: **pagina esercizio ridisegnata** (video
+>   spiegazione/esecuzione affiancati, parametri biomeccanici tolti dalla vista utente, checkbox
+>   opt-in analisi); **database alimenti** (142 alimenti, ricerca/autocomplete nel diario
+>   nutrizionale, gestibile da Admin); **editor guidato trigger biomeccanici** in Admin (sostituisce
+>   la textarea JSON grezza, verificato che non perde dati esistenti); **Progressi ristrutturato** in
+>   stile dashboard (gauge + trend + mappa equilibrio muscolare + grafico per esercizio); **Community**
+>   dietro placeholder "in arrivo". Committato e **pushato in produzione** (commit `725d8c1`), deploy
+>   Vercel verificato live dopo il push. Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md` (Sessioni 7-8).
+> **Aperti:** env var VAPID da confermare su Vercel · credito Anthropic da ricaricare (scelta
+> dell'utente, rimandato all'ultimo prima del lancio) · verificare switch fotocamera e flusso analisi
+> inline con hardware reale (non testabile in questo ambiente di sviluppo) · Libreria macro-filtri
+> (punto da chiarire con l'utente) · Profilo impostazioni lingua · i18n completo del copy (rimandata
+> come iniziativa a parte) · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da
+> compilare (cofondatore, Chi siamo, FAQ, P.IVA, dati competitor).
 
 ---
 

@@ -1,12 +1,12 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15
+> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026):** oltre allo stato del 14/08, in Sessione 6 chiuso MVP polish
-> (toast, validazione form, cambio email/password, sistema notifiche da zero, fix filtri Libreria) e
-> l'intero **piano "Sessione/Nutrizione/Analisi"** (10 fasi — vedi `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis) e `COSE_FATTE_IN_SESSIONE.md` (Sessione 6)).
-> Branch **`feature/mvp-launch-polish`**, non ancora in `main`.
-> **Aperti:** integrare i branch in `main` · verificare switch fotocamera/analisi inline con hardware
-> reale · resto invariato, vedi `STATO_PROGETTO.md`.
+> **Snapshot codice (15 ago 2026, notte):** `main` è ora completamente aggiornato e **in produzione**
+> (Sessioni 7-8: merge, deploy Vercel live, fix login/quiz/dashboard/libreria, pagina esercizio
+> ridisegnata, database alimenti, editor trigger admin guidato, Progressi ristrutturato, Community
+> "in arrivo" — commit `725d8c1`). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessioni 7-8).
+> **Aperti:** verificare switch fotocamera/analisi inline con hardware reale · resto invariato, vedi
+> `STATO_PROGETTO.md`.
 
 ---
 
