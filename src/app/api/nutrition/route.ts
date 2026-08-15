@@ -7,6 +7,7 @@ const LogSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   mealType: z.enum(["BREAKFAST", "LUNCH", "DINNER", "SNACK"]),
   foodName: z.string().min(1).max(200),
+  foodId: z.string().optional(),
   calories: z.number().min(0).max(9999),
   proteinG: z.number().min(0).max(999).optional().default(0),
   carbsG: z.number().min(0).max(999).optional().default(0),

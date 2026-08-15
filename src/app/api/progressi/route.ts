@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { computeImbalances } from "@/lib/body-map";
 
 export async function GET() {
   const session = await auth();
@@ -8,7 +9,7 @@ export async function GET() {
 
   const userId = session.user.id as string;
 
-  const [user, sessions, userAchievements, analyses] = await Promise.all([
+  const [user, sessions, userAchievements, analyses, imbalances] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { totalPoints: true, currentStreak: true, longestStreak: true },
@@ -30,6 +31,7 @@ export async function GET() {
       orderBy: { completedAt: "asc" },
       take: 60,
     }),
+    computeImbalances(userId, 30),
   ]);
 
   const formScores = analyses
@@ -39,6 +41,22 @@ export async function GET() {
       score: Math.round(a.combinedScore ?? 0),
       exercise: a.exercise.name,
     }));
+
+  // Punteggio medio per esercizio (solo quelli con almeno 1 analisi), per capire
+  // su quali movimenti la tecnica è più solida e su quali serve lavorare di più.
+  const scoresByExercise = new Map<string, number[]>();
+  for (const s of formScores) {
+    const list = scoresByExercise.get(s.exercise) ?? [];
+    list.push(s.score);
+    scoresByExercise.set(s.exercise, list);
+  }
+  const avgScoreByExercise = Array.from(scoresByExercise.entries())
+    .map(([exercise, scores]) => ({
+      exercise,
+      avgScore: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
+      count: scores.length,
+    }))
+    .sort((a, b) => b.avgScore - a.avgScore);
 
   const totalMinutes = Math.round(sessions.reduce((a, s) => a + (s.totalSeconds ?? 0), 0) / 60);
 
@@ -75,6 +93,8 @@ export async function GET() {
     weeklyVolume,
     avgFeeling,
     formScores,
+    avgScoreByExercise,
+    imbalances: imbalances.map((i) => ({ muscle: i.muscle, deficitPct: i.deficitPct })),
     recentSessions: sessions.map((s) => ({
       completedAt: s.completedAt?.toISOString(),
       totalSeconds: s.totalSeconds,

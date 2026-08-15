@@ -328,7 +328,9 @@ export default async function DashboardPage() {
                     />
                   </div>
                   {topImbalances.length === 0 ? (
-                    <p className="text-xs text-center text-muted-foreground">{copy.dashboard.goodBalance}</p>
+                    <p className="text-xs text-center text-muted-foreground">
+                      {totalSessions === 0 ? copy.dashboard.noImbalanceData : copy.dashboard.goodBalance}
+                    </p>
                   ) : (
                     <ul className="space-y-1.5 text-xs">
                       {topImbalances.map((i) => (

@@ -11,6 +11,133 @@
 
 ---
 
+## Sessione 8 — 2026-08-15 — Fix login/quiz + 4 richieste da "Aggiornameni possibili.md" (1,3,5,8)
+
+**Contesto:** proseguimento diretto della Sessione 7. Prima richiesta: sistemare login/logout e
+verificare a fondo tutti i flussi principali (quiz, allenamento, libreria, analisi) navigando l'app
+come farebbe un utente vero. Poi l'utente ha scritto `Aggiornameni possibili.md` con 8 punti di
+feedback sull'area utente, chiedendo di agire su quelli chiari.
+
+**Verifica flussi (prima del feedback):**
+- **Bug reale trovato e corretto**: email non normalizzata (case-sensitive) in login/registrazione/
+  recupero password → due account duplicati per lo stesso indirizzo con maiuscole diverse, causa dei
+  "password errata" ricorrenti. Corretto in `auth.ts`, `register`, `login-hint`, `forgot-password`.
+- **Google ↔ email/password**: aggiunto `allowDangerousEmailAccountLinking` (sicuro, Google verifica
+  l'email) + guardia esplicita su `email_verified`, così lo stesso indirizzo email accede allo stesso
+  account indipendentemente dal metodo.
+- **Bug grave trovato e corretto**: il wizard onboarding step1-3 per un utente già loggato finiva
+  sempre sulla pagina di anteprima per ospiti (`/onboarding/piano`), il cui bottone puntava sempre a
+  `/registrati` — rimbalzava un utente già registrato alla schermata di creazione account invece di
+  generare/salvare il piano. Corretto: la pagina ora riconosce la sessione attiva e va a step4.
+- **Bug trovato**: filtro `muscolo`/`difficolta`/`attrezzatura` non valido nella query string della
+  Libreria mandava in crash l'intera pagina (Prisma rifiuta valori fuori enum) invece di ignorarlo.
+  Corretto con validazione prima della query.
+- Verificata l'intera navigazione area utente (7 sezioni) + sito marketing, nessun altro problema.
+- Confermato (limite ambientale, non bug): analisi video richiede fotocamera reale, non testabile in
+  questo ambiente; upload di un video esterno non è una funzionalità esistente nel prodotto (solo
+  registrazione live, i trigger dipendono da pose-landmark calcolati in tempo reale nel browser).
+
+**Punto 1 — Pagina esercizio ridisegnata** (`/esercizi/[slug]` + nuovo `ExerciseStartAction.tsx`):
+due video affiancati (Spiegazione/Esecuzione) invece di uno sopra l'altro, parametri biomeccanici
+(range angolari) **tolti dalla vista utente** (restano in Admin), note del professionista unite alle
+istruzioni, vecchio bottone "Attiva analisi avanzata" sostituito da checkbox + bottone unico "Inizia
+esercizio" (nascosto se la checkbox è spenta, con nota che si esegue senza registrazione). Bonus
+trovato e corretto: le percentuali del report analisi erano hardcoded sbagliate (34/33/33 invece di
+50/30/20 reali da `weights.ts`).
+
+**Punto 2 (dashboard) — bug corretto**: `computeImbalances` in `body-map.ts` restituiva un finto
+"100% deficit su ogni muscolo" quando l'utente non aveva mai allenato nulla, invece di nessuno
+squilibrio. Corretto (torna `[]`), copy dashboard distingue ora "nessun dato" da "buon equilibrio".
+
+**Punto 3 — Database alimenti**: nuovo modello `Food` (Prisma, applicato al DB), 142 alimenti
+caricati da un dataset curato standard (`prisma/seed-foods-data.ts` + `seed-foods.ts`), endpoint
+`/api/foods/search`, form "Nuovo alimento" in Nutrizione sostituito da ricerca alimento + sola
+grammatura con calcolo automatico macro (`FoodSearchAutocomplete.tsx`), nuova sezione Admin →
+Alimenti (CRUD, `/admin/foods` + `AdminFoodsManager.tsx`). Bonus: bottone "+ Aggiungi" che sembrava
+non fare nulla → ora scrolla al form (appare sotto piano attivo/calendario, fuori dal viewport).
+
+**Punto 6 — Community**: sostituita con placeholder "Community in arrivo" (`COMMUNITY_COMING_SOON`
+flag), codice della feed reale lasciato intatto per riattivarla in futuro.
+
+**Punto 8 — Admin**: testo inglese in Abbonamenti (filtri stato, badge) tradotto in italiano; click
+sulla riga in Esercizi apre direttamente il dettaglio; **editor trigger biomeccanici guidato**
+(`TriggerSpecEditor.tsx`) sostituisce la textarea JSON grezza — menu chiuso sulle 9 uniche
+articolazioni che il motore di analisi comprende davvero (`SPEC_JOINTS`), fasi/condizioni/gravità
+tradotte, verificato dal vivo che il round-trip (carica→salva senza modifiche) non perde dati
+esistenti (testato su Squat: 4 movimenti/8 regole invariati).
+
+**Punto 5 — Progressi ristrutturato**: "Qualità dei movimenti" ora in stile dashboard (gauge ultima
+analisi + trend + mappa equilibrio muscolare, stessi dati/componente della dashboard) + nuovo grafico
+"Punteggio medio per esercizio". Bug corretto: il grafico "Andamento minuti" leggeva un campo
+(`totalDuration`) che non esisteva mai nella risposta API (il campo reale è `totalSeconds`) → sempre 0.
+
+**Non fatto (rimandato/da chiarire):**
+- Punto 4 (Libreria: macro-filtri + pulsante "altri filtri", rimuovere un'icona che l'utente descrive
+  ma che non risulta presente nel codice attuale — da chiarire cosa intende).
+- Punto 7 (Profilo: sezione impostazioni lingua — tema chiaro/scuro rimandato, tema chiaro non esiste
+  nel codice; i18n completo del copy discussa ma rimandata come iniziativa a parte, per costo/scope).
+- Punto 8 residuo: costo AI "€0,06" in Admin → Utenti senza Anthropic attivo — da chiarire con l'utente
+  cosa lo genera prima di poterlo giudicare bug o meno.
+
+**Verifica:** ogni fix testato dal vivo con account di test usa-e-getta (creati e cancellati subito
+dopo, incluso un caso di promozione temporanea ad admin via DB per testare l'editor trigger — mai
+toccate le credenziali reali). `tsc --noEmit` ed `eslint` puliti su tutti i file ad ogni fix.
+2 bug ambientali documentati (non prodotto): `scrollIntoView({behavior:"smooth"})` e le animazioni
+`requestAnimationFrame` (CountUp/RadialGauge) non completano visivamente in questo pannello browser
+automatizzato quando non è a schermo — confermato dati reali corretti via rete/DB in entrambi i casi.
+
+**Stato a fine sessione:** tutto il lavoro sopra è ancora **non committato**, seduto sul working tree
+di `main` (non su un branch separato stavolta). Il database Supabase è già aggiornato (schema Food +
+142 alimenti), condiviso tra locale e produzione — solo il codice manca ancora al sito live.
+
+---
+
+## Sessione 7 — 2026-08-15 — Merge in main + deploy Vercel verificato + fix Upstash
+
+**Contesto:** primo step lasciato aperto da Sessione 6: integrare `feature/mvp-launch-polish` (che
+include già tutti i commit di `feature/account-manager-completo`, essendone discendente diretto) in
+`main`, poi verificare lo stato reale del deploy Vercel già collegato (progetto **`fit-ai`**, team
+`masterteam99s-projects`).
+
+**Cosa è stato fatto:**
+
+1. **Verifica pre-merge:** `tsc --noEmit` pulito, `eslint` 0 errori (37 warning preesistenti, non
+   introdotti). Confermato via `git merge-base --is-ancestor` che `feature/mvp-launch-polish` contiene
+   già tutto `feature/account-manager-completo` — un solo merge basta.
+2. **PR + merge:** aperta [FitAI#2](https://github.com/Masterteam99/FitAI/pull/2)
+   (`feature/mvp-launch-polish` → `main`), mergiata con merge commit `ee7e867` (11 commit, 121 file,
+   +10871/-1099). `main` locale e remoto allineati.
+3. **Deploy Vercel verificato via connettore MCP** (non tramite CLI locale, che aveva un problema di
+   pacchetto rotto — `execa` mancante nel bundle npx — e comunque non autenticabile in sessione
+   non-interattiva): il progetto **`fit-ai`** ha l'integrazione Git già attiva, quindi il push su
+   `main` ha **già triggerato in automatico** il deploy production (`dpl_XeNqyy6WA21GbFkckivLTnKV49Jp`,
+   commit `ee7e867`, `READY`). Verificato `/api/health` → 200, home → 200, zero runtime error nelle
+   24h precedenti.
+4. **Diagnosi Upstash Redis (bug reale trovato in produzione):** il vecchio database Upstash
+   (`quiet-gazelle-99660`) risultava eliminato lato utente. Verificato con un test mirato — chiamata
+   reale a `POST /api/auth/login-hint` (endpoint pubblico, rate-limited, nessun side-effect) +
+   lettura runtime log — che il rate limiter falliva in fail-open con
+   `[ratelimit:rl:auth-email] Upstash non raggiungibile, fail-open fetch failed` (comportamento
+   corretto per design — l'app non si rompe — ma niente protezione anti-abuso reale).
+5. **Fix:** l'utente ha creato un nuovo database Upstash (region vicina a `fra1`) e aggiornato
+   `UPSTASH_REDIS_REST_URL`/`TOKEN` su Vercel, poi ha lanciato un redeploy manuale
+   (`dpl_6acQfd57x5KvxWZ5oYByv6RmAksZ`). Riverificato con lo stesso test: **errore sparito**, log
+   `[info]` pulito → Upstash riconnesso e rate limiting attivo in produzione.
+6. **Confine rispettato:** non ho inserito né visto alcuna API key/token/credenziale — l'utente ha
+   sempre agito lui stesso su Vercel/Upstash; io ho solo verificato lo stato con chiamate di sola
+   lettura + un endpoint pubblico innocuo, e guidato passo-passo dove servivano credenziali.
+
+**Residuo volontariamente lasciato aperto** (scelta esplicita dell'utente): **Anthropic** verrà
+ricaricato/attivato solo all'ultimo prima del lancio — la env var `ANTHROPIC_API_KEY` risulta già
+presente su Vercel da lavoro precedente, va solo il credito. **VAPID** (notifiche push) non ancora
+verificato se impostato su Vercel — vedi `COSE_DA_FARE.md`.
+
+**Stato a fine sessione:** `main` = stato di produzione, entrambi allineati. Deploy live e sano su
+`fit-ai-six-ruddy.vercel.app` (+ alias). Upstash funzionante. Anthropic e VAPID da chiudere prima del
+lancio pubblico.
+
+---
+
 ## Sessione 6 — 2026-08-15 — MVP polish (fix Cowork) + piano Sessione/Nutrizione/Analisi (10 fasi)
 
 **Contesto:** ricevuti documenti da Claude Cowork con una roadmap MVP (scritta per un'app HTML/JS

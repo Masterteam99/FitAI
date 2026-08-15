@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, addDays, subDays, parseISO } from "date-fns";
@@ -12,6 +11,7 @@ import { AiNutritionPlan, type NutritionPlan } from "./AiNutritionPlan";
 import { NutritionMatchCard } from "./NutritionMatchCard";
 import { ProfessionalPlanCard, type ProfessionalDoc } from "./ProfessionalPlanCard";
 import { RecipesCard } from "./RecipesCard";
+import { FoodSearchAutocomplete, type SelectedFoodEntry } from "@/components/nutrizione/FoodSearchAutocomplete";
 import { RadialGauge } from "@/components/wow";
 import { RevisionRequestForm } from "@/components/RevisionRequestForm";
 import { computeNutritionTargets, DEFAULT_TARGETS } from "@/lib/nutrition-targets";
@@ -39,11 +39,20 @@ export default function NutrizionePage() {
   const [totals, setTotals] = useState<Totals>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ mealType: "LUNCH", foodName: "", calories: "", protein: "", carbs: "", fat: "" });
+  const [form, setForm] = useState({ mealType: "LUNCH" });
+  const [foodEntry, setFoodEntry] = useState<SelectedFoodEntry | null>(null);
   const [saving, setSaving] = useState(false);
   const [targets, setTargets] = useState(DEFAULT_TARGETS);
   const [persistedPlan, setPersistedPlan] = useState<NutritionPlan | null | undefined>(undefined);
   const [professionalDoc, setProfessionalDoc] = useState<ProfessionalDoc | null | undefined>(undefined);
+  const addFormRef = useRef<HTMLDivElement>(null);
+
+  // Il form "nuovo alimento" appare più in basso nella pagina (sotto piano attivo,
+  // calendario, gauge calorie): senza scroll sembra che il bottone "Aggiungi" non
+  // faccia nulla, specialmente quando c'è un piano attivo che occupa molto spazio.
+  useEffect(() => {
+    if (showForm) addFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [showForm]);
 
   useEffect(() => {
     fetch("/api/profilo")
@@ -74,7 +83,7 @@ export default function NutrizionePage() {
   }, [date]);
 
   async function addLog() {
-    if (!form.foodName || !form.calories) return;
+    if (!foodEntry) return;
     setSaving(true);
     const res = await fetch("/api/nutrition", {
       method: "POST",
@@ -82,11 +91,15 @@ export default function NutrizionePage() {
       body: JSON.stringify({
         date,
         mealType: form.mealType,
-        foodName: form.foodName,
-        calories: Number(form.calories),
-        proteinG: Number(form.protein) || 0,
-        carbsG: Number(form.carbs) || 0,
-        fatG: Number(form.fat) || 0,
+        foodName: foodEntry.foodName,
+        foodId: foodEntry.foodId,
+        quantity: foodEntry.grams,
+        unit: "g",
+        calories: foodEntry.calories,
+        proteinG: foodEntry.proteinG,
+        carbsG: foodEntry.carbsG,
+        fatG: foodEntry.fatG,
+        fiberG: foodEntry.fiberG,
       }),
     });
     if (res.ok) {
@@ -98,7 +111,8 @@ export default function NutrizionePage() {
         carbs: prev.carbs + newLog.carbsG,
         fat: prev.fat + newLog.fatG,
       }));
-      setForm({ mealType: "LUNCH", foodName: "", calories: "", protein: "", carbs: "", fat: "" });
+      setForm({ mealType: "LUNCH" });
+      setFoodEntry(null);
       setShowForm(false);
     }
     setSaving(false);
@@ -208,7 +222,7 @@ export default function NutrizionePage() {
 
       {/* Add form */}
       {showForm && (
-        <Card className="border-primary/30">
+        <Card ref={addFormRef} className="border-primary/30">
           <CardHeader><CardTitle className="text-base">{copy.nutrizione.newFoodTitle}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <select
@@ -218,15 +232,9 @@ export default function NutrizionePage() {
             >
               {MEAL_TYPES.map((mt) => <option key={mt} value={mt}>{MEAL_LABELS[mt]}</option>)}
             </select>
-            <Input placeholder={copy.nutrizione.foodNamePlaceholder} value={form.foodName} onChange={(e) => setForm((f) => ({ ...f, foodName: e.target.value }))} />
-            <div className="grid grid-cols-2 gap-2">
-              <Input placeholder={copy.nutrizione.caloriesPlaceholder} type="number" value={form.calories} onChange={(e) => setForm((f) => ({ ...f, calories: e.target.value }))} />
-              <Input placeholder={copy.nutrizione.proteinPlaceholder} type="number" value={form.protein} onChange={(e) => setForm((f) => ({ ...f, protein: e.target.value }))} />
-              <Input placeholder={copy.nutrizione.carbsPlaceholder} type="number" value={form.carbs} onChange={(e) => setForm((f) => ({ ...f, carbs: e.target.value }))} />
-              <Input placeholder={copy.nutrizione.fatPlaceholder} type="number" value={form.fat} onChange={(e) => setForm((f) => ({ ...f, fat: e.target.value }))} />
-            </div>
+            <FoodSearchAutocomplete onChange={setFoodEntry} />
             <div className="flex gap-2">
-              <Button onClick={addLog} disabled={saving || !form.foodName || !form.calories} className="flex-1">
+              <Button onClick={addLog} disabled={saving || !foodEntry} className="flex-1">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : copy.nutrizione.add}
               </Button>
               <Button variant="outline" onClick={() => setShowForm(false)}>{copy.nutrizione.cancel}</Button>

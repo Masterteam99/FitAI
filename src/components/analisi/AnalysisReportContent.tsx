@@ -82,11 +82,13 @@ export function AnalysisReportContent({ report }: { report: AnalysisReportData }
           <div className={`text-xl font-semibold ${combinedColor}`}>{combinedLabel}</div>
           <p className="text-sm text-muted-foreground mt-1">{copy.analisiReport.overallScore}</p>
 
+          {/* Pesi reali da src/services/analysis/weights.ts (fonte di verità):
+              con video PT 50/30/20, senza 62.5/37.5/0 (L3 ridistribuito). */}
           <div className="grid grid-cols-3 gap-3 mt-6 w-full">
             {[
-              { label: copy.analisiReport.scoreCards.biomechanics, score: bioScore, pct: "34%", icon: Target },
-              { label: copy.analisiReport.scoreCards.ptVision, score: aiScore, pct: "33%", icon: Brain },
-              { label: copy.analisiReport.scoreCards.ptComparison, score: videoScore, pct: "33%", icon: TrendingUp },
+              { label: copy.analisiReport.scoreCards.biomechanics, score: bioScore, pct: l3 ? "50%" : "62,5%", icon: Target },
+              { label: copy.analisiReport.scoreCards.ptVision, score: aiScore, pct: l3 ? "30%" : "37,5%", icon: Brain },
+              { label: copy.analisiReport.scoreCards.ptComparison, score: videoScore, pct: l3 ? "20%" : "—", icon: TrendingUp },
             ].map((s) => {
               const Icon = s.icon;
               const { color } = scoreToLabel(s.score);

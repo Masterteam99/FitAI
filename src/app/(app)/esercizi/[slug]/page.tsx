@@ -6,9 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Brain, CheckCircle, AlertTriangle, PlayCircle, Target, History } from "lucide-react";
+import { ArrowLeft, CheckCircle, PlayCircle, History } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { AnimatedArea } from "@/components/wow";
+import { ExerciseStartAction } from "@/components/esercizi/ExerciseStartAction";
 import { copy } from "@/content/copy";
 
 interface SetLog { set: number; reps?: number; weightKg?: number }
@@ -23,14 +24,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function EsercizioPage({ params }: Props) {
   const { slug } = await params;
-  const exercise = await prisma.exercise.findUnique({
-    where: { slug },
-    include: {
-      biomechanicalSpec: {
-        include: { movements: { include: { phases: { include: { triggers: true } } } } },
-      },
-    },
-  });
+  const exercise = await prisma.exercise.findUnique({ where: { slug } });
   if (!exercise) notFound();
 
   // Storico carichi dell'utente per questo esercizio (ultime 5 sessioni con log)
@@ -57,22 +51,6 @@ export default async function EsercizioPage({ params }: Props) {
   const e1rmSeries = [...loadHistory].reverse().map((h) => h.e1rm);
   const e1rmPr = e1rmSeries.length > 0 ? Math.max(...e1rmSeries) : 0;
 
-  const biomechanicalRules = exercise.biomechanicalSpec?.movements.flatMap((m) =>
-    m.phases.flatMap((p) =>
-      p.triggers.map((t) => ({
-        id: t.id,
-        joint: m.joint,
-        movement: m.movementType,
-        phase: p.phase,
-        minAngle: p.minAngle,
-        maxAngle: p.maxAngle,
-        severity: t.severity,
-        feedback: t.feedback,
-      }))
-    )
-  ) ?? [];
-
-  const severityIcon = { CRITICAL: "🔴", ERROR: "🟠", WARNING: "🟡" };
   const difficultyColor = { BEGINNER: "success", INTERMEDIATE: "warning", ADVANCED: "destructive" } as const;
 
   return (
@@ -81,87 +59,52 @@ export default async function EsercizioPage({ params }: Props) {
         <Link href="/esercizi"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4" />{copy.esercizioDettaglio.backToExercises}</Button></Link>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Video / thumbnail */}
-        <div className="space-y-4">
-          {/* Esecuzione del professionista */}
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.esercizioDettaglio.executionVideoLabel}</p>
-            <div className="aspect-video rounded-xl bg-secondary/50 flex items-center justify-center overflow-hidden">
-              {exercise.videoUrl ? (
-                <video src={exercise.videoUrl} controls className="w-full h-full object-cover rounded-xl" poster={exercise.thumbnailUrl ?? undefined} />
-              ) : (
-                <div className="text-center space-y-2">
-                  <PlayCircle className="w-16 h-16 text-muted-foreground mx-auto" />
-                  <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.videoComingSoon}</p>
-                </div>
-              )}
-            </div>
-            <Link href={`/analisi/sessione?id=${exercise.id}`}>
-              <Button className="w-full gap-2 mt-2">
-                <Brain className="w-4 h-4" />
-                {copy.esercizioDettaglio.activateAdvancedAnalysis}
-              </Button>
-            </Link>
-          </div>
-
-          {/* Consigli del professionista */}
-          {exercise.explanationVideoUrl && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.esercizioDettaglio.explanationVideoLabel}</p>
-              <div className="aspect-video rounded-xl bg-secondary/50 overflow-hidden">
-                <video src={exercise.explanationVideoUrl} controls className="w-full h-full object-cover rounded-xl" />
-              </div>
-            </div>
-          )}
+      <div>
+        <h1 className="text-2xl font-bold">{exercise.name}</h1>
+        <p className="text-muted-foreground mt-1">{exercise.description}</p>
+        <div className="flex flex-wrap gap-2 mt-3">
+          <Badge variant={difficultyColor[exercise.difficulty]}>{DIFFICULTY_LABELS[exercise.difficulty]}</Badge>
+          <Badge variant="outline">{MUSCLE_GROUP_LABELS[exercise.muscleGroupPrimary as keyof typeof MUSCLE_GROUP_LABELS]}</Badge>
+          <Badge variant="secondary">{CATEGORY_LABELS[exercise.category as keyof typeof CATEGORY_LABELS]}</Badge>
+          {exercise.muscleGroupsSecondary.map((mg) => (
+            <Badge key={mg} variant="outline" className="text-muted-foreground">{MUSCLE_GROUP_LABELS[mg as keyof typeof MUSCLE_GROUP_LABELS]}</Badge>
+          ))}
         </div>
+      </div>
 
-        {/* Info */}
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-2xl font-bold">{exercise.name}</h1>
-            <p className="text-muted-foreground mt-1">{exercise.description}</p>
+      {/* Due video affiancati: spiegazione (prima di eseguire) ed esecuzione
+          (quella usata per l'analisi/confronto AI) — vanno visti entrambi
+          prima di allenarsi, non solo quello di esecuzione. */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.esercizioDettaglio.explanationVideoLabel}</p>
+          <div className="aspect-video rounded-xl bg-secondary/50 flex items-center justify-center overflow-hidden">
+            {exercise.explanationVideoUrl ? (
+              <video src={exercise.explanationVideoUrl} controls className="w-full h-full object-cover rounded-xl" />
+            ) : (
+              <div className="text-center space-y-2">
+                <PlayCircle className="w-12 h-12 text-muted-foreground mx-auto" />
+                <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.videoComingSoon}</p>
+              </div>
+            )}
           </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Badge variant={difficultyColor[exercise.difficulty]}>{DIFFICULTY_LABELS[exercise.difficulty]}</Badge>
-            <Badge variant="outline">{MUSCLE_GROUP_LABELS[exercise.muscleGroupPrimary as keyof typeof MUSCLE_GROUP_LABELS]}</Badge>
-            <Badge variant="secondary">{CATEGORY_LABELS[exercise.category as keyof typeof CATEGORY_LABELS]}</Badge>
-            {exercise.muscleGroupsSecondary.map((mg) => (
-              <Badge key={mg} variant="outline" className="text-muted-foreground">{MUSCLE_GROUP_LABELS[mg as keyof typeof MUSCLE_GROUP_LABELS]}</Badge>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-secondary/50 rounded-lg p-3 text-center">
-              <p className="text-lg font-bold text-primary">{exercise.caloriesPerMinute}</p>
-              <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statCalPerMin}</p>
-            </div>
-            <div className="bg-secondary/50 rounded-lg p-3 text-center">
-              <p className="text-lg font-bold text-primary">{biomechanicalRules.length}</p>
-              <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statAiRules}</p>
-            </div>
-            <div className="bg-secondary/50 rounded-lg p-3 text-center">
-              <p className="text-lg font-bold text-primary">{exercise.equipment.length}</p>
-              <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statEquipment}</p>
-            </div>
-          </div>
-
-          {/* Attrezzatura */}
-          <div>
-            <p className="text-sm font-medium mb-2">{copy.esercizioDettaglio.equipmentNeeded}</p>
-            <div className="flex flex-wrap gap-2">
-              {exercise.equipment.map((eq) => (
-                <span key={eq} className="text-xs bg-secondary/50 border border-border rounded-full px-2.5 py-1">
-                  {EQUIPMENT_LABELS[eq as keyof typeof EQUIPMENT_LABELS] ?? eq}
-                </span>
-              ))}
-            </div>
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.esercizioDettaglio.executionVideoLabel}</p>
+          <div className="aspect-video rounded-xl bg-secondary/50 flex items-center justify-center overflow-hidden">
+            {exercise.videoUrl ? (
+              <video src={exercise.videoUrl} controls className="w-full h-full object-cover rounded-xl" poster={exercise.thumbnailUrl ?? undefined} />
+            ) : (
+              <div className="text-center space-y-2">
+                <PlayCircle className="w-12 h-12 text-muted-foreground mx-auto" />
+                <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.videoComingSoon}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Istruzioni */}
+      {/* Istruzioni (con le note del professionista incluse, invece di una card separata) */}
       <Card>
         <CardHeader><CardTitle>{copy.esercizioDettaglio.instructionsTitle}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
@@ -171,8 +114,42 @@ export default async function EsercizioPage({ params }: Props) {
               <p className="text-sm">{step}</p>
             </div>
           ))}
+          {exercise.professionalNotes && (
+            <div className="flex gap-3 pt-2 mt-2 border-t border-border">
+              <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">{copy.esercizioDettaglio.professionalNotesTitle}</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-line">{exercise.professionalNotes}</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      <ExerciseStartAction exerciseId={exercise.id} />
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-secondary/50 rounded-lg p-3 text-center">
+          <p className="text-lg font-bold text-primary">{exercise.caloriesPerMinute}</p>
+          <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statCalPerMin}</p>
+        </div>
+        <div className="bg-secondary/50 rounded-lg p-3 text-center">
+          <p className="text-lg font-bold text-primary">{exercise.equipment.length}</p>
+          <p className="text-xs text-muted-foreground">{copy.esercizioDettaglio.statEquipment}</p>
+        </div>
+      </div>
+
+      {/* Attrezzatura */}
+      <div>
+        <p className="text-sm font-medium mb-2">{copy.esercizioDettaglio.equipmentNeeded}</p>
+        <div className="flex flex-wrap gap-2">
+          {exercise.equipment.map((eq) => (
+            <span key={eq} className="text-xs bg-secondary/50 border border-border rounded-full px-2.5 py-1">
+              {EQUIPMENT_LABELS[eq as keyof typeof EQUIPMENT_LABELS] ?? eq}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* Curva 1RM stimato nel tempo */}
       {e1rmSeries.length >= 2 && (
@@ -215,43 +192,6 @@ export default async function EsercizioPage({ params }: Props) {
         </Card>
       )}
 
-      {/* Regole biomeccaniche */}
-      {biomechanicalRules.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
-              {copy.esercizioDettaglio.biomechanicalTitle}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">{copy.esercizioDettaglio.biomechanicalIntro}</p>
-            {biomechanicalRules.map((r) => (
-              <div key={r.id} className="flex gap-3 p-3 rounded-lg bg-secondary/30">
-                <span className="text-lg shrink-0">{severityIcon[r.severity]}</span>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium capitalize">{r.joint.replace(/_/g, " ")}</span>
-                    <span className="text-xs text-muted-foreground">— {r.movement} ({r.phase.toLowerCase()})</span>
-                    <Badge variant="outline" className="text-xs">{r.minAngle}°–{r.maxAngle}°</Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{r.feedback}</p>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Note professionali */}
-      {exercise.professionalNotes && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary" />{copy.esercizioDettaglio.professionalNotesTitle}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground whitespace-pre-line">{exercise.professionalNotes}</p>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

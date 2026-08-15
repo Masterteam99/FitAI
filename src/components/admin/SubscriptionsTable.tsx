@@ -55,7 +55,7 @@ export function SubscriptionsTable() {
             variant={status === s ? "default" : "outline"}
             onClick={() => { setStatus(s); setPage(1); }}
           >
-            {s === "all" ? copy.adminSubscriptions.table.filterAll : s.replace("_", " ")}
+            {copy.adminSubscriptions.table.statusLabels[s] ?? s}
           </Button>
         ))}
       </div>
@@ -82,8 +82,8 @@ export function SubscriptionsTable() {
                 </div>
               </div>
               <div className="flex gap-2 items-center shrink-0">
-                <Badge variant="outline">{s.subscriptionStatus}</Badge>
-                {s.subscriptionPlan && <Badge>{s.subscriptionPlan}</Badge>}
+                <Badge variant="outline">{copy.adminSubscriptions.table.statusBadgeLabels[s.subscriptionStatus] ?? s.subscriptionStatus}</Badge>
+                {s.subscriptionPlan && <Badge>{copy.adminSubscriptions.table.planBadgeLabels[s.subscriptionPlan] ?? s.subscriptionPlan}</Badge>}
               </div>
             </CardContent>
           </Card>

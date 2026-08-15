@@ -26,6 +26,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Google verifica sempre la proprietà dell'email: è quindi sicuro
+      // collegare automaticamente l'account Google a un utente già esistente
+      // con la stessa email (es. registrato prima con email+password), invece
+      // di bloccare il login con OAuthAccountNotLinked.
+      allowDangerousEmailAccountLinking: true,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email.toLowerCase().trim(),
+          image: profile.picture,
+        };
+      },
     }),
     Credentials({
       name: "credentials",
@@ -37,9 +50,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email },
-        });
+        const email = parsed.data.email.toLowerCase().trim();
+        const user = await prisma.user.findUnique({ where: { email } });
         if (!user?.passwordHash) return null;
 
         const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
@@ -50,6 +62,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    // Google marca email_verified=false nei rari casi di indirizzo non
+    // verificato (es. dominio G Suite con verifica disattivata): con
+    // allowDangerousEmailAccountLinking attivo, meglio bloccare esplicitamente
+    // questo caso piuttosto che fidarsi ciecamente del match sull'email.
+    async signIn({ account, profile }) {
+      if (account?.provider === "google" && profile?.email_verified === false) {
+        return false;
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) token.id = user.id;
       return token;

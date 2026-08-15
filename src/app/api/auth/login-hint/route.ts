@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   if (!success) return NextResponse.json({ oauthOnly: false });
 
   const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
+    where: { email: parsed.data.email.toLowerCase().trim() },
     select: { passwordHash: true, accounts: { select: { provider: true }, take: 1 } },
   });
 

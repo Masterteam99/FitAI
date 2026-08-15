@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Plus, AlertTriangle } from "lucide-react";
 import { copy } from "@/content/copy";
+import { TriggerSpecEditor, type SpecValue } from "./TriggerSpecEditor";
 
 const urlOrEmpty = z.string().trim().url("URL non valido").or(z.literal(""));
 const positiveNumStr = z.string().refine((s) => s.trim() !== "" && Number(s) > 0, "Deve essere un numero positivo");
@@ -55,6 +56,17 @@ export interface ExerciseInitial {
   biomechanicalSpec: unknown | null;
 }
 
+// La spec salvata arriva come `unknown` dall'API (JSON libero lato DB); qui la
+// normalizziamo nella forma tipizzata che l'editor si aspetta, senza fidarsi
+// ciecamente della struttura (un vecchio JSON scritto a mano potrebbe avere
+// campi mancanti).
+function parseInitialSpec(raw: unknown): SpecValue {
+  if (!raw || typeof raw !== "object" || !Array.isArray((raw as { movements?: unknown }).movements)) {
+    return { movements: [] };
+  }
+  return raw as SpecValue;
+}
+
 export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: string; initial?: ExerciseInitial } = {}) {
   const c = copy.adminNewExercise;
   const router = useRouter();
@@ -76,8 +88,8 @@ export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: str
     caloriesPerMinute: String(initial?.caloriesPerMinute ?? 5),
     professionalNotes: initial?.professionalNotes ?? "",
     tags: (initial?.tags ?? []).join(", "),
-    specText: initial?.biomechanicalSpec ? JSON.stringify(initial.biomechanicalSpec, null, 2) : "",
   });
+  const [spec, setSpec] = useState<SpecValue>(() => parseInitialSpec(initial?.biomechanicalSpec));
   const [secondary, setSecondary] = useState<string[]>(initial?.muscleGroupsSecondary ?? []);
   const [equipment, setEquipment] = useState<string[]>(initial?.equipment ?? ["NONE"]);
   const [saving, setSaving] = useState(false);
@@ -116,11 +128,7 @@ export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: str
     }
     setFieldErrors({});
 
-    let biomechanicalSpec: unknown = null;
-    if (f.specText.trim()) {
-      try { biomechanicalSpec = JSON.parse(f.specText); }
-      catch { setError(c.invalidJson); return; }
-    }
+    const biomechanicalSpec: unknown = spec.movements.length > 0 ? spec : null;
     const num = (s: string) => (s.trim() === "" ? null : Number(s));
 
     setSaving(true);
@@ -207,8 +215,7 @@ export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: str
         <Field label={c.tagsLabel}><Input value={f.tags} onChange={(e) => set("tags", e.target.value)} placeholder="forza, casa, gambe" /></Field>
 
         <Field label={c.specLabel}>
-          <textarea value={f.specText} onChange={(e) => set("specText", e.target.value)} className={`${areaCls} min-h-[120px] font-mono text-xs`} placeholder={c.specHint} />
-          <p className="text-[11px] text-muted-foreground mt-1 font-mono break-all">{c.specHint}</p>
+          <TriggerSpecEditor value={spec} onChange={setSpec} />
         </Field>
 
         {error && (

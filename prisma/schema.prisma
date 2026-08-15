@@ -585,11 +585,35 @@ model NutritionLog {
   fatG     Float    @default(0)
   fiberG   Float    @default(0)
   notes    String?
+  foodId   String?
+  food     Food?    @relation(fields: [foodId], references: [id], onDelete: SetNull)
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([date])
   @@map("nutrition_logs")
+}
+
+// Pool alimenti: valori nutrizionali per 100g, usato per il diario alimentare
+// (l'utente inserisce solo la grammatura, calorie/macro si calcolano da qui).
+// Popolato inizialmente da un dataset pubblico (USDA/valori standard per
+// alimenti generici), gestibile/estendibile da Admin → Alimenti.
+model Food {
+  id              String         @id @default(cuid())
+  name            String
+  nameNormalized  String         @unique
+  category        String?
+  caloriesPer100g Float
+  proteinPer100g  Float
+  carbsPer100g    Float
+  fatPer100g      Float
+  fiberPer100g    Float          @default(0)
+  source          String         @default("curated")
+  createdAt       DateTime       @default(now())
+  logs            NutritionLog[]
+
+  @@index([nameNormalized])
+  @@map("foods")
 }
 
 model DailyCheckin {

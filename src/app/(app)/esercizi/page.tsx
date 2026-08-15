@@ -16,14 +16,20 @@ interface Props {
 
 export default async function EserciziPage({ searchParams }: Props) {
   const params = await searchParams;
+  // Un valore non valido nella query string (link vecchio/rotto, URL modificato
+  // a mano) non deve mandare in errore la pagina: lo ignoriamo silenziosamente
+  // invece di passarlo a Prisma, che rifiuterebbe qualsiasi stringa non nell'enum.
+  const muscolo = params.muscolo && params.muscolo in MUSCLE_GROUP_LABELS ? params.muscolo : undefined;
+  const difficolta = params.difficolta && params.difficolta in DIFFICULTY_LABELS ? params.difficolta : undefined;
+  const attrezzatura = params.attrezzatura && params.attrezzatura in EQUIPMENT_LABELS ? params.attrezzatura : undefined;
   const [exercises, tagRows] = await Promise.all([
     prisma.exercise.findMany({
       where: {
         isActive: true,
-        ...(params.muscolo && { muscleGroupPrimary: params.muscolo as never }),
-        ...(params.difficolta && { difficulty: params.difficolta as never }),
+        ...(muscolo && { muscleGroupPrimary: muscolo as never }),
+        ...(difficolta && { difficulty: difficolta as never }),
         ...(params.tag && { tags: { has: params.tag } }),
-        ...(params.attrezzatura && { equipment: { has: params.attrezzatura as never } }),
+        ...(attrezzatura && { equipment: { has: attrezzatura as never } }),
         ...(params.cerca && { name: { contains: params.cerca, mode: "insensitive" } }),
       },
       orderBy: { name: "asc" },

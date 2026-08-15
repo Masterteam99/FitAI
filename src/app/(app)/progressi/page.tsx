@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Dumbbell, Flame, Trophy, Star, Loader2, Calendar } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 import { format, subDays, parseISO } from "date-fns";
@@ -10,7 +9,19 @@ import { it } from "date-fns/locale";
 import { CountUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimitives";
 import { WeightMeasuresCard } from "./WeightMeasuresCard";
 import { LoadTrendsCard } from "./LoadTrendsCard";
+import { AdaptiveBodyMap, RadialGauge } from "@/components/wow";
 import { copy } from "@/content/copy";
+
+// Duplicata (non importata da @/lib/body-map) perché questo è un client
+// component: quel modulo importa Prisma/pg, che non può finire nel bundle browser.
+const MUSCLE_LABELS: Record<string, string> = {
+  CHEST: "Petto", BACK: "Schiena", SHOULDERS: "Spalle", BICEPS: "Bicipiti",
+  TRICEPS: "Tricipiti", FOREARMS: "Avambracci", CORE: "Core", QUADRICEPS: "Quadricipiti",
+  HAMSTRINGS: "Femorali", GLUTES: "Glutei", CALVES: "Polpacci", FULL_BODY: "Full body",
+};
+function muscleLabel(m: string): string {
+  return MUSCLE_LABELS[m] ?? m;
+}
 
 interface StatsData {
   totalSessions: number;
@@ -22,7 +33,9 @@ interface StatsData {
   weeklyVolume: { weekStart: string; minutes: number }[];
   avgFeeling: number | null;
   formScores: { date: string; score: number; exercise: string }[];
-  recentSessions: { completedAt: string; totalDuration: number; overallFeeling: string | null }[];
+  avgScoreByExercise: { exercise: string; avgScore: number; count: number }[];
+  imbalances: { muscle: string; deficitPct: number }[];
+  recentSessions: { completedAt: string; totalSeconds: number | null; overallFeeling: number | null }[];
   achievements: { achievement: { name: string; icon: string; rarity: string }; unlockedAt: string }[];
 }
 
@@ -63,7 +76,7 @@ export default function ProgressiPage() {
     return {
       date: format(date, "dd/MM"),
       sessioni: sessions.length,
-      minuti: sessions.reduce((a, s) => a + (s.totalDuration ?? 0), 0),
+      minuti: Math.round(sessions.reduce((a, s) => a + (s.totalSeconds ?? 0), 0) / 60),
     };
   });
 
@@ -101,7 +114,7 @@ export default function ProgressiPage() {
         })}
       </div>
 
-      {/* Qualità dei movimenti — Form Score trend */}
+      {/* Qualità dei movimenti — dashboard: punteggio attuale + trend + equilibrio muscolare */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{copy.progressi.formScoreTitle}</CardTitle>
@@ -110,31 +123,77 @@ export default function ProgressiPage() {
           {stats.formScores.length === 0 ? (
             <p className="text-sm text-muted-foreground">{copy.progressi.formScoreEmpty}</p>
           ) : (
-            <>
-              <p className="text-sm text-muted-foreground mb-3">
-                {copy.progressi.formScoreSubtitle}
-                {stats.formScores.length >= 2 && (
-                  <span className="ml-2 font-semibold text-primary">
-                    {copy.progressi.formScoreDelta(stats.formScores[stats.formScores.length - 1].score - stats.formScores[0].score)}
-                  </span>
-                )}
-              </p>
-              <ResponsiveContainer width="100%" height={180}>
-                <LineChart data={stats.formScores.map((s) => ({ label: format(parseISO(s.date), "dd/MM"), score: s.score }))}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="label" tick={{ fontSize: 10 }} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
-                  <Tooltip
-                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
-                    formatter={(v) => [copy.progressi.formScoreTooltip(Number(v ?? 0)), ""]}
+            <div className="grid lg:grid-cols-[auto_1fr_auto] gap-6 items-center">
+              {/* Punteggio più recente */}
+              <div className="flex flex-col items-center gap-2 mx-auto lg:mx-0">
+                <RadialGauge value={stats.formScores[stats.formScores.length - 1].score} max={100} size={104} color="#3fae5a" label="forma" />
+                <p className="text-xs text-muted-foreground text-center">Ultima analisi</p>
+              </div>
+
+              {/* Trend */}
+              <div className="min-w-0">
+                <p className="text-sm text-muted-foreground mb-2">
+                  {copy.progressi.formScoreSubtitle}
+                  {stats.formScores.length >= 2 && (
+                    <span className="ml-2 font-semibold text-primary">
+                      {copy.progressi.formScoreDelta(stats.formScores[stats.formScores.length - 1].score - stats.formScores[0].score)}
+                    </span>
+                  )}
+                </p>
+                <ResponsiveContainer width="100%" height={160}>
+                  <LineChart data={stats.formScores.map((s) => ({ label: format(parseISO(s.date), "dd/MM"), score: s.score }))}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+                    <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                    <Tooltip
+                      contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
+                      formatter={(v) => [copy.progressi.formScoreTooltip(Number(v ?? 0)), ""]}
+                    />
+                    <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Equilibrio muscolare — stessa mappa/dati della dashboard */}
+              <div className="flex flex-col items-center gap-2 mx-auto lg:mx-0">
+                <div className="max-w-[130px]">
+                  <AdaptiveBodyMap
+                    mode="balance"
+                    data={stats.imbalances.map((i) => ({ muscle: i.muscle, deficitPct: i.deficitPct }))}
+                    view="front"
+                    showToggle={false}
                   />
-                  <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </>
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  {stats.imbalances.length === 0 ? "Equilibrio muscolare" : stats.imbalances.slice(0, 2).map((i) => muscleLabel(i.muscle)).join(", ")}
+                </p>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Punteggio medio per esercizio */}
+      {stats.avgScoreByExercise.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Punteggio medio per esercizio</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={Math.max(120, stats.avgScoreByExercise.length * 34)}>
+              <BarChart data={stats.avgScoreByExercise} layout="vertical" margin={{ left: 8 }}>
+                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
+                <YAxis type="category" dataKey="exercise" tick={{ fontSize: 11 }} width={140} />
+                <Tooltip
+                  contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
+                  formatter={(v) => [`${v}/100`, "Punteggio medio"]}
+                />
+                <Bar dataKey="avgScore" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Peso e misure */}
       <WeightMeasuresCard />

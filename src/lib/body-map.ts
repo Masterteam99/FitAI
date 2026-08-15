@@ -113,14 +113,10 @@ export async function computeImbalances(userId: string, days = 30): Promise<Imba
   const values = Object.values(raw);
   const avg = values.reduce((a, b) => a + b, 0) / values.length;
 
-  if (avg === 0) {
-    return TRACKED_MUSCLES.map((muscle) => ({
-      muscle,
-      deficitPct: 100,
-      daysSinceLast: null,
-      message: `Nessun allenamento per ${muscle.toLowerCase()} negli ultimi ${days} giorni`,
-    }));
-  }
+  // Nessun volume registrato in assoluto (account nuovo, mai allenato): non ci
+  // sono dati su cui calcolare uno squilibrio relativo, quindi non ne mostriamo
+  // nessuno — mostrare "100% deficit ovunque" sarebbe un falso segnale.
+  if (avg === 0) return [];
 
   const recovery = await computeRecovery(userId);
   const items: ImbalanceItem[] = [];

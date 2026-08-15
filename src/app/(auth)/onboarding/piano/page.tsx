@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Sparkles, ChevronRight, Lock } from "lucide-react";
@@ -15,6 +16,12 @@ const LEVEL_LABELS: Record<string, string> = copy.onboardingStep4.levelLabels;
 
 export default function PianoPreviewPage() {
   const router = useRouter();
+  // Questa pagina è raggiunta sia da ospiti (quiz pre-registrazione, poi
+  // "Salva il mio piano" → registrati) sia da utenti già loggati che hanno
+  // rifatto il quiz dal wizard step1-3: per questi ultimi non ha senso
+  // rimandarli alla registrazione, vanno dritti a step4 (genera+salva piano).
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const [data, setData] = useState<OnboardingState | null>(null);
 
   useEffect(() => {
@@ -75,14 +82,22 @@ export default function PianoPreviewPage() {
 
         <FadeIn delay={0.2}>
           <div className="space-y-3">
-            <Link href="/registrati?from=piano">
-              <Button size="lg" className="w-full gap-2 glow-energy">
-                Salva il mio piano <ChevronRight className="w-5 h-5" />
+            {isAuthenticated ? (
+              <Button size="lg" className="w-full gap-2 glow-energy" onClick={() => router.push("/onboarding/step4")}>
+                Genera il mio piano <ChevronRight className="w-5 h-5" />
               </Button>
-            </Link>
-            <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-              <Lock className="w-3.5 h-3.5" /> Ti serve solo la mail — per non perdere il piano.
-            </p>
+            ) : (
+              <>
+                <Link href="/registrati?from=piano">
+                  <Button size="lg" className="w-full gap-2 glow-energy">
+                    Salva il mio piano <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+                <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                  <Lock className="w-3.5 h-3.5" /> Ti serve solo la mail — per non perdere il piano.
+                </p>
+              </>
+            )}
           </div>
         </FadeIn>
       </div>

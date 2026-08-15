@@ -12,11 +12,12 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Email non valida" }, { status: 400 });
 
+  const email = parsed.data.email.toLowerCase().trim();
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const { success } = await authEmailRatelimit.limit(`${ip}:${parsed.data.email}`);
+  const { success } = await authEmailRatelimit.limit(`${ip}:${email}`);
   if (!success) return NextResponse.json({ ok: true }, { status: 200 });
 
-  const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+  const user = await prisma.user.findUnique({ where: { email } });
   if (user) {
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);

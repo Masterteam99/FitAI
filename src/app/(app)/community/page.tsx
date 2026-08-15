@@ -38,7 +38,28 @@ function initials(name: string | null): string {
   return name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
 }
 
+// Community è funzionante (post/like/commenti) ma per decisione prodotto resta
+// nascosta dietro un placeholder "in arrivo" finché non si decide come usarla
+// (vedi Aggiornameni possibili.md, punto 6). Il codice sotto resta intatto.
+const COMMUNITY_COMING_SOON = true;
+
+function CommunityComingSoon() {
+  return (
+    <div className="max-w-lg mx-auto py-20 text-center space-y-3">
+      <Users className="w-10 h-10 text-muted-foreground mx-auto" />
+      <h1 className="text-xl font-bold">{copy.community.comingSoonTitle}</h1>
+      <p className="text-sm text-muted-foreground">{copy.community.comingSoonSubtitle}</p>
+    </div>
+  );
+}
+
 export default function CommunityPage() {
+  if (COMMUNITY_COMING_SOON) return <CommunityComingSoon />;
+
+  return <CommunityFeed />;
+}
+
+function CommunityFeed() {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [cursor, setCursor] = useState<string | null>(null);

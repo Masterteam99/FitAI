@@ -11,25 +11,54 @@
 
 ---
 
-## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-15]`
+## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-15 notte — Sessione 8]`
 
-- **Primo passo della prossima sessione: fare il merge in `main`.** Due branch pronti e pushati, non
-  ancora integrati:
-  - `feature/account-manager-completo` (Sessioni 1-5: area utente v2, Account Manager, tema scuro/lime)
-  - `feature/mvp-launch-polish` (Sessione 6, parte da sopra: MVP polish + piano Sessione/Nutrizione/Analisi)
-  Da fare in ordine: merge/PR di `feature/account-manager-completo` in `main`, poi merge/PR di
-  `feature/mvp-launch-polish` in `main` (o direttamente quest'ultimo se già include tutto il primo).
-- **Sessione 6 (15/08) conclusa**: MVP polish (toast/validazione/email-password/notifiche/filtri
-  libreria) + piano completo "Sessione/Nutrizione/Analisi" (10 fasi, tutte chiuse). Dettaglio completo
-  in `COSE_FATTE_IN_SESSIONE.md` Sessione 6 e in `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis).
+- **Primo passo: push del lavoro di Sessione 8.** Tutto committato/pushato direttamente su `main`
+  (non branch separato) — verificare che il deploy Vercel completi senza errori dopo il push.
+- **Punto 4 di `Aggiornameni possibili.md` (Libreria filtri) — da chiarire con l'utente**: chiede di
+  togliere "l'iconcina/freccia al centro della card", ma nel codice attuale non risulta presente
+  un'icona di quel tipo (solo un badge "Video" in basso a destra sul thumbnail) — probabile
+  riferimento a un mockup diverso. Chiarire prima di toccare la card. Il resto del punto (macro-filtri
+  + pulsante "altri filtri" invece di mostrarli tutti insieme) resta da fare.
+- **Punto 7 (Profilo) — da fare**: sezione impostazioni con selettore lingua (tema chiaro/scuro
+  rimandato: tema chiaro non esiste nel codice, solo scuro/lime).
+- **i18n completo (IT/EN) — rimandata come iniziativa a parte**, discussa con l'utente: tutto il copy
+  oggi è fisso in italiano in `copy.ts`, nessuna infrastruttura di traduzione. Opzioni valutate:
+  traduzione via browser (zero lavoro, ma conflitti DOM noti con React) vs traduzione automatica
+  server-side con cache (più lavoro di setup una tantum, risultato professionale). Da pianificare
+  come progetto dedicato quando si apre il mercato non italiano.
+- **Punto 8 residuo (Admin → Utenti)**: costo AI stimato "€0,06" mostrato senza Anthropic attivo — da
+  chiarire con l'utente cosa lo genera prima di poter giudicare se è un bug.
+- **VAPID (notifiche push)**: le chiavi sono già generate in `.env.local` locale ma non è stato
+  confermato se sono state copiate su Vercel — verificare.
+
+---
+
+## ▶️ Storico "parti da qui" — Sessione 7 `[agg. 2026-08-15 sera]`
+
+- ✅ **FATTO (2026-08-15): merge in `main`.** PR [FitAI#2](https://github.com/Masterteam99/FitAI/pull/2)
+  mergiata (commit `ee7e867`) — `feature/mvp-launch-polish` includeva già tutto
+  `feature/account-manager-completo`. `main` locale e remoto allineati.
+- ✅ **FATTO (2026-08-15): deploy Vercel verificato live e sano.** Progetto `fit-ai`
+  (`masterteam99s-projects`) già collegato via Git integration — il push su `main` ha auto-deployato.
+  Verificato: `/api/health` 200, home 200, zero runtime error. Alias:
+  `fit-ai-six-ruddy.vercel.app` (+ 2 alias masterteam99s-projects).
+- ✅ **FATTO (2026-08-15): bug Upstash Redis trovato e risolto in produzione.** Il vecchio database
+  era stato eliminato → rate limiter falliva in fail-open (comportamento sicuro ma senza protezione
+  reale). Utente ha creato nuovo database + aggiornato env var su Vercel + redeploy → riverificato,
+  ora funziona (log puliti, nessun fail-open).
+- **Prossimo passo — VAPID (notifiche push):** non ancora verificato se le env var
+  `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT` (+ opzionale
+  `CRON_SECRET`) sono impostate su Vercel (valori generati sono in `.env.local` locale). Senza, il
+  sistema di reminder streak (email+push) costruito in Sessione 6 non invia le push in produzione.
+- **Prossimo passo — Anthropic:** scelta esplicita dell'utente di ricaricare il credito solo
+  all'ultimo prima del lancio. La env var `ANTHROPIC_API_KEY` risulta già presente su Vercel; da
+  verificare/ricaricare quando deciso.
 - ⚠️ **Da verificare con hardware reale (non fatto in autonomia, serve dispositivo mobile vero):**
   switch fotocamera anteriore/posteriore (Fase 10) e flusso "analisi inline" end-to-end con
   registrazione video reale (fotocamera bloccata nell'ambiente di sviluppo usato).
-- **Prima di deploy**: aggiungere su Vercel le env var `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
-  `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, opzionale `CRON_SECRET` (per il sistema
-  notifiche/reminder costruito in Sessione 6 — valori generati sono in `.env.local` locale).
-- Sotto ancora aperti i residui di Sessione 5 (dipendenze esterne, landing/placeholder) — vedi sezione
-  storica sotto, invariata.
+- Sotto ancora aperti i residui di Sessione 5 (landing/placeholder) — vedi sezione storica sotto,
+  invariata.
 
 ---
 
@@ -55,15 +84,15 @@
 
 ## 🔜 Da fare (in sequenza)
 
-1. **Integrare il branch `feature/account-manager-completo`** (già pushato su origin).
-   Aprire la PR — <https://github.com/Masterteam99/FitAI/pull/new/feature/account-manager-completo> —
-   oppure `git checkout main && git merge feature/account-manager-completo`. `[agg. 2026-08-13]`
+1. ✅ **FATTO (2026-08-15):** merge di `feature/mvp-launch-polish` (include già
+   `feature/account-manager-completo`) in `main` via [PR #2](https://github.com/Masterteam99/FitAI/pull/2),
+   commit `ee7e867`.
 
-2. **Ripristinare le dipendenze esterne** (sbloccano la *verifica* delle feature AI; il codice è già pronto):
-   - **Credito Anthropic**: ricaricare dalla console (Plans & Billing). Senza, tutte le feature AI
-     rispondono `credit balance`.
-   - **Upstash Redis**: ripristinare l'istanza o aggiornare `UPSTASH_REDIS_REST_URL/TOKEN` in `.env.local`
-     (host `quiet-gazelle-99660.upstash.io` non risolve → rate-limit degradato a fail-open, l'app funziona).
+2. **Ripristinare le dipendenze esterne:**
+   - **Credito Anthropic**: da ricaricare **all'ultimo prima del lancio** (scelta esplicita
+     dell'utente, non un blocco). La env var `ANTHROPIC_API_KEY` risulta già su Vercel.
+   - ✅ **FATTO (2026-08-15):** **Upstash Redis** — nuovo database creato, `UPSTASH_REDIS_REST_URL/TOKEN`
+     aggiornate su Vercel, redeploy fatto, verificato in produzione (log puliti, nessun fail-open).
    - *Nota infra:* il pooler diretto Supabase `5432` è instabile per la CLI Prisma → workaround usato:
      applicare gli ALTER via pooler `6543`. `[agg. 2026-08-13]`
 
@@ -99,7 +128,9 @@
    `[agg. 2026-08-14]`
 
 6. **Deploy**:
-   - 6a. **Deploy Vercel** (account + env vars) — vedi `CHECKLIST_DEPLOY.md`.
+   - 6a. ✅ **FATTO (2026-08-15):** progetto Vercel `fit-ai` collegato via Git, deploy production live
+     e verificato (auto-deploy al push su `main`). Residuo: confermare env var VAPID (vedi sopra
+     "PARTI DA QUI").
    - 6b. **CORS bucket `exercise-videos`** su Supabase per attivare L3 in modo affidabile.
    `[agg. 2026-08-12]`
 
