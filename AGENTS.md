@@ -20,3 +20,26 @@ Questo progetto usa due documenti-diario alla radice, da mantenere **ogni sessio
   i nuovi step **numerati** con la **data di inserimento** (`[agg. YYYY-MM-DD]`).
 
 Le voci di entrambi i file vanno sempre **numerate in ordine e datate**.
+
+## Aggiornare TUTTI i documenti di stato (non solo i due diari)
+
+I due diari sopra sono la fonte autorevole, ma **non sono gli unici documenti da toccare**. Diversi
+altri file alla radice portano in cima un banner `⚠️ STATO REALE — aggiornato ...` che riassume lo
+stato corrente e rimanda ai diari. Quel banner **va aggiornato ogni sessione insieme ai diari**,
+altrimenti quei documenti restano disallineati e diventano fuorvianti per chiunque (umano o agente) li
+legga senza passare prima dai diari.
+
+**A FINE sessione**, dopo aver aggiornato i due diari:
+1. Trova tutti i file col banner: `grep -rl "STATO REALE" --include="*.md" .`
+2. In ognuno, sostituisci il blocco banner in cima (dalla riga `> ## ⚠️ STATO REALE` fino al `---` che
+   lo chiude) con una versione aggiornata: nuova data/numero sessione, riassunto di cosa è cambiato in
+   questa sessione (poche righe, non serve ripetere tutto il dettaglio: quello sta nei diari), sezione
+   "Aperti" aggiornata.
+3. Non serve riscrivere il resto del documento (spesso è storico/superato "vedi i diari se in
+   conflitto") — solo il banner in cima.
+
+Alla data in cui questa nota è stata scritta i file coinvolti erano: `README.md`, `ROADMAP.md`,
+`STATO_PROGETTO.md`, `CHECKLIST_DEPLOY.md`, `DOCUMENTAZIONE_FLUSSI.md`, `AGGIORNAMENTI.md`,
+`MOTION_INSIGHT_AREA_UTENTE_v2.md`, `MOTION_INSIGHT_COMPLETE.md`,
+`MOTION_INSIGHT_Documentazione_Pagine_Completa.md`, `MOTION_INSIGHT_PROSSIMI_STEP.md` — ma **non
+fidarti di questo elenco**, potrebbe cambiare: usa sempre il grep per trovare l'elenco reale.
