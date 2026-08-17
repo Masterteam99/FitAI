@@ -43,6 +43,7 @@ export const ExerciseSchema = z.object({
   caloriesPerMinute: z.number().min(0).max(50).default(5),
   professionalNotes: z.string().max(4000).nullable().optional(),
   tags: z.array(z.string().max(60)).default([]),
+  availableForFreeTrial: z.boolean().default(false),
   biomechanicalSpec: SpecSchema.nullable().optional(),
 });
 

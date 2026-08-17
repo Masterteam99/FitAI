@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Smartphone } from "lucide-react";
 import { copy } from "@/content/copy";
 import { OrganicLogo } from "./OrganicLogo";
 
@@ -24,6 +24,13 @@ export function MarketingHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/scarica"
+            className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Smartphone className="w-4 h-4" />
+            {copy.marketingHeader.download}
+          </Link>
           <Link
             href="/login"
             className="hidden sm:inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold border border-border hover:border-foreground transition-colors"

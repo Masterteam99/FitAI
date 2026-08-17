@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, CreditCard, Dumbbell, BarChart3, ShieldCheck, Bot, History, MessageSquare, Apple, ListChecks, Type, ClipboardList, UtensilsCrossed, Carrot } from "lucide-react";
+import { Users, CreditCard, Dumbbell, BarChart3, ShieldCheck, Bot, History, MessageSquare, Apple, ListChecks, Type, ClipboardList, UtensilsCrossed, Carrot, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { copy } from "@/content/copy";
 
@@ -19,6 +19,7 @@ const ADMIN_TABS = [
   { href: "/admin/recipes", label: copy.adminSidebar.tabRecipes, icon: UtensilsCrossed },
   { href: "/admin/foods", label: copy.adminSidebar.tabFoods, icon: Carrot },
   { href: "/admin/quiz", label: copy.adminSidebar.tabQuiz, icon: ListChecks },
+  { href: "/admin/leaderboard-rewards", label: copy.adminSidebar.tabLeaderboard, icon: Trophy },
   { href: "/admin/site-content", label: copy.adminSidebar.tabSiteContent, icon: Type },
 ];
 

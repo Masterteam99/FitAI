@@ -11,6 +11,100 @@
 
 ---
 
+## Sessione 9 — 2026-08-17 — Fix rapidi + copy IA + 4 iniziative grandi da "Aggiornameni possibili.md" (1,2,3,4,8)
+
+**Contesto:** proseguimento di `Aggiornameni possibili.md`. Prima i punti "chiari" (fix rapidi), poi
+le 5 iniziative segnalate come grandi in Sessione 8, affrontate una per una col via libera esplicito
+dell'utente per ciascuna.
+
+**Fix rapidi (punti 5, 6, 10):**
+- **Bug reale trovato, più esteso del previsto**: la variabile `--organic-sand` (pensata come sfondo
+  scuro per le "sezioni alternate") veniva riusata anche come **colore del testo** su schede scure →
+  testo invisibile non solo nella CTA finale della home (segnalata dall'utente) ma anche nel footer
+  (titoli colonne), nella `FormScoreHero` della dashboard (nome esercizio, statistiche) e nei
+  contatori grandi della dashboard (sessioni/streak/punti). Corretto in 6 file usando il vero token
+  "testo chiaro" del tema (`--foreground`).
+- **CTA sticky** (`StickyAnalyzeCta.tsx`): appare sotto la nav mentre si scorre tra la CTA dell'hero e
+  quella finale, si nasconde vicino a entrambe (IntersectionObserver). Non verificabile visivamente in
+  questo pannello browser (stesso limite ambientale già noto per scroll/animazioni), verificata la
+  logica via calcolo posizioni.
+- **Nav "Scarica l'app"**: link aggiunto in nav desktop accanto ad "Accedi" (mancava, solo in footer).
+  Pagina `/scarica` ampliata: 4 vantaggi PWA + sezione "perché dal browser e non da App Store/Play
+  Store" (fase di test).
+- **Layout Nutrizione**: container allargato da `max-w-2xl` a `max-w-4xl` (causa della "metà pagina
+  vuota" segnalata); form "nuovo alimento" reso sempre visibile invece che dietro il bottone
+  "Aggiungi" (toggle nascosto rimosso).
+
+**Copy — via "IA/AI" dai bottoni (punto 7):** chiarito con l'utente (2 domande mirate): togliere del
+tutto "IA/AI" da CTA/bottoni/badge/checkbox, lasciarlo nei testi esplicativi (pagina "Analisi AI in
+tempo reale", disclaimer, terminologia interna Admin). Rimosso da 13 etichette azione (copy.ts +
+badge hardcoded in `allenamento/page.tsx`), lasciato intatto altrove (nome prodotto "AI Coach",
+pricing feature list, meta title, disclaimer di trasparenza).
+
+**Demo (punto 9):** simulazione dal vivo di "La tua sessione" con account di test (creato e poi
+eliminato): calendario → piano → giorno → sessione guidata, tutto corrisponde a quanto descritto
+dall'utente. Nessuna modifica al codice, solo verifica.
+
+**Punto 1 — Prova gratuita per ospiti** (`/prova-gratuita`): nuovo flusso pubblico senza account —
+consenso privacy separato (fotocamera / elaborazione video / contatto email), selezione esercizio tra
+quelli curati da Admin (`Exercise.availableForFreeTrial`, nuovo campo), registrazione, **stessa
+pipeline di analisi a 3 livelli (L1+L2+L3) usata dai Premium** (routes `/api/guest-analysis/*`
+mirror di `/api/analysis/*`, riusano gli stessi services), referto inviato via email (Resend, nuovo
+template) + anteprima punteggio a schermo con CTA "crea account". Nuovo modello
+`GuestAnalysisRequest`. **Correzione importante fatta in corsa**: il limite anti-abuso iniziale
+(3/giorno per IP) era troppo restrittivo secondo l'utente — ridisegnato in due limiti separati: i
+*tentativi di registrazione* sono ora praticamente illimitati per un umano (20/giorno per IP, blocca
+solo script), mentre il vero limite è **una sola analisi completata per email, a vita** (non al
+giorno), verificato via query DB prima di eseguire la pipeline costosa. Il bottone "Analizza la tua
+tecnica"/"Prova con la tua prima esecuzione" (hero, CTA finale home, sticky, chiusura "Il Metodo") ora
+punta a `/prova-gratuita` invece che al quiz — **copy dei bottoni non toccato**, solo l'href, come
+richiesto esplicitamente. Il quiz resta intatto per il funnel Premium.
+
+**Punto 2 — Personaggio 2D animato**: sostituito lo sticker a linee scheletriche (`ExerciseFormPlayer`)
+con un nuovo `AnimatedFormCharacter` — stesso motore di pose/interpolazione, ma corpo pieno a capsule
+arrotondate (maglietta, pantaloncini, scarpe, volto semplice, fascia colorata brand). Mostrato
+all'utente come esempio via widget SVG prima di applicarlo. L'utente ha poi chiesto il **3D**: non
+generabile da codice — dategli 4 opzioni (DeepMotion consigliato: converte un video reale in
+animazione 3D via AI motion-capture; Mixamo gratuito; freelance su commissione; Spline no-code) più
+il piano di integrazione (React Three Fiber) per quando l'asset sarà procurato. Il 2D resta attivo nel
+frattempo, netto miglioramento rispetto allo sticker originale.
+
+**Punto 4 — Carosello esempi report**: la card statica "cosa ricevi" nella home sostituita da
+`ReportCardCarousel` — 3 esempi reali (punteggio alto/medio/basso, rischi diversi) che ruotano ogni
+~5s con indicatori cliccabili.
+
+**Punto 3 — Editor "designer" per l'Admin** (versione scalata, concordata esplicitamente con
+l'utente): nuovo `SiteEditModeProvider` + `EditableText` — bottone flottante "Modifica pagina"
+visibile solo agli admin sul sito pubblico (verifica riusa l'endpoint admin già esistente, nessun
+nuovo controllo d'accesso da mantenere); quando attivo, ogni testo avvolto in `EditableText` diventa
+cliccabile → modale (in portale React, per evitare HTML non valido quando il testo è dentro un
+bottone) → textarea → salva → **live immediato**, persistito su `SiteContent` (sistema già esistente,
+prima usato solo dal form admin separato). Applicato oggi alla pagina Prezzi (15 testi). Verificato
+dal vivo con account admin di test: modifica salvata, persiste dopo reload, poi ripristinata e
+account eliminato. Estendere alle altre pagine richiede lo stesso trattamento in due passaggi
+(migrare a `useCopy()` + avvolgere in `EditableText`), meccanico ma da fare pagina per pagina — non
+fatto oggi per scelta di scope.
+
+**Punto 8 — Gamification** (versione scalata): classifica (`/leaderboard`, nuova voce in nav) basata
+su `User.totalPoints` (già esistente) filtrato per `profileVisibility=PUBLIC` (**riusa il flag
+privacy già esistente della Community come opt-in**, nessun nuovo campo di consenso necessario);
+nuovo modello `LeaderboardReward` (fascia di posizione → titolo/descrizione) con CRUD completo in
+Admin (`/admin/leaderboard-rewards`); sezione informativa breve nella home. Verificato dal vivo:
+account di test promosso admin, punti assegnati via DB, premio creato da Admin, classifica e premio
+mostrati correttamente lato utente, poi tutto ripulito.
+
+**Verifica:** `tsc --noEmit` e `eslint` puliti (0 errori, solo warning dello stesso pattern
+preesistente già tollerato) su tutto il lavoro della sessione. Ogni feature con backend/DB testata
+dal vivo con account usa-e-getta (creati e cancellati subito dopo). Migrazioni DB (`GuestAnalysisRequest`,
+`LeaderboardReward`, `Exercise.availableForFreeTrial`) applicate al DB condiviso locale/produzione;
+il pooler diretto 5432 è risultato di nuovo instabile per `prisma db push` in un caso — bypassato con
+SQL diretto via pooler 6543 (stesso workaround già documentato in sessioni precedenti).
+
+**Stato a fine sessione:** tutto il lavoro sopra committato e pushato su `main` in questa sessione
+(vedi hash commit più sotto in `git log`).
+
+---
+
 ## Sessione 8 — 2026-08-15 — Fix login/quiz + 4 richieste da "Aggiornameni possibili.md" (1,3,5,8)
 
 **Contesto:** proseguimento diretto della Sessione 7. Prima richiesta: sistemare login/logout e

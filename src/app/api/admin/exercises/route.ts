@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
         caloriesPerMinute: d.caloriesPerMinute,
         professionalNotes: d.professionalNotes ?? null,
         tags: d.tags,
+        availableForFreeTrial: d.availableForFreeTrial,
         ...(specData ? { biomechanicalSpec: { create: specData } } : {}),
       },
       select: { id: true, slug: true },

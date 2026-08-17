@@ -361,12 +361,14 @@ model Exercise {
   referenceProfileVersion  Int? // = REFERENCE_PROFILE_VERSION, per invalidazione
   tags                     String[]         @default([])
   isActive                 Boolean          @default(true)
+  availableForFreeTrial    Boolean          @default(false) // selezionabile nel flusso "prova gratuita" per ospiti (non loggati)
   createdAt                DateTime         @default(now())
 
-  biomechanicalSpec ExerciseBiomechanicalSpec?
-  planExercises     WorkoutPlanExercise[]
-  sessionExercises  WorkoutSessionExercise[]
-  analysisSessions  AnalysisSession[]
+  biomechanicalSpec    ExerciseBiomechanicalSpec?
+  planExercises        WorkoutPlanExercise[]
+  sessionExercises     WorkoutSessionExercise[]
+  analysisSessions     AnalysisSession[]
+  guestAnalysisRequests GuestAnalysisRequest[]
 
   @@index([muscleGroupPrimary])
   @@index([difficulty])
@@ -550,6 +552,38 @@ model AnalysisSession {
   @@index([workoutSessionId])
   @@index([workoutSessionExerciseId])
   @@map("analysis_sessions")
+}
+
+// ─── Prova gratuita per ospiti (pre-utenti, non loggati) ──────────────────────
+// Stessa pipeline di analisi (L1/L2/L3 + report finale) dell'AnalysisSession,
+// ma senza account: identificata da un token capability in cookie httpOnly
+// invece che dalla sessione NextAuth. Il referto viene inviato via email.
+model GuestAnalysisRequest {
+  id              String         @id @default(cuid())
+  email           String
+  exerciseId      String
+  consentAt       DateTime       @default(now())
+  ipHash          String? // hash IP per rate limiting/abuso, mai l'IP in chiaro
+  status          AnalysisStatus @default(RECORDING)
+  videoUrl        String?
+  videoPath       String?
+  durationSeconds Int?
+
+  l1Result      Json?
+  l2Result      Json?
+  l3Result      Json?
+  finalReport   Json?
+  combinedScore Float?
+  reportSentAt  DateTime?
+
+  createdAt DateTime @default(now())
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@index([email])
+  @@index([exerciseId])
+  @@index([createdAt])
+  @@map("guest_analysis_requests")
 }
 
 model UserProgress {
@@ -866,6 +900,23 @@ model SiteContent {
   updatedAt DateTime @updatedAt
 
   @@map("site_content")
+}
+
+// Premi della classifica (gamification), gestiti dall'Admin. La classifica stessa
+// non ha un modello dedicato: è calcolata al volo da User.totalPoints, filtrando
+// solo i profili con profileVisibility=PUBLIC (lo stesso flag già usato per la
+// Community, riusato qui come opt-in privacy).
+model LeaderboardReward {
+  id          String   @id @default(cuid())
+  rankFrom    Int // es. 1
+  rankTo      Int // es. 3 → premio per le posizioni 1-3
+  title       String // es. "Un mese Premium gratis"
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([isActive])
+  @@map("leaderboard_rewards")
 }
 
 // Pool di ricette curate dal gestore. Mostrate all'utente in base alla dieta;

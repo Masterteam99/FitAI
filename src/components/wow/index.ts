@@ -4,6 +4,7 @@ export { RadialGauge } from "./charts/RadialGauge";
 export { AnimatedArea } from "./charts/AnimatedArea";
 export { AnimatedBars } from "./charts/AnimatedBars";
 export { ExerciseFormPlayer } from "./ExerciseFormPlayer";
+export { AnimatedFormCharacter } from "./AnimatedFormCharacter";
 export { ScrollExplainer } from "./ScrollExplainer";
 export * from "./heat/heatScale";
 export * from "./pose/poseEngine";

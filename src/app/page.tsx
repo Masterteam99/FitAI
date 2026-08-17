@@ -20,8 +20,10 @@ import {
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
+import { StickyAnalyzeCta } from "@/components/marketing/StickyAnalyzeCta";
+import { ReportCardCarousel } from "@/components/marketing/ReportCardCarousel";
 import { FadeIn, SlideUp, ScrollReveal, ScrollStagger, StaggerItem } from "@/components/motion/MotionPrimitives";
-import { ExerciseFormPlayer } from "@/components/wow";
+import { AnimatedFormCharacter } from "@/components/wow";
 import { copy } from "@/content/copy";
 
 const SEGMENT_ICONS = [Home, Dumbbell, HeartPulse, PersonStanding];
@@ -57,6 +59,7 @@ export default function LandingPage() {
       <OrganizationJsonLd />
       <div className="organic-grain" />
       <MarketingHeader />
+      <StickyAnalyzeCta label={c.finalCta} href="/prova-gratuita" />
 
       {/* 1 — HERO */}
       <section className="relative pt-20 pb-24 overflow-hidden">
@@ -76,7 +79,7 @@ export default function LandingPage() {
             </FadeIn>
             <FadeIn delay={0.16}>
               <div className="flex gap-4 items-center flex-wrap">
-                <Link href="/onboarding/step1" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(200,247,81,.4)]" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
+                <Link href="/prova-gratuita" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(200,247,81,.4)]" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
                   {c.ctaPrimary} <ChevronRight className="w-4 h-4" />
                 </Link>
                 <Link href="/come-funziona" className="inline-flex items-center px-7 py-3.5 rounded-full font-semibold text-sm border border-border hover:border-foreground transition-colors">
@@ -85,11 +88,12 @@ export default function LandingPage() {
               </div>
               <p className="text-xs text-muted-foreground mt-3 max-w-[46ch]">{c.ctaMicro}</p>
             </FadeIn>
+            <div id="hero-cta-anchor" />
           </div>
           <FadeIn delay={0.2}>
             <div className="bg-card border border-border rounded-[28px] p-8 grid place-items-center shadow-[0_40px_80px_-40px_rgba(0,0,0,.5)]">
               <span className="text-xs uppercase tracking-[0.18em] font-bold mb-6 self-start" style={{ color: "var(--organic-sage-deep)" }}>Tecnica · squat</span>
-              <ExerciseFormPlayer archetype="squat" errorNote="ginocchia in avanti" size={230} />
+              <AnimatedFormCharacter archetype="squat" errorNote="ginocchia in avanti" size={230} />
               <p className="text-sm text-muted-foreground mt-6 text-center max-w-[34ch]">L&apos;occhio dell&apos;AI segue il movimento e ti mostra il punto da correggere, rep dopo rep.</p>
             </div>
           </FadeIn>
@@ -155,25 +159,7 @@ export default function LandingPage() {
             </ul>
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
-            <div className="rounded-[28px] p-7 md:p-8" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
-              <div className="flex items-end justify-between mb-5">
-                <div>
-                  <span className="font-display text-6xl leading-none" style={{ color: "var(--organic-green-soft)" }}>{c.reportCard.score}</span>
-                  <span className="text-sm ml-2" style={{ color: "rgba(234,241,248,.6)" }}>su 100</span>
-                </div>
-                <span className="text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: "rgba(255,181,71,.16)", color: "#ffb547" }}>{c.reportCard.risk}</span>
-              </div>
-              <p className="text-sm mb-6" style={{ color: "rgba(234,241,248,.78)" }}>{c.reportCard.verdict}</p>
-              <div className="text-xs uppercase tracking-[0.14em] font-bold mb-3" style={{ color: "rgba(234,241,248,.5)" }}>{c.reportCard.fixesTitle}</div>
-              <ol className="space-y-3">
-                {c.reportCard.fixes.map((f, i) => (
-                  <li key={f} className="flex gap-3 text-sm" style={{ color: "rgba(234,241,248,.85)" }}>
-                    <span className="shrink-0 w-5 h-5 rounded-full grid place-items-center text-[11px] font-bold" style={{ background: "rgba(234,241,248,.1)" }}>{i + 1}</span>
-                    {f}
-                  </li>
-                ))}
-              </ol>
-            </div>
+            <ReportCardCarousel cards={c.reportCards} />
           </ScrollReveal>
         </div>
       </section>
@@ -292,6 +278,22 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 8.5 — GAMIFICATION (teaser) */}
+      <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
+        <div className="max-w-[900px] mx-auto px-7 text-center">
+          <Eyebrow center>{c.gamificationEyebrow}</Eyebrow>
+          <Title t={c.gamificationTitle} />
+          <p className="text-muted-foreground text-lg mt-4 max-w-[64ch] mx-auto">{c.gamificationText}</p>
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+            {c.gamificationPoints.map((p) => (
+              <span key={p} className="text-sm font-semibold px-4 py-2 rounded-full" style={{ background: "rgba(200,247,81,.12)", color: "var(--organic-green-deep)" }}>
+                {p}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 9 — VOCE DEL COFONDATORE (placeholder) */}
       <section className="relative z-[2] py-20">
         <div className="max-w-[700px] mx-auto px-7 text-center">
@@ -367,15 +369,15 @@ export default function LandingPage() {
 
       {/* 12 — CTA FINALE */}
       <section className="relative z-[2] py-24">
-        <div className="max-w-[1180px] mx-auto px-7">
+        <div id="final-cta-anchor" className="max-w-[1180px] mx-auto px-7">
           <ScrollReveal>
-            <div className="relative overflow-hidden rounded-[36px] p-12 md:p-16 text-center" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
+            <div className="relative overflow-hidden rounded-[36px] p-12 md:p-16 text-center" style={{ background: "var(--organic-espresso)", color: "var(--foreground)" }}>
               <div className="organic-blob w-[420px] h-[420px] -top-40 -left-32 opacity-[.3]" style={{ background: "var(--organic-terracotta)" }} />
               <div className="relative z-[2] max-w-[600px] mx-auto">
-                <h2 className="font-display text-[clamp(2rem,3.4vw,2.8rem)] leading-tight mb-8" style={{ color: "var(--organic-sand)" }}>
+                <h2 className="font-display text-[clamp(2rem,3.4vw,2.8rem)] leading-tight mb-8" style={{ color: "var(--foreground)" }}>
                   {c.finalTitle.pre}<em style={{ color: "var(--organic-green-soft)" }}>{c.finalTitle.highlight}</em>{c.finalTitle.post}
                 </h2>
-                <Link href="/onboarding/step1" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(200,247,81,.4)]" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
+                <Link href="/prova-gratuita" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(200,247,81,.4)]" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
                   {c.finalCta} <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>

@@ -20,6 +20,7 @@ type AdminExercise = {
   videoUrl: string | null;
   isActive: boolean;
   hasProfile: boolean;
+  availableForFreeTrial: boolean;
 };
 
 export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] }) {
@@ -124,6 +125,11 @@ export function AdminExercisesTable({ exercises }: { exercises: AdminExercise[] 
                     <Badge variant="secondary" className="gap-1">
                       <Activity className="w-3 h-3" />
                       Profilo PT
+                    </Badge>
+                  )}
+                  {ex.availableForFreeTrial && (
+                    <Badge variant="secondary" className="gap-1">
+                      Prova gratuita
                     </Badge>
                   )}
                   <Badge variant={ex.isActive ? "default" : "outline"} className={ex.isActive ? "" : "text-muted-foreground"}>

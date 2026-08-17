@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminExercisesPage() {
   const [exercises, total, withVideo, activeCount] = await Promise.all([
     prisma.exercise.findMany({
-      select: { id: true, slug: true, name: true, muscleGroupPrimary: true, videoUrl: true, isActive: true, referenceProfileAt: true },
+      select: { id: true, slug: true, name: true, muscleGroupPrimary: true, videoUrl: true, isActive: true, referenceProfileAt: true, availableForFreeTrial: true },
       orderBy: { name: "asc" },
     }),
     prisma.exercise.count(),
@@ -61,6 +61,7 @@ export default async function AdminExercisesPage() {
           videoUrl: e.videoUrl,
           isActive: e.isActive,
           hasProfile: e.referenceProfileAt != null,
+          availableForFreeTrial: e.availableForFreeTrial,
         }))}
       />
     </div>

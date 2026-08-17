@@ -64,3 +64,10 @@ export const generalRatelimit = makeLimiter(100, "1 m", "rl:general");
 
 // Rate limiter per richieste reset password / verify resend (3/ora per IP+email)
 export const authEmailRatelimit = makeLimiter(3, "1 h", "rl:auth-email");
+
+// Prova gratuita ospiti — "start" (creazione sessione, prima di registrare) è economico:
+// limite alto per IP, serve solo a bloccare script automatici, non a impedire di rifare
+// una ripresa venuta male (i tentativi restano di fatto illimitati per un umano). Il vero
+// limite — una sola analisi completata per email, a vita — è applicato via DB in
+// /api/guest-analysis/complete, non qui: non è un limite "al giorno".
+export const guestAnalysisStartRatelimit = makeLimiter(20, "1 d", "rl:guest-analysis-start");

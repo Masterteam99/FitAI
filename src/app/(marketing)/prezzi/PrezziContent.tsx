@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Check, ChevronRight } from "lucide-react";
 import { FadeIn, SlideUp } from "@/components/motion/MotionPrimitives";
 import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 export function PrezziContent() {
   const copy = useCopy();
@@ -16,11 +17,14 @@ export function PrezziContent() {
     <>
       <section className="max-w-7xl mx-auto px-4 py-20 text-center space-y-6">
         <SlideUp>
-          <h1 className="text-display-lg">{copy.prezzi.heroTitle.pre}<span className="text-gradient-energy">{copy.prezzi.heroTitle.highlight}</span></h1>
+          <h1 className="text-display-lg">
+            <EditableText path="prezzi.heroTitle.pre">{copy.prezzi.heroTitle.pre}</EditableText>
+            <span className="text-gradient-energy"><EditableText path="prezzi.heroTitle.highlight">{copy.prezzi.heroTitle.highlight}</EditableText></span>
+          </h1>
         </SlideUp>
         <FadeIn delay={0.15}>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {copy.prezzi.heroSubtitle}
+            <EditableText path="prezzi.heroSubtitle">{copy.prezzi.heroSubtitle}</EditableText>
           </p>
         </FadeIn>
       </section>
@@ -29,12 +33,12 @@ export function PrezziContent() {
         <Card className="bg-card/60 backdrop-blur-sm">
           <CardContent className="p-8 space-y-6">
             <div>
-              <h2 className="text-lg font-semibold">{copy.prezzi.free.name}</h2>
-              <p className="text-sm text-muted-foreground">{copy.prezzi.free.tagline}</p>
+              <h2 className="text-lg font-semibold"><EditableText path="prezzi.free.name">{copy.prezzi.free.name}</EditableText></h2>
+              <p className="text-sm text-muted-foreground"><EditableText path="prezzi.free.tagline">{copy.prezzi.free.tagline}</EditableText></p>
             </div>
             <div className="flex items-end gap-1">
-              <span className="text-4xl font-bold">{copy.prezzi.free.price}</span>
-              <span className="text-muted-foreground mb-1">{copy.prezzi.free.period}</span>
+              <span className="text-4xl font-bold"><EditableText path="prezzi.free.price">{copy.prezzi.free.price}</EditableText></span>
+              <span className="text-muted-foreground mb-1"><EditableText path="prezzi.free.period">{copy.prezzi.free.period}</EditableText></span>
             </div>
             <ul className="space-y-3 text-sm">
               {FREE.map((f) => (
@@ -44,25 +48,25 @@ export function PrezziContent() {
               ))}
             </ul>
             <Link href="/registrati" className="block">
-              <Button variant="outline" className="w-full">{copy.prezzi.free.cta}</Button>
+              <Button variant="outline" className="w-full"><EditableText path="prezzi.free.cta">{copy.prezzi.free.cta}</EditableText></Button>
             </Link>
           </CardContent>
         </Card>
 
         <Card className="bg-card/60 backdrop-blur-sm border-primary/40 relative lg:-translate-y-3 transition-transform shadow-[0_30px_70px_-30px_rgba(24,36,26,.5)]">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full glow-primary">
-            {copy.prezzi.premium.badge}
+            <EditableText path="prezzi.premium.badge">{copy.prezzi.premium.badge}</EditableText>
           </div>
           <CardContent className="p-8 space-y-6">
             <div>
-              <h2 className="text-lg font-semibold">{copy.prezzi.premium.name}</h2>
-              <p className="text-sm text-muted-foreground">{copy.prezzi.premium.tagline}</p>
+              <h2 className="text-lg font-semibold"><EditableText path="prezzi.premium.name">{copy.prezzi.premium.name}</EditableText></h2>
+              <p className="text-sm text-muted-foreground"><EditableText path="prezzi.premium.tagline">{copy.prezzi.premium.tagline}</EditableText></p>
             </div>
             <div className="flex items-end gap-1">
-              <span className="text-4xl font-bold">{copy.prezzi.premium.price}</span>
-              <span className="text-muted-foreground mb-1">{copy.prezzi.premium.period}</span>
+              <span className="text-4xl font-bold"><EditableText path="prezzi.premium.price">{copy.prezzi.premium.price}</EditableText></span>
+              <span className="text-muted-foreground mb-1"><EditableText path="prezzi.premium.period">{copy.prezzi.premium.period}</EditableText></span>
             </div>
-            <p className="text-xs text-muted-foreground -mt-4">{copy.prezzi.premium.yearlyNote}</p>
+            <p className="text-xs text-muted-foreground -mt-4"><EditableText path="prezzi.premium.yearlyNote">{copy.prezzi.premium.yearlyNote}</EditableText></p>
             <ul className="space-y-3 text-sm">
               {PREMIUM.map((f) => (
                 <li key={f} className="flex items-start gap-2">
@@ -71,7 +75,7 @@ export function PrezziContent() {
               ))}
             </ul>
             <Link href="/registrati" className="block">
-              <Button className="w-full gap-2 glow-energy">{copy.prezzi.premium.cta} <ChevronRight className="w-4 h-4" /></Button>
+              <Button className="w-full gap-2 glow-energy"><EditableText path="prezzi.premium.cta">{copy.prezzi.premium.cta}</EditableText> <ChevronRight className="w-4 h-4" /></Button>
             </Link>
           </CardContent>
         </Card>

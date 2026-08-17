@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                     >
                       <Icon className="w-5 h-5" />
                     </div>
-                    <div className="font-display text-6xl leading-[.85] tracking-tight flex items-baseline gap-1.5" style={{ color: "var(--organic-cream, #f1f6ed)" }}>
+                    <div className="font-display text-6xl leading-[.85] tracking-tight flex items-baseline gap-1.5" style={{ color: "var(--foreground, #f1f6ed)" }}>
                       <CountUp value={s.value} />
                       {s.unit && (
                         <span className="text-base font-bold tracking-wide font-sans" style={{ color: "var(--organic-terracotta-soft, #7fd194)" }}>

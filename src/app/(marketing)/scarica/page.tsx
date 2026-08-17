@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Apple, Smartphone } from "lucide-react";
+import { Apple, Smartphone, Check, Info } from "lucide-react";
 import { FadeIn, SlideUp } from "@/components/motion/MotionPrimitives";
 import { InstallPwaButton } from "@/components/marketing/InstallPwaButton";
 import { copy } from "@/content/copy";
@@ -37,7 +37,7 @@ export default function ScaricaPage() {
         </FadeIn>
       </section>
 
-      <section className="max-w-4xl mx-auto px-4 pb-24 grid md:grid-cols-2 gap-6">
+      <section className="max-w-4xl mx-auto px-4 pb-16 grid md:grid-cols-2 gap-6">
         {guides.map((g) => {
           const Icon = g.icon;
           return (
@@ -59,6 +59,32 @@ export default function ScaricaPage() {
             </div>
           );
         })}
+      </section>
+
+      <section className="max-w-4xl mx-auto px-4 pb-16">
+        <div className="grid sm:grid-cols-2 gap-5">
+          {c.benefits.map((b) => (
+            <div key={b.title} className="flex gap-3 bg-card border border-border rounded-[16px] p-5">
+              <Check className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "var(--organic-green-deep)" }} />
+              <div>
+                <p className="font-semibold text-sm">{b.title}</p>
+                <p className="text-sm text-muted-foreground mt-1">{b.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="max-w-3xl mx-auto px-4 pb-24">
+        <div className="rounded-[22px] p-7 md:p-8" style={{ background: "var(--organic-espresso)", color: "var(--foreground)" }}>
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "var(--organic-terracotta-soft)" }} />
+            <div>
+              <h2 className="font-display text-lg mb-2">{c.whyBrowser.title}</h2>
+              <p className="text-sm" style={{ color: "rgba(234,241,248,.8)" }}>{c.whyBrowser.body}</p>
+            </div>
+          </div>
+        </div>
       </section>
     </>
   );

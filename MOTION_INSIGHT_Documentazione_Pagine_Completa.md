@@ -1,12 +1,12 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026, notte):** oltre ai cambi di Sessione 6, in Sessione 8 sono cambiate
-> in modo sostanziale anche: `/esercizi/[slug]` (video spiegazione/esecuzione affiancati, niente più
-> parametri biomeccanici in vista utente), `/nutrizione` (ricerca alimento + grammatura al posto
-> dell'inserimento manuale), `/progressi` (stile dashboard, nuovo grafico per esercizio), `/community`
-> (placeholder "in arrivo"). `main` pushato e **in produzione** (commit `725d8c1`). Dettaglio pagina
-> per pagina: `COSE_FATTE_IN_SESSIONE.md` (Sessioni 7-8).
+> **Snapshot codice (17 ago 2026):** oltre ai cambi di Sessioni 6-8, in Sessione 9 sono cambiate/aggiunte
+> anche: `/` (homepage: contrasto testo corretto, CTA sticky, carosello esempi report, sezione
+> gamification, personaggio 2D animato), `/nutrizione` (layout corretto), nuova `/prova-gratuita`
+> (analisi senza account), nuova `/leaderboard` (classifica), Admin (editor inline copy pubblico,
+> gestione premi classifica, flag esercizi per prova gratuita). `main` pushato e **in produzione**.
+> Dettaglio pagina per pagina: `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
 > **Aperti:** vedi `STATO_PROGETTO.md`.
 
 ---

@@ -26,7 +26,7 @@ export function FormScoreHero(props: FormScoreHeroProps) {
   return (
     <div
       className="relative overflow-hidden rounded-[28px] p-7 md:p-9"
-      style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}
+      style={{ background: "var(--organic-espresso)", color: "var(--foreground)" }}
     >
       <div
         className="pointer-events-none absolute w-80 h-80 rounded-full blur-[80px] -top-32 -right-16 opacity-25"
@@ -77,7 +77,7 @@ export function FormScoreHero(props: FormScoreHeroProps) {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-7">
               {stats.map((s) => (
                 <div key={s.label} className="rounded-2xl p-4" style={{ background: "rgba(234,241,248,.06)" }}>
-                  <div className="font-display text-2xl" style={{ color: "var(--organic-sand)" }}>{s.value}</div>
+                  <div className="font-display text-2xl" style={{ color: "var(--foreground)" }}>{s.value}</div>
                   <div className="text-[11px] uppercase tracking-[0.12em] mt-1" style={{ color: "rgba(234,241,248,.6)" }}>{s.label}</div>
                 </div>
               ))}

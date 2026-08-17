@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Apple, Plus, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Apple, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, addDays, subDays, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
 import { AiNutritionPlan, type NutritionPlan } from "./AiNutritionPlan";
@@ -38,21 +38,12 @@ export default function NutrizionePage() {
   const [logs, setLogs] = useState<NutritionLog[]>([]);
   const [totals, setTotals] = useState<Totals>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ mealType: "LUNCH" });
   const [foodEntry, setFoodEntry] = useState<SelectedFoodEntry | null>(null);
   const [saving, setSaving] = useState(false);
   const [targets, setTargets] = useState(DEFAULT_TARGETS);
   const [persistedPlan, setPersistedPlan] = useState<NutritionPlan | null | undefined>(undefined);
   const [professionalDoc, setProfessionalDoc] = useState<ProfessionalDoc | null | undefined>(undefined);
-  const addFormRef = useRef<HTMLDivElement>(null);
-
-  // Il form "nuovo alimento" appare più in basso nella pagina (sotto piano attivo,
-  // calendario, gauge calorie): senza scroll sembra che il bottone "Aggiungi" non
-  // faccia nulla, specialmente quando c'è un piano attivo che occupa molto spazio.
-  useEffect(() => {
-    if (showForm) addFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [showForm]);
 
   useEffect(() => {
     fetch("/api/profilo")
@@ -113,7 +104,6 @@ export default function NutrizionePage() {
       }));
       setForm({ mealType: "LUNCH" });
       setFoodEntry(null);
-      setShowForm(false);
     }
     setSaving(false);
   }
@@ -138,19 +128,13 @@ export default function NutrizionePage() {
   }, {} as Record<string, NutritionLog[]>);
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Apple className="w-7 h-7 text-primary" />
-            {copy.nutrizione.title}
-          </h1>
-          <p className="text-muted-foreground">{copy.nutrizione.subtitle}</p>
-        </div>
-        <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
-          <Plus className="w-4 h-4" />
-          {copy.nutrizione.add}
-        </Button>
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <Apple className="w-7 h-7 text-primary" />
+          {copy.nutrizione.title}
+        </h1>
+        <p className="text-muted-foreground">{copy.nutrizione.subtitle}</p>
       </div>
 
       {/* Piano attivo — priorità: 1) documento di un professionista caricato in Profilo (se analizzato),
@@ -220,28 +204,23 @@ export default function NutrizionePage() {
         })}
       </div>
 
-      {/* Add form */}
-      {showForm && (
-        <Card ref={addFormRef} className="border-primary/30">
-          <CardHeader><CardTitle className="text-base">{copy.nutrizione.newFoodTitle}</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            <select
-              value={form.mealType}
-              onChange={(e) => setForm((f) => ({ ...f, mealType: e.target.value }))}
-              className="w-full bg-secondary border border-border rounded-lg p-2 text-sm"
-            >
-              {MEAL_TYPES.map((mt) => <option key={mt} value={mt}>{MEAL_LABELS[mt]}</option>)}
-            </select>
-            <FoodSearchAutocomplete onChange={setFoodEntry} />
-            <div className="flex gap-2">
-              <Button onClick={addLog} disabled={saving || !foodEntry} className="flex-1">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : copy.nutrizione.add}
-              </Button>
-              <Button variant="outline" onClick={() => setShowForm(false)}>{copy.nutrizione.cancel}</Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Add form — sempre visibile, non più dietro un bottone "Aggiungi" che sembrava non fare nulla */}
+      <Card className="border-primary/30">
+        <CardHeader><CardTitle className="text-base">{copy.nutrizione.newFoodTitle}</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <select
+            value={form.mealType}
+            onChange={(e) => setForm((f) => ({ ...f, mealType: e.target.value }))}
+            className="w-full bg-secondary border border-border rounded-lg p-2 text-sm"
+          >
+            {MEAL_TYPES.map((mt) => <option key={mt} value={mt}>{MEAL_LABELS[mt]}</option>)}
+          </select>
+          <FoodSearchAutocomplete onChange={setFoodEntry} />
+          <Button onClick={addLog} disabled={saving || !foodEntry} className="w-full">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : copy.nutrizione.add}
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Meals */}
       {loading ? (

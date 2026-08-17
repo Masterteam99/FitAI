@@ -262,7 +262,7 @@ function PlanCard({ plan, onSetActive, onDelete }: {
               {plan.isActive && <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">{copy.allenamento.activeBadge}</Badge>}
               {plan.generatedByAI && (
                 <Badge variant="secondary" className="text-xs gap-1">
-                  <Zap className="w-3 h-3" />AI
+                  <Zap className="w-3 h-3" />{copy.allenamento.generatedBadge}
                 </Badge>
               )}
             </div>

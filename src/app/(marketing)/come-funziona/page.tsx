@@ -194,12 +194,12 @@ export default function ComeFunzionaPage() {
       {/* G — Chiusura */}
       <section className="py-24">
         <div className="max-w-[1180px] mx-auto px-7">
-          <div className="relative overflow-hidden rounded-[36px] p-12 md:p-16 text-center" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
+          <div className="relative overflow-hidden rounded-[36px] p-12 md:p-16 text-center" style={{ background: "var(--organic-espresso)", color: "var(--foreground)" }}>
             <div className="relative z-[2] max-w-[600px] mx-auto">
-              <h2 className="font-display text-[clamp(1.8rem,3.2vw,2.6rem)] leading-tight mb-8" style={{ color: "var(--organic-sand)" }}>
+              <h2 className="font-display text-[clamp(1.8rem,3.2vw,2.6rem)] leading-tight mb-8" style={{ color: "var(--foreground)" }}>
                 {c.sectionG.title.pre}<em style={{ color: "var(--organic-green-soft)" }}>{c.sectionG.title.highlight}</em>{c.sectionG.title.post}
               </h2>
-              <Link href="/onboarding/step1" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
+              <Link href="/prova-gratuita" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
                 {c.sectionG.cta} <ChevronRight className="w-4 h-4" />
               </Link>
             </div>

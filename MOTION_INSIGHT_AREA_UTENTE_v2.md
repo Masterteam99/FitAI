@@ -1,14 +1,14 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026, notte):** oltre a tutto quanto già descritto (area utente v2 +
-> Account Manager + estensioni Sessione 6), in Sessione 8: pagina esercizio ridisegnata (video
-> spiegazione/esecuzione affiancati, parametri biomeccanici tolti dalla vista utente), diario
-> nutrizionale con ricerca alimento + grammatura (database di 142 alimenti), Progressi ristrutturato
-> in stile dashboard (gauge + trend + mappa equilibrio muscolare + grafico punteggio per esercizio),
-> Community dietro placeholder "in arrivo". `main` pushato e **in produzione** (commit `725d8c1`).
+> **Snapshot codice (17 ago 2026):** oltre a tutto quanto già descritto (area utente v2 + Account
+> Manager + estensioni Sessioni 6-8), in Sessione 9: nuova sezione pubblica "prova gratuita" per ospiti
+> senza account (`/prova-gratuita`), nuova sezione "Classifica" (`/leaderboard`) con premi
+> configurabili da Admin, editor inline del copy per Admin sul sito pubblico. `main` pushato e **in
+> produzione**.
 > **Aperti:** switch fotocamera e flusso analisi inline non testabili con hardware reale in questo
-> ambiente · resto invariato, vedi `STATO_PROGETTO.md`.
+> ambiente · asset 3D per il personaggio animato da procurare · resto invariato, vedi
+> `STATO_PROGETTO.md`.
 
 ---
 

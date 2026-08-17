@@ -11,10 +11,19 @@
 
 ---
 
-## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-15 notte — Sessione 8]`
+## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-17 — Sessione 9]`
 
-- **Primo passo: push del lavoro di Sessione 8.** Tutto committato/pushato direttamente su `main`
-  (non branch separato) — verificare che il deploy Vercel completi senza errori dopo il push.
+- **Asset 3D per il personaggio animato** — punto 2 di `Aggiornameni possibili.md`: l'utente vuole il
+  3D (non il 2D, tenuto come miglioramento interinale). Serve procurare/commissionare un asset esterno
+  — opzioni date: DeepMotion (converte un video reale in animazione 3D via AI motion-capture, il più
+  coerente con la richiesta originale), Mixamo (gratuito, personaggio generico), freelance su
+  commissione, Spline (no-code). Una volta scelto e ottenuto l'asset, l'integrazione lato codice
+  (React Three Fiber) è da fare.
+- **Estendere l'editor inline copy (punto 3) alle altre pagine** — oggi `SiteEditModeProvider` +
+  `EditableText` sono attivi solo su `/prezzi`. Ogni altra pagina richiede: 1) migrarla da
+  `import { copy }` statico a `useCopy()` (se non già client component, serve uno split
+  server-shell/client-content come già fatto per Prezzi), 2) avvolgere i testi in `EditableText`.
+  Meccanico ma da fare pagina per pagina — non un blocco tecnico, solo tempo.
 - **Punto 4 di `Aggiornameni possibili.md` (Libreria filtri) — da chiarire con l'utente**: chiede di
   togliere "l'iconcina/freccia al centro della card", ma nel codice attuale non risulta presente
   un'icona di quel tipo (solo un badge "Video" in basso a destra sul thumbnail) — probabile
@@ -28,9 +37,25 @@
   server-side con cache (più lavoro di setup una tantum, risultato professionale). Da pianificare
   come progetto dedicato quando si apre il mercato non italiano.
 - **Punto 8 residuo (Admin → Utenti)**: costo AI stimato "€0,06" mostrato senza Anthropic attivo — da
-  chiarire con l'utente cosa lo genera prima di poter giudicare se è un bug.
+  chiarire con l'utente cosa lo genera prima di poter giudicare se è un bug. (Da non confondere con la
+  Gamification, anche quella "punto 8" ma di `Aggiornameni possibili.md` — quella è **fatta**, vedi
+  storico Sessione 9.)
 - **VAPID (notifiche push)**: le chiavi sono già generate in `.env.local` locale ma non è stato
   confermato se sono state copiate su Vercel — verificare.
+- **Nota per me stesso (Claude) — feedback esplicito dell'utente**: quando aggiorno lo stato a fine
+  sessione, aggiornare **tutti** i documenti con banner "STATO REALE" (`README.md`, `ROADMAP.md`,
+  `STATO_PROGETTO.md`, `CHECKLIST_DEPLOY.md`, `DOCUMENTAZIONE_FLUSSI.md`, `AGGIORNAMENTI.md`, i 4
+  `MOTION_INSIGHT_*.md`), non solo i due diari — l'utente si è infastidito perché in questa sessione
+  li avevo dimenticati la prima volta.
+
+---
+
+## ▶️ Storico "parti da qui" — Sessione 8 `[agg. 2026-08-15 notte]`
+
+- ✅ **FATTO (2026-08-15): push del lavoro di Sessione 8.** Committato e pushato su `main` (commit
+  `725d8c1`), deploy Vercel completato senza errori.
+- Punto 4/7/8-residuo di `Aggiornameni possibili.md`, VAPID: **spostati nella sezione "PARTI DA QUI"
+  Sessione 9 in cima** (restano aperti, non ancora chiusi).
 
 ---
 
@@ -135,11 +160,24 @@
    `[agg. 2026-08-12]`
 
 7. **(Progressivo) Migrare le altre pagine a `useCopy()`** — così tutti i copy del sito diventano editabili
-   dal pannello SiteContent senza deploy (oggi è cablata solo la pagina Prezzi come prova). `[agg. 2026-08-13]`
+   dal pannello SiteContent senza deploy. Sessione 9 ha aggiunto anche l'**editor inline "designer"**
+   (clic su un testo → modale → salva, non solo il form admin separato) e lo ha applicato a Prezzi
+   (15 testi) — resta da estendere alle altre pagine, stesso lavoro di prima. `[agg. 2026-08-17]`
 
 ---
 
 ## ✅ Fatto (storico, per riferimento)
+
+**Sessione 9 (2026-08-17)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md`:
+- ✅ Fix contrasto testo esteso (6 file), CTA sticky homepage, nav "Scarica l'app" + pagina ampliata,
+  layout Nutrizione corretto, copy "IA/AI" ripulito da bottoni/badge/checkbox (13 punti).
+- ✅ Prova gratuita ospiti (`/prova-gratuita`): consenso privacy, pipeline analisi condivisa coi
+  Premium, referto via email, una prova completata per email a vita (non al giorno).
+- ✅ Personaggio 2D animato al posto dello sticker (3D valutato, asset esterno da procurare).
+- ✅ Carosello di 3 esempi di referto nella home.
+- ✅ Editor inline copy per Admin (oggi su Prezzi).
+- ✅ Gamification: classifica (`/leaderboard`), premi configurabili da Admin, teaser in home.
+- ✅ Tutto verificato dal vivo con account di test (creati e cancellati); `tsc`/`eslint` puliti.
 
 **Sessione 6 (2026-08-15)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md` e `DOCUMENTAZIONE_FLUSSI.md` (§7-8-10, §14bis):
 - ✅ MVP polish: toast coverage, validazione 4 form admin, cambio email/password, sistema notifiche

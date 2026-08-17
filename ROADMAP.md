@@ -1,12 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026, notte):** `main` è **in produzione** — merge (Sessione 7), deploy
-> Vercel live, e Sessione 8 (fix login/quiz/libreria, pagina esercizio ridisegnata, database alimenti,
-> editor trigger admin, Progressi ristrutturato, Community "in arrivo"). Dettagli in
-> `STATO_PROGETTO.md` e `COSE_FATTE_IN_SESSIONE.md` (Sessioni 7-8).
-> **Aperti:** env VAPID su Vercel da confermare · credito Anthropic da ricaricare (rimandato) ·
-> verificare switch fotocamera/analisi inline con hardware reale · resto invariato (vedi
+> **Snapshot codice (17 ago 2026):** `main` è **in produzione** — oltre a Sessioni 1-8, la Sessione 9
+> aggiunge: fix contrasto testo esteso, CTA sticky homepage, nav "Scarica l'app", layout Nutrizione,
+> copy IA/AI ripulito nei bottoni; prova gratuita ospiti (`/prova-gratuita`), personaggio 2D animato,
+> carosello esempi report, editor inline copy per Admin (oggi su Prezzi), Gamification/classifica.
+> Dettagli in `STATO_PROGETTO.md` e `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
+> **Aperti:** asset 3D da procurare · estendere editor inline alle altre pagine · env VAPID su Vercel
+> da confermare · credito Anthropic da ricaricare (rimandato) · resto invariato (vedi
 > `STATO_PROGETTO.md`).
 
 ---

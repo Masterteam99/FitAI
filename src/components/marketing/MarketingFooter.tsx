@@ -9,7 +9,7 @@ export function MarketingFooter() {
     <footer className="relative" style={{ background: "var(--organic-espresso)", color: "rgba(232,241,226,.7)" }}>
       <div className="max-w-[1180px] mx-auto px-7 pt-16 pb-24 md:pb-9">
         <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr_1fr] mb-12">
-          <div className="space-y-4" style={{ color: "var(--organic-sand)" }}>
+          <div className="space-y-4" style={{ color: "var(--foreground)" }}>
             <OrganicLogo dark />
             <p className="text-sm max-w-xs" style={{ color: "rgba(232,241,226,.7)" }}>
               {copy.marketingFooter.description}
@@ -18,7 +18,7 @@ export function MarketingFooter() {
 
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h4 className="text-xs font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "var(--organic-sand)" }}>
+              <h4 className="text-xs font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "var(--foreground)" }}>
                 {col.title}
               </h4>
               <ul className="space-y-1 text-sm">

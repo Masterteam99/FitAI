@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { Home, PlayCircle, Apple, Library, TrendingUp, Users, User, LogOut, Sparkles, ShieldCheck, Menu, X } from "lucide-react";
+import { Home, PlayCircle, Apple, Library, TrendingUp, Users, User, LogOut, Sparkles, ShieldCheck, Menu, X, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { APP_NAME, copy } from "@/content/copy";
@@ -16,6 +16,7 @@ const ICONS: Record<string, typeof Home> = {
   "/esercizi": Library,
   "/progressi": TrendingUp,
   "/community": Users,
+  "/leaderboard": Trophy,
   "/profilo": User,
 };
 

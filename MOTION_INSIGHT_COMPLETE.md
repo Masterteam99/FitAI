@@ -1,12 +1,12 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026, notte):** `main` è ora completamente aggiornato e **in produzione**
-> (Sessioni 7-8: merge, deploy Vercel live, fix login/quiz/dashboard/libreria, pagina esercizio
-> ridisegnata, database alimenti, editor trigger admin guidato, Progressi ristrutturato, Community
-> "in arrivo" — commit `725d8c1`). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessioni 7-8).
-> **Aperti:** verificare switch fotocamera/analisi inline con hardware reale · resto invariato, vedi
-> `STATO_PROGETTO.md`.
+> **Snapshot codice (17 ago 2026):** `main` è ora completamente aggiornato e **in produzione**
+> (Sessioni 1-9: merge, deploy Vercel live, area utente v2, fix vari, prova gratuita ospiti
+> `/prova-gratuita`, gamification/classifica `/leaderboard`, editor inline copy per Admin, personaggio
+> 2D animato). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
+> **Aperti:** verificare switch fotocamera/analisi inline con hardware reale · asset 3D da procurare ·
+> resto invariato, vedi `STATO_PROGETTO.md`.
 
 ---
 

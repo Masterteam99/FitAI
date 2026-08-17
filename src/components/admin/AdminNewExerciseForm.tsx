@@ -53,6 +53,7 @@ export interface ExerciseInitial {
   caloriesPerMinute: number;
   professionalNotes: string | null;
   tags: string[];
+  availableForFreeTrial: boolean;
   biomechanicalSpec: unknown | null;
 }
 
@@ -92,6 +93,7 @@ export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: str
   const [spec, setSpec] = useState<SpecValue>(() => parseInitialSpec(initial?.biomechanicalSpec));
   const [secondary, setSecondary] = useState<string[]>(initial?.muscleGroupsSecondary ?? []);
   const [equipment, setEquipment] = useState<string[]>(initial?.equipment ?? ["NONE"]);
+  const [availableForFreeTrial, setAvailableForFreeTrial] = useState(initial?.availableForFreeTrial ?? false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -153,6 +155,7 @@ export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: str
         caloriesPerMinute: Number(f.caloriesPerMinute) || 5,
         professionalNotes: f.professionalNotes.trim() || null,
         tags: f.tags.split(",").map((s) => s.trim()).filter(Boolean),
+        availableForFreeTrial,
         biomechanicalSpec,
       }),
     });
@@ -213,6 +216,11 @@ export function AdminNewExerciseForm({ exerciseId, initial }: { exerciseId?: str
 
         <Field label={c.notesLabel}><textarea value={f.professionalNotes} onChange={(e) => set("professionalNotes", e.target.value)} className={`${areaCls} min-h-[60px]`} /></Field>
         <Field label={c.tagsLabel}><Input value={f.tags} onChange={(e) => set("tags", e.target.value)} placeholder="forza, casa, gambe" /></Field>
+
+        <label className="flex items-center gap-2.5 text-sm">
+          <input type="checkbox" checked={availableForFreeTrial} onChange={(e) => setAvailableForFreeTrial(e.target.checked)} />
+          {c.freeTrialLabel}
+        </label>
 
         <Field label={c.specLabel}>
           <TriggerSpecEditor value={spec} onChange={setSpec} />

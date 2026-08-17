@@ -1,15 +1,17 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
 > **Deploy Vercel FATTO e verificato live** (Sessione 7): progetto `fit-ai`, dominio
 > `fit-ai-six-ruddy.vercel.app`, integrazione Git attiva (push su `main` → deploy automatico). Upstash
-> Redis riconnesso e verificato. `main` include ora anche tutto il lavoro di Sessione 8 (commit
-> `725d8c1`, pushato e deployato).
+> Redis riconnesso e verificato. `main` include ora anche tutto il lavoro di Sessione 8 e 9 (guest
+> analysis flow, gamification, editor inline copy — nuovi modelli DB `GuestAnalysisRequest`,
+> `LeaderboardReward`, `Exercise.availableForFreeTrial`, applicati via `prisma db push`).
 > **⚠️ Da confermare su Vercel**: le env var VAPID (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
 > `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, opzionale `CRON_SECRET`) per il sistema notifiche —
 > valori generati sono in `.env.local` locale, non confermato se già copiati su Vercel.
 > **Aperti:** ricaricare credito Anthropic (scelta dell'utente, rimandato all'ultimo prima del lancio)
-> · verificare switch fotocamera/analisi inline con hardware reale · CORS bucket `exercise-videos`.
+> · verificare switch fotocamera/analisi inline con hardware reale · CORS bucket `exercise-videos` ·
+> asset 3D per il personaggio animato da procurare esternamente.
 
 ---
 

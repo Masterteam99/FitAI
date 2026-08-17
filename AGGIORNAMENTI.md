@@ -1,5 +1,5 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è ora completamente aggiornato e in produzione (Sessioni 7-8: merge, deploy Vercel live, fix login/quiz/libreria, pagina esercizio ridisegnata, database alimenti, editor trigger admin, Progressi ristrutturato, Community "in arrivo" — commit `725d8c1`, pushato e deployato). Dettaglio in `COSE_FATTE_IN_SESSIONE.md`.
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è ora completamente aggiornato e in produzione (Sessioni 1-9: merge, deploy Vercel live, area utente v2, prova gratuita ospiti, gamification/classifica, editor inline copy per Admin, personaggio 2D animato — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 9 per il dettaglio completo).
 
 ---
 

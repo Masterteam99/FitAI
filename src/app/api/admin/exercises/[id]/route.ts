@@ -60,6 +60,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       professionalNotes: ex.professionalNotes,
       tags: ex.tags,
       isActive: ex.isActive,
+      availableForFreeTrial: ex.availableForFreeTrial,
       biomechanicalSpec: spec,
     },
   });
@@ -108,6 +109,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
           caloriesPerMinute: d.caloriesPerMinute,
           professionalNotes: d.professionalNotes ?? null,
           tags: d.tags,
+          availableForFreeTrial: d.availableForFreeTrial,
         },
       });
       // Rimpiazza la spec: elimina quella esistente (cascade su movements/phases/triggers) e ricrea.

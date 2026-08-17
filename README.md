@@ -1,18 +1,24 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026, notte):** `main` è **in produzione** (Sessione 7: merge + deploy
-> Vercel verificato live su `fit-ai-six-ruddy.vercel.app` + fix Upstash Redis; Sessione 8: verifica
-> end-to-end dei flussi con 3 bug corretti — email case-mismatch, onboarding che rimbalzava a
-> registrati, filtro Libreria che mandava in crash la pagina — pagina esercizio ridisegnata, database
-> alimenti con ricerca, editor guidato trigger biomeccanici in Admin, Progressi ristrutturato,
-> Community "in arrivo". Commit `725d8c1`, pushato e deployato). Verificato: tsc/eslint puliti, testato
-> dal vivo con dati reali (account di test creati e cancellati).
-> **Aperti:** env var VAPID su Vercel da confermare · credito Anthropic da ricaricare (rimandato
-> all'ultimo, scelta dell'utente) · verificare switch fotocamera e flusso analisi inline con hardware
-> reale · Libreria macro-filtri (da chiarire) · Profilo impostazioni lingua · i18n completo (rimandata
-> come iniziativa a parte) · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da
-> compilare (cofondatore, Chi siamo, FAQ, P.IVA, dati competitor).
+> **Snapshot codice (17 ago 2026):** `main` include ora anche la Sessione 9: fix contrasto testo esteso (bug reale in 6 file:
+> dashboard, footer, CTA homepage/Il Metodo — testo invisibile su sfondo scuro), CTA sticky in
+> homepage, link "Scarica l'app" in nav + pagina ampliata, layout Nutrizione corretto (form sempre
+> visibile), copy "IA/AI" tolto da bottoni/badge/checkbox (resta nei testi esplicativi); **nuova prova
+> gratuita per ospiti** (`/prova-gratuita`, nessun account, stessa pipeline di analisi a 3 livelli,
+> referto via email, una prova completata per email — non un limite giornaliero); **personaggio 2D
+> animato** al posto dello sticker a linee nella home (il 3D richiede un asset esterno, non ancora
+> procurato); **carosello di 3 esempi di referto** nella home; **editor inline "designer" per l'Admin**
+> (bottone "Modifica pagina" sul sito pubblico, clic su un testo → salva → live immediato — oggi attivo
+> solo sulla pagina Prezzi); **Gamification** (classifica `/leaderboard` per punti, premi configurabili
+> da Admin, sezione informativa in home). Nuovi modelli DB: `GuestAnalysisRequest`,
+> `LeaderboardReward`, `Exercise.availableForFreeTrial`. Tutto verificato dal vivo con account di test
+> (creati e poi cancellati); `tsc`/`eslint` puliti (0 errori). Dettaglio: `COSE_FATTE_IN_SESSIONE.md`
+> (Sessione 9).
+> **Aperti:** asset 3D per il personaggio animato da procurare/commissionare (opzioni valutate:
+> DeepMotion, Mixamo, freelance, Spline) · estendere l'editor inline e `useCopy()` alle altre pagine
+> (oggi solo Prezzi) · env var VAPID su Vercel da confermare · credito Anthropic da ricaricare
+> (rimandato all'ultimo, scelta dell'utente) · resto invariato, vedi `COSE_DA_FARE.md`.
 
 ---
 

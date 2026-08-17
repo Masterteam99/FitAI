@@ -1,14 +1,15 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (15 ago 2026, notte):** `main` include ora tutto (Sessioni 1-8), pushato e in
+> **Snapshot codice (17 ago 2026):** `main` include ora tutto (Sessioni 1-9), pushato e in
 > produzione. Rispetto a quanto descritto qui: la pagina esercizio (§ dettaglio Libreria) è stata
 > ridisegnata — due video affiancati (spiegazione/esecuzione), parametri biomeccanici tolti dalla
 > vista utente, checkbox al posto del vecchio bottone "Attiva analisi avanzata"; il diario
 > nutrizionale ora usa ricerca alimento + grammatura invece di calorie/macro inserite a mano; Admin ha
-> un editor guidato per i trigger biomeccanici (non più JSON grezzo) e una nuova sezione Alimenti;
-> Community è dietro un placeholder "in arrivo". Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md`
-> (Sessioni 7-8).
+> un editor guidato per i trigger biomeccanici (non più JSON grezzo), una sezione Alimenti, gestione
+> premi classifica e l'editor inline del copy pubblico; Community è dietro un placeholder "in arrivo";
+> nuova sezione pubblica `/prova-gratuita` (analisi senza account) e `/leaderboard` (classifica).
+> Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
 > **Aperti:** vedi `STATO_PROGETTO.md`.
 
 ---

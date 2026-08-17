@@ -1,24 +1,24 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-15 (notte — Sessione 8)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto, **valgono i diari**.
 >
-> **QUASI TUTTO CIÒ CHE SEGUE È GIÀ FATTO** (Sessioni 3–8), incluso l'integrazione in `main` e il
+> **QUASI TUTTO CIÒ CHE SEGUE È GIÀ FATTO** (Sessioni 3–9), incluso l'integrazione in `main` e il
 > deploy in produzione. Mappa rapida:
 > - PARTE 1 · #1 `db push` → ✅ · #2 bucket `user-documents` → ✅ · #3 parsing AI documenti → ✅ (feature #4) · #4 trend carichi → ✅ (feature #5) · #5 Chi siamo → ✅ · #6 verifica loggata → ✅ (Sess. 3).
-> - PARTE 2 · **A** edit esercizio → ✅ (#6a) · **B** template allenamenti → ✅ (#6b) · **C** modifica pool nutrizionale → ✅ (#6c) · **D** pool ricette curate → ✅ (#6e) · **E** quiz → ✅ · **F** SiteContent → ✅ (#6d).
-> - **Sessione 6 (15 ago):** MVP polish + piano "Sessione/Nutrizione/Analisi" (10 fasi).
-> - **Sessione 7 (15 ago, sera):** merge in `main`, deploy Vercel verificato live
->   (`fit-ai-six-ruddy.vercel.app`), bug Upstash Redis risolto.
-> - **Sessione 8 (15 ago, notte):** verifica end-to-end dei flussi con 3 bug reali trovati e corretti
->   (email case-mismatch, onboarding che rimbalzava a registrati, filtro Libreria che mandava in
->   crash la pagina); pagina esercizio ridisegnata; database alimenti (142 alimenti + ricerca); editor
->   guidato trigger biomeccanici in Admin; Progressi ristrutturato; Community "in arrivo". Committato
->   e **pushato in produzione** (commit `725d8c1`). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessioni 7-8).
-> - **Residui reali aperti:** env var VAPID da confermare su Vercel · credito Anthropic da ricaricare
->   (scelta dell'utente, rimandato all'ultimo) · Libreria macro-filtri (da chiarire punto 4) · Profilo
+> - PARTE 2 · **A** edit esercizio → ✅ (#6a) · **B** template allenamenti → ✅ (#6b) · **C** modifica pool nutrizionale → ✅ (#6c) · **D** pool ricette curate → ✅ (#6e) · **E** quiz → ✅ · **F** SiteContent → ✅ (#6d, ora anche con editor inline "designer", Sessione 9).
+> - **Sessione 6-8 (15 ago):** MVP polish, merge in `main`, deploy Vercel live, fix end-to-end, pagina
+>   esercizio ridisegnata, database alimenti, editor trigger biomeccanici, Progressi ristrutturato.
+> - **Sessione 9 (17 ago):** fix contrasto testo esteso, CTA sticky, nav "Scarica l'app", layout
+>   Nutrizione, copy IA/AI ripulito nei bottoni; **prova gratuita ospiti** (`/prova-gratuita`, nessun
+>   account, referto via email, una prova per email); **personaggio 2D animato** al posto dello sticker
+>   (3D valutato, asset da procurare); **carosello esempi report**; **editor inline copy per Admin**
+>   (oggi su Prezzi); **Gamification** (`/leaderboard`, premi da Admin, teaser in home). Committato e
+>   pushato in produzione. Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
+> - **Residui reali aperti:** asset 3D da procurare/commissionare · estendere editor inline/`useCopy()`
+>   alle altre pagine · env var VAPID da confermare su Vercel · credito Anthropic da ricaricare (scelta
+>   dell'utente, rimandato all'ultimo) · Libreria macro-filtri (da chiarire punto 4) · Profilo
 >   impostazioni lingua · i18n completo (rimandata come iniziativa a parte) · verificare switch fotocamera + flusso
->   analisi inline con hardware reale (fotocamera bloccata nell'ambiente di sviluppo) · ripristinare
->   credito Anthropic + Upstash (per *verificare* l'output AI) · pagine `funzionalita`/`storie`/`risorse`
->   non allineate · env VAPID/CRON su Vercel prima del deploy · deploy.
+>   analisi inline con hardware reale (fotocamera bloccata nell'ambiente di sviluppo) · pagine
+>   `funzionalita`/`storie`/`risorse` non allineate.
 > Il testo sotto è tenuto come storico della visione "Account Manager completo".
 
 ---

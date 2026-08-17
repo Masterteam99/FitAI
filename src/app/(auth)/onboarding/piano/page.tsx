@@ -62,7 +62,7 @@ export default function PianoPreviewPage() {
 
         <FadeIn delay={0.1}>
           <Card className="overflow-hidden">
-            <div className="p-6" style={{ background: "var(--organic-espresso)", color: "var(--organic-sand)" }}>
+            <div className="p-6" style={{ background: "var(--organic-espresso)", color: "var(--foreground)" }}>
               <p className="text-xs uppercase tracking-[0.16em]" style={{ color: "var(--organic-terracotta-soft)" }}>Programma personalizzato</p>
               <p className="font-display text-2xl mt-1">{goal} · {level}</p>
               <p className="text-sm mt-1" style={{ color: "rgba(234,241,248,.72)" }}>{equip} · {days} giorni a settimana</p>
