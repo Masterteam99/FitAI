@@ -11,6 +11,91 @@
 
 ---
 
+## Sessione 10 — 2026-08-18 — Completamento punti 1/2/4/5 da "Aggiornameni possibili.md" (v2, 5 punti)
+
+**Contesto:** l'utente ha riscritto `Aggiornameni possibili.md` da zero con 5 nuovi punti (i 10 di
+Sessione 9 sono superati). Lavorato punto per punto con chiarimenti mirati prima di ogni parte grossa,
+dato che nelle sessioni precedenti alcuni fraintendimenti (2D vs 3D, limite giornaliero vs per-email)
+erano costati tempo — questa volta confermato lo scope prima di costruire.
+
+**Punto 1 — Prova gratuita, completamento:**
+- Spiegato all'utente il flusso attuale passo-passo (aveva chiesto chiarimento), poi aggiunti i pezzi
+  mancanti: campo **nome** (nuovo campo `GuestAnalysisRequest.name`), scelta esplicita **"Registra
+  ora" vs "Carica un video"** invece di solo registrazione live.
+- Upload video: riusa `extractProFrames` (già esistente per il video PT) per i frame vision, e
+  riproduce il file caricato in un `<video>` nascosto mentre `usePoseDetection` (stesso hook della
+  fotocamera live) traccia la posa in tempo reale — nessuna pipeline di analisi duplicata.
+- Selezionati e attivati **6 esercizi di default** in produzione (Squat, Push-Up, Affondi, Plank,
+  Crunch, Curl Bicipiti — corpo libero/manubri, a casa), scelti io su richiesta esplicita dell'utente.
+- **2 bug reali trovati e corretti** testando dal vivo con un video reale scaricato dal PT: (1)
+  l'elemento `<video>` nascosto per l'elaborazione non era ancora montato quando gli si assegnava il
+  file (bug di timing React — fix: spostata la logica in un `useEffect` invece che nel click handler);
+  (2) messaggio d'errore email non valida mostrava per sbaglio il testo di suggerimento invece di un
+  errore vero.
+- Personalizzata l'email di referto col nome se fornito ("Ciao Nome, ecco...").
+
+**Punto 2 — Editor design, chiarito e completato:**
+- L'utente ha chiarito 2 volte lo scope: (a) vuole il **vero editor di design** (colore/dimensione,
+  non solo testo) ma **solo dentro l'Admin**, mai sovrapposto alle pagine pubbliche come nella prima
+  versione; (b) vuole anche cronologia avanti/indietro, un reset al default, e un assistente IA.
+- **Riprogettato l'accesso**: rimosso il bottone flottante che appariva su qualsiasi pagina pubblica
+  visitata da un admin. Ora l'unico punto d'accesso è `/admin/site-content` → nuova sezione "Editor
+  visuale" (`SiteVisualEditor.tsx`): selettore pagina + **iframe** con l'anteprima live della pagina
+  pubblica caricata con `?siteEditor=1` (query flag che attiva la modalità modifica solo lì dentro).
+  Richiesto cambiare `X-Frame-Options` da `DENY` a `SAMEORIGIN` in `next.config.ts` (protezione da
+  clickjacking di siti esterni resta piena, permesso solo al nostro dominio di incorniciarsi).
+- **Nuovo modello DB `SiteStyleOverride`** (colore + dimensione per dot-path, stesso schema chiave di
+  `SiteContent`) + route `/api/site-style` (pubblica) e `/api/admin/site-style` (PUT, whitelist di
+  colori/taglie ammessi — niente CSS libero iniettabile).
+- **Cronologia**: `SiteEditModeProvider` ora centralizza testo+stile di tutti i campi in mappe
+  condivise (prima ogni `EditableText` teneva lo stato solo localmente) + uno stack di history con
+  Annulla/Ripeti in una toolbar flottante (visibile solo dentro l'iframe editor). "Ripristina default"
+  per singolo campo nel modale di modifica.
+- **Assistente IA**: cercato prima su GitHub progetti open source che facessero "editor visuale + IA
+  integrata" (Instatic, FormCMS, GrapesJS, VoxelSite) — tutti piattaforme CMS complete da adottare in
+  blocco, non componenti integrabili nell'architettura attuale. Costruito invece un endpoint
+  (`/api/admin/site-editor-assistant`) che riusa l'infrastruttura Claude già presente (stesso pattern
+  dell'AI Coach) con tool-use: l'admin scrive in linguaggio naturale cosa vuole, l'assistente
+  identifica il campo giusto tra quelli registrati in pagina e applica testo/colore/dimensione, o
+  chiede chiarimenti se ambiguo.
+- **Non fatto** (esplicitamente lasciato per dopo): riordino dei blocchi via drag — il vero
+  posizionamento libero a pixel romperebbe il layout responsive Tailwind/flexbox, quindi la versione
+  sensata è "riordina i fratelli in una sezione", non ancora costruita.
+
+**Punto 4 — Scarica l'app:** bug reale — il bottone "Installa ora" spariva del tutto quando il browser
+non aveva ancora sparato `beforeinstallprompt` (sempre su iOS, spesso al primo caricamento). Ora è
+sempre visibile: usa il prompt nativo se disponibile, altrimenti scorre alle istruzioni manuali.
+
+**Punto 5 — Libreria:**
+- Rinominata "Libreria" → "Libreria esercizi" (title + nav).
+- Filtri: solo gruppo muscolare + ricerca sempre visibili, il resto (difficoltà/attrezzatura/tag)
+  dietro un bottone "Altri filtri" (nuovo componente `ExerciseFilters.tsx`, client, estratto dalla
+  pagina server per gestire il toggle).
+- Bottone "Termina esercizio" aggiunto durante la registrazione (sia nel flusso autenticato che nella
+  prova gratuita) — richiede un `onEndEarly` che replica esattamente la stessa pulizia usata a fine
+  durata naturale.
+- **Vista di registrazione ridisegnata**: durante `RECORDING` la fotocamera occupa tutto lo schermo,
+  con il video del PT in un riquadro (PIP) in alto a destra — solo da desktop in su, come richiesto
+  esplicitamente ("su mobile lo spazio non basterebbe"). In `IDLE`/`COUNTDOWN` resta l'affiancato.
+- **Permessi camera/microfono automatici**: chiarito che non è tecnicamente possibile — è una
+  protezione di sicurezza del browser che nessun sito può bypassare, non un bug dell'app. Il
+  "permission denied" visto durante i test è dovuto al browser interno di Claude, non capiterà su un
+  dispositivo reale.
+
+**Verifica:** `tsc --noEmit` e `eslint` puliti (0 errori) su tutto il lavoro. Ogni feature con
+backend/DB testata dal vivo con account admin usa-e-getta (creati e cancellati subito dopo), incluso
+un video reale scaricato dal PT per il percorso upload — funzionante fino al punto dove serve il
+credito Anthropic (limite noto, non un bug introdotto).
+
+**Non fatto (rimandato):** punto 3 (sezione Prezzi — tabelle/struttura/analisi costo AI) — l'utente ha
+chiesto esplicitamente di aspettare le sue risposte su quali competitor inserire, e ha aggiunto un
+nuovo requisito: un'analisi di quanto potrebbe costare (in token/USD Anthropic) un utente che ripete
+più volte al mese le analisi video, da riflettere nel pricing.
+
+**Stato a fine sessione:** tutto il lavoro sopra **non ancora committato** (verificato `git status`).
+
+---
+
 ## Sessione 9 — 2026-08-17 — Fix rapidi + copy IA + 4 iniziative grandi da "Aggiornameni possibili.md" (1,2,3,4,8)
 
 **Contesto:** proseguimento di `Aggiornameni possibili.md`. Prima i punti "chiari" (fix rapidi), poi

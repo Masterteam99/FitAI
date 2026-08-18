@@ -37,7 +37,7 @@ export default function ScaricaPage() {
         </FadeIn>
       </section>
 
-      <section className="max-w-4xl mx-auto px-4 pb-16 grid md:grid-cols-2 gap-6">
+      <section id="istruzioni-installazione" className="max-w-4xl mx-auto px-4 pb-16 grid md:grid-cols-2 gap-6 scroll-mt-20">
         {guides.map((g) => {
           const Icon = g.icon;
           return (

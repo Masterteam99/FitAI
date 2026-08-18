@@ -116,23 +116,26 @@ export async function sendEmailChangedNotice(to: string, newEmail: string) {
 
 export async function sendGuestAnalysisReportEmail(
   to: string,
+  name: string | null,
   exerciseName: string,
   combinedScore: number,
   overallJudgment: string,
   prioritizedImprovements: string[],
 ) {
+  const greeting = name ? `Ciao ${name.split(" ")[0]}, ecco` : "Ecco";
   const improvementsHtml = prioritizedImprovements.length
     ? `<ul style='padding-left:20px;line-height:1.8'>${prioritizedImprovements.slice(0, 3).map((i) => `<li>${i}</li>`).join("")}</ul>`
     : "";
   const html = layout(
     `Il referto della tua ${exerciseName}: ${Math.round(combinedScore)}/100`,
-    `<p>${overallJudgment}</p>
+    `<p>${greeting} il referto della tua esecuzione.</p>
+     <p>${overallJudgment}</p>
      ${improvementsHtml}
      <p style='color:#6e7681;font-size:13px'>Questa analisi è stata generata dalla prova gratuita, senza account. Crea un account gratuito per salvare questo referto, ricevere un piano su misura e continuare a monitorare i tuoi progressi.</p>`,
     `${APP_URL}/registrati`,
     "Crea il tuo account gratuito"
   );
-  const text = `Il referto della tua ${exerciseName}: ${Math.round(combinedScore)}/100\n\n${overallJudgment}\n\n${prioritizedImprovements.slice(0, 3).join("\n")}\n\nCrea un account gratuito per salvare questo referto: ${APP_URL}/registrati`;
+  const text = `${greeting} il referto della tua ${exerciseName}: ${Math.round(combinedScore)}/100\n\n${overallJudgment}\n\n${prioritizedImprovements.slice(0, 3).join("\n")}\n\nCrea un account gratuito per salvare questo referto: ${APP_URL}/registrati`;
   return send({ to, subject: `Motion Insight — il referto della tua ${exerciseName}`, html, text });
 }
 

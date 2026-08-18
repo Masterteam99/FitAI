@@ -1,24 +1,21 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (17 ago 2026):** `main` include ora anche la Sessione 9: fix contrasto testo esteso (bug reale in 6 file:
-> dashboard, footer, CTA homepage/Il Metodo — testo invisibile su sfondo scuro), CTA sticky in
-> homepage, link "Scarica l'app" in nav + pagina ampliata, layout Nutrizione corretto (form sempre
-> visibile), copy "IA/AI" tolto da bottoni/badge/checkbox (resta nei testi esplicativi); **nuova prova
-> gratuita per ospiti** (`/prova-gratuita`, nessun account, stessa pipeline di analisi a 3 livelli,
-> referto via email, una prova completata per email — non un limite giornaliero); **personaggio 2D
-> animato** al posto dello sticker a linee nella home (il 3D richiede un asset esterno, non ancora
-> procurato); **carosello di 3 esempi di referto** nella home; **editor inline "designer" per l'Admin**
-> (bottone "Modifica pagina" sul sito pubblico, clic su un testo → salva → live immediato — oggi attivo
-> solo sulla pagina Prezzi); **Gamification** (classifica `/leaderboard` per punti, premi configurabili
-> da Admin, sezione informativa in home). Nuovi modelli DB: `GuestAnalysisRequest`,
-> `LeaderboardReward`, `Exercise.availableForFreeTrial`. Tutto verificato dal vivo con account di test
-> (creati e poi cancellati); `tsc`/`eslint` puliti (0 errori). Dettaglio: `COSE_FATTE_IN_SESSIONE.md`
-> (Sessione 9).
-> **Aperti:** asset 3D per il personaggio animato da procurare/commissionare (opzioni valutate:
-> DeepMotion, Mixamo, freelance, Spline) · estendere l'editor inline e `useCopy()` alle altre pagine
-> (oggi solo Prezzi) · env var VAPID su Vercel da confermare · credito Anthropic da ricaricare
-> (rimandato all'ultimo, scelta dell'utente) · resto invariato, vedi `COSE_DA_FARE.md`.
+> **Snapshot codice (18 ago 2026):** la Sessione 10 completa la prova gratuita (campo nome, scelta "Registra ora" o
+> "Carica un video" oltre alla sola registrazione live, 6 esercizi di default attivati); l'**editor
+> design è stato spostato dentro Admin** (`/admin/site-content` → Editor visuale: anteprima iframe con
+> `?siteEditor=1`, non più sovrapposto alle pagine pubbliche) con cronologia Annulla/Ripeti, reset per
+> campo e un **assistente IA integrato** (linguaggio naturale → modifica applicata, riusa
+> l'infrastruttura Claude già usata dall'AI Coach); Libreria rinominata "Libreria esercizi" con filtri
+> principali+"Altri filtri", bottone "Termina esercizio", vista di registrazione a schermo intero con
+> video PT in un riquadro (PIP, desktop); corretto il bottone "Installa ora" della PWA (spariva su
+> iOS/al primo caricamento). Nuovo modello DB `SiteStyleOverride`; `X-Frame-Options` cambiato da `DENY`
+> a `SAMEORIGIN` per l'iframe dell'editor. Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 10).
+> **Aperti:** sezione Prezzi (tabelle/struttura + nuova analisi costo AI per utilizzo intensivo, in
+> attesa risposte dell'utente) · riordino blocchi nell'editor design · asset 3D per il personaggio
+> animato da procurare · estendere l'editor design alle altre pagine (oggi solo Prezzi) · env var VAPID
+> su Vercel da confermare · credito Anthropic da ricaricare (rimandato all'ultimo, scelta dell'utente)
+> · resto invariato, vedi `COSE_DA_FARE.md`.
 
 ---
 

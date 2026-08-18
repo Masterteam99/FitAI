@@ -11,42 +11,61 @@
 
 ---
 
-## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-17 — Sessione 9]`
+## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-18 — Sessione 10]`
 
-- **Asset 3D per il personaggio animato** — punto 2 di `Aggiornameni possibili.md`: l'utente vuole il
-  3D (non il 2D, tenuto come miglioramento interinale). Serve procurare/commissionare un asset esterno
-  — opzioni date: DeepMotion (converte un video reale in animazione 3D via AI motion-capture, il più
-  coerente con la richiesta originale), Mixamo (gratuito, personaggio generico), freelance su
-  commissione, Spline (no-code). Una volta scelto e ottenuto l'asset, l'integrazione lato codice
-  (React Three Fiber) è da fare.
-- **Estendere l'editor inline copy (punto 3) alle altre pagine** — oggi `SiteEditModeProvider` +
-  `EditableText` sono attivi solo su `/prezzi`. Ogni altra pagina richiede: 1) migrarla da
+- **Punto 3 di `Aggiornameni possibili.md` (Prezzi — tabelle/struttura)** — l'utente vuole rivederlo
+  "con calma", risposte sue attese prima di toccare il codice su: quali competitor mostrare nelle
+  tabelle comparative (oggi ci sono dati `[DATI da verificare]` segnaposto), e la struttura generale.
+- **Nuovo — analisi costo AI per il pricing** `[agg. 2026-08-18]`: l'utente vuole, come parte del
+  lavoro sulla sezione Prezzi, un'**analisi di quanto costa (in token/USD Anthropic) un utente che
+  ripete le analisi video più volte al mese** — per capire se il prezzo Premium attuale (9,90€/mese,
+  analisi illimitate) copre il costo reale a un utilizzo intensivo, o se serve un limite/tier diverso.
+  Base dati già esistente per farla: `services/analysis/weights.ts` (pesi L1/L2/L3), i modelli usati
+  in `lib/anthropic.ts` (`MODELS.DEFAULT` = Sonnet), e la sezione Admin → Utenti che già mostra un
+  costo AI stimato per utente (verificare come lo calcola oggi, vedi item sotto).
+- **Riordino blocchi nell'editor design** — coda del punto 2: oggi l'editor Admin (`/admin/site-content`
+  → Editor visuale) modifica testo/colore/dimensione ma non permette di riordinare gli elementi in una
+  sezione (drag per cambiare l'ordine tra fratelli, non posizione libera a pixel — quella romperebbe
+  il layout responsive). Da progettare: probabilmente serve un array ordinabile persistito per
+  sezione, con drag-and-drop lato editor.
+- **Asset 3D per il personaggio animato** — punto 2 di `Aggiornameni possibili.md` v1 (sessione 9):
+  l'utente vuole il 3D (non il 2D, tenuto come miglioramento interinale). Serve procurare/commissionare
+  un asset esterno — opzioni date: DeepMotion (converte un video reale in animazione 3D via AI
+  motion-capture), Mixamo (gratuito, personaggio generico), freelance su commissione, Spline (no-code).
+  Una volta scelto e ottenuto l'asset, l'integrazione lato codice (React Three Fiber) è da fare.
+- **Estendere l'editor design alle altre pagine** — oggi `SiteEditModeProvider` + `EditableText` sono
+  attivi solo su `/prezzi` (selezionabile comunque nell'editor visuale Admin, ma senza testi editabili
+  wired su quella pagina risulterà vuota). Ogni altra pagina richiede: 1) migrarla da
   `import { copy }` statico a `useCopy()` (se non già client component, serve uno split
   server-shell/client-content come già fatto per Prezzi), 2) avvolgere i testi in `EditableText`.
   Meccanico ma da fare pagina per pagina — non un blocco tecnico, solo tempo.
-- **Punto 4 di `Aggiornameni possibili.md` (Libreria filtri) — da chiarire con l'utente**: chiede di
-  togliere "l'iconcina/freccia al centro della card", ma nel codice attuale non risulta presente
-  un'icona di quel tipo (solo un badge "Video" in basso a destra sul thumbnail) — probabile
-  riferimento a un mockup diverso. Chiarire prima di toccare la card. Il resto del punto (macro-filtri
-  + pulsante "altri filtri" invece di mostrarli tutti insieme) resta da fare.
-- **Punto 7 (Profilo) — da fare**: sezione impostazioni con selettore lingua (tema chiaro/scuro
-  rimandato: tema chiaro non esiste nel codice, solo scuro/lime).
+- **Punto 7 (Profilo, da `Aggiornameni possibili.md` v1) — da fare**: sezione impostazioni con
+  selettore lingua (tema chiaro/scuro rimandato: tema chiaro non esiste nel codice, solo scuro/lime).
 - **i18n completo (IT/EN) — rimandata come iniziativa a parte**, discussa con l'utente: tutto il copy
   oggi è fisso in italiano in `copy.ts`, nessuna infrastruttura di traduzione. Opzioni valutate:
   traduzione via browser (zero lavoro, ma conflitti DOM noti con React) vs traduzione automatica
   server-side con cache (più lavoro di setup una tantum, risultato professionale). Da pianificare
   come progetto dedicato quando si apre il mercato non italiano.
-- **Punto 8 residuo (Admin → Utenti)**: costo AI stimato "€0,06" mostrato senza Anthropic attivo — da
-  chiarire con l'utente cosa lo genera prima di poter giudicare se è un bug. (Da non confondere con la
-  Gamification, anche quella "punto 8" ma di `Aggiornameni possibili.md` — quella è **fatta**, vedi
-  storico Sessione 9.)
+- **Punto 8 residuo (Admin → Utenti, da `Aggiornameni possibili.md` v1)**: costo AI stimato "€0,06"
+  mostrato senza Anthropic attivo — da chiarire con l'utente cosa lo genera prima di poter giudicare se
+  è un bug. Probabilmente rilevante anche per la nuova analisi costo AI del punto 3 sopra.
 - **VAPID (notifiche push)**: le chiavi sono già generate in `.env.local` locale ma non è stato
   confermato se sono state copiate su Vercel — verificare.
-- **Nota per me stesso (Claude) — feedback esplicito dell'utente**: quando aggiorno lo stato a fine
-  sessione, aggiornare **tutti** i documenti con banner "STATO REALE" (`README.md`, `ROADMAP.md`,
-  `STATO_PROGETTO.md`, `CHECKLIST_DEPLOY.md`, `DOCUMENTAZIONE_FLUSSI.md`, `AGGIORNAMENTI.md`, i 4
-  `MOTION_INSIGHT_*.md`), non solo i due diari — l'utente si è infastidito perché in questa sessione
-  li avevo dimenticati la prima volta.
+- **Credito Anthropic**: ancora da ricaricare (scelta dell'utente, rimandato all'ultimo prima del
+  lancio) — blocca la verifica reale di: generazione piani AI, prova gratuita (analisi vera), e ora
+  anche l'assistente IA dell'editor Admin.
+
+---
+
+## ▶️ Storico "parti da qui" — Sessione 9 `[agg. 2026-08-17]`
+
+- Fix rapidi (contrasto, CTA sticky, nav download, layout Nutrizione), copy IA ripulito, prova
+  gratuita ospiti, personaggio 2D, carosello report, editor Admin (prima versione), gamification —
+  **tutti fatti**, poi ampliati/corretti in Sessione 10 (editor spostato in Admin, prova gratuita
+  completata con nome+upload, Libreria, Scarica l'app). Vedi storico sotto per il dettaglio originale.
+- I punti "asset 3D", "estendere editor alle altre pagine", "profilo lingua", "i18n", "punto 8 residuo
+  Admin Utenti", "VAPID" restavano aperti — **spostati nella sezione "PARTI DA QUI" Sessione 10 in
+  cima** (ancora aperti, non chiusi in Sessione 10).
 
 ---
 
@@ -167,6 +186,22 @@
 ---
 
 ## ✅ Fatto (storico, per riferimento)
+
+**Sessione 10 (2026-08-18)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md`:
+- ✅ Prova gratuita completata: campo nome, scelta "Registra ora" vs "Carica un video" (riusa
+  l'estrazione frame + pose detection esistenti), 6 esercizi di default attivati in produzione. 2 bug
+  reali trovati e corretti (video non montato, messaggio errore sbagliato).
+- ✅ Editor design spostato **solo dentro Admin** (`/admin/site-content` → Editor visuale, iframe con
+  `?siteEditor=1`) — non più sovrapposto alle pagine pubbliche. Nuovo modello `SiteStyleOverride`
+  (colore+dimensione). `X-Frame-Options` cambiato da `DENY` a `SAMEORIGIN` per l'iframe.
+- ✅ Cronologia modifiche (Annulla/Ripeti) + "Ripristina default" per campo.
+- ✅ Assistente IA nell'editor (valutati progetti open source su GitHub, nessuno adatto — costruito
+  riusando l'infrastruttura Claude esistente, stesso pattern dell'AI Coach).
+- ✅ Libreria: rinominata "Libreria esercizi", filtri principali+"Altri filtri", bottone "Termina
+  esercizio", vista registrazione schermo intero + PIP video PT (desktop), chiarito il limite reale sui
+  permessi camera/microfono (sicurezza browser, non un bug).
+- ✅ Scarica l'app: bottone "Installa ora" sempre visibile (spariva su iOS/al primo caricamento).
+- ✅ Tutto verificato dal vivo con account admin di test (creati e cancellati); `tsc`/`eslint` puliti.
 
 **Sessione 9 (2026-08-17)** — dettaglio in `COSE_FATTE_IN_SESSIONE.md`:
 - ✅ Fix contrasto testo esteso (6 file), CTA sticky homepage, nav "Scarica l'app" + pagina ampliata,

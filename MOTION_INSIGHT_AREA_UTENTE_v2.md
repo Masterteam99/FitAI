@@ -1,14 +1,14 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (17 ago 2026):** oltre a tutto quanto già descritto (area utente v2 + Account
-> Manager + estensioni Sessioni 6-8), in Sessione 9: nuova sezione pubblica "prova gratuita" per ospiti
-> senza account (`/prova-gratuita`), nuova sezione "Classifica" (`/leaderboard`) con premi
-> configurabili da Admin, editor inline del copy per Admin sul sito pubblico. `main` pushato e **in
+> **Snapshot codice (18 ago 2026):** oltre a tutto quanto già descritto (area utente v2 + Account
+> Manager + estensioni Sessioni 6-9), in Sessione 10: prova gratuita completata (nome, upload video,
+> esercizi di default), editor design del sito spostato dentro Admin con cronologia e assistente IA,
+> Libreria ridisegnata (nome, filtri, termina esercizio, vista schermo intero). `main` pushato e **in
 > produzione**.
 > **Aperti:** switch fotocamera e flusso analisi inline non testabili con hardware reale in questo
-> ambiente · asset 3D per il personaggio animato da procurare · resto invariato, vedi
-> `STATO_PROGETTO.md`.
+> ambiente · sezione Prezzi + analisi costo AI (in attesa risposte utente) · asset 3D per il
+> personaggio animato da procurare · resto invariato, vedi `STATO_PROGETTO.md`.
 
 ---
 

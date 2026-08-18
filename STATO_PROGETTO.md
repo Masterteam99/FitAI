@@ -1,36 +1,39 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (17 ago 2026):** `main` è **in produzione** su Vercel
+> **Snapshot codice (18 ago 2026):** `main` è **in produzione** su Vercel
 > (`fit-ai-six-ruddy.vercel.app`).
-> - **Sessioni 7-8:** merge in `main`, deploy Vercel live, bug Upstash risolto, verifica end-to-end
->   flussi (3 bug corretti), pagina esercizio ridisegnata, database alimenti, editor trigger
->   biomeccanici, Progressi ristrutturato, Community dietro placeholder "in arrivo".
-> - **Sessione 9:** fix contrasto testo esteso (bug reale in 6 file: dashboard, footer, CTA
->   homepage/Il Metodo — testo invisibile su sfondo scuro), CTA sticky in homepage, link "Scarica
->   l'app" in nav + pagina ampliata, layout Nutrizione corretto (form sempre visibile), copy "IA/AI"
->   tolto da bottoni/badge/checkbox (resta nei testi esplicativi). Poi le iniziative grandi da
->   `Aggiornameni possibili.md`: **prova gratuita per ospiti** (`/prova-gratuita`, nessun account,
->   stessa pipeline di analisi a 3 livelli dei Premium, referto via email, una prova completata per
->   email — non un limite giornaliero, tentativi di registrazione illimitati); **personaggio 2D
->   animato** al posto dello sticker a linee nella home (il 3D richiede un asset esterno da procurare —
->   opzioni valutate: DeepMotion, Mixamo, freelance, Spline); **carosello di 3 esempi di referto**
->   nella home; **editor inline "designer" per l'Admin** (bottone "Modifica pagina" sul sito pubblico,
->   clic su un testo → salva → live immediato, oggi attivo solo sulla pagina Prezzi — estendere alle
->   altre pagine richiede migrarle a `useCopy()`, meccanico); **Gamification** (classifica
->   `/leaderboard` per punti, riusa il flag privacy `profileVisibility` già usato per la Community,
->   premi configurabili da Admin per fascia di posizione, sezione informativa in home). Nuovi modelli
->   DB: `GuestAnalysisRequest`, `LeaderboardReward`, `Exercise.availableForFreeTrial`. Tutto verificato
->   dal vivo con account di test (creati e poi cancellati); `tsc`/`eslint` puliti (0 errori). Dettaglio
->   completo: `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
-> **Aperti:** asset 3D per il personaggio animato da procurare/commissionare · estendere l'editor
-> inline e `useCopy()` alle altre pagine (oggi solo Prezzi) · env var VAPID da confermare su Vercel ·
-> credito Anthropic da ricaricare (scelta dell'utente, rimandato all'ultimo prima del lancio) ·
-> verificare switch fotocamera e flusso analisi inline con hardware reale (non testabile in questo
-> ambiente di sviluppo) · Libreria macro-filtri (punto da chiarire con l'utente) · Profilo
-> impostazioni lingua · i18n completo del copy (rimandata come iniziativa a parte) · pagine
-> `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore, Chi siamo,
-> FAQ, P.IVA, dati competitor).
+> - **Sessioni 7-9:** merge in `main`, deploy Vercel live, bug Upstash risolto, verifica end-to-end
+>   flussi, fix contrasto testo esteso, prova gratuita ospiti (prima versione, solo registrazione
+>   live), personaggio 2D animato, carosello esempi report, editor copy per Admin (prima versione,
+>   sovrapposto alle pagine pubbliche), Gamification (classifica + premi).
+> - **Sessione 10:** **prova gratuita completata** — campo nome, scelta esplicita "Registra ora" vs
+>   "Carica un video" (riusa l'estrazione frame e il pose-detection già esistenti, nessuna pipeline
+>   duplicata), 6 esercizi di default attivati in produzione (corpo libero/manubri); 2 bug reali
+>   trovati e corretti testando con un video vero. **Editor design riprogettato**: spostato
+>   **esclusivamente dentro Admin** (`/admin/site-content` → "Editor visuale", anteprima in iframe con
+>   `?siteEditor=1` — non più un bottone sovrapposto alle pagine pubbliche), aggiunta cronologia
+>   Annulla/Ripeti, "Ripristina default" per campo, e un **assistente IA** (valutati progetti open
+>   source su GitHub — nessuno adatto, sono piattaforme CMS complete — costruito riusando
+>   l'infrastruttura Claude già usata dall'AI Coach: linguaggio naturale → modifica applicata). Nuovo
+>   modello DB `SiteStyleOverride`; `X-Frame-Options` cambiato da `DENY` a `SAMEORIGIN` per l'iframe.
+>   **Libreria** rinominata "Libreria esercizi", filtri principali+"Altri filtri", bottone "Termina
+>   esercizio", vista di registrazione a schermo intero con video PT in un riquadro (PIP, solo
+>   desktop), chiarito che i permessi camera/microfono automatici non sono possibili (sicurezza del
+>   browser, non un bug). **Scarica l'app**: bottone "Installa ora" sempre visibile (spariva su
+>   iOS/al primo caricamento). Tutto verificato dal vivo con account admin di test (creati e
+>   cancellati); `tsc`/`eslint` puliti (0 errori). Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md`
+>   (Sessione 10).
+> **Aperti:** sezione Prezzi (tabelle/struttura + nuova analisi costo AI per utilizzo intensivo, in
+> attesa risposte dell'utente su competitor e criteri) · riordino blocchi nell'editor design (drag per
+> spostare l'ordine, non fatto) · asset 3D per il personaggio animato da procurare/commissionare ·
+> estendere l'editor design/`useCopy()` alle altre pagine (oggi solo Prezzi) · env var VAPID da
+> confermare su Vercel · credito Anthropic da ricaricare (scelta dell'utente, rimandato all'ultimo
+> prima del lancio — blocca anche la verifica reale dell'assistente IA dell'editor) · verificare
+> switch fotocamera e flusso analisi inline con hardware reale (non testabile in questo ambiente di
+> sviluppo) · Profilo impostazioni lingua · i18n completo del copy (rimandata come iniziativa a parte)
+> · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore,
+> Chi siamo, FAQ, P.IVA, dati competitor).
 
 ---
 

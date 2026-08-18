@@ -1,5 +1,5 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è ora completamente aggiornato e in produzione (Sessioni 1-9: merge, deploy Vercel live, area utente v2, prova gratuita ospiti, gamification/classifica, editor inline copy per Admin, personaggio 2D animato — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 9 per il dettaglio completo).
+> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è ora completamente aggiornato e in produzione (Sessioni 1-10: merge, deploy Vercel live, area utente v2, prova gratuita ospiti completa, gamification/classifica, editor design in Admin con assistente IA, Libreria ridisegnata — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 10 per il dettaglio completo).
 
 ---
 

@@ -1,12 +1,14 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (17 ago 2026):** oltre ai cambi di Sessioni 6-8, in Sessione 9 sono cambiate/aggiunte
-> anche: `/` (homepage: contrasto testo corretto, CTA sticky, carosello esempi report, sezione
-> gamification, personaggio 2D animato), `/nutrizione` (layout corretto), nuova `/prova-gratuita`
-> (analisi senza account), nuova `/leaderboard` (classifica), Admin (editor inline copy pubblico,
-> gestione premi classifica, flag esercizi per prova gratuita). `main` pushato e **in produzione**.
-> Dettaglio pagina per pagina: `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
+> **Snapshot codice (18 ago 2026):** oltre ai cambi di Sessioni 6-9, in Sessione 10 sono cambiate/aggiunte
+> anche: `/prova-gratuita` (nome + scelta registra/carica video), `/esercizi` (rinominata "Libreria
+> esercizi", filtri principali+"Altri filtri"), `/analisi/sessione` (bottone "Termina esercizio", vista
+> schermo intero+PIP in registrazione), `/scarica` (bottone installazione sempre visibile), Admin →
+> `/admin/site-content` (nuovo "Editor visuale": anteprima iframe con modifica testo/colore/dimensione,
+> cronologia, assistente IA — sostituisce l'editor sovrapposto alle pagine pubbliche di Sessione 9).
+> `main` pushato e **in produzione**. Dettaglio pagina per pagina: `COSE_FATTE_IN_SESSIONE.md`
+> (Sessione 10).
 > **Aperti:** vedi `STATO_PROGETTO.md`.
 
 ---

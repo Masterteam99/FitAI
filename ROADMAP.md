@@ -1,13 +1,14 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-17 (Sessione 9)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (17 ago 2026):** `main` è **in produzione** — oltre a Sessioni 1-8, la Sessione 9
-> aggiunge: fix contrasto testo esteso, CTA sticky homepage, nav "Scarica l'app", layout Nutrizione,
-> copy IA/AI ripulito nei bottoni; prova gratuita ospiti (`/prova-gratuita`), personaggio 2D animato,
-> carosello esempi report, editor inline copy per Admin (oggi su Prezzi), Gamification/classifica.
-> Dettagli in `STATO_PROGETTO.md` e `COSE_FATTE_IN_SESSIONE.md` (Sessione 9).
-> **Aperti:** asset 3D da procurare · estendere editor inline alle altre pagine · env VAPID su Vercel
-> da confermare · credito Anthropic da ricaricare (rimandato) · resto invariato (vedi
+> **Snapshot codice (18 ago 2026):** `main` è **in produzione** — oltre a Sessioni 1-9, la Sessione 10
+> completa la prova gratuita (nome, upload video, 6 esercizi di default), sposta l'editor design
+> **solo dentro Admin** con cronologia Annulla/Ripeti + assistente IA, ridisegna Libreria (rinomina,
+> filtri, termina esercizio, vista schermo intero+PIP) e corregge il bottone di installazione PWA.
+> Dettagli in `STATO_PROGETTO.md` e `COSE_FATTE_IN_SESSIONE.md` (Sessione 10).
+> **Aperti:** sezione Prezzi + analisi costo AI (in attesa risposte utente) · riordino blocchi
+> nell'editor · asset 3D da procurare · estendere editor alle altre pagine · env VAPID su Vercel da
+> confermare · credito Anthropic da ricaricare (rimandato) · resto invariato (vedi
 > `STATO_PROGETTO.md`).
 
 ---

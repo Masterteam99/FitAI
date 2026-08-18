@@ -13,7 +13,10 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          { key: "X-Frame-Options", value: "DENY" },
+          // SAMEORIGIN (non DENY): serve per incorporare le pagine pubbliche nell'iframe
+          // dell'editor visuale in /admin/site-content. Protezione da clickjacking di
+          // altri siti resta piena — solo il nostro stesso dominio può incorniciarci.
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {

@@ -5,6 +5,7 @@ import { getClientIp, hashIp, GUEST_SESSION_COOKIE, GUEST_SESSION_MAX_AGE_SECOND
 import { z } from "zod";
 
 const schema = z.object({
+  name: z.string().trim().max(120).optional(),
   email: z.string().trim().email(),
   exerciseId: z.string().min(1),
   consent: z.boolean().refine((v) => v === true, "Devi accettare i termini per continuare"),
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Dati non validi" }, { status: 400 });
   }
-  const { email, exerciseId } = parsed.data;
+  const { name, email, exerciseId } = parsed.data;
 
   const exercise = await prisma.exercise.findFirst({
     where: { id: exerciseId, availableForFreeTrial: true, isActive: true },
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
 
   const guestRequest = await prisma.guestAnalysisRequest.create({
     data: {
+      name: name || null,
       email: email.toLowerCase(),
       exerciseId: exercise.id,
       ipHash: hashIp(ip),

@@ -11,18 +11,18 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 /**
- * Bottone "Installa ora" per la PWA (Fase 6). Usa `beforeinstallprompt` dove
- * supportato (Android/desktop Chrome). Su iOS l'installazione è manuale
- * (Condividi → Aggiungi a Home): mostra un hint verso le istruzioni.
+ * Bottone "Installa ora" per la PWA (Fase 6) — sempre visibile e cliccabile
+ * (prima spariva del tutto finché `beforeinstallprompt` non era disponibile,
+ * es. su iOS o al primo caricamento). Se il prompt nativo è disponibile lo usa
+ * (Android/desktop Chrome); altrimenti scorre alle istruzioni manuali
+ * (Condividi → Aggiungi a Home su iOS, o mentre il prompt non è ancora arrivato).
  */
 export function InstallPwaButton() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
-  const [isIos, setIsIos] = useState(false);
 
   useEffect(() => {
     const nav = navigator as Navigator & { standalone?: boolean };
-    setIsIos(/iphone|ipad|ipod/i.test(nav.userAgent));
     if (window.matchMedia("(display-mode: standalone)").matches || nav.standalone) {
       setInstalled(true);
     }
@@ -47,26 +47,20 @@ export function InstallPwaButton() {
     );
   }
 
-  if (deferred) {
-    return (
-      <Button
-        size="lg"
-        className="gap-2 glow-energy"
-        onClick={async () => {
+  return (
+    <Button
+      size="lg"
+      className="gap-2 glow-energy"
+      onClick={async () => {
+        if (deferred) {
           await deferred.prompt();
           setDeferred(null);
-        }}
-      >
-        <Download className="w-5 h-5" /> {copy.scarica.installNow}
-      </Button>
-    );
-  }
-
-  return (
-    <p className="text-sm text-muted-foreground">
-      {isIos
-        ? "Su iPhone: tocca Condividi ⬆ e poi «Aggiungi a Home» — vedi i passaggi qui sotto."
-        : "Segui i passaggi qui sotto per installare l'app in 10 secondi."}
-    </p>
+          return;
+        }
+        document.getElementById("istruzioni-installazione")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+    >
+      <Download className="w-5 h-5" /> {copy.scarica.installNow}
+    </Button>
   );
 }

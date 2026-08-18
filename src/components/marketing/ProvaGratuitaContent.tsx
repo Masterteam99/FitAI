@@ -2,16 +2,29 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { Loader2, AlertTriangle, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Loader2, AlertTriangle, ChevronRight, CheckCircle2, Video, Upload } from "lucide-react";
 import { useCamera } from "@/hooks/useCamera";
 import { usePoseDetection } from "@/hooks/usePoseDetection";
 import { useAnalysisStore } from "@/stores/analysisStore";
 import { captureFrame, extractProFrames, type LabeledFrame } from "@/lib/analysis/frame-capture";
 import { AnalysisProcessingView } from "@/components/analisi/AnalysisProcessingView";
 import { RecordingStage } from "@/components/analisi/RecordingStage";
+import { ExerciseCardMedia } from "@/components/esercizi/ExerciseCardMedia";
 import { copy } from "@/content/copy";
 
-type Phase = "LOADING_EXERCISES" | "FORM" | "COUNTDOWN" | "RECORDING" | "UPLOADING" | "ANALYZING" | "RESULT" | "ERROR";
+type Phase =
+  | "LOADING_EXERCISES"
+  | "FORM"
+  | "UPLOAD_PICK"
+  | "UPLOAD_PROCESSING"
+  | "COUNTDOWN"
+  | "RECORDING"
+  | "UPLOADING"
+  | "ANALYZING"
+  | "RESULT"
+  | "ERROR";
+
+type Mode = "record" | "upload";
 
 interface GuestExercise {
   id: string;
@@ -19,6 +32,7 @@ interface GuestExercise {
   slug: string;
   muscleGroupPrimary: string;
   thumbnailUrl: string | null;
+  videoUrl: string | null;
 }
 
 interface ExerciseData {
@@ -33,6 +47,8 @@ interface ExerciseData {
 
 const COUNTDOWN_SECONDS = 15;
 const NUM_USER_FRAMES = 8;
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+const ACCEPTED_UPLOAD_MIME = ["video/mp4", "video/webm", "video/quicktime"];
 
 export function ProvaGratuitaContent() {
   const c = copy.provaGratuita;
@@ -41,6 +57,8 @@ export function ProvaGratuitaContent() {
   const [phase, setPhase] = useState<Phase>("LOADING_EXERCISES");
   const [exercises, setExercises] = useState<GuestExercise[]>([]);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
+  const [mode, setMode] = useState<Mode>("record");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [consentCamera, setConsentCamera] = useState(false);
   const [consentProcessing, setConsentProcessing] = useState(false);
@@ -56,6 +74,13 @@ export function ProvaGratuitaContent() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ combinedScore: number; overallJudgment: string } | null>(null);
 
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadPreviewUrl, setUploadPreviewUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const uploadVideoRef = useRef<HTMLVideoElement | null>(null);
+  const uploadObjectUrlRef = useRef<string | null>(null);
+
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const userFramesRef = useRef<LabeledFrame[]>([]);
@@ -67,6 +92,7 @@ export function ProvaGratuitaContent() {
   const { startRecording: storeStart, stopRecording: storeStop, frameHistory, reset: storeReset } = useAnalysisStore();
 
   usePoseDetection({ videoRef, enabled: !!stream && phase === "RECORDING" });
+  usePoseDetection({ videoRef: uploadVideoRef, enabled: phase === "UPLOAD_PROCESSING" });
 
   useEffect(() => {
     fetch("/api/guest-analysis/exercises")
@@ -83,33 +109,38 @@ export function ProvaGratuitaContent() {
   const cleanup = useCallback(() => {
     if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
     if (frameTimerRef.current) { clearInterval(frameTimerRef.current); frameTimerRef.current = null; }
+    if (uploadObjectUrlRef.current) { URL.revokeObjectURL(uploadObjectUrlRef.current); uploadObjectUrlRef.current = null; }
   }, []);
   useEffect(() => () => cleanup(), [cleanup]);
 
   async function submitForm() {
     setFormError(null);
     if (!selectedExerciseId) { setFormError(c.startError); return; }
-    if (!consentCamera || !consentProcessing || !consentEmail) { setFormError(c.missingConsent); return; }
+    if (!consentProcessing || !consentEmail || (mode === "record" && !consentCamera)) { setFormError(c.missingConsent); return; }
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-    if (!emailValid) { setFormError(c.emailHint); return; }
+    if (!emailValid) { setFormError(c.emailInvalid); return; }
 
     setStarting(true);
     try {
       const res = await fetch("/api/guest-analysis/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), exerciseId: selectedExerciseId, consent: true }),
+        body: JSON.stringify({ name: name.trim() || undefined, email: email.trim(), exerciseId: selectedExerciseId, consent: true }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? c.startError);
       setExercise(data.exercise);
       setGuestSessionId(data.guestSessionId);
-      setPhase("COUNTDOWN");
       proFramesRef.current = [];
       if (data.exercise?.videoUrl) {
         extractProFrames(data.exercise.videoUrl, 6).then((frames) => { proFramesRef.current = frames; });
       }
-      await startCamera();
+      if (mode === "upload") {
+        setPhase("UPLOAD_PICK");
+      } else {
+        setPhase("COUNTDOWN");
+        await startCamera();
+      }
     } catch (e) {
       setFormError(e instanceof Error ? e.message : c.startError);
       setPhase("FORM");
@@ -118,13 +149,13 @@ export function ProvaGratuitaContent() {
     }
   }
 
-  const finalize = useCallback(async (videoBlob: Blob) => {
+  const finalize = useCallback(async (videoBlob: Blob, durationSecondsOverride?: number) => {
     if (!guestSessionId || !exercise) return;
     setPhase("UPLOADING");
     setAnalysisStep(0);
     try {
       const fd = new FormData();
-      fd.append("video", videoBlob, "guest-recording.webm");
+      fd.append("video", videoBlob, "guest-video.webm");
       fd.append("guestSessionId", guestSessionId);
       const uploadRes = await fetch("/api/guest-analysis/upload-video", { method: "POST", body: fd });
       if (!uploadRes.ok) {
@@ -142,7 +173,7 @@ export function ProvaGratuitaContent() {
           frameHistory,
           userFrames: userFramesRef.current,
           proFrames: proFramesRef.current,
-          durationSeconds: exercise.recordingDurationSeconds,
+          durationSeconds: durationSecondsOverride ?? exercise.recordingDurationSeconds,
         }),
       });
       const data = await completeRes.json();
@@ -210,11 +241,88 @@ export function ProvaGratuitaContent() {
     startRecordingPhase();
   }, [phase, startRecordingPhase]);
 
+  const endEarly = useCallback(() => {
+    if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
+    if (frameTimerRef.current) { clearInterval(frameTimerRef.current); frameTimerRef.current = null; }
+    storeStop();
+    if (recorderRef.current && recorderRef.current.state !== "inactive") recorderRef.current.stop();
+  }, [storeStop]);
+
+  function clearUploadPreview() {
+    setUploadPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setUploadFile(null);
+  }
+
+  function pickUploadFile(file: File | null) {
+    setUploadError(null);
+    if (!file) { clearUploadPreview(); return; }
+    if (!ACCEPTED_UPLOAD_MIME.includes(file.type)) { setUploadError(c.uploadInvalidType); clearUploadPreview(); return; }
+    if (file.size > MAX_UPLOAD_BYTES) { setUploadError(c.uploadTooLarge); clearUploadPreview(); return; }
+    setUploadPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setUploadFile(file);
+  }
+
+  // Elabora il video caricato: lo riproduce (nascosto) in tempo reale così
+  // MediaPipe può tracciare la posa fotogramma per fotogramma esattamente come
+  // farebbe con la fotocamera live — poi estrae gli stessi frame campione usati
+  // per il confronto vision (stessa utility già usata per il video del PT).
+  // Il setup vero e proprio vive in un effect (sotto): l'elemento <video> nascosto
+  // esiste solo nel branch JSX della fase UPLOAD_PROCESSING, quindi non è ancora
+  // montato nello stesso tick in cui si clicca "Analizza questo video".
+  const analyzeUploadedVideo = useCallback(() => {
+    if (!uploadFile || !guestSessionId) return;
+    setUploadProgress(0);
+    setPhase("UPLOAD_PROCESSING");
+  }, [uploadFile, guestSessionId]);
+
+  useEffect(() => {
+    if (phase !== "UPLOAD_PROCESSING" || !uploadFile || !guestSessionId) return;
+    const video = uploadVideoRef.current;
+    if (!video) return;
+
+    if (uploadObjectUrlRef.current) URL.revokeObjectURL(uploadObjectUrlRef.current);
+    const objectUrl = URL.createObjectURL(uploadFile);
+    uploadObjectUrlRef.current = objectUrl;
+    video.src = objectUrl;
+    storeStart(guestSessionId);
+
+    const onTimeUpdate = () => {
+      if (video.duration > 0) setUploadProgress(Math.min(100, Math.round((video.currentTime / video.duration) * 100)));
+    };
+    const onEnded = async () => {
+      storeStop();
+      const frames = await extractProFrames(objectUrl, NUM_USER_FRAMES);
+      userFramesRef.current = frames;
+      const duration = isFinite(video.duration) ? Math.round(video.duration) : undefined;
+      finalize(uploadFile, duration);
+    };
+    const onLoadedMetadata = () => { video.play().catch(() => {}); };
+
+    video.addEventListener("timeupdate", onTimeUpdate);
+    video.addEventListener("ended", onEnded);
+    video.addEventListener("loadedmetadata", onLoadedMetadata);
+    return () => {
+      video.removeEventListener("timeupdate", onTimeUpdate);
+      video.removeEventListener("ended", onEnded);
+      video.removeEventListener("loadedmetadata", onLoadedMetadata);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
   const retry = useCallback(() => {
     setError(null);
     setResult(null);
     setGuestSessionId(null);
     setExercise(null);
+    setUploadPreviewUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+    setUploadFile(null);
+    setUploadError(null);
     setPhase("FORM");
     storeReset();
   }, [storeReset]);
@@ -237,18 +345,19 @@ export function ProvaGratuitaContent() {
       );
     }
     return (
-      <div className="max-w-lg mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6">
         <div>
           <p className="text-sm font-semibold mb-2" style={{ color: "var(--organic-green-deep)" }}>{c.step1Title}</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {exercises.map((ex) => (
               <button
                 key={ex.id}
                 type="button"
                 onClick={() => setSelectedExerciseId(ex.id)}
-                className={`text-left p-3 rounded-xl border text-sm transition-colors ${selectedExerciseId === ex.id ? "border-primary bg-primary/5" : "border-border"}`}
+                className={`text-left p-2 rounded-xl border transition-colors ${selectedExerciseId === ex.id ? "border-primary bg-primary/5" : "border-border"}`}
               >
-                {ex.name}
+                <ExerciseCardMedia videoUrl={ex.videoUrl} thumbnailUrl={ex.thumbnailUrl} name={ex.name} />
+                <p className="text-sm font-medium mt-2 px-0.5">{ex.name}</p>
               </button>
             ))}
           </div>
@@ -256,6 +365,16 @@ export function ProvaGratuitaContent() {
 
         <div className="space-y-3">
           <p className="text-sm font-semibold" style={{ color: "var(--organic-green-deep)" }}>{c.step2Title}</p>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{c.nameLabel}</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={c.namePlaceholder}
+              className="w-full h-10 px-3 mt-1 rounded-lg border border-border bg-input text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
           <div>
             <label className="text-xs font-medium text-muted-foreground">{c.emailLabel}</label>
             <input
@@ -267,15 +386,41 @@ export function ProvaGratuitaContent() {
             />
             <p className="text-xs text-muted-foreground mt-1">{c.emailHint}</p>
           </div>
+        </div>
 
-          <label className="flex items-start gap-2.5 text-sm">
-            <input type="checkbox" checked={consentCamera} onChange={(e) => setConsentCamera(e.target.checked)} className="mt-0.5" />
-            <span>{c.consentCamera}</span>
-          </label>
+        <div className="space-y-3">
+          <p className="text-sm font-semibold" style={{ color: "var(--organic-green-deep)" }}>{c.step3Title}</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setMode("record")}
+              className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-colors ${mode === "record" ? "border-primary bg-primary/5" : "border-border"}`}
+            >
+              <Video className="w-6 h-6" style={{ color: "var(--organic-green-deep)" }} />
+              <span className="text-sm font-semibold">{c.modeRecord}</span>
+              <span className="text-xs text-muted-foreground">{c.modeRecordDesc}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("upload")}
+              className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-colors ${mode === "upload" ? "border-primary bg-primary/5" : "border-border"}`}
+            >
+              <Upload className="w-6 h-6" style={{ color: "var(--organic-green-deep)" }} />
+              <span className="text-sm font-semibold">{c.modeUpload}</span>
+              <span className="text-xs text-muted-foreground">{c.modeUploadDesc}</span>
+            </button>
+          </div>
+
           <label className="flex items-start gap-2.5 text-sm">
             <input type="checkbox" checked={consentProcessing} onChange={(e) => setConsentProcessing(e.target.checked)} className="mt-0.5" />
             <span>{c.consentProcessing}</span>
           </label>
+          {mode === "record" && (
+            <label className="flex items-start gap-2.5 text-sm">
+              <input type="checkbox" checked={consentCamera} onChange={(e) => setConsentCamera(e.target.checked)} className="mt-0.5" />
+              <span>{c.consentCamera}</span>
+            </label>
+          )}
           <label className="flex items-start gap-2.5 text-sm">
             <input type="checkbox" checked={consentEmail} onChange={(e) => setConsentEmail(e.target.checked)} className="mt-0.5" />
             <span>{c.consentEmail}</span>
@@ -298,6 +443,67 @@ export function ProvaGratuitaContent() {
           {starting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
           {c.startCta}
         </button>
+      </div>
+    );
+  }
+
+  if (phase === "UPLOAD_PICK") {
+    return (
+      <div className="max-w-lg mx-auto space-y-5">
+        <div>
+          <h2 className="text-xl font-bold">{c.uploadTitle}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{c.uploadHint}</p>
+        </div>
+
+        {uploadFile && uploadPreviewUrl ? (
+          <video src={uploadPreviewUrl} controls className="w-full rounded-xl bg-black aspect-video" />
+        ) : (
+          <label className="flex flex-col items-center justify-center gap-2 p-10 rounded-xl border-2 border-dashed border-border cursor-pointer hover:border-primary/50 transition-colors">
+            <Upload className="w-8 h-8 text-muted-foreground" />
+            <span className="text-sm font-medium">{c.uploadPick}</span>
+            <input type="file" accept="video/mp4,video/webm,video/quicktime" className="hidden" onChange={(e) => pickUploadFile(e.target.files?.[0] ?? null)} />
+          </label>
+        )}
+
+        {uploadError && (
+          <div className="flex items-center gap-2 text-sm text-destructive">
+            <AlertTriangle className="w-4 h-4 shrink-0" />{uploadError}
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          {uploadFile && (
+            <button type="button" onClick={clearUploadPreview} className="flex-1 px-4 py-3 rounded-full text-sm font-semibold border border-border">
+              {c.uploadBack}
+            </button>
+          )}
+          <button
+            type="button"
+            disabled={!uploadFile}
+            onClick={analyzeUploadedVideo}
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold text-sm text-white disabled:opacity-50"
+            style={{ background: "var(--organic-terracotta)" }}
+          >
+            <ChevronRight className="w-4 h-4" />
+            {c.uploadAnalyzeCta}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "UPLOAD_PROCESSING") {
+    return (
+      <div className="max-w-lg mx-auto text-center py-16 space-y-5">
+        <Loader2 className="w-10 h-10 animate-spin mx-auto" style={{ color: "var(--organic-green-deep)" }} />
+        <div>
+          <h2 className="text-xl font-semibold">{c.processingUploadTitle}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{c.processingUploadDesc}</p>
+        </div>
+        <div className="h-1.5 rounded-full bg-secondary overflow-hidden max-w-xs mx-auto">
+          <div className="h-full rounded-full transition-all" style={{ width: `${uploadProgress}%`, background: "var(--organic-terracotta)" }} />
+        </div>
+        <video ref={uploadVideoRef} muted playsInline className="hidden" />
       </div>
     );
   }
@@ -358,6 +564,7 @@ export function ProvaGratuitaContent() {
       onCountdownComplete={onCountdownComplete}
       onStart={() => setCountdown(COUNTDOWN_SECONDS)}
       onSwitchCamera={switchCamera}
+      onEndEarly={endEarly}
     />
   );
 }

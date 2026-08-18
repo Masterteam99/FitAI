@@ -560,6 +560,7 @@ model AnalysisSession {
 // invece che dalla sessione NextAuth. Il referto viene inviato via email.
 model GuestAnalysisRequest {
   id              String         @id @default(cuid())
+  name            String?
   email           String
   exerciseId      String
   consentAt       DateTime       @default(now())
@@ -900,6 +901,19 @@ model SiteContent {
   updatedAt DateTime @updatedAt
 
   @@map("site_content")
+}
+
+// Override di stile (colore, dimensione testo) per lo stesso dot-path usato da
+// SiteContent — editor "designer" Admin: non solo il testo, anche l'aspetto.
+// Tabella separata perché SiteContent modella solo foglie stringa di copy.ts,
+// mentre lo stile non è una proprietà del testo ma di come viene renderizzato.
+model SiteStyleOverride {
+  key       String   @id
+  color     String?
+  fontSize  String?
+  updatedAt DateTime @updatedAt
+
+  @@map("site_style_overrides")
 }
 
 // Premi della classifica (gamification), gestiti dall'Admin. La classifica stessa

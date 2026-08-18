@@ -188,6 +188,7 @@ export async function POST(req: NextRequest) {
 
   sendGuestAnalysisReportEmail(
     guestRequest.email,
+    guestRequest.name,
     exerciseName,
     finalReport.combinedScore,
     finalReport.overallJudgment,

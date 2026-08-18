@@ -217,6 +217,13 @@ function SessioneContent() {
     startRecordingPhase();
   }, [phase, startRecordingPhase]);
 
+  const endEarly = useCallback(() => {
+    if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
+    if (frameTimerRef.current) { clearInterval(frameTimerRef.current); frameTimerRef.current = null; }
+    storeStop();
+    if (recorderRef.current && recorderRef.current.state !== "inactive") recorderRef.current.stop();
+  }, [storeStop]);
+
   const retry = useCallback(() => {
     setError(null);
     setPhase("IDLE");
@@ -272,6 +279,7 @@ function SessioneContent() {
       onCountdownComplete={onCountdownComplete}
       onStart={startCountdown}
       onSwitchCamera={switchCamera}
+      onEndEarly={endEarly}
     />
   );
 }
