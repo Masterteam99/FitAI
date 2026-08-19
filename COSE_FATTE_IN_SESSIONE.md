@@ -177,9 +177,10 @@ curate:**
   - Verificato dal vivo: utente di test con dieta "vegana" vede correttamente solo le 3 ricette vegane
     (filtro per dieta funzionante), form Admin con campo "URL foto" testato.
 
-**Stato a fine sessione:** tutto il lavoro della sessione (editor design Home + marketing + onboarding
-+ area utente, 2 fix bug reali, ricette curate) committato e pushato su `main` — vedi hash sotto in
-`git log`. Rimandati esplicitamente a una sessione futura, su scelta dell'utente: **ricarica credito
+**Stato a fine sessione:** tutto il lavoro della sessione committato e pushato su `main` in due commit
+— `b4a4f3c` (editor design Home + marketing + onboarding + area utente) e `69b1cba` (2 fix bug reali +
+ricette curate). Verificato `git status` pulito e allineato a `origin/main`. Rimandati esplicitamente a
+una sessione futura, su scelta dell'utente: **ricarica credito
 Anthropic** e **configurazione chiavi Stripe** (nessuna delle due presente in locale; da verificare
 anche lo stato su Vercel prima del lancio).
 

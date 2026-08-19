@@ -24,6 +24,13 @@
   Da verificare se sono già impostate su Vercel (produzione) — se no, è un blocco vero e proprio per
   il lancio, non solo un test locale mancante. Rimandato su scelta esplicita dell'utente insieme al
   credito Anthropic.
+- ✅ **FATTO (2026-08-19, Sessione 11 — commit `b4a4f3c` + `69b1cba`, pushati su `main`):** editor
+  design esteso a Home + tutte le pagine marketing + onboarding + area utente autenticata; audit di
+  sicurezza (nessun problema, incl. upload video/documenti e pagamenti); 2 bug reali corretti
+  (etichette obiettivo "BUILD_MUSCLE"/attrezzatura "NONE" mostrate grezze invece che tradotte); sezione
+  Nutrizione → Ricette sostituita con 14 ricette curate scritte a mano (grammature, ingredienti,
+  procedimento) al posto del solo generatore AI, filtrate per dieta utente. Dettaglio completo in
+  `COSE_FATTE_IN_SESSIONE.md` Sessione 11.
 - ✅ **FATTO (2026-08-19, stessa Sessione 11): area utente autenticata estesa all'editor design** —
   tutte le 8 pagine (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
   leaderboard) hanno ora `useCopy()` + `EditableText` sui titoli/label statici. Dashboard ed esercizi
