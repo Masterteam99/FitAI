@@ -1,14 +1,16 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (18 ago 2026):** oltre a tutto quanto già descritto (area utente v2 + Account
-> Manager + estensioni Sessioni 6-9), in Sessione 10: prova gratuita completata (nome, upload video,
-> esercizi di default), editor design del sito spostato dentro Admin con cronologia e assistente IA,
-> Libreria ridisegnata (nome, filtri, termina esercizio, vista schermo intero). `main` pushato e **in
-> produzione**.
+> **Snapshot codice (19 ago 2026):** oltre a tutto quanto già descritto (area utente v2 + Account
+> Manager + estensioni Sessioni 6-10), in Sessione 11: editor design esteso a tutte le pagine
+> marketing (prima solo Prezzi), all'onboarding, e a **tutta l'area utente autenticata** (dashboard,
+> allenamento, nutrizione, profilo, esercizi, progressi, community, leaderboard — solo copy statico
+> editabile, mai i dati reali), fix bug "Ripristina default". `main` è **in produzione** fino a
+> Sessione 10; Sessione 11 non ancora committata.
 > **Aperti:** switch fotocamera e flusso analisi inline non testabili con hardware reale in questo
 > ambiente · sezione Prezzi + analisi costo AI (in attesa risposte utente) · asset 3D per il
-> personaggio animato da procurare · resto invariato, vedi `STATO_PROGETTO.md`.
+> personaggio animato da procurare · abilitare la preview iframe per l'onboarding · resto invariato,
+> vedi `STATO_PROGETTO.md`.
 
 ---
 

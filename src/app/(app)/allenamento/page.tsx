@@ -12,6 +12,8 @@ import { RecentFeedbackCard } from "@/components/allenamento/RecentFeedbackCard"
 import { BodyBalanceCard } from "@/components/allenamento/BodyBalanceCard";
 import { ProfessionalNotesCard } from "@/components/allenamento/ProfessionalNotesCard";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 interface WorkoutPlan {
   id: string;
@@ -35,6 +37,7 @@ interface PastSession {
 const GOAL_LABELS: Record<string, string> = copy.allenamento.goalLabels;
 
 export default function AllenamentoPage() {
+  const copy = useCopy();
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [pastSessions, setPastSessions] = useState<PastSession[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,14 +83,14 @@ export default function AllenamentoPage() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Dumbbell className="w-7 h-7 text-primary" />
-            {copy.allenamento.title}
+            <EditableText path="allenamento.title">{copy.allenamento.title}</EditableText>
           </h1>
-          <p className="text-muted-foreground">{copy.allenamento.subtitle}</p>
+          <p className="text-muted-foreground"><EditableText path="allenamento.subtitle">{copy.allenamento.subtitle}</EditableText></p>
         </div>
         <Link href="/allenamento/nuovo">
           <Button className="gap-2">
             <Plus className="w-4 h-4" />
-            {copy.allenamento.newPlan}
+            <EditableText path="allenamento.newPlan">{copy.allenamento.newPlan}</EditableText>
           </Button>
         </Link>
       </div>
@@ -99,18 +102,18 @@ export default function AllenamentoPage() {
           <CardContent className="py-16 text-center space-y-4">
             <Dumbbell className="w-12 h-12 text-muted-foreground mx-auto" />
             <div>
-              <p className="font-semibold">{copy.allenamento.emptyTitle}</p>
-              <p className="text-sm text-muted-foreground">{copy.allenamento.emptySubtitle}</p>
+              <p className="font-semibold"><EditableText path="allenamento.emptyTitle">{copy.allenamento.emptyTitle}</EditableText></p>
+              <p className="text-sm text-muted-foreground"><EditableText path="allenamento.emptySubtitle">{copy.allenamento.emptySubtitle}</EditableText></p>
             </div>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Link href="/allenamento/genera-ai">
                 <Button className="gap-2">
                   <Zap className="w-4 h-4" />
-                  {copy.allenamento.generateWithAi}
+                  <EditableText path="allenamento.generateWithAi">{copy.allenamento.generateWithAi}</EditableText>
                 </Button>
               </Link>
               <Link href="/allenamento/nuovo">
-                <Button variant="outline">{copy.allenamento.createManually}</Button>
+                <Button variant="outline"><EditableText path="allenamento.createManually">{copy.allenamento.createManually}</EditableText></Button>
               </Link>
             </div>
           </CardContent>
@@ -122,7 +125,7 @@ export default function AllenamentoPage() {
           {activePlan && <ActiveSessionBlock plan={activePlan} />}
 
           <div>
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{copy.allenamento.plansSectionTitle}</h2>
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3"><EditableText path="allenamento.plansSectionTitle">{copy.allenamento.plansSectionTitle}</EditableText></h2>
             <div className="space-y-3">
               {activePlan && <PlanCard plan={activePlan} onSetActive={setActive} onDelete={deletePlan} />}
               {plans.filter((p) => !p.isActive).map((plan) => (
@@ -141,7 +144,7 @@ export default function AllenamentoPage() {
             <Link href="/allenamento/genera-ai">
               <Button variant="outline" className="gap-2 w-full sm:w-auto">
                 <Zap className="w-4 h-4 text-primary" />
-                {copy.allenamento.generateNewWithAi}
+                <EditableText path="allenamento.generateNewWithAi">{copy.allenamento.generateNewWithAi}</EditableText>
               </Button>
             </Link>
           </div>
@@ -152,6 +155,7 @@ export default function AllenamentoPage() {
 }
 
 function PastSessionsCard({ sessions }: { sessions: PastSession[] }) {
+  const copy = useCopy();
   if (sessions.length === 0) return null;
 
   return (
@@ -160,10 +164,10 @@ function PastSessionsCard({ sessions }: { sessions: PastSession[] }) {
         <div className="flex items-center justify-between gap-3">
           <CardTitle className="text-base flex items-center gap-2">
             <History className="w-5 h-5 text-primary" />
-            {copy.allenamento.recentSessions.title}
+            <EditableText path="allenamento.recentSessions.title">{copy.allenamento.recentSessions.title}</EditableText>
           </CardTitle>
           <Link href="/progressi" className="text-xs text-primary hover:underline shrink-0">
-            {copy.allenamento.recentSessions.seeAll}
+            <EditableText path="allenamento.recentSessions.seeAll">{copy.allenamento.recentSessions.seeAll}</EditableText>
           </Link>
         </div>
       </CardHeader>
@@ -202,17 +206,18 @@ function PastSessionsCard({ sessions }: { sessions: PastSession[] }) {
 }
 
 function ActiveSessionBlock({ plan }: { plan: WorkoutPlan }) {
+  const copy = useCopy();
   return (
     <Card className="border-primary/40 bg-primary/5">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <p className="text-xs uppercase tracking-wider font-semibold text-primary mb-0.5">{copy.allenamento.sessionEyebrow}</p>
+            <p className="text-xs uppercase tracking-wider font-semibold text-primary mb-0.5"><EditableText path="allenamento.sessionEyebrow">{copy.allenamento.sessionEyebrow}</EditableText></p>
             <CardTitle className="text-lg">{plan.name}</CardTitle>
           </div>
           <Link href={`/allenamento/${plan.id}`}>
             <Button variant="outline" size="sm" className="gap-1.5">
-              {copy.allenamento.openFullSession} <ChevronRight className="w-4 h-4" />
+              <EditableText path="allenamento.openFullSession">{copy.allenamento.openFullSession}</EditableText> <ChevronRight className="w-4 h-4" />
             </Button>
           </Link>
         </div>
@@ -226,14 +231,14 @@ function ActiveSessionBlock({ plan }: { plan: WorkoutPlan }) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{day.name}</p>
               <p className="text-xs text-muted-foreground">
-                {day.restDay ? copy.allenamento.restDayLabel : copy.allenamento.dayExercises(day.exercises.length)}
+                {day.restDay ? <EditableText path="allenamento.restDayLabel">{copy.allenamento.restDayLabel}</EditableText> : copy.allenamento.dayExercises(day.exercises.length)}
               </p>
             </div>
             {!day.restDay && day.exercises.length > 0 && (
               <Link href={`/allenamento/${plan.id}/sessione?day=${day.id}`} className="shrink-0">
                 <Button size="sm" className="gap-1.5">
                   <Play className="w-4 h-4" />
-                  {copy.allenamento.startDayCta}
+                  <EditableText path="allenamento.startDayCta">{copy.allenamento.startDayCta}</EditableText>
                 </Button>
               </Link>
             )}
@@ -249,6 +254,7 @@ function PlanCard({ plan, onSetActive, onDelete }: {
   onSetActive: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
+  const copy = useCopy();
   const totalExercises = plan.days.reduce((acc, d) => acc + d.exercises.length, 0);
   const workoutDays = plan.days.filter((d) => !d.restDay);
 
@@ -259,10 +265,10 @@ function PlanCard({ plan, onSetActive, onDelete }: {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <CardTitle className="text-base">{plan.name}</CardTitle>
-              {plan.isActive && <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">{copy.allenamento.activeBadge}</Badge>}
+              {plan.isActive && <Badge className="bg-primary/20 text-primary border-primary/30 text-xs"><EditableText path="allenamento.activeBadge">{copy.allenamento.activeBadge}</EditableText></Badge>}
               {plan.generatedByAI && (
                 <Badge variant="secondary" className="text-xs gap-1">
-                  <Zap className="w-3 h-3" />{copy.allenamento.generatedBadge}
+                  <Zap className="w-3 h-3" /><EditableText path="allenamento.generatedBadge">{copy.allenamento.generatedBadge}</EditableText>
                 </Badge>
               )}
             </div>
@@ -281,15 +287,15 @@ function PlanCard({ plan, onSetActive, onDelete }: {
         <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
           <span className="flex items-center gap-1.5">
             <Calendar className="w-4 h-4" />
-            {plan.durationWeeks} {copy.allenamento.weeksSuffix}
+            {plan.durationWeeks} <EditableText path="allenamento.weeksSuffix">{copy.allenamento.weeksSuffix}</EditableText>
           </span>
           <span className="flex items-center gap-1.5">
             <Dumbbell className="w-4 h-4" />
-            {plan.workoutsPerWeek}{copy.allenamento.workoutsPerWeekSuffix}
+            {plan.workoutsPerWeek}<EditableText path="allenamento.workoutsPerWeekSuffix">{copy.allenamento.workoutsPerWeekSuffix}</EditableText>
           </span>
           <span className="flex items-center gap-1.5">
             <CheckCircle className="w-4 h-4" />
-            {totalExercises} {copy.allenamento.exercisesSuffix}
+            {totalExercises} <EditableText path="allenamento.exercisesSuffix">{copy.allenamento.exercisesSuffix}</EditableText>
           </span>
         </div>
 
@@ -307,13 +313,13 @@ function PlanCard({ plan, onSetActive, onDelete }: {
         <div className="flex gap-2 flex-wrap">
           <Link href={`/allenamento/${plan.id}`} className="flex-1 min-w-[120px]">
             <Button size="sm" className="w-full gap-1.5">
-              {copy.allenamento.goToPlan} <ChevronRight className="w-4 h-4" />
+              <EditableText path="allenamento.goToPlan">{copy.allenamento.goToPlan}</EditableText> <ChevronRight className="w-4 h-4" />
             </Button>
           </Link>
           {!plan.isActive && (
             <Button size="sm" variant="outline" onClick={() => onSetActive(plan.id)} className="gap-1.5">
               <CheckCircle className="w-4 h-4" />
-              {copy.allenamento.setActive}
+              <EditableText path="allenamento.setActive">{copy.allenamento.setActive}</EditableText>
             </Button>
           )}
         </div>

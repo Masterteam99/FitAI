@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, Flame, Loader2, Lock, Gift } from "lucide-react";
-import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 interface LeaderboardRow {
   rank: number;
@@ -41,7 +42,7 @@ function initials(name: string | null): string {
 }
 
 export default function LeaderboardPage() {
-  const c = copy.leaderboard;
+  const c = useCopy().leaderboard;
   const [data, setData] = useState<LeaderboardData | null>(null);
 
   useEffect(() => {
@@ -60,9 +61,9 @@ export default function LeaderboardPage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Trophy className="w-7 h-7 text-primary" />
-          {c.title}
+          <EditableText path="leaderboard.title">{c.title}</EditableText>
         </h1>
-        <p className="text-muted-foreground">{c.subtitle}</p>
+        <p className="text-muted-foreground"><EditableText path="leaderboard.subtitle">{c.subtitle}</EditableText></p>
       </div>
 
       {!data.isPublic && (
@@ -70,9 +71,9 @@ export default function LeaderboardPage() {
           <CardContent className="p-4 flex items-center gap-3 text-sm">
             <Lock className="w-5 h-5 text-muted-foreground shrink-0" />
             <div className="flex-1">
-              <p>{c.privateNotice}</p>
+              <p><EditableText path="leaderboard.privateNotice">{c.privateNotice}</EditableText></p>
             </div>
-            <Link href="/profilo" className="text-primary font-semibold shrink-0 hover:underline">{c.goToProfile}</Link>
+            <Link href="/profilo" className="text-primary font-semibold shrink-0 hover:underline"><EditableText path="leaderboard.goToProfile">{c.goToProfile}</EditableText></Link>
           </CardContent>
         </Card>
       )}
@@ -90,7 +91,7 @@ export default function LeaderboardPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Gift className="w-5 h-5 text-primary" />
-              {c.rewardsTitle}
+              <EditableText path="leaderboard.rewardsTitle">{c.rewardsTitle}</EditableText>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -110,7 +111,7 @@ export default function LeaderboardPage() {
       <Card>
         <CardContent className="p-0">
           {data.top.length === 0 ? (
-            <p className="p-8 text-center text-sm text-muted-foreground">{c.empty}</p>
+            <p className="p-8 text-center text-sm text-muted-foreground"><EditableText path="leaderboard.empty">{c.empty}</EditableText></p>
           ) : (
             <ul className="divide-y">
               {data.top.map((row) => (

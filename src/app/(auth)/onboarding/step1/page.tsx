@@ -9,6 +9,8 @@ import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
 import { OnboardingProgress } from "../OnboardingProgress";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 const GOAL_EMOJI = ["🔥", "💪", "🏋️", "🏃", "🧘", "⚡"];
 const GOALS = copy.onboardingStep1.goals.map((g, i) => ({ ...g, emoji: GOAL_EMOJI[i] }));
@@ -16,6 +18,7 @@ const GOALS = copy.onboardingStep1.goals.map((g, i) => ({ ...g, emoji: GOAL_EMOJ
 const LEVELS = copy.onboardingStep1.levels;
 
 export default function OnboardingStep1() {
+  const c = useCopy().onboardingStep1;
   const router = useRouter();
   const [goal, setGoal] = useState("");
   const [level, setLevel] = useState("");
@@ -40,12 +43,12 @@ export default function OnboardingStep1() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <Zap className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">{copy.onboardingStep1.title}</h1>
-          <p className="text-muted-foreground text-sm">{copy.onboardingStep1.stepLabel}</p>
+          <h1 className="text-2xl font-bold"><EditableText path="onboardingStep1.title">{c.title}</EditableText></h1>
+          <p className="text-muted-foreground text-sm"><EditableText path="onboardingStep1.stepLabel">{c.stepLabel}</EditableText></p>
         </div>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">{copy.onboardingStep1.goalsTitle}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base"><EditableText path="onboardingStep1.goalsTitle">{c.goalsTitle}</EditableText></CardTitle></CardHeader>
           <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {GOALS.map((g) => (
               <button
@@ -63,7 +66,7 @@ export default function OnboardingStep1() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">{copy.onboardingStep1.levelsTitle}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base"><EditableText path="onboardingStep1.levelsTitle">{c.levelsTitle}</EditableText></CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {LEVELS.map((l) => (
               <button
@@ -84,7 +87,7 @@ export default function OnboardingStep1() {
         </Card>
 
         <Button size="lg" onClick={next} disabled={!goal || !level} className="w-full gap-2">
-          {copy.onboardingStep1.continue} <ChevronRight className="w-5 h-5" />
+          <EditableText path="onboardingStep1.continue">{c.continue}</EditableText> <ChevronRight className="w-5 h-5" />
         </Button>
 
         <div className="text-center">

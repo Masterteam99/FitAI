@@ -1,18 +1,21 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (18 ago 2026):** `main` include ora tutto (Sessioni 1-10), pushato e in
-> produzione. Rispetto a quanto descritto qui: la pagina esercizio (§ dettaglio Libreria) è stata
-> ridisegnata — due video affiancati (spiegazione/esecuzione), parametri biomeccanici tolti dalla
-> vista utente, checkbox al posto del vecchio bottone "Attiva analisi avanzata"; la Libreria è
+> **Snapshot codice (19 ago 2026):** `main` include tutto fino a Sessione 10, pushato e in produzione;
+> il lavoro di Sessione 11 (tutte le pagine marketing + onboarding + area utente autenticata editabili
+> dall'editor design in Admin — solo copy statico, mai i dati reali — fix "Ripristina default") non è
+> ancora committato. Rispetto a quanto descritto qui: la pagina esercizio (§ dettaglio Libreria)
+> è stata ridisegnata — due video affiancati (spiegazione/esecuzione), parametri biomeccanici tolti
+> dalla vista utente, checkbox al posto del vecchio bottone "Attiva analisi avanzata"; la Libreria è
 > rinominata "Libreria esercizi" con filtri principali+"Altri filtri"; la sessione guidata ha un
 > bottone "Termina esercizio" e in registrazione la fotocamera occupa lo schermo intero con il video
 > PT in un riquadro (desktop); il diario nutrizionale usa ricerca alimento + grammatura; Admin ha un
 > editor guidato per i trigger biomeccanici, una sezione Alimenti, gestione premi classifica e
 > l'**editor design del sito** (testo/colore/dimensione + assistente IA, dentro Admin, non più
-> sovrapposto alle pagine pubbliche); Community è dietro un placeholder "in arrivo"; nuova sezione
-> pubblica `/prova-gratuita` (analisi senza account, registrazione o upload video) e `/leaderboard`
-> (classifica). Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md` (Sessione 10).
+> sovrapposto alle pagine pubbliche — oggi editabili Prezzi e Home); Community è dietro un placeholder
+> "in arrivo"; nuova sezione pubblica `/prova-gratuita` (analisi senza account, registrazione o
+> upload video) e `/leaderboard` (classifica). Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md`
+> (Sessione 11).
 > **Aperti:** vedi `STATO_PROGETTO.md`.
 
 ---

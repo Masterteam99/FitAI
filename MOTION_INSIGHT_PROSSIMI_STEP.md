@@ -1,8 +1,15 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto, **valgono i diari**.
 >
 > **QUASI TUTTO CIÒ CHE SEGUE È GIÀ FATTO** (Sessioni 3–10), incluso l'integrazione in `main` e il
-> deploy in produzione. Mappa rapida:
+> deploy in produzione. **Sessione 11** (19 ago): editor design esteso a **tutte le pagine marketing**
+> (Home, Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app, Prova gratuita — prima solo
+> Prezzi), all'**onboarding** (quiz+step1-4, editabile via "Elenco testi" in Admin, non tramite
+> l'iframe visuale per via del redirect di onboarding già completato) e a **tutta l'area utente
+> autenticata** (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
+> leaderboard — solo copy statico editabile, mai i dati reali come richiesto esplicitamente; dashboard
+> ed esercizi splittati in server+client per farlo in sicurezza); corretto un bug reale in "Ripristina
+> default" (lasciava il campo vuoto nella sessione corrente). Non ancora committata. Mappa rapida:
 > - PARTE 1 · #1 `db push` → ✅ · #2 bucket `user-documents` → ✅ · #3 parsing AI documenti → ✅ (feature #4) · #4 trend carichi → ✅ (feature #5) · #5 Chi siamo → ✅ · #6 verifica loggata → ✅ (Sess. 3).
 > - PARTE 2 · **A** edit esercizio → ✅ (#6a) · **B** template allenamenti → ✅ (#6b) · **C** modifica pool nutrizionale → ✅ (#6c) · **D** pool ricette curate → ✅ (#6e) · **E** quiz → ✅ · **F** SiteContent → ✅ (#6d, ora un vero editor design in Admin con cronologia e assistente IA, Sessione 10).
 > - **Sessione 6-9 (15-17 ago):** MVP polish, merge in `main`, deploy Vercel live, fix end-to-end,

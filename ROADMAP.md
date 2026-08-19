@@ -1,14 +1,15 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (18 ago 2026):** `main` è **in produzione** — oltre a Sessioni 1-9, la Sessione 10
-> completa la prova gratuita (nome, upload video, 6 esercizi di default), sposta l'editor design
-> **solo dentro Admin** con cronologia Annulla/Ripeti + assistente IA, ridisegna Libreria (rinomina,
-> filtri, termina esercizio, vista schermo intero+PIP) e corregge il bottone di installazione PWA.
-> Dettagli in `STATO_PROGETTO.md` e `COSE_FATTE_IN_SESSIONE.md` (Sessione 10).
+> **Snapshot codice (19 ago 2026):** `main` è **in produzione** fino a Sessione 10 (prova gratuita
+> completata, editor design **solo dentro Admin** con cronologia Annulla/Ripeti + assistente IA,
+> Libreria ridisegnata, bottone installazione PWA corretto). **Sessione 11** estende l'editor design a
+> tutte le pagine marketing (prima solo Prezzi), all'onboarding e a tutta l'area utente autenticata
+> (solo copy statico, mai i dati reali), e corregge un bug in "Ripristina default" — non ancora
+> committata. Dettagli in `STATO_PROGETTO.md` e `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
 > **Aperti:** sezione Prezzi + analisi costo AI (in attesa risposte utente) · riordino blocchi
-> nell'editor · asset 3D da procurare · estendere editor alle altre pagine · env VAPID su Vercel da
-> confermare · credito Anthropic da ricaricare (rimandato) · resto invariato (vedi
+> nell'editor · asset 3D da procurare · abilitare la preview iframe per l'onboarding · env VAPID su
+> Vercel da confermare · credito Anthropic da ricaricare (rimandato) · resto invariato (vedi
 > `STATO_PROGETTO.md`).
 
 ---

@@ -9,6 +9,8 @@ import { readOnboarding, clearOnboarding, type OnboardingState } from "../onboar
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
 import { OnboardingProgress } from "../OnboardingProgress";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 // Claude può rispondere con JSON puro o dentro un fence ```json: estrazione robusta.
 function extractPlanJson(text: string): unknown {
@@ -25,6 +27,7 @@ const GOAL_LABELS: Record<string, string> = copy.onboardingStep4.goalLabels;
 const LEVEL_LABELS: Record<string, string> = copy.onboardingStep4.levelLabels;
 
 export default function OnboardingStep4() {
+  const c = useCopy().onboardingStep4;
   const router = useRouter();
   const [state, setState] = useState<OnboardingState | null>(null);
   const [busy, setBusy] = useState(false);
@@ -175,8 +178,8 @@ export default function OnboardingStep4() {
           <div className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center mx-auto">
             <Brain className="w-8 h-8 text-primary animate-pulse" />
           </div>
-          <h2 className="text-xl font-bold">{copy.onboardingStep4.busyTitle}</h2>
-          <p className="text-muted-foreground text-sm">{copy.onboardingStep4.busySubtitle}</p>
+          <h2 className="text-xl font-bold"><EditableText path="onboardingStep4.busyTitle">{c.busyTitle}</EditableText></h2>
+          <p className="text-muted-foreground text-sm"><EditableText path="onboardingStep4.busySubtitle">{c.busySubtitle}</EditableText></p>
           {streamText && (
             <Card>
               <CardContent className="p-4">
@@ -203,22 +206,22 @@ export default function OnboardingStep4() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <Sparkles className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">{copy.onboardingStep4.title}</h1>
-          <p className="text-muted-foreground text-sm">{copy.onboardingStep4.stepLabel}</p>
+          <h1 className="text-2xl font-bold"><EditableText path="onboardingStep4.title">{c.title}</EditableText></h1>
+          <p className="text-muted-foreground text-sm"><EditableText path="onboardingStep4.stepLabel">{c.stepLabel}</EditableText></p>
         </div>
 
         <Card>
           <CardContent className="p-5 space-y-3 text-sm">
-            <Row label={copy.onboardingStep4.rows.goal} value={GOAL_LABELS[state.primaryGoal!] ?? state.primaryGoal!} />
-            <Row label={copy.onboardingStep4.rows.level} value={LEVEL_LABELS[state.fitnessLevel!] ?? state.fitnessLevel!} />
-            <Row label={copy.onboardingStep4.rows.equipment} value={state.availableEquipment!.join(", ")} />
-            <Row label={copy.onboardingStep4.rows.age} value={`${state.age} ${copy.onboardingStep4.rows.ageSuffix}`} />
-            <Row label={copy.onboardingStep4.rows.weight} value={`${state.weightKg} ${copy.onboardingStep4.rows.weightSuffix}`} />
-            <Row label={copy.onboardingStep4.rows.height} value={`${state.heightCm} ${copy.onboardingStep4.rows.heightSuffix}`} />
-            <Row label={copy.onboardingStep4.rows.workoutsPerWeek} value={String(state.weeklyWorkoutDays)} />
-            {state.dietType && <Row label={copy.onboardingStep4.rows.diet} value={state.dietType} />}
-            {state.pastSports && state.pastSports.length > 0 && <Row label={copy.onboardingStep4.rows.sports} value={state.pastSports.join(", ")} />}
-            {state.pastInjuries && state.pastInjuries.length > 0 && <Row label={copy.onboardingStep4.rows.injuries} value={state.pastInjuries.join(", ")} />}
+            <Row label={c.rows.goal} value={GOAL_LABELS[state.primaryGoal!] ?? state.primaryGoal!} />
+            <Row label={c.rows.level} value={LEVEL_LABELS[state.fitnessLevel!] ?? state.fitnessLevel!} />
+            <Row label={c.rows.equipment} value={state.availableEquipment!.join(", ")} />
+            <Row label={c.rows.age} value={`${state.age} ${c.rows.ageSuffix}`} />
+            <Row label={c.rows.weight} value={`${state.weightKg} ${c.rows.weightSuffix}`} />
+            <Row label={c.rows.height} value={`${state.heightCm} ${c.rows.heightSuffix}`} />
+            <Row label={c.rows.workoutsPerWeek} value={String(state.weeklyWorkoutDays)} />
+            {state.dietType && <Row label={c.rows.diet} value={state.dietType} />}
+            {state.pastSports && state.pastSports.length > 0 && <Row label={c.rows.sports} value={state.pastSports.join(", ")} />}
+            {state.pastInjuries && state.pastInjuries.length > 0 && <Row label={c.rows.injuries} value={state.pastInjuries.join(", ")} />}
           </CardContent>
         </Card>
 
@@ -230,7 +233,7 @@ export default function OnboardingStep4() {
             </div>
             {quotaExceeded && (
               <Button size="lg" className="w-full gap-2" onClick={() => { clearOnboarding(); router.push("/dashboard"); }}>
-                {copy.onboardingStep4.continueToDashboard}
+                <EditableText path="onboardingStep4.continueToDashboard">{c.continueToDashboard}</EditableText>
               </Button>
             )}
           </div>
@@ -238,11 +241,13 @@ export default function OnboardingStep4() {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => router.push("/onboarding/step3")} className="gap-2">
-            <ChevronLeft className="w-4 h-4" /> {copy.onboardingStep4.back}
+            <ChevronLeft className="w-4 h-4" /> <EditableText path="onboardingStep4.back">{c.back}</EditableText>
           </Button>
           <Button size="lg" onClick={finish} className="flex-1 gap-2">
             {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Brain className="w-5 h-5" />}
-            {quotaExceeded ? copy.onboardingStep4.retry : copy.onboardingStep4.generate}
+            {quotaExceeded
+              ? <EditableText path="onboardingStep4.retry">{c.retry}</EditableText>
+              : <EditableText path="onboardingStep4.generate">{c.generate}</EditableText>}
           </Button>
         </div>
 

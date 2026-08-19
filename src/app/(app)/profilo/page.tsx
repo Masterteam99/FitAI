@@ -15,6 +15,8 @@ import { ChangeEmailCard } from "@/components/profile/ChangeEmailCard";
 import { ChangePasswordCard } from "@/components/profile/ChangePasswordCard";
 import { NotificationsCard } from "@/components/profile/NotificationsCard";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 interface ProfileData {
   name: string;
@@ -38,6 +40,7 @@ const LEVEL_LABELS: Record<string, string> = copy.profilo.levelLabels;
 const GOAL_LABELS: Record<string, string> = copy.profilo.goalLabels;
 
 export default function ProfiloPage() {
+  const copy = useCopy();
   const { data: session } = useSession();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,17 +109,17 @@ export default function ProfiloPage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <User className="w-7 h-7 text-primary" />
-          {copy.profilo.title}
+          <EditableText path="profilo.title">{copy.profilo.title}</EditableText>
         </h1>
-        <p className="text-muted-foreground">{copy.profilo.subtitle}</p>
+        <p className="text-muted-foreground"><EditableText path="profilo.subtitle">{copy.profilo.subtitle}</EditableText></p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: Trophy, label: copy.profilo.stats.points, value: profile?.totalPoints ?? 0, color: "text-yellow-400" },
-          { icon: Flame, label: copy.profilo.stats.streak, value: `${profile?.currentStreak ?? 0}🔥`, color: "text-orange-400" },
-          { icon: Dumbbell, label: copy.profilo.stats.longestStreak, value: profile?.longestStreak ?? 0, color: "text-primary" },
+          { icon: Trophy, label: copy.profilo.stats.points, path: "profilo.stats.points", value: profile?.totalPoints ?? 0, color: "text-yellow-400" },
+          { icon: Flame, label: copy.profilo.stats.streak, path: "profilo.stats.streak", value: `${profile?.currentStreak ?? 0}🔥`, color: "text-orange-400" },
+          { icon: Dumbbell, label: copy.profilo.stats.longestStreak, path: "profilo.stats.longestStreak", value: profile?.longestStreak ?? 0, color: "text-primary" },
         ].map((s) => {
           const Icon = s.icon;
           return (
@@ -124,7 +127,7 @@ export default function ProfiloPage() {
               <CardContent className="p-4 text-center">
                 <Icon className={`w-5 h-5 mx-auto mb-1 ${s.color}`} />
                 <div className="text-xl font-bold">{s.value}</div>
-                <p className="text-xs text-muted-foreground">{s.label}</p>
+                <p className="text-xs text-muted-foreground"><EditableText path={s.path}>{s.label}</EditableText></p>
               </CardContent>
             </Card>
           );
@@ -133,7 +136,7 @@ export default function ProfiloPage() {
 
       {/* Account info */}
       <Card>
-        <CardHeader><CardTitle className="text-base">{copy.profilo.accountTitle}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base"><EditableText path="profilo.accountTitle">{copy.profilo.accountTitle}</EditableText></CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
@@ -157,42 +160,42 @@ export default function ProfiloPage() {
 
       {/* Edit form */}
       <Card>
-        <CardHeader><CardTitle className="text-base">{copy.profilo.editTitle}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base"><EditableText path="profilo.editTitle">{copy.profilo.editTitle}</EditableText></CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium mb-1.5 block">{copy.profilo.nameLabel}</label>
+            <label className="text-sm font-medium mb-1.5 block"><EditableText path="profilo.nameLabel">{copy.profilo.nameLabel}</EditableText></label>
             <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder={copy.profilo.namePlaceholder} />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">{copy.profilo.ageLabel}</label>
+              <label className="text-sm font-medium mb-1.5 block"><EditableText path="profilo.ageLabel">{copy.profilo.ageLabel}</EditableText></label>
               <Input type="number" value={form.age} onChange={(e) => setForm((f) => ({ ...f, age: e.target.value }))} placeholder={copy.profilo.agePlaceholder} min="10" max="99" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">{copy.profilo.weightLabel}</label>
+              <label className="text-sm font-medium mb-1.5 block"><EditableText path="profilo.weightLabel">{copy.profilo.weightLabel}</EditableText></label>
               <Input type="number" value={form.weight} onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))} placeholder={copy.profilo.weightPlaceholder} min="30" max="300" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">{copy.profilo.heightLabel}</label>
+              <label className="text-sm font-medium mb-1.5 block"><EditableText path="profilo.heightLabel">{copy.profilo.heightLabel}</EditableText></label>
               <Input type="number" value={form.height} onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))} placeholder={copy.profilo.heightPlaceholder} min="100" max="250" />
             </div>
           </div>
           <Button onClick={saveProfile} disabled={saving} className="gap-2">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {saved ? copy.profilo.saved : copy.profilo.save}
+            {saved ? <EditableText path="profilo.saved">{copy.profilo.saved}</EditableText> : <EditableText path="profilo.save">{copy.profilo.save}</EditableText>}
           </Button>
         </CardContent>
       </Card>
 
       {/* Rifai il quiz */}
       <Card>
-        <CardHeader><CardTitle className="text-base">{copy.profilo.retakeQuiz.title}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base"><EditableText path="profilo.retakeQuiz.title">{copy.profilo.retakeQuiz.title}</EditableText></CardTitle></CardHeader>
         <CardContent className="flex items-center justify-between gap-3 flex-wrap">
-          <p className="text-sm text-muted-foreground">{copy.profilo.retakeQuiz.desc}</p>
+          <p className="text-sm text-muted-foreground"><EditableText path="profilo.retakeQuiz.desc">{copy.profilo.retakeQuiz.desc}</EditableText></p>
           <Button variant="outline" asChild className="gap-2 shrink-0">
             <Link href="/onboarding/quiz">
               <ListChecks className="w-4 h-4" />
-              {copy.profilo.retakeQuiz.cta}
+              <EditableText path="profilo.retakeQuiz.cta">{copy.profilo.retakeQuiz.cta}</EditableText>
             </Link>
           </Button>
         </CardContent>
@@ -200,9 +203,9 @@ export default function ProfiloPage() {
 
       {/* Note mediche */}
       <Card>
-        <CardHeader><CardTitle className="text-base">{copy.profilo.noteMediche.title}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base"><EditableText path="profilo.noteMediche.title">{copy.profilo.noteMediche.title}</EditableText></CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">{copy.profilo.noteMediche.desc}</p>
+          <p className="text-sm text-muted-foreground"><EditableText path="profilo.noteMediche.desc">{copy.profilo.noteMediche.desc}</EditableText></p>
           <textarea
             value={medicalNotes}
             onChange={(e) => setMedicalNotes(e.target.value)}
@@ -210,10 +213,10 @@ export default function ProfiloPage() {
             maxLength={2000}
             className="w-full bg-secondary/50 border border-border rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary min-h-[90px]"
           />
-          <p className="text-xs text-muted-foreground">{copy.profilo.noteMediche.disclaimer}</p>
+          <p className="text-xs text-muted-foreground"><EditableText path="profilo.noteMediche.disclaimer">{copy.profilo.noteMediche.disclaimer}</EditableText></p>
           <Button onClick={saveMedicalNotes} disabled={savingNotes} className="gap-2">
             {savingNotes ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {savedNotes ? copy.profilo.noteMediche.saved : copy.profilo.noteMediche.save}
+            {savedNotes ? <EditableText path="profilo.noteMediche.saved">{copy.profilo.noteMediche.saved}</EditableText> : <EditableText path="profilo.noteMediche.save">{copy.profilo.noteMediche.save}</EditableText>}
           </Button>
         </CardContent>
       </Card>
@@ -226,13 +229,13 @@ export default function ProfiloPage() {
 
       {/* Abbonamento */}
       <Card>
-        <CardHeader><CardTitle className="text-base">{copy.profilo.abbonamento.title}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base"><EditableText path="profilo.abbonamento.title">{copy.profilo.abbonamento.title}</EditableText></CardTitle></CardHeader>
         <CardContent className="flex items-center justify-between gap-3 flex-wrap">
-          <p className="text-sm text-muted-foreground">{copy.profilo.abbonamento.desc}</p>
+          <p className="text-sm text-muted-foreground"><EditableText path="profilo.abbonamento.desc">{copy.profilo.abbonamento.desc}</EditableText></p>
           <Button variant="outline" asChild className="gap-2 shrink-0">
             <Link href="/abbonamento">
               <Sparkles className="w-4 h-4" />
-              {copy.profilo.abbonamento.cta}
+              <EditableText path="profilo.abbonamento.cta">{copy.profilo.abbonamento.cta}</EditableText>
             </Link>
           </Button>
         </CardContent>
@@ -241,11 +244,11 @@ export default function ProfiloPage() {
       {/* Visibilità profilo */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{copy.profilo.visibilityTitle}</CardTitle>
+          <CardTitle className="text-base"><EditableText path="profilo.visibilityTitle">{copy.profilo.visibilityTitle}</EditableText></CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            {copy.profilo.visibilityDesc}
+            <EditableText path="profilo.visibilityDesc">{copy.profilo.visibilityDesc}</EditableText>
           </p>
           <div className="flex gap-2">
             <Button
@@ -260,7 +263,7 @@ export default function ProfiloPage() {
               }}
               className="flex-1"
             >
-              {copy.profilo.visibilityPublic}
+              <EditableText path="profilo.visibilityPublic">{copy.profilo.visibilityPublic}</EditableText>
             </Button>
             <Button
               variant={profile?.profileVisibility === "PRIVATE" ? "default" : "outline"}
@@ -274,7 +277,7 @@ export default function ProfiloPage() {
               }}
               className="flex-1"
             >
-              {copy.profilo.visibilityPrivate}
+              <EditableText path="profilo.visibilityPrivate">{copy.profilo.visibilityPrivate}</EditableText>
             </Button>
           </div>
         </CardContent>
@@ -292,16 +295,16 @@ export default function ProfiloPage() {
       {/* I miei dati (GDPR) */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{copy.profilo.dataTitle}</CardTitle>
+          <CardTitle className="text-base"><EditableText path="profilo.dataTitle">{copy.profilo.dataTitle}</EditableText></CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            {copy.profilo.dataDesc}
+            <EditableText path="profilo.dataDesc">{copy.profilo.dataDesc}</EditableText>
           </p>
           <Button variant="outline" asChild className="gap-2">
             <a href="/api/account/export">
               <Download className="w-4 h-4" />
-              {copy.profilo.dataDownload}
+              <EditableText path="profilo.dataDownload">{copy.profilo.dataDownload}</EditableText>
             </a>
           </Button>
         </CardContent>
@@ -312,11 +315,11 @@ export default function ProfiloPage() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-primary" />
-            {copy.profilo.guida.title}
+            <EditableText path="profilo.guida.title">{copy.profilo.guida.title}</EditableText>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">{copy.profilo.guida.intro}</p>
+          <p className="text-sm text-muted-foreground"><EditableText path="profilo.guida.intro">{copy.profilo.guida.intro}</EditableText></p>
           <div className="space-y-3">
             {copy.profilo.guida.items.map((it) => (
               <div key={it.q}>
@@ -332,12 +335,12 @@ export default function ProfiloPage() {
       <Card className="border-destructive/30">
         <CardContent className="p-4 flex items-center justify-between">
           <div>
-            <p className="font-medium">{copy.profilo.logoutTitle}</p>
-            <p className="text-sm text-muted-foreground">{copy.profilo.logoutDesc}</p>
+            <p className="font-medium"><EditableText path="profilo.logoutTitle">{copy.profilo.logoutTitle}</EditableText></p>
+            <p className="text-sm text-muted-foreground"><EditableText path="profilo.logoutDesc">{copy.profilo.logoutDesc}</EditableText></p>
           </div>
           <Button variant="destructive" onClick={() => signOut({ callbackUrl: "/" })} className="gap-2">
             <LogOut className="w-4 h-4" />
-            {copy.profilo.logout}
+            <EditableText path="profilo.logout">{copy.profilo.logout}</EditableText>
           </Button>
         </CardContent>
       </Card>
@@ -348,6 +351,7 @@ export default function ProfiloPage() {
 }
 
 function DeleteAccountSection() {
+  const copy = useCopy();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [password, setPassword] = useState("");
@@ -376,18 +380,18 @@ function DeleteAccountSection() {
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2 text-destructive">
           <AlertTriangle className="w-4 h-4" />
-          {copy.profilo.deleteTitle}
+          <EditableText path="profilo.deleteTitle">{copy.profilo.deleteTitle}</EditableText>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {!open ? (
           <>
             <p className="text-sm text-muted-foreground">
-              {copy.profilo.deleteDesc}
+              <EditableText path="profilo.deleteDesc">{copy.profilo.deleteDesc}</EditableText>
             </p>
             <Button variant="destructive" onClick={() => setOpen(true)} className="gap-2">
               <Trash2 className="w-4 h-4" />
-              {copy.profilo.deleteTitle}
+              <EditableText path="profilo.deleteTitle">{copy.profilo.deleteTitle}</EditableText>
             </Button>
           </>
         ) : (
@@ -406,10 +410,10 @@ function DeleteAccountSection() {
                 className="gap-2"
               >
                 {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                {copy.profilo.deleteConfirm}
+                <EditableText path="profilo.deleteConfirm">{copy.profilo.deleteConfirm}</EditableText>
               </Button>
               <Button variant="outline" onClick={() => { setOpen(false); setConfirmText(""); setPassword(""); setError(null); }}>
-                {copy.profilo.cancel}
+                <EditableText path="profilo.cancel">{copy.profilo.cancel}</EditableText>
               </Button>
             </div>
           </div>

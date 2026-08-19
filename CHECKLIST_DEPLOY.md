@@ -1,13 +1,15 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
 > **Deploy Vercel FATTO e verificato live** (Sessione 7): progetto `fit-ai`, dominio
 > `fit-ai-six-ruddy.vercel.app`, integrazione Git attiva (push su `main` → deploy automatico). Upstash
-> Redis riconnesso e verificato. `main` include ora anche tutto il lavoro di Sessioni 8-10 (guest
-> analysis flow completo con upload video, gamification, editor design in Admin con assistente IA —
-> nuovi modelli DB `GuestAnalysisRequest`, `LeaderboardReward`, `Exercise.availableForFreeTrial`,
+> Redis riconnesso e verificato. `main` include tutto il lavoro di Sessioni 8-10 (guest analysis flow
+> completo con upload video, gamification, editor design in Admin con assistente IA — nuovi modelli
+> DB `GuestAnalysisRequest`, `LeaderboardReward`, `Exercise.availableForFreeTrial`,
 > `SiteStyleOverride`, applicati via `prisma db push`). `next.config.ts`: `X-Frame-Options` cambiato da
-> `DENY` a `SAMEORIGIN` (serve per l'iframe dell'editor Admin).
+> `DENY` a `SAMEORIGIN` (serve per l'iframe dell'editor Admin). **Sessione 11** (editor design esteso a
+> tutte le pagine marketing + onboarding + area utente autenticata — dashboard/esercizi splittati in
+> server+client per farlo in sicurezza, fix "Ripristina default") non ancora committato/deployato.
 > **⚠️ Da confermare su Vercel**: le env var VAPID (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
 > `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, opzionale `CRON_SECRET`) per il sistema notifiche —
 > valori generati sono in `.env.local` locale, non confermato se già copiati su Vercel.

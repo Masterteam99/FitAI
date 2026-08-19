@@ -11,6 +11,132 @@
 
 ---
 
+## Sessione 11 — 2026-08-19 — Editor design esteso alla Home + fix "Ripristina default"
+
+**Contesto:** l'utente ha provato l'editor visuale Admin e ha notato che, a parte Prezzi, tutte le
+altre pagine (a partire dalla Home) sembravano "off limits" — nessun testo cliccabile. Prima di
+toccare codice, fatta una **verifica diagnostica** (agente Explore) sul motivo reale: confermato via
+codice che (a) `SiteEditModeProvider` è montato solo nel layout marketing, (b) la Home viveva a
+`src/app/page.tsx`, **fuori** dal gruppo di route `(marketing)` e quindi senza quel provider, (c)
+nessuna pagina eccetto Prezzi usa `useCopy()` + `<EditableText>`. Non un bug isolato: lavoro di
+estensione già annotato come aperto nel diario, mai iniziato.
+
+**Home resa editabile (stesso trattamento già usato per Prezzi in Sessione 9):**
+- Spostata la Home dentro il gruppo di route `(marketing)` (`src/app/(marketing)/page.tsx`, nuovo file
+  — la URL resta `/`, i route group non toccano il path) così eredita `SiteEditModeProvider` dal
+  layout marketing invece di essere autonoma.
+- Estratto tutto il contenuto in un nuovo componente client `src/app/(marketing)/LandingContent.tsx`
+  (`"use client"`, `useCopy()` al posto dell'import statico `{ copy }`), rimossa la duplicazione di
+  wrapper/header/footer/blob decorativi che la vecchia Home teneva inline (ora forniti dal layout).
+- Avvolti in `<EditableText path="landing.xxx">` tutti i testi scalari visibili (eyebrow, titoli
+  pre/highlight/post, lead, CTA, testi descrittivi di ogni sezione) — stesso scope di Prezzi: gli
+  **array** (liste problemi/step/segmenti/extra/trust/tabella competitor) restano non editabili,
+  coerente con la scelta già fatta su Prezzi (troppo rischioso editare struttura via testo libero).
+- Vecchio `src/app/page.tsx` eliminato (sostituito dal nuovo, nessun'altra route lo referenziava).
+
+**Bug reale trovato e corretto durante il test dal vivo:** "Ripristina default" su un campo
+(`SiteEditMode.tsx`, `applyChange`) salvava una stringa vuota `""` nello stato locale invece di
+rimuovere la chiave — dato che `EditableText` calcola `displayValue = savedContent ?? children`, e
+`""` non è `null`/`undefined`, il testo restava **vuoto** nella sessione corrente finché non si
+ricaricava la pagina (il backend già cancellava correttamente l'override, quindi al reload tornava
+tutto giusto — bug solo nello stato client). Bug preesistente, presente anche su Prezzi da Sessione 9,
+mai notato prima. Fix: quando il testo salvato è `""`, la chiave viene rimossa dalla mappa locale
+invece di essere impostata a stringa vuota.
+
+**Verifica dal vivo:** creato un utente admin usa-e-getta via script una tantum (`passwordHash` +
+`isAdmin: true` + `onboardingCompleted: true`, bypassando il quiz), login reale, editor aperto su
+`?siteEditor=1` sulla Home: confermati i bottoni "Modifica: landing.*" cliccabili, modale con
+testo/colore/dimensione funzionante, salvataggio verificato sia dentro l'iframe editor sia sulla
+pagina pubblica normale (stesso `SiteContent` condiviso), poi testato "Ripristina default" **senza
+ricaricare la pagina** — con il fix il testo torna visibile immediatamente (prima restava vuoto).
+Utente di test e script eliminati subito dopo. `tsc --noEmit` e `eslint` puliti (solo 3 warning
+preesistenti non toccati da questo lavoro, stesso pattern già tollerato altrove).
+
+**Continuazione stessa sessione — estensione a tutte le pagine marketing + onboarding:**
+- **Le 7 pagine marketing restanti** (Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app,
+  Prova gratuita) hanno ricevuto lo stesso trattamento di Home/Prezzi: contenuto estratto in un
+  componente client (`<Nome>Content.tsx`), `useCopy()` al posto dell'import statico, testi scalari
+  avvolti in `EditableText`. FAQ mantiene il JSON-LD lato server (da dati statici, non influenzato
+  dagli override — gli array di domande/risposte restano non editabili per scelta di scope, solo
+  hero/CTA lo sono). Tutte e 8 le pagine marketing verificate dal vivo nell'iframe editor con account
+  admin di test.
+- **Onboarding** (`/onboarding/quiz`, `step1-4`): erano già Client Component, quindi conversione più
+  semplice (nessuno split server/client necessario) — sostituito l'import statico `copy` con
+  `useCopy()` per i testi scalari visibili (titoli, label, bottoni), lasciando invariati gli array di
+  opzioni (obiettivi, livelli, generi, ecc. — stessa scelta di scope delle altre pagine) e i messaggi
+  d'errore tecnici di step4 (`errors.*`, usati anche in una funzione a livello di modulo, non in JSX).
+  **Bug evitato durante la scrittura**: in step4 il bottone genera/riprova cambia testo in base allo
+  stato (`quotaExceeded`) — un primo tentativo di avvolgerlo in un solo `EditableText` con path fisso
+  avrebbe salvato la modifica sotto la chiave sbagliata quando lo stato cambia; corretto con due
+  `EditableText` distinti, uno per stato.
+- **`SiteEditModeProvider` montato anche in `(app)/layout.tsx`** (area utente autenticata: dashboard,
+  allenamento, ecc.) **e in `(auth)/onboarding/layout.tsx`** — additivo, nessun testo ancora avvolto
+  lì (l'area utente resta fuori scope per questa sessione, vedi sotto).
+- **Bug/limite architetturale trovato e gestito**: le pagine onboarding non sono state aggiunte al
+  selettore dell'editor visuale (iframe) perché `onboarding/layout.tsx` reindirizza a `/dashboard`
+  chiunque abbia già completato l'onboarding — praticamente ogni admin — quindi l'iframe mostrerebbe
+  sempre la dashboard invece della pagina onboarding scelta. I testi restano comunque modificabili
+  tramite la vista alternativa "Elenco testi (ricerca)" in `/admin/site-content`, che non passa
+  dall'iframe e non è soggetta a questo redirect. Verificato dal vivo: cercata `onboardingStep1`,
+  modificato `onboardingStep1.title` dalla lista, verificato che il cambiamento sia apparso sulla
+  vera pagina `/onboarding/step1` (richiesto un secondo utente di test con onboarding non completato
+  per poterla visitare), poi ripristinato.
+- **Non fatto per scelta esplicita di rischio/scope**: l'area utente autenticata (dashboard,
+  allenamento, nutrizione, profilo, esercizi, progressi, community, leaderboard) NON è stata
+  convertita — a differenza di marketing/onboarding, diverse di queste pagine sono Server Component
+  con fetch diretto dal DB (dashboard, esercizi) o comunque molto più complesse/dati-dipendenti
+  (allenamento, nutrizione, profilo). Convertirle richiede lo stesso trattamento ma con più
+  attenzione (split server/client dove serve) e verifica dedicata pagina per pagina, per non
+  rischiare di rompere funzionalità reali usate da utenti paganti — non tentato "alla cieca" in
+  questa sessione. Il provider è comunque già montato, quindi il lavoro futuro è puramente
+  incrementale (nessuna modifica architetturale da rifare).
+- **Riordino blocchi/drag-and-drop**: ancora non progettato, invariato.
+
+**Verifica:** `tsc --noEmit` pulito su tutto il progetto dopo ogni blocco di modifiche; `eslint` sui
+file toccati mostra solo gli stessi 5 warning preesistenti (`react-hooks/set-state-in-effect`, pattern
+già tollerato altrove, non introdotto da questa sessione). Ogni pagina marketing nuova verificata dal
+vivo nell'iframe editor; onboarding verificato via ricerca testi + pagina reale, con un secondo utente
+di test creato/eliminato per poter visitare l'onboarding non completato.
+
+**Continuazione stessa sessione — area utente autenticata, con distinzione copy statico vs dati reali:**
+l'utente ha chiesto esplicitamente di rendere editabili solo le parti "assolute" (copy di sezione,
+etichette, titoli grafici) e **mai** il contenuto dinamico reale (punteggi, feedback di analisi, dati
+utente). Questa distinzione era già la convenzione stabilita nelle sessioni precedenti (`EditableText`
+avvolge solo stringhe scalari statiche da `copy.ts`, mai variabili) — applicata qui su 8 pagine:
+- **Leaderboard, Community (placeholder), Progressi, Nutrizione, Allenamento, Profilo**: già Client
+  Component, conversione a basso rischio — sostituito l'import statico `copy` con `useCopy()` (a volte
+  con shadowing locale della variabile `copy` dentro il componente per non dover rinominare ogni
+  riferimento), avvolti in `EditableText` solo i titoli di sezione/label/bottoni statici. Lasciati
+  intoccati: valori numerici reali, grafici (Recharts) con dati utente, funzioni di copy dinamiche che
+  interpolano numeri (es. `progressi.formScoreDelta(...)`, `dashboard.sessionsCompleted(...)`), liste
+  dinamiche dal DB (FAQ profilo/guida, ricompense classifica).
+- **Dashboard ed Esercizi**: Server Component con fetch diretto da Prisma — le più a rischio.
+  Refactoring in due file: il vecchio `page.tsx` resta un Server Component che fa **solo**
+  fetching/calcolo dati (invariato), un nuovo componente client (`DashboardContent.tsx`,
+  `EserciziText.tsx`) riceve i dati già pronti come props e gestisce testo/rendering con `useCopy()` +
+  `EditableText` solo sui titoli statici — i dati reali (nome esercizio, punteggio, sessioni, streak)
+  passano come props e non sono mai avvolti in `EditableText`. Bug reale scoperto e corretto nella
+  scrittura: `DailyMissionCard` si aspettava `type DailyMission` da `@/lib/dailyMission-shared`, non
+  da un export inesistente del componente stesso — preso a tsc prima di qualunque test.
+- **Verificato dal vivo** con un account admin di test (creato ed eliminato subito dopo): tutte le 8
+  pagine caricano senza errori server (incluso il refactor Dashboard, il più rischioso — dati reali,
+  streak, missione, piano attivo tutti confermati corretti), editor visuale testato su Dashboard
+  (salvataggio "Piano Attivo" → "QA TEST DASHBOARD" confermato live, poi ripristinato), le altre 7
+  pagine verificate a occhio che continuino a mostrare i dati reali dell'utente senza regressioni.
+  `tsc --noEmit` pulito; `eslint` su tutta l'area app mostra solo warning preesistenti non toccati da
+  questa sessione (stesso pattern `react-hooks/set-state-in-effect` e `Date.now` impuro già presenti
+  prima, non introdotti qui).
+- **Non fatto per scelta di scope**: array/liste dinamiche di testo (FAQ profilo, meal labels
+  nutrizione, opzioni onboarding, achievement) restano statiche non editabili — coerente con la
+  decisione già presa per Prezzi/Home in Sessione 9-11 (solo scalari, mai array, per evitare editing
+  di struttura via testo libero). Riordino blocchi/drag-and-drop: ancora non progettato.
+
+**Stato a fine sessione:** tutto il lavoro sopra (Home + 7 pagine marketing + onboarding + 8 pagine
+area utente + provider) **non ancora committato** (verificare `git status` alla prossima sessione
+prima di continuare).
+
+---
+
 ## Sessione 10 — 2026-08-18 — Completamento punti 1/2/4/5 da "Aggiornameni possibili.md" (v2, 5 punti)
 
 **Contesto:** l'utente ha riscritto `Aggiornameni possibili.md` da zero con 5 nuovi punti (i 10 di
@@ -92,7 +218,7 @@ chiesto esplicitamente di aspettare le sue risposte su quali competitor inserire
 nuovo requisito: un'analisi di quanto potrebbe costare (in token/USD Anthropic) un utente che ripete
 più volte al mese le analisi video, da riflettere nel pricing.
 
-**Stato a fine sessione:** tutto il lavoro sopra **non ancora committato** (verificato `git status`).
+**Stato a fine sessione:** tutto il lavoro sopra committato e pushato su `main` (commit `dd3e9a6`), verificato con `git status` (working tree pulito, branch allineato a `origin/main`).
 
 ---
 

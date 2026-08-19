@@ -10,6 +10,8 @@ import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
 import { OnboardingProgress } from "../OnboardingProgress";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 const GENDERS = copy.onboardingStep3.genders;
 
@@ -18,6 +20,7 @@ const DIET_OPTIONS = copy.onboardingStep3.dietOptions;
 const SPORT_OPTIONS = copy.onboardingStep3.sportOptions;
 
 export default function OnboardingStep3() {
+  const c = useCopy().onboardingStep3;
   const router = useRouter();
   const [age, setAge] = useState("");
   const [weightKg, setWeightKg] = useState("");
@@ -90,30 +93,30 @@ export default function OnboardingStep3() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <User className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">{copy.onboardingStep3.title}</h1>
-          <p className="text-muted-foreground text-sm">{copy.onboardingStep3.stepLabel}</p>
+          <h1 className="text-2xl font-bold"><EditableText path="onboardingStep3.title">{c.title}</EditableText></h1>
+          <p className="text-muted-foreground text-sm"><EditableText path="onboardingStep3.stepLabel">{c.stepLabel}</EditableText></p>
         </div>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">{copy.onboardingStep3.physicalDataTitle}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base"><EditableText path="onboardingStep3.physicalDataTitle">{c.physicalDataTitle}</EditableText></CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">{copy.onboardingStep3.ageLabel}</label>
-                <Input type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} placeholder={copy.onboardingStep3.agePlaceholder} />
+                <label className="text-xs text-muted-foreground"><EditableText path="onboardingStep3.ageLabel">{c.ageLabel}</EditableText></label>
+                <Input type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} placeholder={c.agePlaceholder} />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">{copy.onboardingStep3.weightLabel}</label>
-                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder={copy.onboardingStep3.weightPlaceholder} />
+                <label className="text-xs text-muted-foreground"><EditableText path="onboardingStep3.weightLabel">{c.weightLabel}</EditableText></label>
+                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder={c.weightPlaceholder} />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">{copy.onboardingStep3.heightLabel}</label>
-                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder={copy.onboardingStep3.heightPlaceholder} />
+                <label className="text-xs text-muted-foreground"><EditableText path="onboardingStep3.heightLabel">{c.heightLabel}</EditableText></label>
+                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder={c.heightPlaceholder} />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">{copy.onboardingStep3.genderLabel}</label>
+              <label className="text-xs text-muted-foreground"><EditableText path="onboardingStep3.genderLabel">{c.genderLabel}</EditableText></label>
               <div className="flex gap-2">
                 {GENDERS.map((g) => (
                   <button
@@ -132,7 +135,7 @@ export default function OnboardingStep3() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">{copy.onboardingStep3.daysTitle}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base"><EditableText path="onboardingStep3.daysTitle">{c.daysTitle}</EditableText></CardTitle></CardHeader>
           <CardContent className="flex gap-2 flex-wrap">
             {DAYS_OPTIONS.map((d) => (
               <button
@@ -149,10 +152,10 @@ export default function OnboardingStep3() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">{copy.onboardingStep3.lifestyleTitle}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base"><EditableText path="onboardingStep3.lifestyleTitle">{c.lifestyleTitle}</EditableText></CardTitle></CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{copy.onboardingStep3.dietLabel}</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"><EditableText path="onboardingStep3.dietLabel">{c.dietLabel}</EditableText></label>
               <select 
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={dietType}
@@ -163,17 +166,17 @@ export default function OnboardingStep3() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{copy.onboardingStep3.injuriesLabel}</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"><EditableText path="onboardingStep3.injuriesLabel">{c.injuriesLabel}</EditableText></label>
               <textarea
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={pastInjuries}
                 onChange={(e) => setPastInjuries(e.target.value)}
-                placeholder={copy.onboardingStep3.injuriesPlaceholder}
+                placeholder={c.injuriesPlaceholder}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{copy.onboardingStep3.sportsLabel}</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"><EditableText path="onboardingStep3.sportsLabel">{c.sportsLabel}</EditableText></label>
               <div className="flex flex-wrap gap-2">
                 {SPORT_OPTIONS.map(s => (
                   <button
@@ -193,10 +196,10 @@ export default function OnboardingStep3() {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => router.push("/onboarding/step2")} className="gap-2">
-            <ChevronLeft className="w-4 h-4" /> {copy.onboardingStep3.back}
+            <ChevronLeft className="w-4 h-4" /> <EditableText path="onboardingStep3.back">{c.back}</EditableText>
           </Button>
           <Button size="lg" onClick={next} disabled={!valid} className="flex-1 gap-2">
-            {copy.onboardingStep3.continue} <ChevronRight className="w-5 h-5" />
+            <EditableText path="onboardingStep3.continue">{c.continue}</EditableText> <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 

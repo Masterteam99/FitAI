@@ -110,7 +110,15 @@ export function SiteEditModeProvider({ children }: { children: React.ReactNode }
       }),
     ]);
 
-    setContents((prev) => ({ ...prev, [key]: text }));
+    // Testo vuoto = "torna al default" (stessa convenzione del backend, che elimina
+    // l'override): rimuovere la chiave invece di salvare "" fa sì che EditableText
+    // ricada sul suo children (il default), non su una stringa vuota.
+    setContents((prev) => {
+      if (text === "") {
+        return Object.fromEntries(Object.entries(prev).filter(([k]) => k !== key));
+      }
+      return { ...prev, [key]: text };
+    });
     setStyles((prev) => ({ ...prev, [key]: style }));
 
     if (recordHistory) {

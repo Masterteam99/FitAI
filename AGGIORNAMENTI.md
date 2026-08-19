@@ -1,5 +1,5 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è ora completamente aggiornato e in produzione (Sessioni 1-10: merge, deploy Vercel live, area utente v2, prova gratuita ospiti completa, gamification/classifica, editor design in Admin con assistente IA, Libreria ridisegnata — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 10 per il dettaglio completo).
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è aggiornato a Sessioni 1-10 in produzione; il lavoro di Sessione 11 (editor design esteso a tutte le pagine marketing + onboarding + area utente autenticata, fix "Ripristina default") non è ancora committato — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 11 per il dettaglio completo.
 
 ---
 

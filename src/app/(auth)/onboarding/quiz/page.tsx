@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, ChevronRight } from "lucide-react";
 import type { QuizConfig } from "@/lib/quiz";
-import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 type Answer = string | string[] | number;
 
 export default function QuizPage() {
+  const copy = useCopy();
   const c = copy.quiz;
   const router = useRouter();
   const [config, setConfig] = useState<QuizConfig | null>(null);
@@ -60,8 +62,8 @@ export default function QuizPage() {
   return (
     <div className="max-w-xl mx-auto p-4 space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">{c.title}</h1>
-        <p className="text-sm text-muted-foreground">{c.subtitle}</p>
+        <h1 className="text-2xl font-bold"><EditableText path="quiz.title">{c.title}</EditableText></h1>
+        <p className="text-sm text-muted-foreground"><EditableText path="quiz.subtitle">{c.subtitle}</EditableText></p>
       </div>
 
       {config.questions.map((q) => (
@@ -116,10 +118,10 @@ export default function QuizPage() {
       <div className="space-y-2">
         <Button onClick={submit} disabled={submitting} size="lg" className="w-full gap-2">
           {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-          {c.submit}<ChevronRight className="w-5 h-5" />
+          <EditableText path="quiz.submit">{c.submit}</EditableText><ChevronRight className="w-5 h-5" />
         </Button>
         <Button onClick={skip} disabled={submitting} variant="ghost" size="sm" className="w-full text-muted-foreground">
-          {c.skip}
+          <EditableText path="quiz.skip">{c.skip}</EditableText>
         </Button>
       </div>
     </div>

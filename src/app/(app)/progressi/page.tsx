@@ -10,7 +10,8 @@ import { CountUp, Stagger, StaggerItem } from "@/components/motion/MotionPrimiti
 import { WeightMeasuresCard } from "./WeightMeasuresCard";
 import { LoadTrendsCard } from "./LoadTrendsCard";
 import { AdaptiveBodyMap, RadialGauge } from "@/components/wow";
-import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 // Duplicata (non importata da @/lib/body-map) perché questo è un client
 // component: quel modulo importa Prisma/pg, che non può finire nel bundle browser.
@@ -48,6 +49,7 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 export default function ProgressiPage() {
+  const copy = useCopy();
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -88,18 +90,18 @@ export default function ProgressiPage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <TrendingUp className="w-7 h-7 text-primary" />
-          {copy.progressi.title}
+          <EditableText path="progressi.title">{copy.progressi.title}</EditableText>
         </h1>
-        <p className="text-muted-foreground">{copy.progressi.subtitle}</p>
+        <p className="text-muted-foreground"><EditableText path="progressi.subtitle">{copy.progressi.subtitle}</EditableText></p>
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { icon: Dumbbell, label: copy.progressi.stats.totalSessions, value: stats.totalSessions, suffix: "", color: "text-primary" },
-          { icon: Calendar, label: copy.progressi.stats.totalMinutes, value: stats.totalMinutes, suffix: "", color: "text-blue-400" },
-          { icon: Flame, label: copy.progressi.stats.currentStreak, value: stats.currentStreak, suffix: "🔥", color: "text-orange-400" },
-          { icon: Trophy, label: copy.progressi.stats.totalPoints, value: stats.totalPoints, suffix: "", color: "text-yellow-400" },
+          { icon: Dumbbell, label: copy.progressi.stats.totalSessions, path: "progressi.stats.totalSessions", value: stats.totalSessions, suffix: "", color: "text-primary" },
+          { icon: Calendar, label: copy.progressi.stats.totalMinutes, path: "progressi.stats.totalMinutes", value: stats.totalMinutes, suffix: "", color: "text-blue-400" },
+          { icon: Flame, label: copy.progressi.stats.currentStreak, path: "progressi.stats.currentStreak", value: stats.currentStreak, suffix: "🔥", color: "text-orange-400" },
+          { icon: Trophy, label: copy.progressi.stats.totalPoints, path: "progressi.stats.totalPoints", value: stats.totalPoints, suffix: "", color: "text-yellow-400" },
         ].map((s) => {
           const Icon = s.icon;
           return (
@@ -107,7 +109,7 @@ export default function ProgressiPage() {
               <CardContent className="p-4 text-center">
                 <Icon className={`w-6 h-6 mx-auto mb-2 ${s.color}`} />
                 <div className="text-2xl font-bold"><CountUp value={s.value} />{s.suffix}</div>
-                <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5"><EditableText path={s.path}>{s.label}</EditableText></p>
               </CardContent>
             </Card>
           );
@@ -117,11 +119,11 @@ export default function ProgressiPage() {
       {/* Qualità dei movimenti — dashboard: punteggio attuale + trend + equilibrio muscolare */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{copy.progressi.formScoreTitle}</CardTitle>
+          <CardTitle className="text-base"><EditableText path="progressi.formScoreTitle">{copy.progressi.formScoreTitle}</EditableText></CardTitle>
         </CardHeader>
         <CardContent>
           {stats.formScores.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{copy.progressi.formScoreEmpty}</p>
+            <p className="text-sm text-muted-foreground"><EditableText path="progressi.formScoreEmpty">{copy.progressi.formScoreEmpty}</EditableText></p>
           ) : (
             <div className="grid lg:grid-cols-[auto_1fr_auto] gap-6 items-center">
               {/* Punteggio più recente */}
@@ -204,7 +206,7 @@ export default function ProgressiPage() {
       {/* Weekly chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{copy.progressi.weeklyChartTitle}</CardTitle>
+          <CardTitle className="text-base"><EditableText path="progressi.weeklyChartTitle">{copy.progressi.weeklyChartTitle}</EditableText></CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={180}>
@@ -225,7 +227,7 @@ export default function ProgressiPage() {
       {stats.totalSessions >= 3 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{copy.progressi.minutesTrendTitle}</CardTitle>
+            <CardTitle className="text-base"><EditableText path="progressi.minutesTrendTitle">{copy.progressi.minutesTrendTitle}</EditableText></CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={160}>
@@ -248,19 +250,19 @@ export default function ProgressiPage() {
       {stats.totalSessions > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{copy.progressi.insightsTitle}</CardTitle>
+            <CardTitle className="text-base"><EditableText path="progressi.insightsTitle">{copy.progressi.insightsTitle}</EditableText></CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
               <div>
                 <div className="text-2xl font-bold text-primary">{stats.daysActive30}</div>
-                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightDaysActive}</p>
+                <p className="text-xs text-muted-foreground mt-0.5"><EditableText path="progressi.insightDaysActive">{copy.progressi.insightDaysActive}</EditableText></p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-blue-400">
                   {stats.totalSessions > 0 ? Math.round(stats.totalMinutes / stats.totalSessions) : 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightAvgMinPerSession}</p>
+                <p className="text-xs text-muted-foreground mt-0.5"><EditableText path="progressi.insightAvgMinPerSession">{copy.progressi.insightAvgMinPerSession}</EditableText></p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-orange-400">
@@ -268,13 +270,13 @@ export default function ProgressiPage() {
                     ? Math.round(stats.weeklyVolume.reduce((a, w) => a + w.minutes, 0) / stats.weeklyVolume.length)
                     : 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightAvgMinPerWeek}</p>
+                <p className="text-xs text-muted-foreground mt-0.5"><EditableText path="progressi.insightAvgMinPerWeek">{copy.progressi.insightAvgMinPerWeek}</EditableText></p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-yellow-400">
                   {stats.avgFeeling != null ? stats.avgFeeling.toFixed(1) : "—"}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">{copy.progressi.insightAvgFeeling}</p>
+                <p className="text-xs text-muted-foreground mt-0.5"><EditableText path="progressi.insightAvgFeeling">{copy.progressi.insightAvgFeeling}</EditableText></p>
               </div>
             </div>
           </CardContent>
@@ -285,7 +287,7 @@ export default function ProgressiPage() {
       {stats.weeklyVolume.some((w) => w.minutes > 0) && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{copy.progressi.weeklyVolumeTitle}</CardTitle>
+            <CardTitle className="text-base"><EditableText path="progressi.weeklyVolumeTitle">{copy.progressi.weeklyVolumeTitle}</EditableText></CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={160}>
@@ -352,7 +354,7 @@ export default function ProgressiPage() {
         <Card className="border-dashed border-2">
           <CardContent className="py-12 text-center space-y-3">
             <Dumbbell className="w-10 h-10 text-muted-foreground mx-auto" />
-            <p className="text-muted-foreground">{copy.progressi.emptyState}</p>
+            <p className="text-muted-foreground"><EditableText path="progressi.emptyState">{copy.progressi.emptyState}</EditableText></p>
           </CardContent>
         </Card>
       )}

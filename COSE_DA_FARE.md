@@ -11,8 +11,26 @@
 
 ---
 
-## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-18 — Sessione 10]`
+## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-19 — Sessione 11]`
 
+- **Committare il lavoro di Sessione 11** — editor design esteso a Home + tutte le pagine marketing
+  (Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app, Prova gratuita) + onboarding
+  (quiz/step1-4, via "Elenco testi", non iframe) + fix "Ripristina default" + provider montato anche
+  in area utente/onboarding — tutto ancora non committato (verificare `git status`).
+- ✅ **FATTO (2026-08-19, stessa Sessione 11): area utente autenticata estesa all'editor design** —
+  tutte le 8 pagine (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
+  leaderboard) hanno ora `useCopy()` + `EditableText` sui titoli/label statici. Dashboard ed esercizi
+  (Server Component) sono stati splittati in page.tsx (fetch dati) + componente client (rendering).
+  Solo copy statico è editabile, mai i dati reali (punteggi, feedback, valori utente) — come richiesto
+  esplicitamente. Verificato dal vivo, `tsc`/`eslint` puliti.
+- **Onboarding — valutare se abilitare la preview iframe** `[agg. 2026-08-19]` — oggi i testi
+  onboarding sono editabili solo tramite "Elenco testi (ricerca)" in `/admin/site-content`, non tramite
+  l'iframe visuale: `onboarding/layout.tsx` reindirizza a `/dashboard` chi ha già completato
+  l'onboarding (ogni admin), quindi l'iframe mostrerebbe sempre la dashboard. Per abilitare la preview
+  visuale servirebbe un modo per far bypassare quel redirect quando `?siteEditor=1` è presente — le
+  pagine ricevono `searchParams` ma il layout no (limite di Next.js App Router), quindi la logica
+  andrebbe spostata/duplicata nelle singole pagine onboarding. Non fatto perché tocca la logica reale
+  di redirect dell'onboarding — da valutare con più attenzione, non è puro lavoro meccanico.
 - **Punto 3 di `Aggiornameni possibili.md` (Prezzi — tabelle/struttura)** — l'utente vuole rivederlo
   "con calma", risposte sue attese prima di toccare il codice su: quali competitor mostrare nelle
   tabelle comparative (oggi ci sono dati `[DATI da verificare]` segnaposto), e la struttura generale.

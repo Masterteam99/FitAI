@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { prisma } from "@/lib/prisma";
+import { SiteEditModeProvider } from "@/content/SiteEditMode";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -23,10 +24,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     // con gli accenti energy esistenti come componente atletica.
     <div className="theme-organic flex min-h-screen bg-background text-foreground">
       <div className="organic-grain" />
-      <Navbar isAdmin={user.isAdmin} isPremium={isPremium} />
-      <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 pb-20 lg:pb-0 relative z-[2]">
-        <div className="p-4 lg:p-6 max-w-7xl mx-auto">{children}</div>
-      </main>
+      <SiteEditModeProvider>
+        <Navbar isAdmin={user.isAdmin} isPremium={isPremium} />
+        <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 pb-20 lg:pb-0 relative z-[2]">
+          <div className="p-4 lg:p-6 max-w-7xl mx-auto">{children}</div>
+        </main>
+      </SiteEditModeProvider>
     </div>
   );
 }

@@ -1,21 +1,23 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (18 ago 2026):** la Sessione 10 completa la prova gratuita (campo nome, scelta "Registra ora" o
-> "Carica un video" oltre alla sola registrazione live, 6 esercizi di default attivati); l'**editor
-> design è stato spostato dentro Admin** (`/admin/site-content` → Editor visuale: anteprima iframe con
-> `?siteEditor=1`, non più sovrapposto alle pagine pubbliche) con cronologia Annulla/Ripeti, reset per
-> campo e un **assistente IA integrato** (linguaggio naturale → modifica applicata, riusa
-> l'infrastruttura Claude già usata dall'AI Coach); Libreria rinominata "Libreria esercizi" con filtri
-> principali+"Altri filtri", bottone "Termina esercizio", vista di registrazione a schermo intero con
-> video PT in un riquadro (PIP, desktop); corretto il bottone "Installa ora" della PWA (spariva su
-> iOS/al primo caricamento). Nuovo modello DB `SiteStyleOverride`; `X-Frame-Options` cambiato da `DENY`
-> a `SAMEORIGIN` per l'iframe dell'editor. Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 10).
-> **Aperti:** sezione Prezzi (tabelle/struttura + nuova analisi costo AI per utilizzo intensivo, in
+> **Snapshot codice (19 ago 2026):** la Sessione 11 estende l'**editor design a tutte le pagine
+> marketing** (Home, Prezzi, Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app, Prova
+> gratuita — prima editabile solo Prezzi), all'**onboarding** (quiz + step1-4, editabile tramite
+> "Elenco testi" in Admin, non tramite l'iframe visuale — vedi "Aperti") e a **tutta l'area utente
+> autenticata** (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
+> leaderboard) — solo il copy statico (titoli, label, bottoni) è editabile, mai i dati reali
+> (punteggi, feedback, valori utente), come richiesto esplicitamente. Dashboard ed esercizi (Server
+> Component con fetch dal DB) sono stati splittati in page.tsx (dati) + componente client (rendering)
+> per farlo in sicurezza. Corretto anche un bug reale in "Ripristina default" (lasciava il campo vuoto
+> nella sessione corrente invece di tornare al default). La Sessione 10 aveva completato la prova
+> gratuita e spostato l'**editor design dentro Admin** con cronologia Annulla/Ripeti e **assistente IA**.
+> Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
+> **Aperti:** lavoro di Sessione 11 non ancora committato · abilitare la preview iframe per
+> l'onboarding (oggi solo via ricerca testi) · sezione Prezzi (tabelle/struttura + analisi costo AI, in
 > attesa risposte dell'utente) · riordino blocchi nell'editor design · asset 3D per il personaggio
-> animato da procurare · estendere l'editor design alle altre pagine (oggi solo Prezzi) · env var VAPID
-> su Vercel da confermare · credito Anthropic da ricaricare (rimandato all'ultimo, scelta dell'utente)
-> · resto invariato, vedi `COSE_DA_FARE.md`.
+> animato da procurare · env var VAPID su Vercel da confermare · credito Anthropic da ricaricare
+> (rimandato all'ultimo, scelta dell'utente) · resto invariato, vedi `COSE_DA_FARE.md`.
 
 ---
 

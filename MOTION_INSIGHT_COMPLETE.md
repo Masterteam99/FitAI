@@ -1,13 +1,15 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-18 (Sessione 10)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (18 ago 2026):** `main` è ora completamente aggiornato e **in produzione**
-> (Sessioni 1-10: merge, deploy Vercel live, area utente v2, fix vari, prova gratuita ospiti completa
-> (nome + upload video), gamification/classifica, editor design del sito in Admin con assistente IA,
-> Libreria ridisegnata). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 10).
+> **Snapshot codice (19 ago 2026):** `main` è **in produzione** fino a Sessione 10 (merge, deploy
+> Vercel live, area utente v2, fix vari, prova gratuita ospiti completa (nome + upload video),
+> gamification/classifica, editor design del sito in Admin con assistente IA, Libreria ridisegnata).
+> **Sessione 11** (editor design esteso a tutte le pagine marketing + onboarding + area utente
+> autenticata, fix "Ripristina default") non ancora committata. Dettaglio:
+> `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
 > **Aperti:** verificare switch fotocamera/analisi inline con hardware reale · sezione Prezzi + analisi
-> costo AI (in attesa risposte utente) · asset 3D da procurare · resto invariato, vedi
-> `STATO_PROGETTO.md`.
+> costo AI (in attesa risposte utente) · asset 3D da procurare · abilitare la preview iframe per
+> l'onboarding · resto invariato, vedi `STATO_PROGETTO.md`.
 
 ---
 

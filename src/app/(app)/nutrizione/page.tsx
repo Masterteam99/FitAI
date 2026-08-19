@@ -16,6 +16,8 @@ import { RadialGauge } from "@/components/wow";
 import { RevisionRequestForm } from "@/components/RevisionRequestForm";
 import { computeNutritionTargets, DEFAULT_TARGETS } from "@/lib/nutrition-targets";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 interface NutritionLog {
   id: string;
@@ -34,6 +36,7 @@ const MEAL_LABELS: Record<string, string> = copy.nutrizione.mealLabels;
 const MEAL_TYPES = Object.keys(MEAL_LABELS);
 
 export default function NutrizionePage() {
+  const copy = useCopy();
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [logs, setLogs] = useState<NutritionLog[]>([]);
   const [totals, setTotals] = useState<Totals>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
@@ -132,9 +135,9 @@ export default function NutrizionePage() {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Apple className="w-7 h-7 text-primary" />
-          {copy.nutrizione.title}
+          <EditableText path="nutrizione.title">{copy.nutrizione.title}</EditableText>
         </h1>
-        <p className="text-muted-foreground">{copy.nutrizione.subtitle}</p>
+        <p className="text-muted-foreground"><EditableText path="nutrizione.subtitle">{copy.nutrizione.subtitle}</EditableText></p>
       </div>
 
       {/* Piano attivo — priorità: 1) documento di un professionista caricato in Profilo (se analizzato),
@@ -169,7 +172,7 @@ export default function NutrizionePage() {
         <CardContent className="p-5 flex items-center gap-5">
           <RadialGauge value={totals.calories} max={targets.calories} size={116} color="#3fae5a" label="kcal" />
           <div className="text-sm">
-            <p className="font-medium">{copy.nutrizione.macros.calories}</p>
+            <p className="font-medium"><EditableText path="nutrizione.macros.calories">{copy.nutrizione.macros.calories}</EditableText></p>
             <p className="text-muted-foreground mt-0.5">
               {totals.calories >= targets.calories
                 ? "Obiettivo calorico giornaliero raggiunto."
@@ -182,10 +185,10 @@ export default function NutrizionePage() {
       {/* Macro totals */}
       <div className="grid grid-cols-4 gap-2">
         {[
-          { label: copy.nutrizione.macros.calories, value: totals.calories, unit: copy.nutrizione.caloriesUnit, target: targets.calories, color: "text-primary" },
-          { label: copy.nutrizione.macros.protein, value: Math.round(totals.protein), unit: copy.nutrizione.gramsUnit, target: targets.protein, color: "text-blue-400" },
-          { label: copy.nutrizione.macros.carbs, value: Math.round(totals.carbs), unit: copy.nutrizione.gramsUnit, target: targets.carbs, color: "text-orange-400" },
-          { label: copy.nutrizione.macros.fat, value: Math.round(totals.fat), unit: copy.nutrizione.gramsUnit, target: targets.fat, color: "text-yellow-400" },
+          { label: copy.nutrizione.macros.calories, path: "nutrizione.macros.calories", value: totals.calories, unit: copy.nutrizione.caloriesUnit, target: targets.calories, color: "text-primary" },
+          { label: copy.nutrizione.macros.protein, path: "nutrizione.macros.protein", value: Math.round(totals.protein), unit: copy.nutrizione.gramsUnit, target: targets.protein, color: "text-blue-400" },
+          { label: copy.nutrizione.macros.carbs, path: "nutrizione.macros.carbs", value: Math.round(totals.carbs), unit: copy.nutrizione.gramsUnit, target: targets.carbs, color: "text-orange-400" },
+          { label: copy.nutrizione.macros.fat, path: "nutrizione.macros.fat", value: Math.round(totals.fat), unit: copy.nutrizione.gramsUnit, target: targets.fat, color: "text-yellow-400" },
         ].map((m) => {
           const pct = Math.min(Math.round((m.value / m.target) * 100), 100);
           return (
@@ -193,7 +196,7 @@ export default function NutrizionePage() {
               <CardContent className="p-3 text-center">
                 <div className={`text-lg font-bold ${m.color}`}>{m.value}</div>
                 <div className="text-xs text-muted-foreground">{m.unit}</div>
-                <div className="text-xs text-muted-foreground">{m.label}</div>
+                <div className="text-xs text-muted-foreground"><EditableText path={m.path}>{m.label}</EditableText></div>
                 <div className="mt-1.5 h-1 bg-secondary rounded-full overflow-hidden">
                   <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
                 </div>
@@ -206,7 +209,7 @@ export default function NutrizionePage() {
 
       {/* Add form — sempre visibile, non più dietro un bottone "Aggiungi" che sembrava non fare nulla */}
       <Card className="border-primary/30">
-        <CardHeader><CardTitle className="text-base">{copy.nutrizione.newFoodTitle}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base"><EditableText path="nutrizione.newFoodTitle">{copy.nutrizione.newFoodTitle}</EditableText></CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <select
             value={form.mealType}
@@ -217,7 +220,7 @@ export default function NutrizionePage() {
           </select>
           <FoodSearchAutocomplete onChange={setFoodEntry} />
           <Button onClick={addLog} disabled={saving || !foodEntry} className="w-full">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : copy.nutrizione.add}
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <EditableText path="nutrizione.add">{copy.nutrizione.add}</EditableText>}
           </Button>
         </CardContent>
       </Card>
@@ -256,7 +259,7 @@ export default function NutrizionePage() {
             <Card className="border-dashed border-2">
               <CardContent className="py-10 text-center">
                 <Apple className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground text-sm">{copy.nutrizione.emptyDay}</p>
+                <p className="text-muted-foreground text-sm"><EditableText path="nutrizione.emptyDay">{copy.nutrizione.emptyDay}</EditableText></p>
               </CardContent>
             </Card>
           )}

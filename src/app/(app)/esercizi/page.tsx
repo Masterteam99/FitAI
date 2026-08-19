@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Dumbbell } from "lucide-react";
 import { ExerciseCardMedia } from "@/components/esercizi/ExerciseCardMedia";
 import { ExerciseFilters } from "@/components/esercizi/ExerciseFilters";
+import { EserciziHeading, EserciziNoResults } from "./EserciziText";
 import type { Metadata } from "next";
 import { copy } from "@/content/copy";
 
@@ -48,10 +49,7 @@ export default async function EserciziPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{copy.esercizi.title}</h1>
-        <p className="text-muted-foreground">{copy.esercizi.countAvailable(exercises.length)}</p>
-      </div>
+      <EserciziHeading count={exercises.length} />
 
       {/* Filtri */}
       <ExerciseFilters
@@ -66,7 +64,7 @@ export default async function EserciziPage({ searchParams }: Props) {
       {exercises.length === 0 ? (
         <div className="text-center py-16 space-y-3">
           <Dumbbell className="w-12 h-12 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground">{copy.esercizi.noResults}</p>
+          <EserciziNoResults />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

@@ -9,6 +9,8 @@ import { Users, Dumbbell, Trophy, Image as ImageIcon, Loader2, Heart, MessageCir
 import { formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 interface FeedPost {
   id: string;
@@ -44,11 +46,12 @@ function initials(name: string | null): string {
 const COMMUNITY_COMING_SOON = true;
 
 function CommunityComingSoon() {
+  const c = useCopy().community;
   return (
     <div className="max-w-lg mx-auto py-20 text-center space-y-3">
       <Users className="w-10 h-10 text-muted-foreground mx-auto" />
-      <h1 className="text-xl font-bold">{copy.community.comingSoonTitle}</h1>
-      <p className="text-sm text-muted-foreground">{copy.community.comingSoonSubtitle}</p>
+      <h1 className="text-xl font-bold"><EditableText path="community.comingSoonTitle">{c.comingSoonTitle}</EditableText></h1>
+      <p className="text-sm text-muted-foreground"><EditableText path="community.comingSoonSubtitle">{c.comingSoonSubtitle}</EditableText></p>
     </div>
   );
 }

@@ -13,7 +13,16 @@ const PAGES = [
   { href: "/risorse", label: "Risorse" },
   { href: "/scarica", label: "Scarica l'app" },
   { href: "/prova-gratuita", label: "Prova gratuita" },
+  // Le pagine onboarding NON sono qui: /onboarding/layout.tsx reindirizza a
+  // /dashboard chi ha già completato l'onboarding (praticamente ogni admin) —
+  // l'iframe mostrerebbe sempre la dashboard, non la pagina scelta. I loro testi
+  // sono comunque editabili tramite "Elenco testi (ricerca)" qui sotto, che non
+  // passa dall'iframe.
 ];
+
+// Nota: elenco già completo per le pagine marketing (Sessione 11 ha aggiunto EditableText a Home,
+// Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app, Prova gratuita — restano da fare
+// l'area utente autenticata e l'onboarding, che vivono fuori da questo gruppo di route).
 
 /**
  * Punto di accesso unico all'editor "designer": un'anteprima live del sito

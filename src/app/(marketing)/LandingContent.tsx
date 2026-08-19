@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Home,
@@ -17,48 +19,44 @@ import {
   Award,
   AlertTriangle,
 } from "lucide-react";
-import { MarketingHeader } from "@/components/marketing/MarketingHeader";
-import { MarketingFooter } from "@/components/marketing/MarketingFooter";
-import { OrganizationJsonLd } from "@/components/marketing/OrganizationJsonLd";
 import { StickyAnalyzeCta } from "@/components/marketing/StickyAnalyzeCta";
 import { ReportCardCarousel } from "@/components/marketing/ReportCardCarousel";
 import { FadeIn, SlideUp, ScrollReveal, ScrollStagger, StaggerItem } from "@/components/motion/MotionPrimitives";
 import { AnimatedFormCharacter } from "@/components/wow";
-import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 const SEGMENT_ICONS = [Home, Dumbbell, HeartPulse, PersonStanding];
 const EXTRA_ICONS = [Dumbbell, Utensils, TrendingUp, Calculator, Users, ChefHat];
 const TRUST_ICONS = [ShieldCheck, Award, Lock];
 
-function Eyebrow({ children, center }: { children: React.ReactNode; center?: boolean }) {
+function Eyebrow({ text, path, center }: { text: string; path: string; center?: boolean }) {
   return (
     <span
       className={`inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-bold mb-4 ${center ? "justify-center w-full" : ""}`}
       style={{ color: "var(--organic-green-deep)" }}
     >
       <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--organic-green)" }} />
-      {children}
+      <EditableText path={path}>{text}</EditableText>
     </span>
   );
 }
 
-function Title({ t, className }: { t: { pre: string; highlight: string; post?: string }; className?: string }) {
+function Title({ t, tPath, className }: { t: { pre: string; highlight: string; post?: string }; tPath: string; className?: string }) {
   return (
     <h2 className={className ?? "text-display-lg !text-[clamp(2.1rem,3.8vw,3.1rem)]"}>
-      {t.pre}
-      <em style={{ color: "var(--organic-green)" }}>{t.highlight}</em>
-      {t.post}
+      <EditableText path={`${tPath}.pre`}>{t.pre}</EditableText>
+      <em style={{ color: "var(--organic-green)" }}><EditableText path={`${tPath}.highlight`}>{t.highlight}</EditableText></em>
+      <EditableText path={`${tPath}.post`}>{t.post ?? ""}</EditableText>
     </h2>
   );
 }
 
-export default function LandingPage() {
+export function LandingContent() {
+  const copy = useCopy();
   const c = copy.landing;
   return (
-    <div className="theme-organic relative min-h-screen overflow-x-clip bg-background text-foreground">
-      <OrganizationJsonLd />
-      <div className="organic-grain" />
-      <MarketingHeader />
+    <>
       <StickyAnalyzeCta label={c.finalCta} href="/prova-gratuita" />
 
       {/* 1 — HERO */}
@@ -67,26 +65,26 @@ export default function LandingPage() {
         <div className="relative z-[2] max-w-[1180px] mx-auto px-7 grid lg:grid-cols-[1.05fr_.95fr] gap-14 items-center">
           <div>
             <SlideUp>
-              <Eyebrow>{c.heroEyebrow}</Eyebrow>
+              <Eyebrow text={c.heroEyebrow} path="landing.heroEyebrow" />
               <h1 className="text-display-lg !text-[clamp(2.7rem,5.4vw,4.2rem)] mb-6">
-                {c.heroTitle.pre}
-                <em style={{ color: "var(--organic-green)" }}>{c.heroTitle.highlight}</em>
-                {c.heroTitle.post}
+                <EditableText path="landing.heroTitle.pre">{c.heroTitle.pre}</EditableText>
+                <em style={{ color: "var(--organic-green)" }}><EditableText path="landing.heroTitle.highlight">{c.heroTitle.highlight}</EditableText></em>
+                <EditableText path="landing.heroTitle.post">{c.heroTitle.post ?? ""}</EditableText>
               </h1>
             </SlideUp>
             <FadeIn delay={0.1}>
-              <p className="text-lg text-muted-foreground max-w-[520px] mb-8">{c.heroLead}</p>
+              <p className="text-lg text-muted-foreground max-w-[520px] mb-8"><EditableText path="landing.heroLead">{c.heroLead}</EditableText></p>
             </FadeIn>
             <FadeIn delay={0.16}>
               <div className="flex gap-4 items-center flex-wrap">
                 <Link href="/prova-gratuita" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(200,247,81,.4)]" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
-                  {c.ctaPrimary} <ChevronRight className="w-4 h-4" />
+                  <EditableText path="landing.ctaPrimary">{c.ctaPrimary}</EditableText> <ChevronRight className="w-4 h-4" />
                 </Link>
                 <Link href="/come-funziona" className="inline-flex items-center px-7 py-3.5 rounded-full font-semibold text-sm border border-border hover:border-foreground transition-colors">
-                  {c.ctaSecondary}
+                  <EditableText path="landing.ctaSecondary">{c.ctaSecondary}</EditableText>
                 </Link>
               </div>
-              <p className="text-xs text-muted-foreground mt-3 max-w-[46ch]">{c.ctaMicro}</p>
+              <p className="text-xs text-muted-foreground mt-3 max-w-[46ch]"><EditableText path="landing.ctaMicro">{c.ctaMicro}</EditableText></p>
             </FadeIn>
             <div id="hero-cta-anchor" />
           </div>
@@ -103,8 +101,8 @@ export default function LandingPage() {
       {/* 2 — IL PROBLEMA */}
       <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
         <div className="max-w-[820px] mx-auto px-7 text-center">
-          <Title t={c.problemTitle} />
-          <p className="text-muted-foreground text-lg mt-5 mb-9">{c.problemText}</p>
+          <Title t={c.problemTitle} tPath="landing.problemTitle" />
+          <p className="text-muted-foreground text-lg mt-5 mb-9"><EditableText path="landing.problemText">{c.problemText}</EditableText></p>
           <div className="grid sm:grid-cols-3 gap-4 text-left">
             {c.problemPoints.map((p) => (
               <div key={p} className="flex gap-3 bg-card border border-border rounded-[16px] p-5">
@@ -120,8 +118,8 @@ export default function LandingPage() {
       <section className="relative z-[2] py-24">
         <div className="max-w-[1180px] mx-auto px-7">
           <div className="text-center max-w-[640px] mx-auto mb-14">
-            <Eyebrow center>{c.stepsEyebrow}</Eyebrow>
-            <Title t={c.stepsTitle} />
+            <Eyebrow center text={c.stepsEyebrow} path="landing.stepsEyebrow" />
+            <Title t={c.stepsTitle} tPath="landing.stepsTitle" />
           </div>
           <ScrollStagger className="grid sm:grid-cols-3 gap-5">
             {c.steps.map((s) => (
@@ -136,7 +134,7 @@ export default function LandingPage() {
           </ScrollStagger>
           <div className="text-center mt-8">
             <Link href="/come-funziona" className="inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: "var(--organic-green-deep)" }}>
-              {c.stepsLink}
+              <EditableText path="landing.stepsLink">{c.stepsLink}</EditableText>
             </Link>
           </div>
         </div>
@@ -146,9 +144,9 @@ export default function LandingPage() {
       <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
         <div className="max-w-[1180px] mx-auto px-7 grid lg:grid-cols-2 gap-14 items-center">
           <ScrollReveal>
-            <Eyebrow>{c.reportEyebrow}</Eyebrow>
-            <Title t={c.reportTitle} />
-            <p className="text-muted-foreground text-lg mt-4 mb-6">{c.reportText}</p>
+            <Eyebrow text={c.reportEyebrow} path="landing.reportEyebrow" />
+            <Title t={c.reportTitle} tPath="landing.reportTitle" />
+            <p className="text-muted-foreground text-lg mt-4 mb-6"><EditableText path="landing.reportText">{c.reportText}</EditableText></p>
             <ul className="space-y-2.5">
               {c.reportBullets.map((b) => (
                 <li key={b} className="flex gap-2.5 items-start text-sm">
@@ -168,9 +166,9 @@ export default function LandingPage() {
       <section id="per-chi" className="relative z-[2] py-24 scroll-mt-20">
         <div className="max-w-[1180px] mx-auto px-7">
           <div className="text-center max-w-[640px] mx-auto mb-14">
-            <Eyebrow center>{c.segmentsEyebrow}</Eyebrow>
-            <Title t={c.segmentsTitle} />
-            <p className="text-muted-foreground text-lg mt-4">{c.segmentsSubtitle}</p>
+            <Eyebrow center text={c.segmentsEyebrow} path="landing.segmentsEyebrow" />
+            <Title t={c.segmentsTitle} tPath="landing.segmentsTitle" />
+            <p className="text-muted-foreground text-lg mt-4"><EditableText path="landing.segmentsSubtitle">{c.segmentsSubtitle}</EditableText></p>
           </div>
           <ScrollStagger className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {c.segments.map((s, i) => {
@@ -195,9 +193,9 @@ export default function LandingPage() {
       <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
         <div className="max-w-[900px] mx-auto px-7">
           <div className="text-center max-w-[680px] mx-auto mb-12">
-            <Eyebrow center>{c.compareEyebrow}</Eyebrow>
-            <Title t={c.compareTitle} />
-            <p className="text-muted-foreground text-lg mt-4">{c.compareText}</p>
+            <Eyebrow center text={c.compareEyebrow} path="landing.compareEyebrow" />
+            <Title t={c.compareTitle} tPath="landing.compareTitle" />
+            <p className="text-muted-foreground text-lg mt-4"><EditableText path="landing.compareText">{c.compareText}</EditableText></p>
           </div>
           <div className="bg-card border border-border rounded-[22px] p-7 md:p-9">
             <div className="flex items-center gap-6 mb-7 text-xs font-semibold">
@@ -226,8 +224,8 @@ export default function LandingPage() {
       <section className="relative z-[2] py-24">
         <div className="max-w-[1180px] mx-auto px-7">
           <div className="text-center max-w-[640px] mx-auto mb-14">
-            <Eyebrow center>{c.extrasEyebrow}</Eyebrow>
-            <Title t={c.extrasTitle} />
+            <Eyebrow center text={c.extrasEyebrow} path="landing.extrasEyebrow" />
+            <Title t={c.extrasTitle} tPath="landing.extrasTitle" />
           </div>
           <ScrollStagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {c.extras.map((e, i) => {
@@ -252,7 +250,7 @@ export default function LandingPage() {
       <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
         <div className="max-w-[1180px] mx-auto px-7">
           <div className="text-center max-w-[640px] mx-auto mb-14">
-            <Title t={c.trustTitle} />
+            <Title t={c.trustTitle} tPath="landing.trustTitle" />
           </div>
           <ScrollStagger className="grid sm:grid-cols-3 gap-6">
             {c.trust.map((t, i) => {
@@ -281,9 +279,9 @@ export default function LandingPage() {
       {/* 8.5 — GAMIFICATION (teaser) */}
       <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
         <div className="max-w-[900px] mx-auto px-7 text-center">
-          <Eyebrow center>{c.gamificationEyebrow}</Eyebrow>
-          <Title t={c.gamificationTitle} />
-          <p className="text-muted-foreground text-lg mt-4 max-w-[64ch] mx-auto">{c.gamificationText}</p>
+          <Eyebrow center text={c.gamificationEyebrow} path="landing.gamificationEyebrow" />
+          <Title t={c.gamificationTitle} tPath="landing.gamificationTitle" />
+          <p className="text-muted-foreground text-lg mt-4 max-w-[64ch] mx-auto"><EditableText path="landing.gamificationText">{c.gamificationText}</EditableText></p>
           <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
             {c.gamificationPoints.map((p) => (
               <span key={p} className="text-sm font-semibold px-4 py-2 rounded-full" style={{ background: "rgba(200,247,81,.12)", color: "var(--organic-green-deep)" }}>
@@ -298,16 +296,16 @@ export default function LandingPage() {
       <section className="relative z-[2] py-20">
         <div className="max-w-[700px] mx-auto px-7 text-center">
           <Quote className="w-8 h-8 mx-auto mb-5" style={{ color: "var(--organic-green)" }} />
-          <p className="text-xl italic text-foreground/90 mb-4">«{c.founderQuote}»</p>
-          <p className="text-sm text-muted-foreground">{c.founderName}</p>
+          <p className="text-xl italic text-foreground/90 mb-4">«<EditableText path="landing.founderQuote">{c.founderQuote}</EditableText>»</p>
+          <p className="text-sm text-muted-foreground"><EditableText path="landing.founderName">{c.founderName}</EditableText></p>
         </div>
       </section>
 
       {/* 10 — PREZZI (compatto) */}
       <section className="relative z-[2] py-24" style={{ background: "var(--organic-sand)" }}>
         <div className="max-w-[820px] mx-auto px-7 text-center">
-          <Eyebrow center>{c.pricingEyebrow}</Eyebrow>
-          <Title t={c.pricingTitle} />
+          <Eyebrow center text={c.pricingEyebrow} path="landing.pricingEyebrow" />
+          <Title t={c.pricingTitle} tPath="landing.pricingTitle" />
           <div className="grid sm:grid-cols-3 gap-5 mt-10">
             {c.pricingMini.map((p) => (
               <div key={p.name} className="relative bg-card border border-border rounded-[20px] p-6">
@@ -319,9 +317,9 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground mt-8">{c.pricingGuarantee}</p>
+          <p className="text-sm text-muted-foreground mt-8"><EditableText path="landing.pricingGuarantee">{c.pricingGuarantee}</EditableText></p>
           <Link href="/prezzi" className="inline-flex items-center gap-1.5 text-sm font-semibold mt-4" style={{ color: "var(--organic-green-deep)" }}>
-            {c.pricingLink} <ChevronRight className="w-4 h-4" />
+            <EditableText path="landing.pricingLink">{c.pricingLink}</EditableText> <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
@@ -330,7 +328,9 @@ export default function LandingPage() {
       <section className="relative z-[2] py-24">
         <div className="max-w-[1120px] mx-auto px-7">
           <div className="text-center max-w-[640px] mx-auto mb-10">
-            <Title t={{ pre: "", highlight: "", post: c.compTableTitle }} />
+            <h2 className="text-display-lg !text-[clamp(2.1rem,3.8vw,3.1rem)]">
+              <EditableText path="landing.compTableTitle">{c.compTableTitle}</EditableText>
+            </h2>
           </div>
           <div className="overflow-x-auto rounded-[20px] border border-border">
             <table className="w-full text-sm border-collapse min-w-[640px]">
@@ -357,11 +357,11 @@ export default function LandingPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-muted-foreground mt-4 max-w-[70ch]">{c.compTableCaption}</p>
-          <p className="text-sm text-muted-foreground mt-5 max-w-[80ch]">{c.compTableNote}</p>
+          <p className="text-xs text-muted-foreground mt-4 max-w-[70ch]"><EditableText path="landing.compTableCaption">{c.compTableCaption}</EditableText></p>
+          <p className="text-sm text-muted-foreground mt-5 max-w-[80ch]"><EditableText path="landing.compTableNote">{c.compTableNote}</EditableText></p>
           <div className="text-center mt-8">
             <Link href="/faq" className="inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: "var(--organic-green-deep)" }}>
-              {c.faqLink} <ChevronRight className="w-4 h-4" />
+              <EditableText path="landing.faqLink">{c.faqLink}</EditableText> <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -375,18 +375,16 @@ export default function LandingPage() {
               <div className="organic-blob w-[420px] h-[420px] -top-40 -left-32 opacity-[.3]" style={{ background: "var(--organic-terracotta)" }} />
               <div className="relative z-[2] max-w-[600px] mx-auto">
                 <h2 className="font-display text-[clamp(2rem,3.4vw,2.8rem)] leading-tight mb-8" style={{ color: "var(--foreground)" }}>
-                  {c.finalTitle.pre}<em style={{ color: "var(--organic-green-soft)" }}>{c.finalTitle.highlight}</em>{c.finalTitle.post}
+                  <EditableText path="landing.finalTitle.pre">{c.finalTitle.pre}</EditableText><em style={{ color: "var(--organic-green-soft)" }}><EditableText path="landing.finalTitle.highlight">{c.finalTitle.highlight}</EditableText></em><EditableText path="landing.finalTitle.post">{c.finalTitle.post ?? ""}</EditableText>
                 </h2>
                 <Link href="/prova-gratuita" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-10px_rgba(200,247,81,.4)]" style={{ background: "var(--organic-terracotta)", color: "var(--primary-foreground)" }}>
-                  {c.finalCta} <ChevronRight className="w-4 h-4" />
+                  <EditableText path="landing.finalCta">{c.finalCta}</EditableText> <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
           </ScrollReveal>
         </div>
       </section>
-
-      <MarketingFooter />
-    </div>
+    </>
   );
 }

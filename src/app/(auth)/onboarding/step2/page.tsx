@@ -9,10 +9,13 @@ import { readOnboarding, writeOnboarding } from "../onboardingState";
 import { SkipOnboardingButton } from "../SkipOnboardingButton";
 import { OnboardingProgress } from "../OnboardingProgress";
 import { copy } from "@/content/copy";
+import { useCopy } from "@/content/CopyProvider";
+import { EditableText } from "@/content/SiteEditMode";
 
 const EQUIPMENT_OPTIONS = copy.onboardingStep2.equipment;
 
 export default function OnboardingStep2() {
+  const c = useCopy().onboardingStep2;
   const router = useRouter();
   const [equipment, setEquipment] = useState<string[]>([]);
 
@@ -43,12 +46,12 @@ export default function OnboardingStep2() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/15 mb-3">
             <Dumbbell className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">{copy.onboardingStep2.title}</h1>
-          <p className="text-muted-foreground text-sm">{copy.onboardingStep2.stepLabel}</p>
+          <h1 className="text-2xl font-bold"><EditableText path="onboardingStep2.title">{c.title}</EditableText></h1>
+          <p className="text-muted-foreground text-sm"><EditableText path="onboardingStep2.stepLabel">{c.stepLabel}</EditableText></p>
         </div>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">{copy.onboardingStep2.cardTitle}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base"><EditableText path="onboardingStep2.cardTitle">{c.cardTitle}</EditableText></CardTitle></CardHeader>
           <CardContent className="flex gap-2 flex-wrap">
             {EQUIPMENT_OPTIONS.map((e) => (
               <button
@@ -66,10 +69,10 @@ export default function OnboardingStep2() {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => router.push("/onboarding/step1")} className="gap-2">
-            <ChevronLeft className="w-4 h-4" /> {copy.onboardingStep2.back}
+            <ChevronLeft className="w-4 h-4" /> <EditableText path="onboardingStep2.back">{c.back}</EditableText>
           </Button>
           <Button size="lg" onClick={next} disabled={equipment.length === 0} className="flex-1 gap-2">
-            {copy.onboardingStep2.continue} <ChevronRight className="w-5 h-5" />
+            <EditableText path="onboardingStep2.continue">{c.continue}</EditableText> <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 
