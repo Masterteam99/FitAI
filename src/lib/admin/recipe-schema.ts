@@ -6,6 +6,7 @@ const MealType = z.enum(["BREAKFAST", "LUNCH", "DINNER", "SNACK"]);
 export const RecipeSchema = z.object({
   title: z.string().min(2).max(160),
   description: z.string().min(2).max(2000),
+  imageUrl: z.union([z.string().trim().url().max(1000), z.literal("")]).nullable().optional(),
   mealType: MealType.nullable().optional(),
   dietType: z.string().max(40).nullable().optional(), // null = adatta a tutte
   calories: z.number().int().min(0).max(5000).nullable().optional(),
@@ -24,6 +25,7 @@ export function buildRecipeData(d: RecipeInput) {
   return {
     title: d.title,
     description: d.description,
+    imageUrl: d.imageUrl && d.imageUrl.trim() ? d.imageUrl.trim() : null,
     mealType: d.mealType ?? null,
     dietType: d.dietType && d.dietType.trim() ? d.dietType.trim() : null,
     calories: d.calories ?? null,

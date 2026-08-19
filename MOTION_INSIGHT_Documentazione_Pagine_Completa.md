@@ -10,7 +10,9 @@
 > `main` pushato e **in produzione** fino a Sessione 10. **Sessione 11** ha esteso l'editor visuale a
 > tutte le pagine marketing (prima solo `/prezzi`), all'onboarding (via "Elenco testi", non iframe) e a
 > tutta l'area utente autenticata (solo copy statico, mai i dati reali), e corretto un bug in
-> "Ripristina default" — non ancora committata. Dettaglio pagina per pagina: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
+> "Ripristina default" — committata e pushata. Sostituito anche il generatore AI di ricette in
+> Nutrizione con 14 ricette curate a mano (l'AI resta come opzione extra). Dettaglio pagina per
+> pagina: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
 > **Aperti:** vedi `STATO_PROGETTO.md`.
 
 ---

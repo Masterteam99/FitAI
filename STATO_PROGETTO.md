@@ -2,7 +2,7 @@
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
 > **Snapshot codice (19 ago 2026):** `main` è **in produzione** su Vercel
-> (`fit-ai-six-ruddy.vercel.app`) fino a Sessione 10; il lavoro di Sessione 11 non è ancora committato.
+> (`fit-ai-six-ruddy.vercel.app`) fino a Sessione 10; il lavoro di Sessione 11 è committato e pushato.
 > - **Sessione 11:** editor design **esteso a tutte le pagine marketing** (Home, Il Metodo, Per Chi,
 >   Chi siamo, FAQ, Risorse, Scarica l'app, Prova gratuita — prima editabile solo `/prezzi`), stesso
 >   trattamento per ognuna: contenuto estratto in componente client con `useCopy()`, testi scalari
@@ -24,7 +24,24 @@
 >   testi onboarding verificati via ricerca + pagina reale con un secondo utente di test senza
 >   onboarding completato, tutte le 8 pagine dell'area utente verificate senza errori server e con dati
 >   reali intatti (incluso il refactor Dashboard, il più a rischio). `tsc`/`eslint` puliti (solo
->   warning preesistenti non toccati). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
+>   warning preesistenti non toccati).
+>   **Audit di sicurezza** (skill `security-review`) sul diff della sessione, poi allargato su
+>   richiesta a upload video/documenti e flusso di pagamento: **nessun problema trovato** in nessuna
+>   delle due aree (auth boundary intatti, ownership check coerenti, firma webhook Stripe verificata).
+>   **Test end-to-end come utente reale**: registrato un account vero via form pubblico, completato
+>   onboarding, testato piano AI/nutrizionale AI (falliscono con messaggio chiaro, credito esaurito),
+>   piano manuale (funziona), Abbonamento (**scoperto: nessuna chiave Stripe in locale**), export GDPR,
+>   cambio password. Trovati e corretti **2 bug reali**: `profilo.goalLabels`/`allenamento.goalLabels`
+>   in `copy.ts` usavano chiavi non allineate all'enum reale `FitnessGoal` (3 obiettivi su 6 mostravano
+>   il valore grezzo del DB tipo "BUILD_MUSCLE"); riepilogo onboarding step4 mostrava "NONE" invece
+>   dell'etichetta per l'attrezzatura (join senza mappa etichette).
+>   **Nutrizione → Ricette**: chiarito con l'utente che non voleva un generatore AI ma una selezione
+>   reale — scritte **14 ricette curate originali** (grammature, ingredienti, procedimento; 5 diete,
+>   pasti principali; ispirate a ricerca web ma non copiate, per evitare problemi di copyright),
+>   salvate in `prisma/seed-recipes.ts` e inserite nel DB. Aggiunto il campo `Recipe.imageUrl`
+>   (migrazione applicata, form Admin e rendering utente aggiornati) — lasciato vuoto: foto reali
+>   andranno aggiunte a mano dall'Admin per evitare di usare immagini di altri siti senza permesso.
+>   Verificato dal vivo (filtro dieta funzionante, form Admin testato). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
 > - **Sessioni 7-9:** merge in `main`, deploy Vercel live, bug Upstash risolto, verifica end-to-end
 >   flussi, fix contrasto testo esteso, prova gratuita ospiti (prima versione, solo registrazione
 >   live), personaggio 2D animato, carosello esempi report, editor copy per Admin (prima versione,
@@ -51,7 +68,9 @@
 > spostare l'ordine, non fatto) · asset 3D per il personaggio animato da procurare/commissionare ·
 > abilitare la preview iframe per l'onboarding · env var VAPID da
 > confermare su Vercel · credito Anthropic da ricaricare (scelta dell'utente, rimandato all'ultimo
-> prima del lancio — blocca anche la verifica reale dell'assistente IA dell'editor) · verificare
+> prima del lancio — blocca anche la verifica reale dell'assistente IA dell'editor) · **chiavi Stripe
+> da configurare** (nessuna presente in locale, confermato testando la pagina Abbonamento — da
+> verificare anche su Vercel, altrimenti nessun pagamento reale è possibile) · verificare
 > switch fotocamera e flusso analisi inline con hardware reale (non testabile in questo ambiente di
 > sviluppo) · Profilo impostazioni lingua · i18n completo del copy (rimandata come iniziativa a parte)
 > · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore,

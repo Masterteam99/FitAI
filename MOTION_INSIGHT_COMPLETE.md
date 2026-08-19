@@ -5,7 +5,8 @@
 > Vercel live, area utente v2, fix vari, prova gratuita ospiti completa (nome + upload video),
 > gamification/classifica, editor design del sito in Admin con assistente IA, Libreria ridisegnata).
 > **Sessione 11** (editor design esteso a tutte le pagine marketing + onboarding + area utente
-> autenticata, fix "Ripristina default") non ancora committata. Dettaglio:
+> autenticata, fix "Ripristina default", audit sicurezza, 2 bug reali corretti, 14 ricette curate)
+> è committata e pushata. Dettaglio:
 > `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
 > **Aperti:** verificare switch fotocamera/analisi inline con hardware reale · sezione Prezzi + analisi
 > costo AI (in attesa risposte utente) · asset 3D da procurare · abilitare la preview iframe per

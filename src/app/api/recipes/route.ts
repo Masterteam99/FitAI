@@ -24,7 +24,7 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
     take: 6,
     select: {
-      id: true, title: true, description: true, mealType: true, dietType: true,
+      id: true, title: true, description: true, imageUrl: true, mealType: true, dietType: true,
       calories: true, proteinG: true, carbsG: true, fatG: true, ingredients: true, steps: true, tags: true,
     },
   });

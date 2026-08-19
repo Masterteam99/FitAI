@@ -5,12 +5,14 @@
 > completata, editor design **solo dentro Admin** con cronologia Annulla/Ripeti + assistente IA,
 > Libreria ridisegnata, bottone installazione PWA corretto). **Sessione 11** estende l'editor design a
 > tutte le pagine marketing (prima solo Prezzi), all'onboarding e a tutta l'area utente autenticata
-> (solo copy statico, mai i dati reali), e corregge un bug in "Ripristina default" — non ancora
-> committata. Dettagli in `STATO_PROGETTO.md` e `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
+> (solo copy statico, mai i dati reali), corregge un bug in "Ripristina default", passa un audit di
+> sicurezza (nessun problema, anche su upload/pagamenti) e sostituisce il generatore AI di ricette con
+> 14 ricette curate — committata e pushata. Dettagli in `STATO_PROGETTO.md` e
+> `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
 > **Aperti:** sezione Prezzi + analisi costo AI (in attesa risposte utente) · riordino blocchi
 > nell'editor · asset 3D da procurare · abilitare la preview iframe per l'onboarding · env VAPID su
-> Vercel da confermare · credito Anthropic da ricaricare (rimandato) · resto invariato (vedi
-> `STATO_PROGETTO.md`).
+> Vercel da confermare · **credito Anthropic e chiavi Stripe** da configurare (nessuna delle due in
+> locale — rimandate al lancio) · resto invariato (vedi `STATO_PROGETTO.md`).
 
 ---
 

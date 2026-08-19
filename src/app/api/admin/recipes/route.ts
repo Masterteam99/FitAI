@@ -19,7 +19,7 @@ export async function GET() {
 
   const items = await prisma.recipe.findMany({
     orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, description: true, mealType: true, dietType: true, isActive: true, createdAt: true },
+    select: { id: true, title: true, description: true, imageUrl: true, mealType: true, dietType: true, isActive: true, createdAt: true },
   });
 
   return NextResponse.json({
@@ -27,6 +27,7 @@ export async function GET() {
       id: r.id,
       title: r.title,
       description: r.description,
+      imageUrl: r.imageUrl,
       mealType: r.mealType,
       dietType: r.dietType,
       isActive: r.isActive,

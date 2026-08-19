@@ -2,9 +2,10 @@
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
 > **Snapshot codice (19 ago 2026):** `main` include tutto fino a Sessione 10, pushato e in produzione;
-> il lavoro di Sessione 11 (tutte le pagine marketing + onboarding + area utente autenticata editabili
-> dall'editor design in Admin — solo copy statico, mai i dati reali — fix "Ripristina default") non è
-> ancora committato. Rispetto a quanto descritto qui: la pagina esercizio (§ dettaglio Libreria)
+> la Sessione 11 (tutte le pagine marketing + onboarding + area utente autenticata editabili
+> dall'editor design in Admin — solo copy statico, mai i dati reali — fix "Ripristina default",
+> audit sicurezza, 2 bug reali corretti, sezione Nutrizione → Ricette ora con 14 ricette curate al
+> posto del solo generatore AI) è committata e pushata. Rispetto a quanto descritto qui: la pagina esercizio (§ dettaglio Libreria)
 > è stata ridisegnata — due video affiancati (spiegazione/esecuzione), parametri biomeccanici tolti
 > dalla vista utente, checkbox al posto del vecchio bottone "Attiva analisi avanzata"; la Libreria è
 > rinominata "Libreria esercizi" con filtri principali+"Altri filtri"; la sessione guidata ha un

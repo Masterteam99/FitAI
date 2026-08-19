@@ -9,10 +9,15 @@
 > `SiteStyleOverride`, applicati via `prisma db push`). `next.config.ts`: `X-Frame-Options` cambiato da
 > `DENY` a `SAMEORIGIN` (serve per l'iframe dell'editor Admin). **Sessione 11** (editor design esteso a
 > tutte le pagine marketing + onboarding + area utente autenticata — dashboard/esercizi splittati in
-> server+client per farlo in sicurezza, fix "Ripristina default") non ancora committato/deployato.
+> server+client per farlo in sicurezza, audit sicurezza senza problemi, 2 bug reali corretti, nuovo
+> campo `Recipe.imageUrl` + 14 ricette curate) è committata e pushata. Testato con un account reale:
+> pagina Abbonamento risponde correttamente "Pagamenti non configurati" — confermato che
+> **nessuna chiave `STRIPE_*` è presente in `.env.local` locale**.
 > **⚠️ Da confermare su Vercel**: le env var VAPID (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
 > `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, opzionale `CRON_SECRET`) per il sistema notifiche —
-> valori generati sono in `.env.local` locale, non confermato se già copiati su Vercel.
+> valori generati sono in `.env.local` locale, non confermato se già copiati su Vercel. **Idem le
+> chiavi Stripe** (`STRIPE_SECRET_KEY`, `STRIPE_PRICE_MONTHLY/YEARLY`, `STRIPE_WEBHOOK_SECRET`): senza,
+> nessun pagamento reale è possibile in produzione.
 > **Aperti:** ricaricare credito Anthropic (scelta dell'utente, rimandato all'ultimo prima del lancio,
 > blocca anche la verifica dell'assistente IA dell'editor) · verificare switch fotocamera/analisi
 > inline con hardware reale · CORS bucket `exercise-videos` · asset 3D per il personaggio animato da

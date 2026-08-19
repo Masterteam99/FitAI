@@ -11,6 +11,7 @@ interface CuratedRecipe {
   id: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   mealType: string | null;
   dietType: string | null;
   calories: number | null;
@@ -64,6 +65,10 @@ export function RecipesCard() {
           <div className="space-y-3">
             {curated!.map((r) => (
               <div key={r.id} className="rounded-lg border p-3 space-y-2">
+                {r.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={r.imageUrl} alt={r.title} className="w-full h-40 object-cover rounded-md" loading="lazy" />
+                )}
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-medium">{r.title}</p>
                   <Badge variant="secondary" className="text-[10px]">{c.recipesCuratedBadge}</Badge>

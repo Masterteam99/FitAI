@@ -26,6 +26,10 @@ const GOAL_LABELS: Record<string, string> = copy.onboardingStep4.goalLabels;
 
 const LEVEL_LABELS: Record<string, string> = copy.onboardingStep4.levelLabels;
 
+const EQUIPMENT_LABELS: Record<string, string> = Object.fromEntries(
+  copy.onboardingStep2.equipment.map((e) => [e.value, e.label])
+);
+
 export default function OnboardingStep4() {
   const c = useCopy().onboardingStep4;
   const router = useRouter();
@@ -214,7 +218,7 @@ export default function OnboardingStep4() {
           <CardContent className="p-5 space-y-3 text-sm">
             <Row label={c.rows.goal} value={GOAL_LABELS[state.primaryGoal!] ?? state.primaryGoal!} />
             <Row label={c.rows.level} value={LEVEL_LABELS[state.fitnessLevel!] ?? state.fitnessLevel!} />
-            <Row label={c.rows.equipment} value={state.availableEquipment!.join(", ")} />
+            <Row label={c.rows.equipment} value={state.availableEquipment!.map((e) => EQUIPMENT_LABELS[e] ?? e).join(", ")} />
             <Row label={c.rows.age} value={`${state.age} ${c.rows.ageSuffix}`} />
             <Row label={c.rows.weight} value={`${state.weightKg} ${c.rows.weightSuffix}`} />
             <Row label={c.rows.height} value={`${state.heightCm} ${c.rows.heightSuffix}`} />

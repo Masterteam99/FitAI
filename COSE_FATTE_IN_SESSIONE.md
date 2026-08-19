@@ -131,9 +131,57 @@ avvolge solo stringhe scalari statiche da `copy.ts`, mai variabili) — applicat
   decisione già presa per Prezzi/Home in Sessione 9-11 (solo scalari, mai array, per evitare editing
   di struttura via testo libero). Riordino blocchi/drag-and-drop: ancora non progettato.
 
-**Stato a fine sessione:** tutto il lavoro sopra (Home + 7 pagine marketing + onboarding + 8 pagine
-area utente + provider) **non ancora committato** (verificare `git status` alla prossima sessione
-prima di continuare).
+**Continuazione stessa sessione — audit di sicurezza + test end-to-end come utente reale + ricette
+curate:**
+- **Audit di sicurezza** (skill `security-review`) sul diff della sessione: nessuna vulnerabilità
+  trovata (auth boundary intatti, nessun injection point nuovo, nessuna esposizione dati). Allargato
+  su richiesta a upload video/documenti e flusso di abbonamento/pagamento: anche lì nessun problema —
+  guest session legata a cookie httpOnly, validazione file server-side, path storage mai da input
+  utente grezzo, firma webhook Stripe verificata, ownership check (`findFirst({id, userId})`) coerente
+  ovunque.
+- **Test end-to-end come utente reale**: registrato un account vero via form pubblico (non script
+  admin), completato l'intero onboarding, testato generazione piano AI e piano nutrizionale AI
+  (falliscono correttamente con messaggio chiaro sul credito Anthropic esaurito, nessun crash),
+  creazione piano manuale (funziona end-to-end), pagina Abbonamento (risponde correttamente "Pagamenti
+  non configurati" — **Stripe non ha nessuna chiave in `.env.local` locale**, da verificare se
+  configurato su Vercel prima del lancio), export dati GDPR, cambio password (rifiuta correttamente
+  la password sbagliata). Account di test eliminato a fine verifica.
+- **2 bug reali trovati e corretti durante il test**:
+  1. `profilo.goalLabels` e `allenamento.goalLabels` in `copy.ts` usavano chiavi (`WEIGHT_LOSS`,
+     `MUSCLE_GAIN`, `STRENGTH`, `SPORT_PERFORMANCE`) che **non corrispondevano all'enum reale**
+     `FitnessGoal` nello schema Prisma (`LOSE_WEIGHT`, `BUILD_MUSCLE`, `ATHLETIC_PERFORMANCE`, ecc.) —
+     per 3 obiettivi su 6 il profilo mostrava il valore grezzo del database (es. "BUILD_MUSCLE")
+     invece dell'etichetta italiana. Corretto allineando le chiavi all'enum vero.
+  2. Il riepilogo onboarding step4 mostrava "NONE" invece di "Solo peso corporeo" per l'attrezzatura:
+     univa i valori grezzi dell'array senza passare da una mappa etichette (a differenza di
+     obiettivo/livello, che la usavano già). Corretto in `step4/page.tsx` con una mappa costruita da
+     `onboardingStep2.equipment`.
+- **Ricette curate per Nutrizione** (chiarimento richiesto dall'utente: non voleva un generatore AI
+  ma una selezione reale di ricette, ricercate online, adatte a chi si allena e vuole aumentare la
+  massa magra a discapito di quella grassa, con grammature vere e procedimento — l'AI resta solo come
+  fallback per chi vuole altre idee, invariata). Fatto:
+  - Ricerca web (italiana + internazionale) su ricette fitness ad alto contenuto proteico/basso
+    contenuto di grassi per capire cosa viene proposto più spesso nel settore.
+  - Scritte **14 ricette originali** (non copiate da nessuna fonte, per evitare problemi di
+    copyright — solo ispirate ai pattern comuni trovati in ricerca), con grammature reali,
+    ingredienti e procedimento passo-passo, coprendo le 5 diete (onnivora, vegetariana, vegana,
+    chetogenica, mediterranea) e i pasti principali, con qualche spunto meno scontato dei soliti
+    "pollo e riso" (dal di lenticchie, buddha bowl di tempeh, tonno scottato, ecc.).
+  - Dati salvati in `prisma/seed-recipes.ts` (file di riferimento riutilizzabile, stessa convenzione
+    degli altri `seed-*.ts` già presenti) e inseriti nel DB.
+  - **Aggiunto il campo `imageUrl`** al modello `Recipe` (migrazione DB applicata) + form Admin
+    (`AdminRecipesManager.tsx`) + rendering lato utente (`RecipesCard.tsx`) — l'utente aveva chiesto
+    "se possibile" anche le foto di preparazione: **non ho inserito foto reali** perché prenderle da
+    altri siti di ricette senza permesso sarebbe un problema di copyright/hotlinking; il campo è
+    pronto e vuoto, va compilato a mano dall'Admin con foto proprie o autorizzate quando disponibili.
+  - Verificato dal vivo: utente di test con dieta "vegana" vede correttamente solo le 3 ricette vegane
+    (filtro per dieta funzionante), form Admin con campo "URL foto" testato.
+
+**Stato a fine sessione:** tutto il lavoro della sessione (editor design Home + marketing + onboarding
++ area utente, 2 fix bug reali, ricette curate) committato e pushato su `main` — vedi hash sotto in
+`git log`. Rimandati esplicitamente a una sessione futura, su scelta dell'utente: **ricarica credito
+Anthropic** e **configurazione chiavi Stripe** (nessuna delle due presente in locale; da verificare
+anche lo stato su Vercel prima del lancio).
 
 ---
 

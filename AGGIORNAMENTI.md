@@ -1,5 +1,5 @@
 > ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è aggiornato a Sessioni 1-10 in produzione; il lavoro di Sessione 11 (editor design esteso a tutte le pagine marketing + onboarding + area utente autenticata, fix "Ripristina default") non è ancora committato — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 11 per il dettaglio completo.
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è aggiornato a Sessioni 1-10 in produzione; la Sessione 11 (editor design esteso a tutte le pagine marketing + onboarding + area utente autenticata, audit sicurezza, 2 bug reali corretti, 14 ricette curate) è committata e pushata — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 11 per il dettaglio completo.
 
 ---
 

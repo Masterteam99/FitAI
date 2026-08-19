@@ -13,10 +13,17 @@
 
 ## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-19 — Sessione 11]`
 
-- **Committare il lavoro di Sessione 11** — editor design esteso a Home + tutte le pagine marketing
-  (Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app, Prova gratuita) + onboarding
-  (quiz/step1-4, via "Elenco testi", non iframe) + fix "Ripristina default" + provider montato anche
-  in area utente/onboarding — tutto ancora non committato (verificare `git status`).
+- **Credito Anthropic da ricaricare** `[agg. 2026-08-19]` — confermato con un test reale in questa
+  sessione (registrazione utente vera + generazione piano AI): l'errore è gestito bene lato UI
+  ("credito esaurito", nessun crash), ma finché non si ricarica nessuna feature AI funziona
+  davvero (piani allenamento/nutrizione, ricette AI di supporto, assistente editor). Scelta
+  esplicita dell'utente di rimandare al momento del lancio.
+- **Chiavi Stripe da configurare** `[agg. 2026-08-19]` — scoperto testando la pagina Abbonamento:
+  **nessuna chiave `STRIPE_*` è presente in `.env.local` locale**. La UI gestisce l'assenza in modo
+  pulito ("Pagamenti non configurati"), ma senza queste chiavi **nessun pagamento reale è possibile**.
+  Da verificare se sono già impostate su Vercel (produzione) — se no, è un blocco vero e proprio per
+  il lancio, non solo un test locale mancante. Rimandato su scelta esplicita dell'utente insieme al
+  credito Anthropic.
 - ✅ **FATTO (2026-08-19, stessa Sessione 11): area utente autenticata estesa all'editor design** —
   tutte le 8 pagine (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
   leaderboard) hanno ora `useCopy()` + `EditableText` sui titoli/label statici. Dashboard ed esercizi

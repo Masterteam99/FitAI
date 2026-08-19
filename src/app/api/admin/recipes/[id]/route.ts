@@ -27,6 +27,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       id: r.id,
       title: r.title,
       description: r.description,
+      imageUrl: r.imageUrl,
       mealType: r.mealType,
       dietType: r.dietType,
       calories: r.calories,

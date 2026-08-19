@@ -9,7 +9,12 @@
 > autenticata** (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
 > leaderboard — solo copy statico editabile, mai i dati reali come richiesto esplicitamente; dashboard
 > ed esercizi splittati in server+client per farlo in sicurezza); corretto un bug reale in "Ripristina
-> default" (lasciava il campo vuoto nella sessione corrente). Non ancora committata. Mappa rapida:
+> default" (lasciava il campo vuoto nella sessione corrente); audit di sicurezza (nessun problema
+> trovato, anche su upload video/documenti e pagamenti); testato l'onboarding+app con un account reale
+> registrato via form pubblico, trovati e corretti 2 bug reali (etichette obiettivo/attrezzatura che
+> mostravano il valore grezzo del database); sostituito il generatore AI di ricette in Nutrizione con
+> **14 ricette curate** scritte a mano (grammature, ingredienti, procedimento, filtrate per dieta —
+> l'AI resta come opzione extra). Committata e pushata. Mappa rapida:
 > - PARTE 1 · #1 `db push` → ✅ · #2 bucket `user-documents` → ✅ · #3 parsing AI documenti → ✅ (feature #4) · #4 trend carichi → ✅ (feature #5) · #5 Chi siamo → ✅ · #6 verifica loggata → ✅ (Sess. 3).
 > - PARTE 2 · **A** edit esercizio → ✅ (#6a) · **B** template allenamenti → ✅ (#6b) · **C** modifica pool nutrizionale → ✅ (#6c) · **D** pool ricette curate → ✅ (#6e) · **E** quiz → ✅ · **F** SiteContent → ✅ (#6d, ora un vero editor design in Admin con cronologia e assistente IA, Sessione 10).
 > - **Sessione 6-9 (15-17 ago):** MVP polish, merge in `main`, deploy Vercel live, fix end-to-end,

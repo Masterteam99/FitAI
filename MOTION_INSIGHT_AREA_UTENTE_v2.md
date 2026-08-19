@@ -5,8 +5,9 @@
 > Manager + estensioni Sessioni 6-10), in Sessione 11: editor design esteso a tutte le pagine
 > marketing (prima solo Prezzi), all'onboarding, e a **tutta l'area utente autenticata** (dashboard,
 > allenamento, nutrizione, profilo, esercizi, progressi, community, leaderboard — solo copy statico
-> editabile, mai i dati reali), fix bug "Ripristina default". `main` è **in produzione** fino a
-> Sessione 10; Sessione 11 non ancora committata.
+> editabile, mai i dati reali), fix bug "Ripristina default", audit sicurezza (nessun problema),
+> 2 bug reali di etichette corretti, 14 ricette curate al posto del solo generatore AI in Nutrizione.
+> `main` è **in produzione** fino a Sessione 10; Sessione 11 committata e pushata.
 > **Aperti:** switch fotocamera e flusso analisi inline non testabili con hardware reale in questo
 > ambiente · sezione Prezzi + analisi costo AI (in attesa risposte utente) · asset 3D per il
 > personaggio animato da procurare · abilitare la preview iframe per l'onboarding · resto invariato,

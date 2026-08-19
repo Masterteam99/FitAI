@@ -12,12 +12,17 @@
 > per farlo in sicurezza. Corretto anche un bug reale in "Ripristina default" (lasciava il campo vuoto
 > nella sessione corrente invece di tornare al default). La Sessione 10 aveva completato la prova
 > gratuita e spostato l'**editor design dentro Admin** con cronologia Annulla/Ripeti e **assistente IA**.
-> Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
-> **Aperti:** lavoro di Sessione 11 non ancora committato · abilitare la preview iframe per
-> l'onboarding (oggi solo via ricerca testi) · sezione Prezzi (tabelle/struttura + analisi costo AI, in
-> attesa risposte dell'utente) · riordino blocchi nell'editor design · asset 3D per il personaggio
-> animato da procurare · env var VAPID su Vercel da confermare · credito Anthropic da ricaricare
-> (rimandato all'ultimo, scelta dell'utente) · resto invariato, vedi `COSE_DA_FARE.md`.
+> Fatto anche: audit di sicurezza (nessun problema trovato) su editor/upload/pagamenti, un test
+> end-to-end come utente reale (2 bug reali di etichette obiettivo/attrezzatura trovati e corretti),
+> e sostituito il generatore AI di ricette con **14 ricette curate** scritte a mano (grammature,
+> ingredienti, procedimento, filtrate per dieta) — l'AI resta solo come opzione extra. Dettaglio:
+> `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
+> **Aperti:** abilitare la preview iframe per l'onboarding (oggi solo via ricerca testi) · sezione
+> Prezzi (tabelle/struttura + analisi costo AI, in attesa risposte dell'utente) · riordino blocchi
+> nell'editor design · asset 3D per il personaggio animato da procurare · env var VAPID su Vercel da
+> confermare · **credito Anthropic** e **chiavi Stripe** da configurare (nessuna delle due presente in
+> locale — rimandate al lancio, scelta dell'utente, ma da verificare anche su Vercel) · resto
+> invariato, vedi `COSE_DA_FARE.md`.
 
 ---
 

@@ -939,6 +939,7 @@ model Recipe {
   id          String    @id @default(cuid())
   title       String
   description String    @db.Text
+  imageUrl    String? // foto del piatto, facoltativa
   mealType    MealType? // BREAKFAST/LUNCH/DINNER/SNACK — facoltativo
   dietType    String? // onnivora/vegetariana/vegana/... — null = adatta a tutte
   calories    Int?

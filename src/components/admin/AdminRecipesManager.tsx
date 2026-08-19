@@ -35,6 +35,7 @@ interface Item {
   id: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   mealType: string | null;
   dietType: string | null;
   isActive: boolean;
@@ -109,7 +110,11 @@ export function AdminRecipesManager({ initial }: { initial: Item[] }) {
             <Card key={i.id}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  {i.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={i.imageUrl} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                  )}
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm">{i.title}</p>
                     <div className="flex items-center gap-2 flex-wrap mt-1">
                       <Badge variant="secondary" className="text-xs">{dietLabel(i.dietType)}</Badge>
@@ -151,6 +156,7 @@ function RecipeForm({
   const [form, setForm] = useState({
     title: initial?.title ?? "",
     description: initial?.description ?? "",
+    imageUrl: initial?.imageUrl ?? "",
     mealType: initial?.mealType ?? "",
     dietType: initial?.dietType ?? "",
     calories: initial?.calories != null ? String(initial.calories) : "",
@@ -200,6 +206,7 @@ function RecipeForm({
     const payload = {
       title: form.title.trim(),
       description: form.description.trim(),
+      imageUrl: form.imageUrl.trim() || null,
       mealType: form.mealType || null,
       dietType: form.dietType || null,
       calories: num(form.calories),
@@ -223,6 +230,7 @@ function RecipeForm({
       id: isEdit ? (recipeId as string) : body.id,
       title: payload.title,
       description: payload.description,
+      imageUrl: payload.imageUrl,
       mealType: payload.mealType,
       dietType: payload.dietType,
       isActive: payload.isActive,
@@ -236,6 +244,7 @@ function RecipeForm({
       <CardContent className="space-y-3">
         <Field label={c.titleLabel} error={fieldErrors.title}><Input value={form.title} onChange={(e) => set("title", e.target.value)} /></Field>
         <Field label={c.descLabel} error={fieldErrors.description}><textarea value={form.description} onChange={(e) => set("description", e.target.value)} maxLength={2000} className={`${areaCls} min-h-[60px]`} /></Field>
+        <Field label={c.imageLabel}><Input value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder={c.imagePlaceholder} /></Field>
 
         <div className="grid grid-cols-2 gap-3">
           <Field label={c.mealLabel}>
