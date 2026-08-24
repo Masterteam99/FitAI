@@ -119,7 +119,7 @@ export function PrezziContent() {
           <h2 className="text-display-md text-center mb-3">{copy.prezzi.competitorTitle}</h2>
           <p className="text-xs text-muted-foreground text-center max-w-[70ch] mx-auto mb-10">{copy.prezzi.competitorCaption}</p>
 
-          <div className="overflow-x-auto rounded-[20px] border border-border mb-10">
+          <div className="overflow-x-auto rounded-[20px] border border-border">
             <table className="w-full text-sm border-collapse min-w-[560px]">
               <thead>
                 <tr className="border-b border-border">
@@ -134,28 +134,6 @@ export function PrezziContent() {
                     <td className="p-4 font-medium">{row.label}</td>
                     {row.values.map((v, i) => (
                       <td key={i} className="p-4 text-muted-foreground">{v}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="overflow-x-auto rounded-[20px] border border-border">
-            <table className="w-full text-sm border-collapse min-w-[720px]">
-              <thead>
-                <tr className="border-b border-border">
-                  {copy.prezzi.competitorFeatureTable.cols.map((col, i) => (
-                    <th key={col} className={`text-left p-4 font-semibold ${i === copy.prezzi.competitorFeatureTable.cols.length - 1 ? "" : "text-muted-foreground"}`} style={i === copy.prezzi.competitorFeatureTable.cols.length - 1 ? { color: "var(--organic-green)" } : undefined}>{col}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {copy.prezzi.competitorFeatureTable.rows.map((row) => (
-                  <tr key={row.label} className="border-b border-border last:border-b-0">
-                    <td className="p-4 font-medium">{row.label}</td>
-                    {row.values.map((v, i) => (
-                      <td key={i} className={`p-4 ${i === row.values.length - 1 ? "font-semibold" : "text-muted-foreground"}`} style={i === row.values.length - 1 ? { color: "var(--organic-green)" } : undefined}>{v}</td>
                     ))}
                   </tr>
                 ))}

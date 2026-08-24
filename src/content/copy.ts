@@ -259,15 +259,16 @@ export const copy = {
 
     // ── 11. TABELLA COMPETITOR ──
     compTableTitle: "Cosa ottieni, e a che prezzo.",
-    compTableCaption: "[DATI da verificare] Prezzi competitor rilevati da fonti pubbliche (mercato USA, in $) — dettaglio e fonti nella pagina Prezzi.",
-    compTableCols: ["Cosa fai", "Classi live (Buddyfit)", "Solo tecnica (FormCheck AI)", "Solo piani (Fitbod)", "Motion Insight"],
+    compTableCaption: "Prezzi rilevati sui listini pubblici di ciascun servizio, mercato italiano/EU, agosto 2026 — indicativi e soggetti a promozioni periodiche. *Freeletics non ha un piano mensile: cifra equivalente al piano 12 mesi. Confronto completo nella pagina Prezzi.",
+    compTableCols: ["Funzionalità", "Buddyfit", "Freeletics", "Gymondo", "Motion Insight"],
     compTableRows: [
-      { label: "Analisi della tua tecnica", values: ["—", "✅", "—", "✅"] },
-      { label: "Piano di allenamento su misura", values: ["classi", "—", "✅", "✅"] },
-      { label: "Alimentazione", values: ["—", "—", "—", "✅ ricette"] },
-      { label: "Prezzo/mese (circa)", values: ["17,99 €", "~12 $", "~13 $", "9,90 €"] },
+      { label: "Analisi AI della tua tecnica da video", values: ["—", "—", "—", "✅"] },
+      { label: "Piano di allenamento adattivo", values: ["classi da seguire", "✅", "parziale", "✅"] },
+      { label: "Piano nutrizionale su misura", values: ["ricette", "✅ (bundle)", "parziale (scanner cibo)", "✅"] },
+      { label: "Classi live/on-demand con istruttore", values: ["✅", "—", "✅", "—"] },
+      { label: "Prezzo/mese (circa)", values: ["17,99 €", "da 6,25 €*", "15 €", "9,90 €"] },
     ],
-    compTableNote: "Le classi live ti fanno allenare ma nessuno guarda te; chi fa la tecnica non ti dà il piano; chi ti dà il piano non guarda la tecnica; un coach umano costa venti volte tanto. Motion Insight mette tutto insieme e, soprattutto, guarda la tua esecuzione.",
+    compTableNote: "Le classi live ti fanno allenare ma nessuno guarda la tua esecuzione; i coach AI generici ti danno un piano ma non guardano come ti muovi; le app on-demand puntano sul catalogo, non sulla tua tecnica. Motion Insight mette insieme analisi, piano e alimentazione — e soprattutto guarda come esegui davvero l'esercizio.",
     faqLink: "Tutte le domande frequenti →",
 
     // ── 12. CTA FINALE ──
@@ -473,36 +474,27 @@ export const copy = {
         { label: "Confronto con il professionista", values: ["—", "Sì"] },
         { label: "Piano di allenamento generato", values: ["—", "Sì"] },
         { label: "Piano alimentare", values: ["—", "Sì"] },
+        { label: "Calcolo delle kilocalorie", values: ["—", "Sì"] },
       ],
     },
 
-    // Confronto competitor (A: prezzo mensile · B: funzionalità) — dati [🧩 da verificare]
+    // Confronto competitor (prezzo mensile/annuale) — Buddyfit, Freeletics, Gymondo, Fitbod + Motion Insight
+    // Dati rilevati da listini pubblici/App Store IT, agosto 2026. Prezzi indicativi: variano spesso per promozioni
+    // periodiche e differiscono tra acquisto via sito e via store (commissioni Apple/Google). Fitbod non ha listino
+    // in euro (mercato IT non ufficialmente coperto) — prezzo riportato in dollari, segnalato in tabella.
     competitorTitle: "Quanto costano gli altri",
-    competitorCaption: "[DATI da verificare] Valori rilevati da recensioni/comparazioni pubbliche, mercato USA in $, agosto 2026. Indicativi e soggetti a cambiare.",
+    competitorCaption: "Prezzi rilevati sui listini pubblici di ciascun servizio (sito ufficiale e App Store Italia), agosto 2026. Sono indicativi: cambiano spesso per promozioni e differiscono tra acquisto via sito o via store. Freeletics non offre un piano mensile standalone: solo 3 e 12 mesi, qui riportati come equivalente mensile. Fitbod non ha un listino in euro per il mercato italiano: prezzo riportato in dollari.",
     competitorPriceTable: {
-      cols: ["Soluzione", "Tipo", "Prezzo/mese (circa)"],
+      cols: ["Soluzione", "Tipo", "Prezzo/mese (circa)", "Annuale (equiv./mese)"],
       rows: [
-        { label: "Buddyfit (mercato IT)", values: ["Classi live/on-demand + ricette", "17,99 €"] },
-        { label: "FormCheck AI", values: ["Analisi tecnica da video", "~12–13 $"] },
-        { label: "Fitbod", values: ["Solo piani di allenamento", "~12,99–15,99 $"] },
-        { label: "Zing Coach", values: ["Tracking live + piani", "~18,99 $"] },
-        { label: "Freeletics", values: ["Coach AI, piani", "~8,50–34,99 $"] },
-        { label: "Future", values: ["Coach umano", "199 $"] },
-        { label: "Motion Insight Premium", values: ["Analisi + piano + nutrizione", "9,90 €"] },
+        { label: "Buddyfit", values: ["Classi live/on-demand + ricette", "17,99 € (promo da 3,99 €)", "59,99 € (~5 €/mese)"] },
+        { label: "Freeletics", values: ["Coach AI, allenamenti a corpo libero — nessun piano mensile", "da 6,25 €* (equiv. piano 12 mesi)", "74,99 €/anno (94,99 € con nutrizione)"] },
+        { label: "Gymondo", values: ["On-demand + scanner alimentare AI", "14,99 € (promo periodiche da ~4 €)", "84–90 € (~7–10 €/mese)"] },
+        { label: "Fitbod", values: ["Solo piani di allenamento AI", "~16 $ (nessun listino in €)", "~96 $ (~8 $/mese)"] },
+        { label: "Motion Insight Premium", values: ["Analisi tecnica + piano + nutrizione", "9,90 €", "79,90 € (~6,65 €/mese)"] },
       ],
     },
-    competitorFeatureTable: {
-      cols: ["Funzionalità", "Buddyfit (classi live)", "FormCheck AI (sola tecnica)", "Fitbod (soli piani)", "Future (coach umano)", "Motion Insight"],
-      rows: [
-        { label: "Analisi della tua tecnica da video", values: ["—", "✅", "—", "parziale (umano)", "✅"] },
-        { label: "Confronto con un professionista", values: ["—", "—", "—", "n/d", "✅"] },
-        { label: "Piano di allenamento su misura", values: ["classi da seguire", "—", "✅", "✅", "✅"] },
-        { label: "Alimentazione", values: ["ricette", "—", "—", "limitato", "✅ piano"] },
-        { label: "Progressi sulla qualità del movimento", values: ["—", "—", "—", "—", "✅"] },
-        { label: "Prezzo/mese (circa)", values: ["17,99 €", "~12 $", "~13 $", "199 $", "9,90 €"] },
-      ],
-    },
-    competitorMessage: "Le classi live (come Buddyfit) ti fanno allenare ma nessuno guarda la tua esecuzione; le app di sola tecnica fanno solo quello; quelle di soli piani non guardano come ti muovi; un coach umano fa di più ma costa venti volte tanto. Motion Insight tiene insieme analisi, piano e alimentazione — a 9,90 € — e soprattutto guarda la tua tecnica.",
+    competitorMessage: "Le classi live (come Buddyfit) ti fanno allenare ma nessuno guarda la tua esecuzione; i coach AI generici (Freeletics, Fitbod) ti danno un piano ma il controllo della tecnica resta parziale o assente; le app on-demand (Gymondo) puntano sul catalogo di contenuti. Motion Insight tiene insieme analisi tecnica, piano adattivo e alimentazione — a 9,90 € — ed è l'unico a guardare davvero come esegui l'esercizio.",
 
     // Quanto costa oggi farsi seguire
     costTitle: "Quanto costa oggi farsi seguire",
