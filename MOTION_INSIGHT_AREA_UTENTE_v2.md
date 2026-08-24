@@ -1,18 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (19 ago 2026):** oltre a tutto quanto già descritto (area utente v2 + Account
-> Manager + estensioni Sessioni 6-10), in Sessione 11: editor design esteso a tutte le pagine
-> marketing (prima solo Prezzi), all'onboarding, e a **tutta l'area utente autenticata** (dashboard,
-> allenamento, nutrizione, profilo, esercizi, progressi, community, leaderboard — solo copy statico
-> editabile, mai i dati reali), fix bug "Ripristina default", audit sicurezza (nessun problema),
-> 2 bug reali di etichette corretti, 14 ricette curate al posto del solo generatore AI in Nutrizione.
-> `main` è **in produzione** fino a Sessione 10; Sessione 11 committata e pushata.
-> **Aperti:** switch fotocamera e flusso analisi inline non testabili con hardware reale in questo
-> ambiente · sezione Prezzi + analisi costo AI (in attesa risposte utente) · asset 3D per il
-> personaggio animato da procurare · abilitare la preview iframe per l'onboarding · resto invariato,
-> vedi `STATO_PROGETTO.md`.
-
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 # Motion Insight — AREA UTENTE v2 (spec di lavoro)

@@ -1,81 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (19 ago 2026):** `main` è **in produzione** su Vercel
-> (`fit-ai-six-ruddy.vercel.app`) fino a Sessione 10; il lavoro di Sessione 11 è committato e pushato.
-> - **Sessione 11:** editor design **esteso a tutte le pagine marketing** (Home, Il Metodo, Per Chi,
->   Chi siamo, FAQ, Risorse, Scarica l'app, Prova gratuita — prima editabile solo `/prezzi`), stesso
->   trattamento per ognuna: contenuto estratto in componente client con `useCopy()`, testi scalari
->   avvolti in `EditableText`. Esteso anche all'**onboarding** (quiz + step1-4, già componenti client:
->   solo sostituito l'import statico `copy` con `useCopy()`) — editabile tramite "Elenco testi" in
->   Admin, non tramite l'iframe visuale (`onboarding/layout.tsx` reindirizza a `/dashboard` chi ha già
->   completato l'onboarding, cioè ogni admin: l'iframe mostrerebbe sempre la dashboard). **Esteso anche
->   a tutta l'area utente autenticata** (dashboard, allenamento, nutrizione, profilo, esercizi,
->   progressi, community, leaderboard) — su richiesta esplicita dell'utente, editabile **solo il copy
->   statico** (titoli, label, bottoni), **mai i dati reali** (punteggi, feedback, valori utente,
->   grafici). Dashboard ed esercizi (Server Component con fetch diretto da Prisma) sono stati
->   splittati in due file: il `page.tsx` resta un Server Component che fa solo fetching/calcolo, un
->   nuovo componente client riceve i dati già pronti come props e gestisce testo statico + rendering.
->   Trovato e corretto un **bug reale** in "Ripristina default" (`SiteEditMode.tsx`): salvava una
->   stringa vuota nello stato locale invece di rimuovere la chiave, lasciando il campo vuoto nella
->   sessione corrente finché non si ricaricava la pagina (bug preesistente, presente anche su Prezzi
->   da Sessione 9, mai notato prima). Verificato dal vivo con account admin di test (creati e
->   cancellati subito dopo): editor attivo su tutte le 8 pagine marketing (iframe) e su Dashboard,
->   testi onboarding verificati via ricerca + pagina reale con un secondo utente di test senza
->   onboarding completato, tutte le 8 pagine dell'area utente verificate senza errori server e con dati
->   reali intatti (incluso il refactor Dashboard, il più a rischio). `tsc`/`eslint` puliti (solo
->   warning preesistenti non toccati).
->   **Audit di sicurezza** (skill `security-review`) sul diff della sessione, poi allargato su
->   richiesta a upload video/documenti e flusso di pagamento: **nessun problema trovato** in nessuna
->   delle due aree (auth boundary intatti, ownership check coerenti, firma webhook Stripe verificata).
->   **Test end-to-end come utente reale**: registrato un account vero via form pubblico, completato
->   onboarding, testato piano AI/nutrizionale AI (falliscono con messaggio chiaro, credito esaurito),
->   piano manuale (funziona), Abbonamento (**scoperto: nessuna chiave Stripe in locale**), export GDPR,
->   cambio password. Trovati e corretti **2 bug reali**: `profilo.goalLabels`/`allenamento.goalLabels`
->   in `copy.ts` usavano chiavi non allineate all'enum reale `FitnessGoal` (3 obiettivi su 6 mostravano
->   il valore grezzo del DB tipo "BUILD_MUSCLE"); riepilogo onboarding step4 mostrava "NONE" invece
->   dell'etichetta per l'attrezzatura (join senza mappa etichette).
->   **Nutrizione → Ricette**: chiarito con l'utente che non voleva un generatore AI ma una selezione
->   reale — scritte **14 ricette curate originali** (grammature, ingredienti, procedimento; 5 diete,
->   pasti principali; ispirate a ricerca web ma non copiate, per evitare problemi di copyright),
->   salvate in `prisma/seed-recipes.ts` e inserite nel DB. Aggiunto il campo `Recipe.imageUrl`
->   (migrazione applicata, form Admin e rendering utente aggiornati) — lasciato vuoto: foto reali
->   andranno aggiunte a mano dall'Admin per evitare di usare immagini di altri siti senza permesso.
->   Verificato dal vivo (filtro dieta funzionante, form Admin testato). Dettaglio: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
-> - **Sessioni 7-9:** merge in `main`, deploy Vercel live, bug Upstash risolto, verifica end-to-end
->   flussi, fix contrasto testo esteso, prova gratuita ospiti (prima versione, solo registrazione
->   live), personaggio 2D animato, carosello esempi report, editor copy per Admin (prima versione,
->   sovrapposto alle pagine pubbliche), Gamification (classifica + premi).
-> - **Sessione 10:** **prova gratuita completata** — campo nome, scelta esplicita "Registra ora" vs
->   "Carica un video" (riusa l'estrazione frame e il pose-detection già esistenti, nessuna pipeline
->   duplicata), 6 esercizi di default attivati in produzione (corpo libero/manubri); 2 bug reali
->   trovati e corretti testando con un video vero. **Editor design riprogettato**: spostato
->   **esclusivamente dentro Admin** (`/admin/site-content` → "Editor visuale", anteprima in iframe con
->   `?siteEditor=1` — non più un bottone sovrapposto alle pagine pubbliche), aggiunta cronologia
->   Annulla/Ripeti, "Ripristina default" per campo, e un **assistente IA** (valutati progetti open
->   source su GitHub — nessuno adatto, sono piattaforme CMS complete — costruito riusando
->   l'infrastruttura Claude già usata dall'AI Coach: linguaggio naturale → modifica applicata). Nuovo
->   modello DB `SiteStyleOverride`; `X-Frame-Options` cambiato da `DENY` a `SAMEORIGIN` per l'iframe.
->   **Libreria** rinominata "Libreria esercizi", filtri principali+"Altri filtri", bottone "Termina
->   esercizio", vista di registrazione a schermo intero con video PT in un riquadro (PIP, solo
->   desktop), chiarito che i permessi camera/microfono automatici non sono possibili (sicurezza del
->   browser, non un bug). **Scarica l'app**: bottone "Installa ora" sempre visibile (spariva su
->   iOS/al primo caricamento). Tutto verificato dal vivo con account admin di test (creati e
->   cancellati); `tsc`/`eslint` puliti (0 errori). Dettaglio completo: `COSE_FATTE_IN_SESSIONE.md`
->   (Sessione 10).
-> **Aperti:** sezione Prezzi (tabelle/struttura + nuova analisi costo AI per utilizzo intensivo, in
-> attesa risposte dell'utente su competitor e criteri) · riordino blocchi nell'editor design (drag per
-> spostare l'ordine, non fatto) · asset 3D per il personaggio animato da procurare/commissionare ·
-> abilitare la preview iframe per l'onboarding · env var VAPID da
-> confermare su Vercel · credito Anthropic da ricaricare (scelta dell'utente, rimandato all'ultimo
-> prima del lancio — blocca anche la verifica reale dell'assistente IA dell'editor) · **chiavi Stripe
-> da configurare** (nessuna presente in locale, confermato testando la pagina Abbonamento — da
-> verificare anche su Vercel, altrimenti nessun pagamento reale è possibile) · verificare
-> switch fotocamera e flusso analisi inline con hardware reale (non testabile in questo ambiente di
-> sviluppo) · Profilo impostazioni lingua · i18n completo del copy (rimandata come iniziativa a parte)
-> · pagine `funzionalita`/`storie`/`risorse` non allineate · placeholder da compilare (cofondatore,
-> Chi siamo, FAQ, P.IVA, dati competitor).
-
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 # Motion Insight (ex FitAI) — Stato del Progetto

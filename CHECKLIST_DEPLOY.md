@@ -1,28 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Deploy Vercel FATTO e verificato live** (Sessione 7): progetto `fit-ai`, dominio
-> `fit-ai-six-ruddy.vercel.app`, integrazione Git attiva (push su `main` → deploy automatico). Upstash
-> Redis riconnesso e verificato. `main` include tutto il lavoro di Sessioni 8-10 (guest analysis flow
-> completo con upload video, gamification, editor design in Admin con assistente IA — nuovi modelli
-> DB `GuestAnalysisRequest`, `LeaderboardReward`, `Exercise.availableForFreeTrial`,
-> `SiteStyleOverride`, applicati via `prisma db push`). `next.config.ts`: `X-Frame-Options` cambiato da
-> `DENY` a `SAMEORIGIN` (serve per l'iframe dell'editor Admin). **Sessione 11** (editor design esteso a
-> tutte le pagine marketing + onboarding + area utente autenticata — dashboard/esercizi splittati in
-> server+client per farlo in sicurezza, audit sicurezza senza problemi, 2 bug reali corretti, nuovo
-> campo `Recipe.imageUrl` + 14 ricette curate) è committata e pushata. Testato con un account reale:
-> pagina Abbonamento risponde correttamente "Pagamenti non configurati" — confermato che
-> **nessuna chiave `STRIPE_*` è presente in `.env.local` locale**.
-> **⚠️ Da confermare su Vercel**: le env var VAPID (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
-> `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, opzionale `CRON_SECRET`) per il sistema notifiche —
-> valori generati sono in `.env.local` locale, non confermato se già copiati su Vercel. **Idem le
-> chiavi Stripe** (`STRIPE_SECRET_KEY`, `STRIPE_PRICE_MONTHLY/YEARLY`, `STRIPE_WEBHOOK_SECRET`): senza,
-> nessun pagamento reale è possibile in produzione.
-> **Aperti:** ricaricare credito Anthropic (scelta dell'utente, rimandato all'ultimo prima del lancio,
-> blocca anche la verifica dell'assistente IA dell'editor) · verificare switch fotocamera/analisi
-> inline con hardware reale · CORS bucket `exercise-videos` · asset 3D per il personaggio animato da
-> procurare esternamente.
-
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 # Checklist Deploy & Setup Produzione

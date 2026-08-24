@@ -1,19 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (19 ago 2026):** `main` è **in produzione** fino a Sessione 10 (prova gratuita
-> completata, editor design **solo dentro Admin** con cronologia Annulla/Ripeti + assistente IA,
-> Libreria ridisegnata, bottone installazione PWA corretto). **Sessione 11** estende l'editor design a
-> tutte le pagine marketing (prima solo Prezzi), all'onboarding e a tutta l'area utente autenticata
-> (solo copy statico, mai i dati reali), corregge un bug in "Ripristina default", passa un audit di
-> sicurezza (nessun problema, anche su upload/pagamenti) e sostituisce il generatore AI di ricette con
-> 14 ricette curate — committata e pushata. Dettagli in `STATO_PROGETTO.md` e
-> `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
-> **Aperti:** sezione Prezzi + analisi costo AI (in attesa risposte utente) · riordino blocchi
-> nell'editor · asset 3D da procurare · abilitare la preview iframe per l'onboarding · env VAPID su
-> Vercel da confermare · **credito Anthropic e chiavi Stripe** da configurare (nessuna delle due in
-> locale — rimandate al lancio) · resto invariato (vedi `STATO_PROGETTO.md`).
-
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 # FitAI — Roadmap Esecutiva (Analisi v2 + Estensioni)

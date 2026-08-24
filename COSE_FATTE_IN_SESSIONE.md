@@ -11,6 +11,60 @@
 
 ---
 
+## Sessione 12 — 2026-08-23 — Tabelle competitor prezzi (home + /prezzi) con dati reali verificati
+
+**Contesto:** punto 3/4 di `Aggiornameni possibili.md` — le tabelle competitor in home e su `/prezzi`
+avevano ancora i dati segnaposto `[DATI da verificare]` (mercato USA in $, competitor generici tipo
+"FormCheck AI"/"Future" mai realmente scelti). L'utente ha chiesto di sciogliere quel nodo: quali
+competitor mostrare, con che dati, in quali tabelle.
+
+**Ricerca competitor (4 agenti in sequenza, con WebSearch/WebFetch, fonti citate):**
+- Approfondimento **Freeletics** e **Buddyfit** (prezzi, funzionalità, posizionamento, rating).
+- Verifica esplicita richiesta dall'utente: "Buddyfit è l'unico competitor italiano attivo nel
+  coaching/PT online?" — risposta onesta: **sì**, nessun altro player italiano risultato comparabile
+  (Virtuagym/Trainerize sono SaaS B2B per PT, non brand consumer; Fitprime/Wellhub sono corporate
+  wellness; Real Move è tech B2B per palestre). Scartata anche una tripletta di nomi
+  (TrueCoach AI/TrainerStorm/FitForce AI) risultata un'allucinazione di ricerca auto-alimentata —
+  verificata e esclusa esplicitamente.
+- Scelto **Gymondo** come terzo competitor (approfondito con agente dedicato: nessun form-check AI,
+  target forte su salute femminile, prezzo €14,99/mese circa) e **Fitbod** come quinto nome (AI
+  coaching puro, ma senza IT/EUR) su richiesta esplicita dell'utente.
+- **Freeletics — verifica di secondo livello**: prezzo iniziale (range "13–35 €") giudicato non
+  abbastanza solido dall'utente; riverificato passando per il **funnel di acquisto reale su
+  freeletics.com/it** (non blog terzi): **nessun piano mensile standalone**, solo 3 mesi (34,99 €,
+  ≈11,66 €/mese) e 12 mesi (74,99 €, ≈6,25 €/mese); un "Lifetime" a 214,99 € è risultato una promo con
+  voucher automatico −50%, scartato perché non è prezzo di listino.
+
+**Implementazione (`src/content/copy.ts` + `PrezziContent.tsx`), in più passaggi guidati dall'utente:**
+1. Popolate le 3 tabelle con dati reali: tabella home compatta (Motion Insight + Buddyfit + Freeletics
+   + Gymondo, 5 righe), tabella `/prezzi` Free/Premium (lasciata intatta), tabella `/prezzi` competitor
+   completa (+ Fitbod, prezzo mensile/annuale + 8 righe funzionalità).
+2. Corretto il dato Freeletics ovunque con "da 6,25 €* (equiv. piano 12 mesi)" dopo la verifica.
+3. Su richiesta: cella Freeletics "Analisi AI tecnica da video" nella **sola tabella home** cambiata da
+   "parziale" a "—" (lasciata "parziale" nella tabella `/prezzi`, dove il dettaglio ha senso).
+4. Aggiunta riga "Calcolo delle kilocalorie" (Solo Premium) alla tabella Free/Premium.
+5. **Rimossa la sotto-tabella "Funzionalità" (3b)** dalla sezione competitor di `/prezzi` — ridondante
+   con la tabella home — lasciando solo la sotto-tabella prezzo; rimosso anche `competitorFeatureTable`
+   da `copy.ts` (dato non più referenziato da nessun componente).
+6. Verificato dal vivo su dev server (`get_page_text` su home e `/prezzi`): colonne allineate, nessun
+   placeholder residuo nelle 3 tabelle.
+
+**Consegnati due documenti di lavoro** (Artifact, non salvati nel repo, su richiesta esplicita
+dell'utente): mappa dettagliata dell'area Admin (pattern riusabili per portare lo stesso scheletro su
+un progetto con dominio diverso) e schema/anteprima delle 3 tabelle prezzi con la verifica Freeletics.
+
+**Commit e push:** `be4369b` (tabelle) — pushato su `origin/main` in due tempi: prima solo
+`src/content/copy.ts` + `PrezziContent.tsx`, poi su richiesta esplicita anche `Aggiornameni
+possibili.md` (note di lavoro dell'utente, già modificate prima dell'inizio sessione, non toccate nel
+contenuto).
+
+**Non fatto (resta aperto):** l'analisi costo AI/token per il pricing (già in `COSE_DA_FARE.md`, non
+richiesta in questa sessione); verifica del prezzo Freeletics via App Store/Google Play (solo il sito
+diretto è stato verificato con certezza); conferma se l'app Gymondo ha davvero interfaccia in italiano
+(solo la scheda store è confermata localizzata).
+
+---
+
 ## Sessione 11 — 2026-08-19 — Editor design esteso alla Home + fix "Ripristina default"
 
 **Contesto:** l'utente ha provato l'editor visuale Admin e ha notato che, a parte Prezzi, tutte le

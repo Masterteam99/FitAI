@@ -11,7 +11,7 @@
 
 ---
 
-## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-19 — Sessione 11]`
+## ▶️ PARTI DA QUI (prossima sessione) `[agg. 2026-08-23 — Sessione 12]`
 
 - **Credito Anthropic da ricaricare** `[agg. 2026-08-19]` — confermato con un test reale in questa
   sessione (registrazione utente vera + generazione piano AI): l'errore è gestito bene lato UI
@@ -45,9 +45,19 @@
   pagine ricevono `searchParams` ma il layout no (limite di Next.js App Router), quindi la logica
   andrebbe spostata/duplicata nelle singole pagine onboarding. Non fatto perché tocca la logica reale
   di redirect dell'onboarding — da valutare con più attenzione, non è puro lavoro meccanico.
-- **Punto 3 di `Aggiornameni possibili.md` (Prezzi — tabelle/struttura)** — l'utente vuole rivederlo
-  "con calma", risposte sue attese prima di toccare il codice su: quali competitor mostrare nelle
-  tabelle comparative (oggi ci sono dati `[DATI da verificare]` segnaposto), e la struttura generale.
+- ✅ **FATTO (2026-08-23, Sessione 12 — commit `be4369b`, pushato su `main`):** punto 3 di
+  `Aggiornameni possibili.md` (Prezzi — tabelle/struttura). Competitor scelti e verificati con ricerca
+  web reale: Buddyfit, Freeletics, Gymondo (tabella home, 4 colonne) + Fitbod (quinto nome, solo nella
+  tabella `/prezzi`). Prezzo Freeletics riverificato sul funnel ufficiale `freeletics.com/it` dopo un
+  primo giro giudicato non abbastanza solido. Rimossa la sotto-tabella "Funzionalità" da `/prezzi`
+  (ridondante con la home), aggiunta riga "Calcolo delle kilocalorie" a Free/Premium. Dettaglio
+  completo in `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
+- **Nuovo `[agg. 2026-08-23]` — verifica prezzo Freeletics via App Store/Google Play**: la Sessione 12
+  ha verificato con certezza solo il prezzo sul sito diretto (`freeletics.com/it`); il prezzo via store
+  (tipicamente più alto per le commissioni Apple/Google) resta da confermare se si vuole citarlo altrove.
+- **Nuovo `[agg. 2026-08-23]` — Gymondo, lingua app**: la scheda App Store IT è localizzata in
+  italiano, ma non è confermato se l'interfaccia dell'app stessa lo sia (andrebbe scaricata e
+  controllata) — oggi in tabella è segnata "parziale", da correggere se si verifica il dato.
 - **Nuovo — analisi costo AI per il pricing** `[agg. 2026-08-18]`: l'utente vuole, come parte del
   lavoro sulla sezione Prezzi, un'**analisi di quanto costa (in token/USD Anthropic) un utente che
   ripete le analisi video più volte al mese** — per capire se il prezzo Premium attuale (9,90€/mese,

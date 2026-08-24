@@ -1,29 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (19 ago 2026):** la Sessione 11 estende l'**editor design a tutte le pagine
-> marketing** (Home, Prezzi, Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app, Prova
-> gratuita — prima editabile solo Prezzi), all'**onboarding** (quiz + step1-4, editabile tramite
-> "Elenco testi" in Admin, non tramite l'iframe visuale — vedi "Aperti") e a **tutta l'area utente
-> autenticata** (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
-> leaderboard) — solo il copy statico (titoli, label, bottoni) è editabile, mai i dati reali
-> (punteggi, feedback, valori utente), come richiesto esplicitamente. Dashboard ed esercizi (Server
-> Component con fetch dal DB) sono stati splittati in page.tsx (dati) + componente client (rendering)
-> per farlo in sicurezza. Corretto anche un bug reale in "Ripristina default" (lasciava il campo vuoto
-> nella sessione corrente invece di tornare al default). La Sessione 10 aveva completato la prova
-> gratuita e spostato l'**editor design dentro Admin** con cronologia Annulla/Ripeti e **assistente IA**.
-> Fatto anche: audit di sicurezza (nessun problema trovato) su editor/upload/pagamenti, un test
-> end-to-end come utente reale (2 bug reali di etichette obiettivo/attrezzatura trovati e corretti),
-> e sostituito il generatore AI di ricette con **14 ricette curate** scritte a mano (grammature,
-> ingredienti, procedimento, filtrate per dieta) — l'AI resta solo come opzione extra. Dettaglio:
-> `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
-> **Aperti:** abilitare la preview iframe per l'onboarding (oggi solo via ricerca testi) · sezione
-> Prezzi (tabelle/struttura + analisi costo AI, in attesa risposte dell'utente) · riordino blocchi
-> nell'editor design · asset 3D per il personaggio animato da procurare · env var VAPID su Vercel da
-> confermare · **credito Anthropic** e **chiavi Stripe** da configurare (nessuna delle due presente in
-> locale — rimandate al lancio, scelta dell'utente, ma da verificare anche su Vercel) · resto
-> invariato, vedi `COSE_DA_FARE.md`.
-
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 # Motion Insight (repo: FitAI)

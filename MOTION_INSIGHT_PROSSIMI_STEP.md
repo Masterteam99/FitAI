@@ -1,43 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto, **valgono i diari**.
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **QUASI TUTTO CIÒ CHE SEGUE È GIÀ FATTO** (Sessioni 3–10), incluso l'integrazione in `main` e il
-> deploy in produzione. **Sessione 11** (19 ago): editor design esteso a **tutte le pagine marketing**
-> (Home, Il Metodo, Per Chi, Chi siamo, FAQ, Risorse, Scarica l'app, Prova gratuita — prima solo
-> Prezzi), all'**onboarding** (quiz+step1-4, editabile via "Elenco testi" in Admin, non tramite
-> l'iframe visuale per via del redirect di onboarding già completato) e a **tutta l'area utente
-> autenticata** (dashboard, allenamento, nutrizione, profilo, esercizi, progressi, community,
-> leaderboard — solo copy statico editabile, mai i dati reali come richiesto esplicitamente; dashboard
-> ed esercizi splittati in server+client per farlo in sicurezza); corretto un bug reale in "Ripristina
-> default" (lasciava il campo vuoto nella sessione corrente); audit di sicurezza (nessun problema
-> trovato, anche su upload video/documenti e pagamenti); testato l'onboarding+app con un account reale
-> registrato via form pubblico, trovati e corretti 2 bug reali (etichette obiettivo/attrezzatura che
-> mostravano il valore grezzo del database); sostituito il generatore AI di ricette in Nutrizione con
-> **14 ricette curate** scritte a mano (grammature, ingredienti, procedimento, filtrate per dieta —
-> l'AI resta come opzione extra). Committata e pushata. Mappa rapida:
-> - PARTE 1 · #1 `db push` → ✅ · #2 bucket `user-documents` → ✅ · #3 parsing AI documenti → ✅ (feature #4) · #4 trend carichi → ✅ (feature #5) · #5 Chi siamo → ✅ · #6 verifica loggata → ✅ (Sess. 3).
-> - PARTE 2 · **A** edit esercizio → ✅ (#6a) · **B** template allenamenti → ✅ (#6b) · **C** modifica pool nutrizionale → ✅ (#6c) · **D** pool ricette curate → ✅ (#6e) · **E** quiz → ✅ · **F** SiteContent → ✅ (#6d, ora un vero editor design in Admin con cronologia e assistente IA, Sessione 10).
-> - **Sessione 6-9 (15-17 ago):** MVP polish, merge in `main`, deploy Vercel live, fix end-to-end,
->   pagina esercizio ridisegnata, database alimenti, editor trigger biomeccanici, Progressi
->   ristrutturato, prova gratuita ospiti (prima versione), personaggio 2D animato, carosello esempi
->   report, editor copy per Admin (prima versione, sovrapposto alle pagine pubbliche), Gamification.
-> - **Sessione 10 (18 ago):** prova gratuita completata (nome, scelta registra/carica video, esercizi
->   di default); **editor design spostato dentro Admin** (`/admin/site-content` → Editor visuale,
->   iframe, non più sulle pagine pubbliche) con cronologia Annulla/Ripeti, reset per campo e
->   **assistente IA** (valutati progetti open source su GitHub, nessuno adatto — costruito riusando
->   l'infrastruttura Claude esistente); **Libreria** rinominata "Libreria esercizi", filtri
->   principali+"Altri filtri", bottone "Termina esercizio", vista registrazione schermo intero+PIP
->   (desktop); bottone installazione PWA corretto (spariva su iOS/al primo caricamento). Dettaglio:
->   `COSE_FATTE_IN_SESSIONE.md` (Sessione 10).
-> - **Residui reali aperti:** sezione Prezzi (tabelle/struttura + nuova analisi costo AI per utilizzo
->   intensivo, in attesa risposte utente) · riordino blocchi nell'editor design · asset 3D da
->   procurare/commissionare · estendere l'editor design/`useCopy()` alle altre pagine · env var VAPID
->   da confermare su Vercel · credito Anthropic da ricaricare (scelta dell'utente, rimandato
->   all'ultimo) · Profilo impostazioni lingua · i18n completo (rimandata come iniziativa a parte) ·
->   verificare switch fotocamera + flusso analisi inline con hardware reale (fotocamera bloccata
->   nell'ambiente di sviluppo) · pagine `funzionalita`/`storie`/`risorse` non allineate.
-> Il testo sotto è tenuto come storico della visione "Account Manager completo".
-
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 # Motion Insight — Prossimi step

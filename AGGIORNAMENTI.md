@@ -1,6 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
-> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** Questo file è un **changelog storico** del restyling (palette navy/coral/Sora SUPERATA dal tema scuro/lime): NON usarlo per lo stato attuale. `main` è aggiornato a Sessioni 1-10 in produzione; la Sessione 11 (editor design esteso a tutte le pagine marketing + onboarding + area utente autenticata, audit sicurezza, 2 bug reali corretti, 14 ricette curate) è committata e pushata — vedi `COSE_FATTE_IN_SESSIONE.md` Sessione 11 per il dettaglio completo.
-
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
+> **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
+>
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 # Aggiornamenti — Restyling Motion Insight

@@ -1,20 +1,13 @@
-> ## ⚠️ STATO REALE — aggiornato 2026-08-19 (Sessione 11)
+> ## ⚠️ STATO REALE — aggiornato 2026-08-23 (Sessione 12)
 > **Fonte autorevole dello stato di avanzamento: i due diari `COSE_FATTE_IN_SESSIONE.md` + `COSE_DA_FARE.md`.** In caso di conflitto con questo documento, **valgono i diari** (qui sotto possono esserci sezioni storiche o superate).
 >
-> **Snapshot codice (19 ago 2026):** oltre ai cambi di Sessioni 6-9, in Sessione 10 sono cambiate/aggiunte
-> anche: `/prova-gratuita` (nome + scelta registra/carica video), `/esercizi` (rinominata "Libreria
-> esercizi", filtri principali+"Altri filtri"), `/analisi/sessione` (bottone "Termina esercizio", vista
-> schermo intero+PIP in registrazione), `/scarica` (bottone installazione sempre visibile), Admin →
-> `/admin/site-content` (nuovo "Editor visuale": anteprima iframe con modifica testo/colore/dimensione,
-> cronologia, assistente IA — sostituisce l'editor sovrapposto alle pagine pubbliche di Sessione 9).
-> `main` pushato e **in produzione** fino a Sessione 10. **Sessione 11** ha esteso l'editor visuale a
-> tutte le pagine marketing (prima solo `/prezzi`), all'onboarding (via "Elenco testi", non iframe) e a
-> tutta l'area utente autenticata (solo copy statico, mai i dati reali), e corretto un bug in
-> "Ripristina default" — committata e pushata. Sostituito anche il generatore AI di ricette in
-> Nutrizione con 14 ricette curate a mano (l'AI resta come opzione extra). Dettaglio pagina per
-> pagina: `COSE_FATTE_IN_SESSIONE.md` (Sessione 11).
-> **Aperti:** vedi `STATO_PROGETTO.md`.
-
+> **Sessione 12:** tabelle competitor prezzi (home + `/prezzi`) popolate con dati reali verificati via
+> ricerca web — Buddyfit, Freeletics, Gymondo (tabella home) + Fitbod (aggiunto anche su `/prezzi`).
+> Prezzo Freeletics riverificato direttamente sul sito ufficiale dopo un primo giro giudicato non
+> abbastanza solido: nessun piano mensile standalone, solo 3/12 mesi. Rimossa la sotto-tabella
+> "Funzionalità" da `/prezzi` (ridondante con quella in home); aggiunta riga "Calcolo delle kilocalorie"
+> a Free/Premium. Commit `be4369b`, pushato su `main`. Dettaglio completo in
+> `COSE_FATTE_IN_SESSIONE.md` Sessione 12.
 ---
 
 Tutte le pagine: copy, struttura, obiettivi, note tecniche
